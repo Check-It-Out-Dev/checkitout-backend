@@ -1,0 +1,23 @@
+# Main tasks for 07-systemd role
+
+---
+- name: Create test environment service
+  include_tasks: test-service.yml
+  tags: [systemd, test-service]
+
+- name: Create production environment service
+  include_tasks: prod-service.yml
+  tags: [systemd, prod-service]
+
+- name: Deploy Flask auth app for test domain protection
+  include_tasks: flask-auth-service.yml
+  when: deploy_flask_auth_app | bool
+  tags: [systemd, flask-auth, test-protection]
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Verify systemd services
+  include_tasks: verify.yml
+  tags: [systemd, verify]

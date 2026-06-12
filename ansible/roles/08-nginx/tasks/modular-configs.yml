@@ -1,0 +1,31 @@
+# Deploy modular Nginx configurations
+
+---
+- name: Find modular configs in source
+  ansible.builtin.find:
+    paths: "{{ nginx_config_source }}/conf.d"
+    patterns: "*.conf"
+  delegate_to: localhost
+  become: false
+  register: modular_configs_found
+  ignore_errors: yes
+
+- name: Deploy modular configs to /etc/nginx/conf.d/
+  ansible.builtin.copy:
+    src: "{{ item.path }}"
+    dest: "/etc/nginx/conf.d/{{ item.path | basename }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ modular_configs_found.files | default([]) }}"
+  when: modular_configs_found.files is defined and modular_configs_found.files | length > 0
+  notify: Reload Nginx
+  register: modular_configs_deployed
+
+- name: Display modular configs deployment status
+  ansible.builtin.debug:
+    msg:
+      - "Nginx Modular Configs:"
+      - "  Found locally: {{ modular_configs_found.matched | default(0) }}"
+      - "  Deployed to VPS: {{ modular_configs_deployed.results | default([]) | selectattr('changed', 'equalto', true) | list | length if modular_configs_deployed.results is defined else 0 }}"
+      - "  Status: {{ 'SUCCESS ✅' if modular_configs_found.matched | default(0) > 0 else 'No configs found (OK if using defaults)' }}"

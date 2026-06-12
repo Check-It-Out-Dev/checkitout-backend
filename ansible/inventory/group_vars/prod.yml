@@ -1,0 +1,149 @@
+# Production Environment Variables
+# Instagram Platform VPS Deployment
+#
+# These variables override values from all.yml for the production environment.
+# Extracted from deployment-prod.yml
+
+---
+# =============================================================================
+# Environment Identifier
+# =============================================================================
+
+environment: "prod"
+deployment_environment: "prod"
+
+# =============================================================================
+# Container Image Configuration
+# =============================================================================
+
+container_image_name: "check-it-out-dev/checkitout-be/instagram-platform-backend-prod"
+container_image_variant: ""  # No debug variant for prod
+
+# Docker images for compose
+gsm_init_image_full: "ghcr.io/check-it-out-dev/google-secrets-init:latest"
+main_app_image: "ghcr.io/check-it-out-dev/checkitout-be/instagram-platform-backend-prod:latest"
+app_container_name: "instagram-platform-prod"
+
+# =============================================================================
+# Container User/Group Configuration
+# =============================================================================
+
+container_user_id: 1006
+container_group_id: 1006
+container_user_name: "instagram-prod-deploy"
+container_group_name: "docker-secrets-prod"
+
+# =============================================================================
+# Google Secret Manager Configuration
+# =============================================================================
+
+gsm_project_id: "check-it-out-prod"
+gsm_secret_prefix: "PROD_"
+gsm_service_account_path: "/etc/instagram-platform/prod/secrets/service-account.json"
+
+# =============================================================================
+# Server Port Configuration
+# =============================================================================
+
+server_port: 8083
+app_port: 8083
+app_port_binding: "127.0.0.1:8083"  # Bind only to localhost
+
+# =============================================================================
+# Database Configuration
+# =============================================================================
+
+# Production uses self-hosted Docker PostgreSQL (replaced OVH managed DB)
+spring_datasource_host: "postgres"  # Docker container name
+spring_datasource_port: 5432        # Internal container port
+spring_datasource_host_port: 5433   # Host port mapping (avoids conflict with test on 5432)
+spring_datasource_database: "checkitout_app_prod_database"
+postgres_enabled: true  # Self-hosted Docker PostgreSQL
+
+# =============================================================================
+# Domains and URLs
+# =============================================================================
+
+prod_domain: "checkitout.app"
+prod_backend_url: "https://checkitout.app"
+prod_frontend_url: "https://checkitout.app"
+
+# =============================================================================
+# Docker Compose Configuration
+# =============================================================================
+
+docker_compose_file: "docker-compose-prod.yml"
+docker_compose_path: "/opt/instagram-platform/prod/deployment/docker-compose-prod.yml"
+
+# Expected container count for verification
+expected_container_count: 5  # google-secrets-init (exited), postgres, redis, redis-sentinel, app
+
+# Container names (matching docker-compose-prod.yml hardcoded names)
+containers:
+  - "instagram-platform-prod-gsm-init"
+  - "instagram-platform-prod-db"
+  - "instagram-platform-prod-redis"
+  - "instagram-platform-prod-redis-sentinel"
+  - "instagram-platform-prod-app"
+
+# =============================================================================
+# Systemd Service Configuration
+# =============================================================================
+
+systemd_service_name: "instagram-platform-prod"
+systemd_service_user: "instagram-prod-deploy"
+systemd_working_directory: "/opt/instagram-platform/prod/deployment"
+
+# =============================================================================
+# Network Configuration
+# =============================================================================
+
+docker_network_name: "instagram-platform-prod_network"
+docker_network_subnet: "172.21.0.0/16"
+docker_network_gateway: "172.21.0.1"
+
+# =============================================================================
+# Volume Configuration
+# =============================================================================
+
+docker_volume_secrets: "instagram-platform-prod_secrets-storage"
+docker_volume_postgres: "instagram-platform-prod_postgres-data"
+docker_volume_redis: "instagram-platform-prod_redis-data"
+docker_volume_backup: "instagram-platform-prod_backup-storage"
+
+# =============================================================================
+# Backup Configuration
+# =============================================================================
+
+backup_retention_count: 30  # Keep 30 days of backups in production
+
+# =============================================================================
+# Health Check Configuration
+# =============================================================================
+
+health_check_url: "http://localhost:8083/actuator/health"
+health_check_retries: 60
+health_check_delay: 5  # Stricter health checks in production
+health_initial_wait_seconds: 5
+
+# =============================================================================
+# Logging Configuration
+# =============================================================================
+
+log_level: "INFO"
+spring_profile: "prod"
+
+# =============================================================================
+# Deployment Configuration
+# =============================================================================
+
+deploy_user: "instagram-prod-deploy"
+deploy_group: "docker-secrets-prod"
+secrets_group: "docker-secrets-prod"
+
+# =============================================================================
+# Production Deploy User Configuration
+# =============================================================================
+
+prod_deploy_user_name: "instagram-prod-deploy"
+prod_deploy_user_home: "/home/instagram-prod-deploy"

@@ -1,0 +1,55 @@
+# SSH key configuration tasks
+
+---
+- name: Create .ssh directories for deployment users
+  ansible.builtin.file:
+    path: "{{ item.home }}/.ssh"
+    owner: "{{ item.name }}"
+    group: "{{ item.gid }}"
+    mode: "{{ ssh_directory_permissions }}"
+    state: directory
+  loop:
+    - "{{ user_test_deploy }}"
+    - "{{ user_prod_deploy }}"
+    - "{{ user_scripts_admin }}"
+
+- name: Deploy SSH authorized_keys for test deployment user
+  ansible.builtin.authorized_key:
+    user: "{{ user_test_deploy.name }}"
+    key: "{{ vault_test_deploy_ssh_public_key }}"
+    state: present
+  when: vault_test_deploy_ssh_public_key is defined
+
+- name: Deploy SSH authorized_keys for prod deployment user
+  ansible.builtin.authorized_key:
+    user: "{{ user_prod_deploy.name }}"
+    key: "{{ vault_prod_deploy_ssh_public_key }}"
+    state: present
+  when: vault_prod_deploy_ssh_public_key is defined
+
+- name: Deploy SSH authorized_keys for scripts admin user
+  ansible.builtin.authorized_key:
+    user: "{{ user_scripts_admin.name }}"
+    key: "{{ vault_admin_ssh_public_key | default('') }}"
+    state: present
+  when: vault_admin_ssh_public_key is defined
+
+- name: Deploy SSH authorized_keys for ubuntu user (your access)
+  ansible.builtin.authorized_key:
+    user: ubuntu
+    key: "{{ vault_ubuntu_ssh_public_key }}"
+    state: present
+  when: vault_ubuntu_ssh_public_key is defined
+
+- name: Set authorized_keys file permissions
+  ansible.builtin.file:
+    path: "{{ item.home }}/.ssh/authorized_keys"
+    owner: "{{ item.name }}"
+    group: "{{ item.gid }}"
+    mode: "{{ authorized_keys_permissions }}"
+  loop:
+    - "{{ user_test_deploy }}"
+    - "{{ user_prod_deploy }}"
+    - "{{ user_scripts_admin }}"
+  when: configure_ssh_keys | bool
+  ignore_errors: yes

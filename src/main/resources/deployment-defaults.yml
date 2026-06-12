@@ -1,0 +1,312 @@
+# =============================================================================
+# DEFAULT DEPLOYMENT CONFIGURATION
+# Base configuration for all environments - provides sensible defaults
+# Environment-specific files only need to override what's different
+# 
+# TO OVERRIDE: Add the property to deployment-{environment}.yml
+# 
+# PROPERTY NAMING CONVENTION:
+# - deployment: CI/CD pipeline configuration
+# - server: Spring Boot server configuration  
+# - spring: Spring application configuration
+# 
+# PLACEHOLDERS:
+# - ${deployment.environment}: Replaced with actual environment (test/prod/etc)
+# - ${property.name}: References another property value
+# =============================================================================
+
+# =============================================================================
+# RUNTIME PROPERTIES (Standard Spring Boot)
+# =============================================================================
+server:
+  servlet:
+    context-path: /api
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+
+# Database Configuration (Standard for all environments)
+spring:
+  datasource:
+    host: postgres
+    port: 5432
+    database: instagram_platform_{environment}
+
+# Google Secret Manager Container Path (same for all environments)
+GSM_SECRETS_PATH: /app/config
+
+# =============================================================================
+# DEPLOYMENT CONFIGURATION
+# =============================================================================
+deployment:
+  # Container Registry (GitHub Packages)
+  registry:
+    primary: ghcr.io
+    
+  image:
+    platforms: linux/amd64
+    build:
+      cache:
+        enabled: true
+        
+  # Java Build Configuration
+  java:
+    version: 21
+    distribution: temurin
+    
+  # Maven Build Configuration (Optimized for 16-core runner)
+  maven:
+    memory:
+      max: 12g          # Increased for 16-core runner
+    threads: C2         # 2 threads per core = 32 threads on 16 cores
+    compiler:
+      maxmem: 1g
+      fork: true        # Enable forked compilation
+      useIncrementalCompilation: false  # Disable for parallel builds
+    # Additional optimization flags
+    artifact:
+      threads: C2       # Parallel artifact resolution
+    # Wagon HTTP optimizations for parallel downloads
+    wagon:
+      http:
+        pool: false     # Disable connection pooling (better for parallel)
+        keepAlive: false
+        connectionManager:
+          ttlSeconds: 120
+    test:
+      fork:
+        count: C2       # 2 JVMs per core for tests
+        reuseForks: false  # Don't reuse for better isolation
+      parallel:
+        enabled: true
+        mode: both      # Parallel classes AND methods
+        strategy: dynamic
+        factor: 0.75
+        threadCount: C2  # Explicit thread count for tests
+      
+  # Docker Configuration
+  docker:
+    platform: linux/amd64
+    cache:
+      inline: max
+    provenance:
+      enabled: false
+    sbom:
+      enabled: false
+    maven:
+      memory: 12g
+      
+  # Container Configuration
+  container:
+    user:
+      name: instagram-{environment}-deploy  # Template: will be resolved
+    group:
+      name: docker-secrets-{environment}     # Template: will be resolved
+      
+  # Server Configuration
+  server:
+    user:
+      name: instagram-deploy
+    admin:
+      user:
+        name: instagram-scripts-admin
+        home: /var/lib/instagram-scripts-admin
+      group: docker
+    base:
+      path: /opt/instagram-platform
+      
+  # Paths Configuration
+  secure:
+    base:
+      path: /opt/instagram-platform/secure
+      
+  # Base System Paths (override per OS/deployment)
+  base:
+    system:
+      path: /opt/instagram-platform
+    log:
+      path: /var/log/instagram-platform    # Used for LOG_BASE_PATH - application logs
+      
+  # Destination paths for deployment
+  destination:
+    base:
+      path: /opt/instagram-platform/{environment}
+    deployment:
+      path: /opt/instagram-platform/{environment}/deployment
+    runtime:
+      path: /opt/instagram-platform/{environment}/runtime
+    docker:
+      compose:
+        file: /opt/instagram-platform/{environment}/deployment/docker-compose-{environment}.yml
+        
+  # Source paths for deployment
+  origin:
+    base:
+      path: deployment
+    docker:
+      compose:
+        file: deployment/docker-compose.yml
+        
+  # Admin package path
+  admin:
+    package:
+      path: /var/lib/instagram-scripts-admin
+      
+  # Google Secret Manager Configuration
+  gsm:
+    project:
+      id: check-it-out-{environment}  # Template: will be resolved
+    service:
+      account:
+        path: /var/secrets/gcp-sa/key.json
+    # GSM init container configuration
+    init:
+      image: google-secrets-init:latest
+      retry:
+        count: 5   # Number of retries for init operations
+        delay: 5   # Delay between retries in seconds
+      max:
+        wait:
+          seconds: 300  # Maximum wait time for init completion
+        
+  # Security Configuration
+  security:
+    use-sudo-docker: true
+    deployment-script: deploy.sh
+    
+  # Validation Configuration
+  validation:
+    expected:
+      containers: 2
+      
+  # Timeout Configuration
+  timeout:
+    build:
+      minutes: 30
+    security-scan:
+      minutes: 10
+    deploy:
+      minutes: 15
+    health-check:
+      minutes: 5
+      
+  script:
+    execution:
+      timeout:
+        seconds: 600  # 10 minutes for proper checksum validation
+        
+  env:
+    output:
+      file: .env.deployment
+        
+  # Health Check Configuration
+  health:
+    check:
+      default:
+        attempts: 30
+      interval:
+        seconds: 10
+      gsm-init:
+        attempts: 60
+      database:
+        attempts: 30
+      application:
+        attempts: 60
+    endpoint:
+      max:
+        retries: 5
+      retry:
+        delay:
+          seconds: 10
+      initial:
+        wait:
+          seconds: 30
+          
+  # Systemd Configuration
+  systemd:
+    service:
+      name: instagram-platform-{environment}  # Template: will be resolved
+      path: /etc/systemd/system
+      state:
+        file: /opt/instagram-platform/{environment}/runtime/.service-state
+    lock:
+      file: /var/lock/instagram-platform-{environment}.lock
+    startup:
+      timeout:
+        attempts: 30
+      check:
+        interval:
+          seconds: 10
+          
+  # Backup Configuration
+  backup:
+    base:
+      path: /opt/instagram-platform/{environment}/backups  # Template: will be resolved
+    retention:
+      count: 7
+      
+  # CI/CD Configuration
+  cicd:
+    enabled: true
+    # CI/CD User Group Configuration
+    group:
+      name: instagram-cicd    # All CI/CD users belong to this group
+    # Centralized Logging Configuration
+    log:
+      enabled: true
+      base:
+        path: /var/log/CiCd      # Updated to capital C as requested
+      file: instagram-platform-cicd.log
+      group: instagram-cicd     # Log files owned by this group
+      permissions: "0664"      # rw-rw-r-- (readable by all, writable by owner/group)
+      immutable: true          # Apply chattr +a after each write
+      # Log Format Configuration
+      format:
+        timestamp: "[%Y-%m-%d %H:%M:%S]"  # Standard timestamp format
+        levels:                           # Log level colors for console output
+          ERROR: "\033[0;31m"             # Red
+          SUCCESS: "\033[0;32m"           # Green
+          WARN: "\033[1;33m"              # Yellow
+          INFO: "\033[0;34m"              # Blue
+          DEBUG: "\033[0;36m"             # Cyan
+          NC: "\033[0m"                   # No Color
+      rotation:
+        enabled: true
+        size: 100M
+        count: 10
+        compress: true
+        
+  # GitHub Actions Configuration
+  github:
+    actions:
+      enabled: true
+      
+  # Build Metadata
+  build:
+    timestamp: ${TIMESTAMP}
+
+# Database Configuration Template
+
+# PostgreSQL image reference
+postgres:
+  image: postgres:16.9
+
+# =============================================================================
+# TEMPLATE DOCUMENTATION
+# =============================================================================
+_templates:
+  description: "Values containing {environment} will be replaced with actual environment name"
+  patterns:
+    - "{environment}" 
+    - "${deployment.environment}"
+    - "${environment}"
+  conventions:
+    paths: "/opt/instagram-platform/{environment}/*"
+    service_name: "instagram-platform-{environment}"
+    container_user: "instagram-{environment}-deploy"
+    container_group: "docker-secrets-{environment}"
+    database: "instagram_platform_{environment}"
+    gsm_project: "check-it-out-{environment}"
+    gsm_secret_prefix: "{ENVIRONMENT}_"  # uppercase

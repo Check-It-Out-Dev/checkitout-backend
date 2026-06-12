@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Console appender with colored output -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %highlight(%-5level) %cyan(%logger{36}) - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Testcontainers logging -->
+    <logger name="org.testcontainers" level="INFO"/>
+    <logger name="org.testcontainers.containers" level="INFO"/>
+    <logger name="org.testcontainers.utility" level="INFO"/>
+    <logger name="com.github.dockerjava" level="WARN"/>
+    <logger name="org.testcontainers.dockerclient" level="INFO"/>
+    
+    <!-- Docker client logging -->
+    <logger name="com.github.dockerjava.api.command" level="WARN"/>
+    <logger name="com.github.dockerjava.zerodep" level="WARN"/>
+    
+    <!-- Application logging -->
+    <logger name="com.sm.instagram.platform" level="DEBUG"/>
+    <logger name="com.sm.instagram.platform.config" level="INFO"/>
+    <logger name="com.sm.instagram.platform.common.redis" level="INFO"/>
+    
+    <!-- Spring logging -->
+    <logger name="org.springframework.test" level="INFO"/>
+    <logger name="org.springframework.boot.test" level="INFO"/>
+    <logger name="org.springframework.data.redis" level="DEBUG"/>
+    
+    <!-- Liquibase logging -->
+    <logger name="liquibase" level="INFO"/>
+    <logger name="liquibase.executor" level="WARN"/>
+    <logger name="liquibase.changelog" level="INFO"/>
+    
+    <!-- Hibernate/JPA logging -->
+    <logger name="org.hibernate" level="WARN"/>
+    <logger name="org.hibernate.SQL" level="WARN"/>
+    
+    <!-- Embedded Redis logging -->
+    <logger name="redis.embedded" level="INFO"/>
+    
+    <!-- Disable noisy loggers -->
+    <logger name="com.zaxxer.hikari" level="WARN"/>
+    <logger name="org.apache.catalina" level="WARN"/>
+    <logger name="org.apache.tomcat" level="WARN"/>
+    
+    <!-- Root logger -->
+    <root level="WARN">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

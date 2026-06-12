@@ -1,0 +1,58 @@
+# Main tasks for 01-base-system role
+# Instagram Platform VPS - Base System Setup
+#
+# This role sets up the foundation of the VPS:
+# - System verification
+# - Package installation
+# - Network configuration
+# - Firewall setup
+# - Kernel tuning
+# - SSH hardening
+
+---
+- name: Verify system meets requirements
+  include_tasks: verify.yml
+  tags: [base-system, verify]
+
+- name: Install and update packages
+  include_tasks: packages.yml
+  tags: [base-system, packages]
+
+- name: Configure network
+  include_tasks: network.yml
+  when: configure_network | bool
+  tags: [base-system, network]
+
+- name: Configure firewall
+  include_tasks: firewall.yml
+  when: configure_firewall | bool
+  tags: [base-system, firewall]
+
+- name: Configure kernel parameters
+  include_tasks: sysctl.yml
+  when: configure_sysctl | bool
+  tags: [base-system, sysctl]
+
+- name: Harden SSH configuration
+  include_tasks: ssh.yml
+  when: configure_ssh | bool
+  tags: [base-system, ssh]
+
+- name: Configure hostname
+  include_tasks: hostname.yml
+  when: configure_hostname | bool
+  tags: [base-system, hostname]
+
+- name: Configure timezone
+  include_tasks: timezone.yml
+  when: configure_timezone | bool
+  tags: [base-system, timezone]
+
+- name: Configure automatic security updates
+  include_tasks: unattended-upgrades.yml
+  when: enable_unattended_upgrades | bool
+  tags: [base-system, security-updates]
+
+- name: Final system update and cleanup
+  include_tasks: cleanup.yml
+  tags: [base-system, cleanup]

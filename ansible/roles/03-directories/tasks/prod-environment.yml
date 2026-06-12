@@ -1,0 +1,33 @@
+# Production environment directory creation
+
+---
+- name: Create production environment base directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ user_prod_deploy.name }}"
+    group: "{{ user_prod_deploy.gid }}"
+    mode: "{{ dir_permissions_standard }}"
+  loop:
+    - "{{ prod_base_path }}"
+    - "{{ prod_runtime_path }}"
+    - "{{ prod_runtime_path }}/logs"
+    - "{{ prod_runtime_path }}/temp"
+    - "{{ prod_runtime_path }}/cache"
+
+- name: Create production deployment directory (CI/CD accessible)
+  ansible.builtin.file:
+    path: "{{ prod_deployment_path }}"
+    state: directory
+    owner: root
+    group: docker-secrets-prod
+    mode: '0755'
+
+- name: Create production backups directory (restricted)
+  ansible.builtin.file:
+    path: "{{ prod_backups_path }}"
+    state: directory
+    owner: "{{ user_prod_deploy.name }}"
+    group: "{{ user_prod_deploy.gid }}"
+    mode: "{{ dir_permissions_restricted }}"
+  when: create_backups | bool

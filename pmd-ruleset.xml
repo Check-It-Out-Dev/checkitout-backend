@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<ruleset name="Instagram Platform PMD Rules"
+    xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>
+        Custom PMD ruleset for Instagram Platform project (PMD 7.x compatible).
+        Uses category-level includes with exclusions for maintainability.
+    </description>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- BEST PRACTICES - Include all, exclude noisy rules                       -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <rule ref="category/java/bestpractices.xml">
+        <!-- Exclude overly strict rules -->
+        <exclude name="GuardLogStatement"/>
+        <exclude name="JUnitTestContainsTooManyAsserts"/>
+        <exclude name="JUnitAssertionsShouldIncludeMessage"/>
+        <exclude name="AvoidReassigningParameters"/>
+        <exclude name="AbstractClassWithoutAbstractMethod"/>
+    </rule>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- CODE STYLE - Include minimal rules                                       -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <rule ref="category/java/codestyle.xml">
+        <!-- Exclude most style rules - keep only critical ones -->
+        <exclude name="AtLeastOneConstructor"/>
+        <exclude name="CallSuperInConstructor"/>
+        <exclude name="CommentDefaultAccessModifier"/>
+        <exclude name="ConfusingTernary"/>
+        <exclude name="ControlStatementBraces"/>
+        <exclude name="DefaultPackage"/>
+        <exclude name="EmptyMethodInAbstractClassShouldBeAbstract"/>
+        <exclude name="FieldDeclarationsShouldBeAtStartOfClass"/>
+        <exclude name="LocalVariableCouldBeFinal"/>
+        <exclude name="LongVariable"/>
+        <exclude name="MethodArgumentCouldBeFinal"/>
+        <exclude name="OnlyOneReturn"/>
+        <exclude name="PrematureDeclaration"/>
+        <exclude name="ShortClassName"/>
+        <exclude name="ShortMethodName"/>
+        <exclude name="ShortVariable"/>
+        <exclude name="TooManyStaticImports"/>
+        <exclude name="UselessParentheses"/>
+        <exclude name="UnnecessaryLocalBeforeReturn"/>
+        <exclude name="UseUnderscoresInNumericLiterals"/>
+    </rule>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- DESIGN - Include with relaxed thresholds                                 -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <rule ref="category/java/design.xml">
+        <!-- Exclude design rules that are too strict -->
+        <exclude name="AvoidCatchingGenericException"/>
+        <exclude name="AvoidDeeplyNestedIfStmts"/>
+        <exclude name="AvoidThrowingRawExceptionTypes"/>
+        <exclude name="CognitiveComplexity"/>
+        <exclude name="CyclomaticComplexity"/>
+        <exclude name="DataClass"/>
+        <exclude name="ExcessiveImports"/>
+        <exclude name="GodClass"/>
+        <exclude name="LawOfDemeter"/>
+        <exclude name="LoosePackageCoupling"/>
+        <exclude name="NcssCount"/>
+        <exclude name="NPathComplexity"/>
+        <exclude name="SignatureDeclareThrowsException"/>
+        <exclude name="TooManyFields"/>
+        <exclude name="TooManyMethods"/>
+        <exclude name="UseObjectForClearerAPI"/>
+    </rule>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- ERROR PRONE - Include critical bug detection rules                       -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <rule ref="category/java/errorprone.xml">
+        <!-- Exclude false-positive prone rules -->
+        <exclude name="AvoidDuplicateLiterals"/>
+        <exclude name="AvoidFieldNameMatchingMethodName"/>
+        <exclude name="AvoidFieldNameMatchingTypeName"/>
+        <exclude name="AvoidLiteralsInIfCondition"/>
+        <exclude name="BeanMembersShouldSerialize"/>
+        <exclude name="DataflowAnomalyAnalysis"/>
+        <exclude name="MissingSerialVersionUID"/>
+        <exclude name="NullAssignment"/>
+        <exclude name="UseLocaleWithCaseConversions"/>
+    </rule>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- PERFORMANCE - Include all performance rules                              -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <rule ref="category/java/performance.xml">
+        <exclude name="AvoidInstantiatingObjectsInLoops"/>
+    </rule>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- SECURITY - Include ALL security rules (critical)                         -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <rule ref="category/java/security.xml"/>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- MULTITHREADING - Include concurrency bug detection                       -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <rule ref="category/java/multithreading.xml">
+        <exclude name="DoNotUseThreads"/>
+        <exclude name="UseConcurrentHashMap"/>
+    </rule>
+
+</ruleset>

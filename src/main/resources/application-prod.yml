@@ -1,0 +1,427 @@
+# =============================================================================
+# PRODUCTION ENVIRONMENT - AUTOMATICALLY INHERITS FROM application.yml
+# =============================================================================
+
+# Frontend URL configuration
+frontend:
+  url: https://checkitout.app
+
+# =============================================================================
+# APPLICATION IDENTITY
+# =============================================================================
+app:
+  environment: PRODUCTION
+  base-url: https://checkitout.app
+
+# =============================================================================
+# SERVER CONFIGURATION FOR PRODUCTION
+# =============================================================================
+server:
+  address: 0.0.0.0
+  port: ${SERVER_PORT:8083}
+  
+  # Production-optimized Tomcat settings for 16GB VPS
+  tomcat:
+    threads:
+      max: ${TOMCAT_MAX_THREADS:400}
+      min-spare: ${TOMCAT_MIN_SPARE_THREADS:50}
+    accept-count: ${TOMCAT_ACCEPT_COUNT:200}
+    max-connections: ${TOMCAT_MAX_CONNECTIONS:20000}
+  
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    min-response-size: 1024
+  
+  # Enhanced security headers for production
+  servlet:
+    session:
+      cookie:
+        secure: ${COOKIE_SECURE:true}
+        http-only: true
+        same-site: strict
+      timeout: 20m
+  
+  error:
+    include-stacktrace: never
+    include-message: never
+
+# =============================================================================
+# SPRING CONFIGURATION FOR PRODUCTION
+# =============================================================================
+spring:
+  # =============================================================================
+  # DATABASE CONFIGURATION FOR PRODUCTION
+  # =============================================================================
+  datasource:
+    host: ${DATABASE_HOST}  # From environment (Docker service name 'postgres' or override)
+    port: ${DATABASE_PORT:5432}
+    database: checkitout_app_prod_database
+    url: jdbc:postgresql://${spring.datasource.host}:${spring.datasource.port}/${spring.datasource.database}
+    username: checkitout_app_prod
+    password: ${DATABASE_PASSWORD}  # From env/secrets
+    driver-class-name: org.postgresql.Driver
+
+    # Database Connection Pool - production tuned for self-hosted Docker PostgreSQL
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000  # 30 minutes
+      pool-name: CheckItOut-Prod-Pool
+      connection-test-query: SELECT 1
+      leak-detection-threshold: 60000
+      data-source-properties:
+        prepareThreshold: 0
+        reWriteBatchedInserts: true
+        stringtype: unspecified
+  
+  # Production-specific JPA settings (only visual/debugging off)
+  jpa:
+    show-sql: false  # Never show SQL in production
+    properties:
+      hibernate:
+        format_sql: false  # No formatting needed
+        use_sql_comments: false  # No comments
+        generate_statistics: false  # No statistics for performance
+  
+  # Liquibase for production
+  liquibase:
+    contexts: prod
+    user: checkitout_app_prod
+    password: ${DATABASE_PASSWORD}  # From vault/env (secret)
+  
+  # =============================================================================
+  # REDIS CONFIGURATION FOR PRODUCTION
+  # =============================================================================
+  data:
+    redis:
+      mode: sentinel
+      # Standalone config (fallback if sentinel is down)
+      host: redis
+      port: 6379
+      password: 
+      database: 0
+      # Sentinel configuration for HA
+      sentinel:
+        master: mymaster
+        nodes: redis-sentinel:26379
+        password: 
+      # Production connection settings
+      timeout: 1000
+      connect-timeout: 5s
+      ssl:
+        enabled: false
+      # Production connection pooling - optimized for 16GB VPS
+      lettuce:
+        pool:
+          max-active: 50
+          max-idle: 25
+          min-idle: 10
+          max-wait: 2000ms
+          time-between-eviction-runs: 30s
+  
+  # Cache configuration
+  cache:
+    type: redis
+    redis:
+      time-to-live: 30m
+      cache-null-values: false
+      use-key-prefix: true
+      key-prefix: "instagram:prod:"
+  
+  # =============================================================================
+  # JACKSON JSON PROCESSING FOR PRODUCTION
+  # =============================================================================
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+      write-durations-as-timestamps: false
+      fail-on-empty-beans: false
+    default-property-inclusion: NON_NULL
+
+# =============================================================================
+# SECRET MANAGEMENT CONFIGURATION - GOOGLE SECRET MANAGER
+# =============================================================================
+secrets:
+  development:
+    mode: false  # Use mounted secrets from Google Secret Manager
+  mount:
+    path: /app/config  # Where init container mounts secrets
+  cache:
+    enabled: true
+    # Redis password removed - running without authentication
+    # redis:
+    #   password:
+    #     name: PROD_REDIS_PASSWORD
+    #     env-var: REDIS_PASSWORD
+
+# =============================================================================
+# FIREBASE CONFIGURATION FOR PRODUCTION
+# =============================================================================
+firebase:
+  service:
+    account:
+      json:
+        base64: ${FIREBASE_SERVICE_ACCOUNT_JSON:}
+  project:
+    id: check-it-out-prod  # PROD Firebase project (constant)
+
+# =============================================================================
+# JWT/SECURITY CONFIGURATION
+# =============================================================================
+# Backend JWT Configuration (from GSM)
+jwt:
+  secret: ${JWT_SECRET:}  # From GSM (PROD_JWT_SECRET)
+  cookie:
+    domain: .checkitout.app  # Leading dot for subdomain cookies
+    secure: true  # HTTPS required in production
+
+# Cookie HMAC Configuration (from GSM)
+cookie:
+  hmac:
+    secret: ${COOKIE_HMAC_SECRET:}  # From GSM (PROD_COOKIE_HMAC_SECRET)
+
+# Meta App Configuration for Production
+meta:
+  app-id: ${META_APP_ID:1000000000000002}           # From env/secrets
+  app-secret: ${META_APP_SECRET:}  # From env/secrets
+
+# Admin Configuration
+admin:
+  firebase:
+    uid: ${ADMIN_FIREBASE_UID}  # From GSM (PROD_ADMIN_FIREBASE_UID)
+  email: ${ADMIN_EMAIL}  # From GSM (PROD_ADMIN_EMAIL)
+
+instagram:
+  test:
+    token: ${INSTAGRAM_TEST_TOKEN:}
+    validation:
+      enabled: true
+      startup-check: false  # Different for prod
+  client-id: ${INSTAGRAM_CLIENT_ID:2000000000000002}  # PROD Instagram App ID (constant)
+  client:
+    secret: ${INSTAGRAM_CLIENT_SECRET:}  # From env/secrets
+  redirect-uri: https://checkitout.app/api/auth/social/callback/instagram  # Backend OAuth callback with /api/ prefix
+
+# =============================================================================
+# GCP CONFIGURATION FOR PRODUCTION
+# =============================================================================
+gcp:
+  project-id: check-it-out-prod
+  bucket-name: check-it-out-prod.firebasestorage.app
+  storage:
+    enabled: true
+  kms:
+    enabled: true
+    location: europe-central2  # Warsaw, Poland
+    key-ring: instagram-tokens-prod
+    key-name: token-encryption-key-prod
+    totp-key-name: totp-secrets-key-prod
+
+# =============================================================================
+# FILE UPLOAD CONFIGURATION FOR PRODUCTION
+# =============================================================================
+file-upload:
+  max-file-size: 10485760
+  allowed-extensions: jpg,jpeg,png,gif,webp
+  signed-url-expiration-minutes: 5
+  storage-path-pattern: content/{userId}/{timestamp}_{filename}
+  tracking:
+    enabled: true
+    cleanup-orphaned-uploads: true
+    orphaned-upload-timeout-hours: 1
+
+# =============================================================================
+# TOTP (2FA) CONFIGURATION FOR PRODUCTION
+# =============================================================================
+totp:
+  # Production issuer - clearly distinguishable in Google Authenticator
+  issuer: CheckItOut
+  # Keep 2FA enabled in production
+  enabled: true
+
+# =============================================================================
+# GEOIP CONFIGURATION FOR PRODUCTION
+# =============================================================================
+geoip:
+  storage:
+    bucket: check-it-out-prod-geoip-private-60auv # Production private bucket for GeoIP data
+    enabled: true
+    max-age-days: 7  # Check for updates if database older than 7 days
+  download:
+    source: firebase  # All production instances download from Firebase Storage
+
+recaptcha:
+  project-id: check-it-out-prod
+  # Using Firebase service account for authentication (no API key needed)
+  site-key: 6LfDy6orAAAAAGDtgz0Pz_-Z9a3h0iSK78LXhTel  # Public site key
+# =============================================================================
+# STORAGE MODE FOR PRODUCTION
+# =============================================================================
+storage:
+  mode: redis  # Production uses Redis (distributed, persistent)
+
+# =============================================================================
+# RATE LIMITING CONFIGURATION
+# =============================================================================
+rate-limit:
+  enabled: true
+  redis:
+    key-prefix: "rl:prod:"
+    enable-fallback: true
+    connection-timeout: 1000
+    sliding-window:
+      enabled: true
+      precision: 20
+    circuit-breaker:
+      enabled: true
+      failure-threshold: 3
+      timeout: 10s
+      fallback-to-memory: true
+  
+  # GDPR Compliance
+  gdpr:
+    enabled: true
+    data-retention-hours: 24
+    anonymize-keys: true
+    audit-violations: true
+
+# Redis health monitoring and startup test
+redis:
+  health:
+    timeout: 1000ms
+    min-connections: 1
+  startup:
+    test:
+      enabled: true
+      fail-fast: true  # Fail application startup if Redis not available in production
+      timeout: 5000ms
+      retry-attempts: 3
+
+# =============================================================================
+# ACTUATOR & MONITORING FOR PRODUCTION
+# =============================================================================
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+      roles: SCOPE_ADMIN
+      cache:
+        time-to-live: 30s
+  info:
+    git:
+      mode: simple
+  
+  # Production metrics configuration
+  metrics:
+    enabled: true
+    tags:
+      application: instagram-platform
+      environment: ${app.environment}
+      profile: ${spring.profiles.active}
+    enable:
+      jvm: true
+      system: true
+      web: true
+      logback: true
+      hikaricp: true
+  
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  
+  health:
+    redis:
+      enabled: true
+
+# Production info endpoint
+info:
+  application:
+    name: ${spring.application.name}
+    description: Instagram Platform Backend Service
+    version: '@project.version@'
+    encoding: ${server.servlet.encoding.charset}
+    java:
+      version: ${java.version}
+    environment: ${app.environment}
+    profile: ${spring.profiles.active}
+
+# =============================================================================
+# LOGGING CONFIGURATION FOR PRODUCTION
+# =============================================================================
+logging:
+  file:
+    path: /var/log/instagram-platform/prod/application
+    name: /var/log/instagram-platform/prod/application/application.log
+  
+  # Production log rotation
+  logback:
+    rollingpolicy:
+      max-file-size: 500MB
+      total-size-cap: 5GB
+      max-history: 60
+      clean-history-on-start: true
+  
+  # Production logging patterns (structured for log aggregation)
+  pattern:
+    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSS'Z',UTC} [%thread] %-5level [%logger{36}] [%X{traceId:-}] - %msg%n"
+    file: "%d{yyyy-MM-dd'T'HH:mm:ss.SSS'Z',UTC} [%thread] %-5level [%logger{36}] [%X{traceId:-}] - %msg%n"
+  
+  level:
+    root: ${LOG_LEVEL_ROOT:INFO}
+    com.sm.instagram.platform: ${LOG_LEVEL_APP:INFO}
+    com.sm.instagram.platform.secrets: ${LOG_LEVEL_SECRETS:INFO}
+    com.sm.instagram.platform.secrets.ProductionSecretService: ${LOG_LEVEL_PROD_SECRET_SERVICE:INFO}
+    org.springframework.boot: ${LOG_LEVEL_SPRING_BOOT:INFO}
+    org.springframework.boot.autoconfigure: INFO
+    org.springframework.boot.autoconfigure.jdbc: INFO
+    org.springframework.jdbc: INFO
+    org.springframework.security: ${LOG_LEVEL_SPRING_SECURITY:INFO}
+    org.springframework.web.cors: ${LOG_LEVEL_CORS:INFO}
+    org.hibernate: ${LOG_LEVEL_HIBERNATE:INFO}
+    org.hibernate.SQL: ${LOG_LEVEL_HIBERNATE_SQL:INFO}
+    org.hibernate.type: INFO
+    org.hibernate.hql: INFO
+    org.hibernate.orm.query: INFO
+    org.hibernate.query: INFO
+    org.hibernate.engine.internal.StatisticalLoggingSessionEventListener: INFO  # Suppress session metrics
+    com.zaxxer.hikari: ${LOG_LEVEL_HIKARI:INFO}
+    com.zaxxer.hikari.HikariConfig: INFO
+    com.google.firebase: ${LOG_LEVEL_FIREBASE:INFO}
+    io.lettuce.core: ${LOG_LEVEL_LETTUCE:INFO}
+    org.springframework.data.redis: ${LOG_LEVEL_SPRING_REDIS:INFO}
+    com.sm.instagram.platform.common.ratelimit: ${LOG_LEVEL_RATE_LIMIT:INFO}
+    com.sm.instagram.platform.config.RedisConfiguration: ${LOG_LEVEL_REDIS_CONFIG:INFO}
+    io.github.resilience4j.circuitbreaker: ${LOG_LEVEL_CIRCUIT_BREAKER:INFO}
+    liquibase: INFO
+    liquibase.changelog: INFO
+    liquibase.database: INFO
+
+# =============================================================================
+# SWAGGER/OPENAPI (DISABLED FOR PRODUCTION)
+# =============================================================================
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+# =============================================================================
+# CORS FOR PRODUCTION
+# =============================================================================
+cors:
+  allowed-origins:
+    - https://checkitout.app
+    - https://www.checkitout.app
+    - https://app.check-it-out.pl
+    - https://www.app.check-it-out.pl
+    - https://check-it-out.pl
+    - https://www.check-it-out.pl

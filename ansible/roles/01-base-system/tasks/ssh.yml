@@ -1,0 +1,62 @@
+# SSH hardening tasks
+# Deploy main sshd_config from old VPS (exact copy)
+
+---
+- name: Backup existing SSH configuration
+  ansible.builtin.copy:
+    src: /etc/ssh/sshd_config
+    dest: "/etc/ssh/sshd_config.backup-{{ ansible_date_time.date }}"
+    remote_src: yes
+    mode: '0600'
+
+- name: Deploy main sshd_config (exact copy from old VPS)
+  ansible.builtin.copy:
+    src: sshd_config
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: '0644'
+    validate: '/usr/sbin/sshd -t -f %s'
+  register: sshd_main_deployed
+
+- name: Display main sshd_config deployment status
+  ansible.builtin.debug:
+    msg: "Main sshd_config: {{ 'DEPLOYED ✅ (exact copy from old VPS)' if sshd_main_deployed is changed else 'EXISTS' }}"
+
+- name: Test SSH configuration
+  ansible.builtin.command: sshd -t
+  changed_when: false
+  when: sshd_test_before_reload | bool
+  register: sshd_test_result
+
+- name: Display SSH config test result
+  ansible.builtin.debug:
+    msg: "SSH config test: {{ 'PASSED ✅' if sshd_test_result.rc == 0 else 'FAILED ⚠️' }}"
+  when: sshd_test_before_reload | bool
+
+- name: Reload SSH service
+  ansible.builtin.systemd:
+    name: ssh
+    state: reloaded
+
+- name: Display SSH configuration warning
+  ansible.builtin.debug:
+    msg:
+      - "WARNING: SSH configuration will be reloaded"
+      - "Ensure SSH keys are properly configured"
+      - "Current session will NOT be disconnected"
+      - "Test new session before closing this one"
+
+- name: Verify SSH hardening settings
+  ansible.builtin.command: "sshd -T"
+  register: sshd_test_output
+  changed_when: false
+
+- name: Check critical SSH settings
+  ansible.builtin.assert:
+    that:
+      - "'permitrootlogin no' in sshd_test_output.stdout"
+      - "'passwordauthentication no' in sshd_test_output.stdout"
+      - "'pubkeyauthentication yes' in sshd_test_output.stdout"
+    success_msg: "SSH hardening verified successfully"
+    fail_msg: "SSH hardening verification failed"

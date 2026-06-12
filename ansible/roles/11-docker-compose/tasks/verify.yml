@@ -1,0 +1,28 @@
+# Docker Compose deployment verification
+
+---
+- name: Verify test Docker Compose file exists
+  ansible.builtin.stat:
+    path: "{{ test_deployment_path }}/docker-compose-test.yml"
+  register: test_compose_file
+
+- name: Verify production Docker Compose file exists
+  ansible.builtin.stat:
+    path: "{{ prod_deployment_path }}/docker-compose-prod.yml"
+  register: prod_compose_file
+
+- name: Assert Docker Compose files exist
+  ansible.builtin.assert:
+    that:
+      - test_compose_file.stat.exists
+      - prod_compose_file.stat.exists
+    success_msg: "All Docker Compose files deployed"
+    fail_msg: "Missing Docker Compose files"
+
+- name: Display Docker Compose deployment summary
+  ansible.builtin.debug:
+    msg:
+      - "Docker Compose files deployed successfully"
+      - "Test compose: {{ test_deployment_path }}/docker-compose-test.yml"
+      - "Prod compose: {{ prod_deployment_path }}/docker-compose-prod.yml"
+      - "Applications will be started in playbooks/startup.yml"

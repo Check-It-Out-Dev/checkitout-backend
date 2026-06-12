@@ -1,0 +1,52 @@
+# Zsh Setup Playbook
+# Instagram Platform - Configure Zsh for Ubuntu User
+#
+# This playbook installs and configures zsh with Oh-My-Zsh, Powerlevel10k theme,
+# and essential plugins for the ubuntu user.
+#
+# ⚠️  Run this BEFORE ssh-hardening.yml
+#
+# Usage:
+#   ansible-playbook -i inventory/production.yml playbooks/zsh-setup.yml
+
+---
+- name: Instagram Platform - Zsh Setup
+  hosts: instagram_platform
+  become: true
+  gather_facts: yes
+
+  pre_tasks:
+    - name: Display zsh setup information
+      ansible.builtin.debug:
+        msg:
+          - "=========================================="
+          - "Zsh Setup for Ubuntu User"
+          - "=========================================="
+          - "Installing:"
+          - "  - Zsh shell"
+          - "  - Oh-My-Zsh framework"
+          - "  - Powerlevel10k theme"
+          - "  - Essential plugins"
+          - ""
+          - "Default shell will be changed to zsh"
+          - "=========================================="
+
+  roles:
+    - role: ../roles/16-zsh-set-up
+      tags: [zsh-setup]
+
+  post_tasks:
+    - name: Display completion message
+      ansible.builtin.debug:
+        msg:
+          - "=========================================="
+          - "Zsh Setup Complete!"
+          - "=========================================="
+          - "Ubuntu user shell: zsh ✅"
+          - "Oh-My-Zsh: Installed ✅"
+          - "Powerlevel10k theme: Installed ✅"
+          - "Plugins: Installed ✅"
+          - ""
+          - "Next login will use zsh!"
+          - "Test: ssh ubuntu@{{ ansible_host }}"
+          - "=========================================="

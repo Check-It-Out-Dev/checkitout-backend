@@ -1,0 +1,32 @@
+# =============================================================================
+# TEST ENVIRONMENT SPECIFIC CONFIGURATION - REFACTORED VERSION
+# Only contains properties that are UNIQUE to the test environment
+# All pattern-following values are automatically derived from templates
+# =============================================================================
+
+deployment:
+  # Environment identifier (REQUIRED)
+  environment: test
+    
+  # Test-specific image configuration
+  image:
+    name: check-it-out-dev/checkitout-be/instagram-platform-backend-test
+    variant: debug
+    
+  # Only override IDs - names follow templates
+  container:
+    user:
+      id: 1002      # Only override ID
+    group:
+      id: 1005      # Only override ID
+      
+  # Test-specific Google Secret Manager configuration
+  gsm:
+    project:
+      id: check-it-out-47c50  # Test GCP project
+    secret:
+      prefix: TEST_
+
+# Test-specific server configuration
+server:
+  port: 8082

@@ -1,0 +1,52 @@
+# Network configuration tasks
+# Configure static IP with netplan
+
+---
+- name: Backup existing netplan configuration
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ item }}.backup-{{ ansible_date_time.date }}"
+    remote_src: yes
+    mode: '0600'
+  with_fileglob:
+    - /etc/netplan/*.yaml
+  ignore_errors: yes
+
+- name: Deploy netplan configuration
+  ansible.builtin.template:
+    src: netplan.yml.j2
+    dest: "{{ netplan_config_file }}"
+    owner: root
+    group: root
+    mode: '0600'
+  notify: Apply netplan configuration
+
+- name: Test netplan configuration syntax
+  ansible.builtin.command: netplan generate
+  changed_when: false
+  check_mode: no
+
+- name: Display network configuration warning
+  ansible.builtin.debug:
+    msg:
+      - "WARNING: Network configuration will be applied"
+      - "If connection is lost, configuration will auto-revert in {{ netplan_apply_timeout }} seconds"
+      - "Ensure you have console access (OVH VNC/KVM) before proceeding"
+
+- name: Apply netplan configuration (with auto-revert)
+  ansible.builtin.command: netplan apply
+  when: not ansible_check_mode
+  register: netplan_result
+  failed_when: false
+  async: 45
+  poll: 0
+
+- name: Wait for network to stabilize
+  ansible.builtin.pause:
+    seconds: 5
+  when: not ansible_check_mode
+
+- name: Verify network connectivity after netplan apply
+  ansible.builtin.wait_for_connection:
+    timeout: 60
+  when: not ansible_check_mode

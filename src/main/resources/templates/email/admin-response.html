@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title th:text="#{email.ticket_response.title}">Support Request Update</title>
+    <!--[if mso]>
+    <style>
+        table { border-collapse: collapse; }
+        .button { padding: 14px 32px !important; }
+    </style>
+    <![endif]-->
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; line-height: 1.6; color: #333333; background-color: #f4f4f4;">
+
+    <!-- Wrapper table for background color -->
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f4f4f4;">
+        <tr>
+            <td style="padding: 20px 0;">
+                <!-- Container table (mobile responsive) -->
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: 0 auto; max-width: 600px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" align="center">
+
+                    <!-- Header Section -->
+                    <tr>
+                        <td style="background-color: #667eea; padding: 40px 20px; text-align: center; color: #ffffff; border-radius: 8px 8px 0 0;">
+                            <!--[if mso]>
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                            <tr>
+                            <td style="background-color: #667eea; padding: 40px 20px; text-align: center;">
+                            <![endif]-->
+                            <h1 style="margin: 0; padding: 0; font-size: 24px; font-weight: 600; color: #ffffff;" th:text="#{email.ticket_response.title}">Support Request Update</h1>
+                            <!--[if mso]>
+                            </td>
+                            </tr>
+                            </table>
+                            <![endif]-->
+                        </td>
+                    </tr>
+
+                    <!-- Body Section -->
+                    <tr>
+                        <td style="padding: 40px 30px;">
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+
+                                <!-- Greeting -->
+                                <tr>
+                                    <td style="padding-bottom: 20px;">
+                                        <h2 style="margin: 0; padding: 0; font-size: 22px; font-weight: 600; color: #667eea;" th:text="#{email.ticket_response.greeting}">Dear Customer,</h2>
+                                    </td>
+                                </tr>
+
+                                <!-- Intro text -->
+                                <tr>
+                                    <td style="padding-bottom: 20px; font-size: 16px; color: #555555; line-height: 1.6;" th:text="#{email.ticket_response.intro(${ticketReference}, ${ticketSubject})}">
+                                        We have an update to your support request.
+                                    </td>
+                                </tr>
+
+                                <!-- Admin responded -->
+                                <tr>
+                                    <td style="padding-bottom: 10px; font-size: 16px; color: #555555; line-height: 1.6;" th:text="#{email.ticket_response.admin_responded(${adminName})}">
+                                        An admin from our support team has responded:
+                                    </td>
+                                </tr>
+
+                                <!-- Response content blockquote -->
+                                <tr>
+                                    <td style="padding-bottom: 20px;">
+                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f8f9fa; border-left: 4px solid #667eea; border-radius: 4px;">
+                                            <tr>
+                                                <td style="padding: 15px; font-size: 15px; color: #555555; line-height: 1.6; font-style: italic;" th:text="${responseContent}">
+                                                    Response content here.
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                                <!-- View instructions -->
+                                <tr>
+                                    <td style="padding-bottom: 20px; font-size: 16px; color: #555555; line-height: 1.6;" th:text="#{email.ticket_response.view_instructions}">
+                                        You can view the full conversation and reply at:
+                                    </td>
+                                </tr>
+
+                                <!-- CTA Button with Outlook VML fallback -->
+                                <tr>
+                                    <td style="padding: 20px 0; text-align: center;">
+                                        <!--[if mso]>
+                                        <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="[(${statusLink})]" style="height:48px;v-text-anchor:middle;width:250px;" arcsize="13%" stroke="f" fillcolor="#667eea">
+                                        <w:anchorlock/>
+                                        <center style="color:#ffffff;font-family:sans-serif;font-size:16px;font-weight:600;">[(#{email.ticket_response.button})]</center>
+                                        </v:roundrect>
+                                        <![endif]-->
+                                        <!--[if !mso]><!-->
+                                        <a th:href="${statusLink}" style="display: inline-block; background-color: #667eea; color: #ffffff !important; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-weight: 600; font-size: 16px; line-height: 20px; text-align: center; min-width: 150px;" th:text="#{email.ticket_response.button}">
+                                            View Conversation
+                                        </a>
+                                        <!--<![endif]-->
+                                    </td>
+                                </tr>
+
+                                <!-- Alternative link box -->
+                                <tr>
+                                    <td style="padding: 20px 0;">
+                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px;">
+                                            <tr>
+                                                <td style="padding: 15px;">
+                                                    <p style="margin: 0 0 10px 0; font-size: 14px; color: #6c757d;" th:text="#{email.ticket_response.link.alternative}">
+                                                        Or copy and paste this link into your browser:
+                                                    </p>
+                                                    <a th:href="${statusLink}" style="color: #667eea; font-size: 13px; word-break: break-all; text-decoration: none;" th:text="${statusLink}">
+                                                        https://link
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                                <!-- Closing -->
+                                <tr>
+                                    <td style="padding-top: 10px; font-size: 16px; color: #555555; line-height: 1.6;" th:text="#{email.ticket_response.closing}">
+                                        Thank you for your patience.
+                                    </td>
+                                </tr>
+
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Footer Section -->
+                    <tr>
+                        <td style="background-color: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #e9ecef; border-radius: 0 0 8px 8px;">
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                <tr>
+                                    <td style="padding-bottom: 8px;">
+                                        <span style="color: #667eea; font-weight: 600; font-size: 14px;" th:text="#{email.common.footer.company}">CheckItOut Team</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-bottom: 8px; font-size: 14px; color: #6c757d;">
+                                        <span th:text="#{email.common.footer.contact_prefix}">Need help? Contact us at</span>
+                                        <a href="mailto:support@example.com" style="color: #667eea; text-decoration: none;">support@example.com</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-top: 10px; font-size: 13px; color: #999999;">
+                                        <span>&copy; </span><span th:text="${currentYear}">2026</span><span> Check It Out. </span><span th:text="#{email.common.footer.rights}">All rights reserved.</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

@@ -1,0 +1,57 @@
+# Deploy individual sudoers file with validation
+
+---
+- name: "Check if {{ sudoers_file }} source exists"
+  ansible.builtin.stat:
+    path: "{{ role_path }}/files/{{ sudoers_file }}"
+  delegate_to: localhost
+  become: false
+  register: sudoers_source
+
+- name: "Deploy {{ sudoers_file }} to temporary location"
+  ansible.builtin.copy:
+    src: "{{ sudoers_file }}"
+    dest: "/tmp/{{ sudoers_file }}.tmp"
+    owner: root
+    group: root
+    mode: '0440'
+  when: sudoers_source.stat.exists
+
+- name: "Validate {{ sudoers_file }} syntax"
+  ansible.builtin.command: "visudo -c -f /tmp/{{ sudoers_file }}.tmp"
+  register: sudoers_validation
+  changed_when: false
+  when: sudoers_source.stat.exists and validate_sudoers | bool
+
+- name: "Assert {{ sudoers_file }} validation passed"
+  ansible.builtin.assert:
+    that:
+      - sudoers_validation.rc == 0
+      - "'parsed OK' in sudoers_validation.stdout or 'parsed OK' in sudoers_validation.stderr"
+    fail_msg: "Sudoers validation FAILED for {{ sudoers_file }}! DO NOT PROCEED!"
+    success_msg: "Sudoers validation passed for {{ sudoers_file }}"
+  when: sudoers_source.stat.exists and validate_sudoers | bool
+
+- name: "Move validated {{ sudoers_file }} to sudoers.d"
+  ansible.builtin.copy:
+    src: "/tmp/{{ sudoers_file }}.tmp"
+    dest: "{{ sudoers_dir }}/{{ sudoers_file }}"
+    remote_src: yes
+    owner: "{{ sudoers_owner }}"
+    group: "{{ sudoers_group }}"
+    mode: "{{ sudoers_file_permissions }}"
+  when: sudoers_source.stat.exists
+
+- name: "Remove temporary {{ sudoers_file }}"
+  ansible.builtin.file:
+    path: "/tmp/{{ sudoers_file }}.tmp"
+    state: absent
+  when: sudoers_source.stat.exists
+
+- name: "Display warning if {{ sudoers_file }} not found"
+  ansible.builtin.debug:
+    msg:
+      - "WARNING: Sudoers file not found: {{ role_path }}/files/{{ sudoers_file }}"
+      - "Place sudoers files in ansible/roles/09-sudoers/files/"
+      - "Copy from existing VPS: scp OLD_VPS:/etc/sudoers.d/{{ sudoers_file }} files/"
+  when: not sudoers_source.stat.exists

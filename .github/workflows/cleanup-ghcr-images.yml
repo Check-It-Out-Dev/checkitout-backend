@@ -1,0 +1,165 @@
+name: Cleanup GHCR Images
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: 'Run in dry-run mode (preview deletions without actually deleting)'
+        required: false
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+env:
+  REGISTRY: 'ghcr.io'
+  ORGANIZATION: 'Check-It-Out-Dev'
+  CUTOFF_DAYS: 7
+
+jobs:
+  cleanup:
+    name: Delete images older than 7 days
+    runs-on: [self-hosted, Linux, x64]
+    permissions:
+      packages: write
+      contents: read
+    
+    steps:
+      - name: Cleanup GHCR images
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const dryRun = '${{ inputs.dry-run }}' === 'true';
+            const org = '${{ env.ORGANIZATION }}';
+            const cutoffDays = ${{ env.CUTOFF_DAYS }};
+            const cutoffDate = new Date();
+            cutoffDate.setDate(cutoffDate.getDate() - cutoffDays);
+            
+            console.log(`🧹 GHCR Cleanup - ${dryRun ? 'DRY RUN' : 'LIVE RUN'}`);
+            console.log(`📍 Organization: ${org}`);
+            console.log(`📅 Cutoff date: ${cutoffDate.toISOString()}`);
+            console.log(`🗑️  Will delete images older than ${cutoffDays} days\n`);
+            
+            // Known package names (add/remove as needed)
+            const packageNames = [
+              'checkitout-be/instagram-platform-backend-prod',
+              'checkitout-be/instagram-platform-backend-test',
+              'checkitout-be/google-secrets-init'
+            ];
+            
+            let totalDeleted = 0;
+            let totalFailed = 0;
+            
+            for (const packageName of packageNames) {
+              console.log(`\n📦 Processing package: ${packageName}`);
+              console.log('─'.repeat(50));
+              
+              try {
+                // Get all versions for this package
+                let page = 1;
+                let hasMore = true;
+                const allVersions = [];
+                
+                while (hasMore) {
+                  try {
+                    const response = await github.rest.packages.getAllPackageVersionsForPackageOwnedByOrg({
+                      package_type: 'container',
+                      package_name: packageName,
+                      org: org,
+                      per_page: 100,
+                      page: page,
+                      state: 'active'
+                    });
+                    
+                    allVersions.push(...response.data);
+                    hasMore = response.data.length === 100;
+                    page++;
+                  } catch (error) {
+                    if (error.status === 404) {
+                      console.log(`  ⚠️  Package not found: ${packageName}`);
+                      hasMore = false;
+                    } else {
+                      throw error;
+                    }
+                  }
+                }
+                
+                if (allVersions.length === 0) {
+                  console.log(`  ℹ️  No versions found`);
+                  continue;
+                }
+                
+                console.log(`  📊 Total versions: ${allVersions.length}`);
+                
+                // Filter old versions
+                const oldVersions = allVersions.filter(version => {
+                  const createdAt = new Date(version.created_at);
+                  return createdAt < cutoffDate;
+                });
+                
+                console.log(`  🗑️  Old versions to delete: ${oldVersions.length}`);
+                
+                if (oldVersions.length === 0) {
+                  console.log(`  ✅ No old versions to delete`);
+                  continue;
+                }
+                
+                // Delete old versions
+                let packageDeleted = 0;
+                let packageFailed = 0;
+                
+                for (const version of oldVersions) {
+                  const age = Math.floor((Date.now() - new Date(version.created_at)) / (1000 * 60 * 60 * 24));
+                  const tags = version.metadata?.container?.tags || [];
+                  const tagInfo = tags.length > 0 ? tags.join(', ') : 'untagged';
+                  
+                  console.log(`  🔍 Version ${version.id} (${age} days old, ${tagInfo})`);
+                  
+                  if (!dryRun) {
+                    try {
+                      await github.rest.packages.deletePackageVersionForOrg({
+                        package_type: 'container',
+                        package_name: packageName,
+                        org: org,
+                        package_version_id: version.id
+                      });
+                      console.log(`     ✅ Deleted`);
+                      packageDeleted++;
+                    } catch (error) {
+                      console.log(`     ❌ Failed: ${error.message}`);
+                      packageFailed++;
+                    }
+                  } else {
+                    console.log(`     🔍 Would delete (dry run)`);
+                    packageDeleted++;
+                  }
+                }
+                
+                console.log(`  📊 Package summary: ${packageDeleted} deleted, ${packageFailed} failed`);
+                totalDeleted += packageDeleted;
+                totalFailed += packageFailed;
+                
+              } catch (error) {
+                console.error(`  ❌ Error processing package: ${error.message}`);
+                if (error.status === 403) {
+                  console.error(`  💡 Permission denied. Make sure the workflow has 'packages: write' permission`);
+                }
+              }
+            }
+            
+            // Final summary
+            console.log('\n' + '═'.repeat(60));
+            console.log('📊 FINAL SUMMARY');
+            console.log('═'.repeat(60));
+            console.log(`✅ Total ${dryRun ? 'would delete' : 'deleted'}: ${totalDeleted} versions`);
+            if (totalFailed > 0) {
+              console.log(`❌ Total failed: ${totalFailed} versions`);
+            }
+            console.log(`🐳 Registry: ${{ env.REGISTRY }}/${org}`);
+            console.log('\n✨ Cleanup complete!');
+            
+            // Exit with error if any deletions failed in live mode
+            if (!dryRun && totalFailed > 0) {
+              core.setFailed(`Failed to delete ${totalFailed} versions`);
+            }

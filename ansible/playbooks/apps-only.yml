@@ -1,0 +1,43 @@
+# Applications Only Playbook
+# Instagram Platform - Deploy Application Configs Only
+#
+# This playbook deploys only application configurations (secrets, monitoring, compose files).
+# Assumes infrastructure is already deployed.
+#
+# Usage:
+#   ansible-playbook -i inventory/production.yml playbooks/apps-only.yml --vault-password-file ~/.ansible/vault-pass
+
+---
+- name: Instagram Platform - Applications Only
+  hosts: instagram_platform
+  become: true
+  gather_facts: yes
+
+  pre_tasks:
+    - name: Display deployment information
+      ansible.builtin.debug:
+        msg:
+          - "Deploying application configurations only"
+          - "Infrastructure assumed to be already deployed"
+
+  roles:
+    # Application configs
+    - role: ../roles/05-secrets
+      tags: [apps, secrets]
+
+    - role: ../roles/10-monitoring
+      tags: [apps, monitoring]
+
+    - role: ../roles/11-docker-compose
+      tags: [apps, compose]
+
+    # Automation
+    - role: ../roles/13-automation
+      tags: [apps, automation]
+
+  post_tasks:
+    - name: Display completion message
+      ansible.builtin.debug:
+        msg:
+          - "Application configuration complete"
+          - "To start applications: ansible-playbook -i inventory/production.yml playbooks/startup.yml"

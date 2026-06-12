@@ -1,0 +1,20 @@
+{
+  "log-driver": "{{ docker_log_driver }}",
+  "log-opts": {
+    "tag": "docker/{% raw %}{{.Name}}{% endraw %}",
+    "max-size": "10m",
+    "max-file": "3"
+  },
+  "storage-driver": "{{ docker_storage_driver }}",
+  "userland-proxy": {{ docker_userland_proxy | lower }},
+  "live-restore": {{ docker_live_restore | lower }},
+  "default-address-pools": [
+    {
+      "base": "172.16.0.0/12",
+      "size": 24
+    }
+  ],
+  "dns": {{ dns_servers | to_json }},
+  "max-concurrent-downloads": 10,
+  "max-concurrent-uploads": 10
+}

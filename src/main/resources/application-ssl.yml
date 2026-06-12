@@ -1,0 +1,66 @@
+# =============================================================================
+# SSL CONFIGURATION FOR LOCAL DEVELOPMENT
+# =============================================================================
+# Usage: Include this profile when running locally with OAuth
+# Example: mvn spring-boot:run -Dspring.profiles.active=dev,ssl
+#
+# BEFORE USING THIS PROFILE:
+# 1. Generate a self-signed certificate or use mkcert:
+#    keytool -genkeypair -alias tomcat -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore keystore.p12 -validity 3650 -storepass changeit
+# 2. Place keystore.p12 in src/main/resources/
+# 3. Trust the certificate in your browser
+
+server:
+  ssl:
+    enabled: true
+    key-store: classpath:keystore.p12  # Certificate location
+    key-store-password: changeit       # Certificate password
+    key-store-type: PKCS12             # Certificate type
+    key-alias: tomcat                  # Certificate alias
+    
+    # SSL Protocol Configuration
+    protocol: TLS
+    enabled-protocols: TLSv1.2, TLSv1.3
+    
+    # Cipher suites (optional - Spring Boot defaults are usually fine)
+    # ciphers: TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+    
+  # HTTP port (disabled when SSL is enabled)
+  # To run both HTTP and HTTPS, you need additional configuration
+  port: 8080  # This becomes HTTPS port when SSL is enabled
+
+# Instructions for generating certificates:
+# 
+# Option 1: Self-signed certificate (quick for testing)
+# ------------------------------------------------------
+# keytool -genkeypair -alias tomcat -keyalg RSA -keysize 2048 \
+#   -storetype PKCS12 -keystore keystore.p12 -validity 3650 \
+#   -storepass changeit \
+#   -dname "CN=localhost, OU=Development, O=CheckItOut, L=Warsaw, ST=Mazovia, C=PL"
+#
+# Option 2: Using mkcert (recommended for local development)
+# -----------------------------------------------------------
+# 1. Install mkcert:
+#    choco install mkcert  # Windows with Chocolatey
+#    OR download from https://github.com/FiloSottile/mkcert
+#
+# 2. Create local CA:
+#    mkcert -install
+#
+# 3. Generate certificate:
+#    mkcert localhost 127.0.0.1 ::1
+#
+# 4. Convert to PKCS12:
+#    openssl pkcs12 -export -in localhost+2.pem -inkey localhost+2-key.pem \
+#      -out keystore.p12 -name tomcat -password pass:changeit
+#
+# Option 3: Let's Encrypt for public domain (production-like)
+# ------------------------------------------------------------
+# Use certbot to generate real certificates for a domain you own
+#
+# Trust the certificate in your browser:
+# ---------------------------------------
+# Chrome: Navigate to https://localhost:8080
+#         Click "Advanced" → "Proceed to localhost (unsafe)"
+# OR import certificate to Windows Certificate Store:
+#    certutil -addstore -user "Root" localhost+2.pem

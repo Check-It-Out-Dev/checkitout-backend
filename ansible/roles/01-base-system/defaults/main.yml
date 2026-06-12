@@ -1,0 +1,47 @@
+# Default variables for 01-base-system role
+# Instagram Platform VPS Deployment
+#
+# These can be overridden in group_vars/ or host_vars/
+
+---
+# System verification
+required_os_distribution: "Ubuntu"
+required_os_version: "24.04"
+required_os_codename: "noble"
+required_architecture: "x86_64"
+
+# Package installation
+update_apt_cache: true
+upgrade_packages: false  # Set to true for full system upgrade
+
+# Network configuration (DISABLED - applied in final hardening phase)
+configure_network: false
+netplan_config_file: "/etc/netplan/01-netcfg.yaml"
+netplan_apply_timeout: 120  # seconds before auto-revert
+
+# Firewall configuration (DISABLED - applied in final hardening phase)
+configure_firewall: false
+firewall_script_path: "/usr/local/sbin/apply-firewall-rules.sh"
+install_iptables_persistent: true
+
+# Kernel parameters
+configure_sysctl: true
+sysctl_config_file: "/etc/sysctl.d/99-instagram-platform.conf"
+
+# SSH hardening (DISABLED - applied in final hardening phase)
+configure_ssh: false
+sshd_config_file: "/etc/ssh/sshd_config.d/99-instagram-hardening.conf"
+sshd_test_before_reload: true
+
+# Hostname configuration
+configure_hostname: true
+update_hosts_file: true
+
+# Timezone configuration
+configure_timezone: true
+
+# Automatic security updates
+enable_unattended_upgrades: true
+
+# System monitoring
+enable_system_monitoring: true

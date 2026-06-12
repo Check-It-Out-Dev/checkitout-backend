@@ -1,0 +1,81 @@
+# Logrotate configuration for Instagram Platform Test Environment
+# This file should be copied to /etc/logrotate.d/instagram-platform-test
+
+/var/log/instagram-platform/test/application/*.log {
+    # Rotate logs daily
+    daily
+    
+    # Keep 14 days of logs
+    rotate 14
+    
+    # Compress old logs
+    compress
+    
+    # Delay compression by one rotation cycle
+    delaycompress
+    
+    # Don't error if log file is missing
+    missingok
+    
+    # Don't rotate empty files
+    notifempty
+    
+    # Create new log files with specific permissions
+    create 0644 instagram-test-deploy docker-secrets-test
+    
+    # Run postrotate script once for all logs
+    sharedscripts
+    
+    # After rotation, send signal to application to reopen log files
+    postrotate
+        # Check if container is running before sending signal
+        if docker ps | grep -q instagram-platform-test-app; then
+            docker exec instagram-platform-test-app kill -USR1 1 2>/dev/null || true
+        fi
+    endscript
+    
+    # Maximum size before forced rotation (in addition to daily)
+    maxsize 100M
+    
+    # Use date as suffix for rotated files
+    dateext
+    dateformat -%Y%m%d
+    
+    # Keep logs in the same directory
+    olddir /var/log/instagram-platform/test/application/archive
+    createolddir 755 instagram-test-deploy docker-secrets-test
+}
+
+# Separate configuration for Docker logs if needed
+/var/log/instagram-platform/test/docker/*.log {
+    daily
+    rotate 7
+    compress
+    delaycompress
+    missingok
+    notifempty
+    create 0644 instagram-test-deploy docker-secrets-test
+    maxsize 50M
+    dateext
+    dateformat -%Y%m%d
+}
+
+# Configuration for nginx logs
+/var/log/instagram-platform/test/nginx/*.log {
+    daily
+    rotate 7
+    compress
+    delaycompress
+    missingok
+    notifempty
+    create 0644 instagram-test-deploy docker-secrets-test
+    sharedscripts
+    postrotate
+        if docker ps | grep -q instagram-platform-test-nginx; then
+            docker exec instagram-platform-test-nginx nginx -s reopen 2>/dev/null || true
+        fi
+    endscript
+    maxsize 50M
+    dateext
+    dateformat -%Y%m%d
+}

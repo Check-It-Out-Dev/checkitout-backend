@@ -1,0 +1,11 @@
+# Production database initialization SQL deployment
+
+---
+- name: Deploy production database initialization SQL
+  ansible.builtin.copy:
+    src: "{{ compose_source_path }}/prod/INIT_PROD_DATABASE.sql"
+    dest: "{{ prod_deployment_path }}/INIT_PROD_DATABASE.sql"
+    owner: "{{ user_prod_deploy.name }}"
+    group: "{{ user_prod_deploy.gid }}"
+    mode: '0644'
+  ignore_errors: yes

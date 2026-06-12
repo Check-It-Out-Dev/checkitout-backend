@@ -1,0 +1,67 @@
+# Production deployment sensitive files
+
+
+# State files
+.service-state
+.systemd-setup-complete
+.hcp-init-complete
+.hcp-init-failed
+.hcp-init-error
+
+# Backup files
+*.backup
+*.bak
+*.old
+
+# Log files
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+.*.swp
+.*.swo
+
+# Lock files
+*.lock
+
+# PID files
+*.pid
+
+# Secret files (should never be committed)
+*.secret
+*-credentials
+*-password
+*.key
+*.pem
+*.crt
+
+# Database dumps
+*.sql
+!INIT_PROD_DATABASE.sql
+*.dump
+
+# IDE files
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker volumes (if mounted locally during testing)
+volumes/
+postgres_prod_data/
+
+# Terraform state (if using IaC)
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# Ansible files (if using)
+*.retry
+
+# Backup directories (managed by backup system)
+backups/
+rollback-staging/

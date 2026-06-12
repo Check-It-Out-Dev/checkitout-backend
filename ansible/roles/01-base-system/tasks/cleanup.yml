@@ -1,0 +1,27 @@
+# System cleanup tasks
+
+---
+- name: Upgrade all packages to latest
+  ansible.builtin.apt:
+    upgrade: dist
+    update_cache: yes
+  when: upgrade_packages | bool
+
+- name: Remove unnecessary packages
+  ansible.builtin.apt:
+    autoremove: yes
+    purge: yes
+
+- name: Clean APT cache
+  ansible.builtin.apt:
+    autoclean: yes
+
+- name: Check for remaining upgradable packages
+  ansible.builtin.command: apt list --upgradable
+  register: upgradable_packages
+  changed_when: false
+
+- name: Display upgradable packages
+  ansible.builtin.debug:
+    msg: "{{ upgradable_packages.stdout_lines }}"
+  when: upgradable_packages.stdout_lines | length > 1

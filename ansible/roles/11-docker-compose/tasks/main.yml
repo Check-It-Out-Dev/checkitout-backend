@@ -1,0 +1,32 @@
+# Main tasks for 11-docker-compose role
+
+---
+- name: Deploy test environment Docker Compose
+  include_tasks: test-compose.yml
+  tags: [docker-compose, test-compose]
+
+- name: Deploy production environment Docker Compose
+  include_tasks: prod-compose.yml
+  tags: [docker-compose, prod-compose]
+
+- name: Deploy test database initialization SQL
+  include_tasks: test-database-init.yml
+  tags: [docker-compose, test-db-init]
+
+- name: Deploy production database initialization SQL
+  include_tasks: prod-database-init.yml
+  tags: [docker-compose, prod-db-init]
+
+- name: Validate Docker Compose files
+  include_tasks: validate.yml
+  when: validate_compose | bool
+  tags: [docker-compose, validate]
+
+- name: Pull Docker images (optional)
+  include_tasks: pull-images.yml
+  when: pull_images | bool
+  tags: [docker-compose, pull-images]
+
+- name: Verify Docker Compose deployment
+  include_tasks: verify.yml
+  tags: [docker-compose, verify]

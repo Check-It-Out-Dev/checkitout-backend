@@ -1,0 +1,48 @@
+# Docker volume permissions configuration
+
+---
+- name: Get test secrets volume mount point
+  ansible.builtin.command: !unsafe "docker volume inspect instagram-platform-test_secrets-storage --format '{{.Mountpoint}}'"
+  register: test_secrets_volume
+  changed_when: false
+
+- name: Get prod secrets volume mount point
+  ansible.builtin.command: !unsafe "docker volume inspect instagram-platform-prod_secrets-storage --format '{{.Mountpoint}}'"
+  register: prod_secrets_volume
+  changed_when: false
+
+- name: Get Loki data volume mount point
+  ansible.builtin.command: !unsafe "docker volume inspect loki-stack_loki-data --format '{{.Mountpoint}}'"
+  register: loki_data_volume
+  changed_when: false
+
+- name: Set test secrets volume permissions
+  ansible.builtin.file:
+    path: "{{ test_secrets_volume.stdout }}"
+    owner: "1002"  # instagram-test-deploy UID
+    group: "1005"  # docker-secrets-test GID
+    mode: '0750'
+    state: directory
+
+- name: Set prod secrets volume permissions
+  ansible.builtin.file:
+    path: "{{ prod_secrets_volume.stdout }}"
+    owner: "1006"  # instagram-prod-deploy UID
+    group: "1006"  # docker-secrets-prod GID
+    mode: '0750'
+    state: directory
+
+- name: Set Loki data volume permissions
+  ansible.builtin.file:
+    path: "{{ loki_data_volume.stdout }}"
+    owner: "{{ loki_container_uid }}"
+    group: "{{ loki_container_gid }}"
+    mode: '0755'
+    state: directory
+
+- name: Display volume permissions
+  ansible.builtin.debug:
+    msg:
+      - "Test secrets volume: {{ test_secrets_volume.stdout }}"
+      - "Prod secrets volume: {{ prod_secrets_volume.stdout }}"
+      - "Loki data volume: {{ loki_data_volume.stdout }}"

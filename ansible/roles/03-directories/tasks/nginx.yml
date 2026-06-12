@@ -1,0 +1,26 @@
+# Nginx directories creation
+
+---
+- name: Create Nginx configuration directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "{{ dir_permissions_standard }}"
+  loop:
+    - /etc/nginx/conf.d
+    - /etc/nginx/sites-available
+    - /etc/nginx/sites-enabled
+    - /etc/nginx/backups
+
+- name: Create Nginx SSL directories (restricted)
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "{{ dir_permissions_restricted }}"
+  loop:
+    - "{{ nginx_ssl_path }}"
+    - "{{ loki_mtls_path }}"

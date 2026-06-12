@@ -1,0 +1,20 @@
+# Default variables for 04-docker role
+
+---
+# Docker daemon config (from group_vars/all.yml)
+configure_docker_daemon: true
+deploy_daemon_json: false  # Old VPS has no daemon.json - Docker uses defaults
+restart_docker_on_config_change: true
+
+# Network creation
+# DISABLED: Networks are created dynamically by docker-compose files during deployment
+# Creating them via Ansible causes conflicts with compose-managed networks
+create_docker_networks: false
+
+# Volume creation
+create_docker_volumes: true
+configure_volume_permissions: true
+
+# Loki container UID (runs as 10001 inside container)
+loki_container_uid: 10001
+loki_container_gid: 10001

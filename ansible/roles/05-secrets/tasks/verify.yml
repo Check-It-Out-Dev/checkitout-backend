@@ -1,0 +1,50 @@
+# Secrets verification tasks
+
+---
+- name: Verify GCP service account files exist
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  register: gcp_service_accounts_check
+  loop:
+    - "{{ test_secrets_path }}/service-account.json"
+    - "{{ prod_secrets_path }}/service-account.json"
+    - "{{ loki_secrets_path }}/service-account.json"
+
+- name: Display GCP service account files status
+  ansible.builtin.debug:
+    msg: "{{ item.item }}: {{ 'EXISTS' if item.stat.exists else 'MISSING ⚠️' }}"
+  loop: "{{ gcp_service_accounts_check.results }}"
+
+- name: Assert all GCP service account files exist
+  ansible.builtin.assert:
+    that:
+      - item.stat.exists
+    fail_msg: "GCP service account file missing: {{ item.item }}"
+    success_msg: "GCP service account file verified: {{ item.item }}"
+  loop: "{{ gcp_service_accounts_check.results }}"
+
+- name: Verify secrets file permissions are exactly 640
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  register: secrets_perms
+  loop:
+    - "{{ test_secrets_path }}/service-account.json"
+    - "{{ prod_secrets_path }}/service-account.json"
+
+- name: Assert secrets have correct permissions
+  ansible.builtin.assert:
+    that:
+      - item.stat.mode == '0640'
+    fail_msg: "Incorrect permissions on {{ item.item }}: {{ item.stat.mode }} (should be 0640)"
+    success_msg: "Correct permissions on {{ item.item }}"
+  loop: "{{ secrets_perms.results }}"
+
+- name: Display secrets deployment summary
+  ansible.builtin.debug:
+    msg:
+      - "GCP service accounts deployed successfully"
+      - "Test GCP service account: {{ test_secrets_path }}/service-account.json"
+      - "Prod GCP service account: {{ prod_secrets_path }}/service-account.json"
+      - "Loki GCP service account: {{ loki_secrets_path }}/service-account.json"
+      - ".env files: Skipped (managed by GitHub Actions)"
+      - "All service account files have correct permissions (640) and ownership"

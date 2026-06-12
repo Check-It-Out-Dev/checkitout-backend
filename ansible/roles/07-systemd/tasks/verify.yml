@@ -1,0 +1,30 @@
+# Systemd services verification
+
+---
+- name: List all Instagram Platform services
+  ansible.builtin.command: systemctl list-unit-files instagram-platform-*.service
+  register: services_list
+  changed_when: false
+
+- name: Display services
+  ansible.builtin.debug:
+    var: services_list.stdout_lines
+
+- name: Verify test service is enabled
+  ansible.builtin.systemd:
+    name: instagram-platform-test
+  register: test_service_status
+  check_mode: yes
+
+- name: Verify production service is enabled
+  ansible.builtin.systemd:
+    name: instagram-platform-prod
+  register: prod_service_status
+  check_mode: yes
+
+- name: Display service status
+  ansible.builtin.debug:
+    msg:
+      - "Test service enabled: {{ test_service_status.status.UnitFileState | default('unknown') }}"
+      - "Prod service enabled: {{ prod_service_status.status.UnitFileState | default('unknown') }}"
+      - "Services will start in playbooks/startup.yml"

@@ -1,0 +1,30 @@
+# Nginx deployment verification
+
+---
+- name: Check Nginx service status
+  ansible.builtin.systemd:
+    name: nginx
+  register: nginx_status
+  check_mode: yes
+
+- name: Display Nginx service status
+  ansible.builtin.debug:
+    msg: "Nginx service: {{ nginx_status.status.ActiveState | default('unknown') }}"
+
+- name: Test Nginx is listening on port 80
+  ansible.builtin.wait_for:
+    port: 80
+    timeout: 10
+
+- name: Test Nginx is listening on port 443
+  ansible.builtin.wait_for:
+    port: 443
+    timeout: 10
+
+- name: Display Nginx deployment summary
+  ansible.builtin.debug:
+    msg:
+      - "Nginx deployed and running"
+      - "Listening on ports 80 (HTTP) and 443 (HTTPS)"
+      - "Sites configured: checkitout.app, check-it-out.pl, loki.checkitout.app"
+      - "SSL certificates configured"

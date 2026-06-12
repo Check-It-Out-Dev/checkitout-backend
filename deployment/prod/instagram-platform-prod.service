@@ -1,0 +1,75 @@
+[Unit]
+Description=Instagram Platform Production Docker Compose Application
+Documentation=https://github.com/your-org/instagram-platform
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+# Prevent rapid restart loops
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+# PRODUCTION BEST PRACTICE: Type=simple for proper stdout/stderr handling
+Type=simple
+
+# Working directory and user configuration
+WorkingDirectory=/opt/instagram-platform/prod/deployment
+User=instagram-prod-deploy
+Group=docker-secrets-prod
+
+# Environment configuration
+EnvironmentFile=-/opt/instagram-platform/prod/deployment/.env
+Environment="PATH=/usr/local/bin:/usr/bin:/bin"
+# Disable output buffering for real-time logs
+Environment="PYTHONUNBUFFERED=1"
+Environment="UNBUFFER=1"
+
+# PRODUCTION STANDARD: Use exec-start for Type=simple
+# This keeps the process running and maintains stdout connection
+ExecStart=/bin/bash -c 'exec /opt/instagram-platform/prod/deployment/systemd-wrapper.sh exec-start 2>&1'
+ExecStop=/opt/instagram-platform/prod/deployment/systemd-wrapper.sh stop
+ExecReload=/bin/kill -HUP $MAINPID
+
+# Restart configuration
+Restart=on-failure
+RestartSec=30s
+TimeoutStartSec=360
+TimeoutStopSec=120
+
+# PRODUCTION LOGGING CONFIGURATION
+# Journal is the single source of truth for logs
+StandardOutput=journal
+StandardError=journal
+# Unique identifier for filtering logs
+SyslogIdentifier=instagram-platform-prod
+# Maximum log level (info for production, debug only when troubleshooting)
+LogLevelMax=info
+
+# Process management
+KillMode=mixed
+KillSignal=SIGTERM
+SendSIGKILL=yes
+SendSIGKILLMode=mixed
+
+# Resource limits (production values)
+LimitNOFILE=65536
+LimitNPROC=32768
+LimitCORE=infinity
+
+# Security hardening for production
+PrivateTmp=yes
+NoNewPrivileges=no
+# Note: ProtectSystem and ProtectHome might need adjustment based on your setup
+# ProtectSystem=strict
+# ProtectHome=yes
+# ReadWritePaths=/opt/instagram-platform/prod
+
+[Install]
+WantedBy=multi-user.target
+
+# PRODUCTION NOTES:
+# 1. View logs: journalctl -u instagram-platform-prod -f
+# 2. Export logs: journalctl -u instagram-platform-prod --since "1 hour ago" -o json
+# 3. Promtail will read from journal using systemd_journal scrape config
+# 4. Docker containers should also use journald driver (configured in docker-compose.yml)

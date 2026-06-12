@@ -1,0 +1,11 @@
+# Test database initialization SQL deployment
+
+---
+- name: Deploy test database initialization SQL
+  ansible.builtin.copy:
+    src: "{{ compose_source_path }}/test/INIT_TEST_DATABASE.sql"
+    dest: "{{ test_deployment_path }}/INIT_TEST_DATABASE.sql"
+    owner: "{{ user_test_deploy.name }}"
+    group: "{{ user_test_deploy.gid }}"
+    mode: '0644'
+  ignore_errors: yes

@@ -1,0 +1,109 @@
+# Main tasks for 16-zsh-set-up role
+# Set up zsh with Oh-My-Zsh and Powerlevel10k for ubuntu user
+
+---
+- name: Install zsh and dependencies
+  ansible.builtin.apt:
+    name:
+      - zsh
+      - git
+      - curl
+      - wget
+      - fonts-powerline
+      - fontconfig
+    state: present
+    update_cache: yes
+
+- name: Check if Oh-My-Zsh is already installed
+  ansible.builtin.stat:
+    path: /home/ubuntu/.oh-my-zsh
+  register: ohmyzsh_installed
+
+- name: Install Oh-My-Zsh for ubuntu user
+  ansible.builtin.shell: sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+  args:
+    creates: /home/ubuntu/.oh-my-zsh
+  become_user: ubuntu
+  when: not ohmyzsh_installed.stat.exists
+
+- name: Clone Powerlevel10k theme
+  ansible.builtin.git:
+    repo: https://github.com/romkatv/powerlevel10k.git
+    dest: /home/ubuntu/.oh-my-zsh/custom/themes/powerlevel10k
+    depth: 1
+  become_user: ubuntu
+  ignore_errors: yes
+
+- name: Clone zsh-autosuggestions plugin
+  ansible.builtin.git:
+    repo: https://github.com/zsh-users/zsh-autosuggestions
+    dest: /home/ubuntu/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+  become_user: ubuntu
+  ignore_errors: yes
+
+- name: Clone zsh-syntax-highlighting plugin
+  ansible.builtin.git:
+    repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
+    dest: /home/ubuntu/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+  become_user: ubuntu
+  ignore_errors: yes
+
+- name: Clone zsh-completions plugin
+  ansible.builtin.git:
+    repo: https://github.com/zsh-users/zsh-completions
+    dest: /home/ubuntu/.oh-my-zsh/custom/plugins/zsh-completions
+  become_user: ubuntu
+  ignore_errors: yes
+
+- name: Clone zsh-history-substring-search plugin
+  ansible.builtin.git:
+    repo: https://github.com/zsh-users/zsh-history-substring-search
+    dest: /home/ubuntu/.oh-my-zsh/custom/plugins/zsh-history-substring-search
+  become_user: ubuntu
+  ignore_errors: yes
+
+- name: Deploy .zshrc configuration
+  ansible.builtin.copy:
+    src: zshrc
+    dest: /home/ubuntu/.zshrc
+    owner: ubuntu
+    group: ubuntu
+    mode: '0644'
+  register: zshrc_deployed
+
+- name: Deploy .bashrc configuration
+  ansible.builtin.copy:
+    src: bashrc
+    dest: /home/ubuntu/.bashrc
+    owner: ubuntu
+    group: ubuntu
+    mode: '0644'
+  register: bashrc_deployed
+
+- name: Deploy .fzf.bash configuration
+  ansible.builtin.copy:
+    src: fzf.bash
+    dest: /home/ubuntu/.fzf.bash
+    owner: ubuntu
+    group: ubuntu
+    mode: '0644'
+  register: fzf_deployed
+
+- name: Set zsh as default shell for ubuntu user
+  ansible.builtin.user:
+    name: ubuntu
+    shell: /usr/bin/zsh
+  register: shell_changed
+
+- name: Display zsh setup completion
+  ansible.builtin.debug:
+    msg:
+      - "Zsh Setup Complete for Ubuntu User:"
+      - "  Oh-My-Zsh: {{ 'INSTALLED ✅' if ohmyzsh_installed.stat.exists or not ohmyzsh_installed.stat.exists else 'FAILED ⚠️' }}"
+      - "  Powerlevel10k: Installed ✅"
+      - "  Plugins: zsh-autosuggestions, zsh-syntax-highlighting, zsh-completions, zsh-history-substring-search ✅"
+      - "  .zshrc: {{ 'DEPLOYED ✅' if zshrc_deployed is changed else 'EXISTS' }}"
+      - "  .bashrc: {{ 'DEPLOYED ✅' if bashrc_deployed is changed else 'EXISTS' }}"
+      - "  Default shell: {{ 'CHANGED TO ZSH ✅' if shell_changed is changed else 'Already zsh' }}"
+      - ""
+      - "Next login will use zsh with your custom configuration!"

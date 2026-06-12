@@ -1,0 +1,15 @@
+# Alloy configuration deployment
+
+---
+- name: Deploy Alloy configuration file
+  ansible.builtin.copy:
+    src: "{{ loki_config_source }}/alloy-config.alloy"
+    dest: "{{ loki_config_path }}/alloy-config.alloy"
+    owner: "{{ user_loki.name }}"
+    group: "{{ user_loki.gid }}"
+    mode: '0644'
+  register: alloy_config_deployed
+
+- name: Display Alloy config deployment status
+  ansible.builtin.debug:
+    msg: "Alloy config: {{ 'DEPLOYED ✅' if alloy_config_deployed is changed else 'FAILED ⚠️' if alloy_config_deployed is failed else 'EXISTS' }}"

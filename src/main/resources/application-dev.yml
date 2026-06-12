@@ -1,0 +1,195 @@
+# =============================================================================
+# DEVELOPMENT PROFILE - INHERITS FROM APPLICATION.YML
+# =============================================================================
+# This profile is for local development with minimal setup
+# Database and user are auto-created by LocalDatabaseInitializer
+
+# Frontend URL configuration
+frontend:
+  url: https://localhost:4200
+
+spring:
+  # =============================================================================
+  # DATASOURCE - APPLICATION USER (created by initializer)
+  # =============================================================================
+  datasource:
+    host: localhost
+    port: 5432
+    database: checkitout_local_db
+    url: jdbc:postgresql://${spring.datasource.host}:${spring.datasource.port}/${spring.datasource.database}
+    # Application user (will be created if doesn't exist)
+    username: checkitout_app_local
+    password: local_dev_password
+    
+    hikari:
+      pool-name: CheckItOut-Dev-Pool
+      maximum-pool-size: 5
+      minimum-idle: 2
+
+  # =============================================================================
+  # LIQUIBASE - USES APPLICATION USER (after creation)
+  # =============================================================================
+  liquibase:
+    enabled: true
+    contexts: dev,local
+    # IMPORTANT: Liquibase runs as app user (owns the public schema)
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    url: ${spring.datasource.url}
+
+  # =============================================================================
+  # REDIS CONFIGURATION FOR DEV
+  # =============================================================================
+  cache:
+    type: redis  # Use Redis cache
+    redis:
+      time-to-live: 10m  # Shorter TTL for dev
+      key-prefix: "checkitout:dev:"
+
+  data:
+    redis:
+      mode: standalone
+      host: localhost
+      port: 6379
+      password: 
+      database: 0
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 2
+
+# =============================================================================
+# POSTGRES SUPERUSER - FOR INITIAL SETUP ONLY
+# =============================================================================
+# Used by LocalDatabaseInitializer to create database and user
+postgres:
+  superuser:
+    username: postgres
+    password: admin
+
+# =============================================================================
+# LOCAL DATABASE INITIALIZATION
+# =============================================================================
+local:
+  db:
+    init:
+      enabled: true  # Auto-create database and user on startup
+      force: false   # Set to true to recreate database (WARNING: data loss!)
+
+# =============================================================================
+# RATE LIMITING - REDIS
+# =============================================================================
+rate-limit:
+  enabled: true
+  storage: redis  # Use Redis for rate limiting
+  algorithm: sliding-window
+  max-entries: 100000
+  cleanup:
+    enabled: true
+    interval: 300000
+  redis:
+    key-prefix: "rate_limit:dev:"
+    enable-fallback: true
+    connection-timeout: 2000
+    sliding-window:
+      enabled: true
+      precision: 10
+    circuit-breaker:
+      enabled: true
+      failure-threshold: 5
+      success-threshold: 3
+      timeout: 30s
+      fallback-to-memory: true
+  metrics:
+    enabled: true
+    optimized: true
+  defaults:
+    requests: 1000
+    duration: 60
+    auth-requests: 20
+    auth-duration: 300
+    upload-requests: 10
+    upload-duration: 3600
+  upload:
+    per-hour: 20        # More lenient for dev
+    per-day: 100        # More lenient for dev
+    global-per-minute: 50  # More lenient for dev
+    max-user-storage: 1073741824  # 1GB per user
+    max-file-size: 104857600      # 100MB per file
+
+# =============================================================================
+# STORAGE CONFIGURATION
+# =============================================================================
+storage:
+  mode: redis  # Dev profile USES Redis
+  monitoring:
+    enabled: true
+    metrics:
+      enabled: true
+    alerts:
+      enabled: false  # Disable alerts for local dev
+
+# =============================================================================
+# JWT AND COOKIE CONFIGURATION FOR DEV
+# =============================================================================
+jwt:
+  cookie:
+    domain: localhost
+    secure: true  # HTTPS with Angular proxy
+
+# =============================================================================
+# DEVELOPMENT ENVIRONMENT
+# =============================================================================
+app:
+  environment: DEVELOPMENT
+  base-url: https://localhost:4200
+
+# =============================================================================
+# FIREBASE - Should use TEST instance for local development
+# =============================================================================
+firebase:
+  project:
+    id: check-it-out-47c50  # Expected TEST instance (actual depends on service-account.json)
+
+server:
+  port: 8080
+
+# =============================================================================
+# DEVELOPMENT LOGGING
+# =============================================================================
+logging:
+  level:
+    root: INFO
+    com.sm.instagram.platform: INFO
+    com.sm.instagram.platform.config: INFO
+    com.sm.instagram.platform.common.authorization: INFO  # Firebase and Admin logging
+    com.sm.instagram.platform.config.LocalDatabaseInitializer: INFO
+    com.sm.instagram.platform.common.ratelimit: INFO
+    org.hibernate.SQL: WARN  # Reduce SQL noise
+    org.hibernate.type.descriptor.sql.BasicBinder: OFF
+    liquibase: INFO
+
+# =============================================================================
+# SWAGGER ENABLED
+# =============================================================================
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    try-it-out-enabled: true
+# =============================================================================
+# RECAPTCHA ENTERPRISE CONFIGURATION
+# =============================================================================
+recaptcha:
+  project-id: check-it-out-47c50
+  # Using Firebase service account for authentication (no API key needed)
+  site-key: 6LfEy6orAAAAACHdzHZXmj9FC5rKcT0nQpe8qzcD  # Public site key
+  score-threshold: 0.5  # Default threshold
+  enabled: false
+  cache-duration: 60  # Cache assessments for 60 seconds
+  # Action-specific thresholds (optional)
+  login-threshold: 0.5
+  signup-threshold: 0.3  # Lower threshold for signup to reduce friction
+  forgot-password-threshold: 0.3

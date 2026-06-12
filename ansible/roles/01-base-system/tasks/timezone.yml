@@ -1,0 +1,15 @@
+# Timezone configuration tasks
+
+---
+- name: Set system timezone
+  community.general.timezone:
+    name: "{{ server_timezone }}"
+
+- name: Verify timezone configuration
+  ansible.builtin.command: timedatectl
+  register: timedatectl_output
+  changed_when: false
+
+- name: Display timezone information
+  ansible.builtin.debug:
+    var: timedatectl_output.stdout_lines

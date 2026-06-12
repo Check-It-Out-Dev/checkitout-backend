@@ -1,0 +1,49 @@
+# Loki configuration deployment
+
+---
+- name: Deploy Loki configuration file
+  ansible.builtin.copy:
+    src: "{{ loki_config_source }}/loki-config.yaml"
+    dest: "{{ loki_config_path }}/loki-config.yaml"
+    owner: "{{ user_loki.name }}"
+    group: "{{ user_loki.gid }}"
+    mode: '0644'
+  register: loki_config_deployed
+
+- name: Display Loki config deployment status
+  ansible.builtin.debug:
+    msg: "Loki config: {{ 'DEPLOYED ✅' if loki_config_deployed is changed else 'FAILED ⚠️' if loki_config_deployed is failed else 'EXISTS' }}"
+
+- name: Deploy Loki runtime configuration
+  ansible.builtin.copy:
+    src: "{{ loki_config_source }}/runtime.yaml"
+    dest: "{{ loki_config_path }}/runtime.yaml"
+    owner: "{{ loki_container_uid }}"
+    group: "{{ loki_container_gid }}"
+    mode: '0644'
+  register: loki_runtime_deployed
+
+- name: Display Loki runtime config deployment status
+  ansible.builtin.debug:
+    msg: "Loki runtime config: {{ 'DEPLOYED ✅' if loki_runtime_deployed is changed else 'FAILED ⚠️' if loki_runtime_deployed is failed else 'EXISTS' }}"
+
+- name: Deploy Loki environment file
+  ansible.builtin.copy:
+    src: "{{ loki_config_source }}/env"
+    dest: "{{ loki_config_path }}/.env"
+    owner: "{{ user_loki.name }}"
+    group: "{{ user_loki.gid }}"
+    mode: '0640'
+  register: loki_env_deployed
+
+- name: Display Loki environment file deployment status
+  ansible.builtin.debug:
+    msg: "Loki .env file: {{ 'DEPLOYED ✅' if loki_env_deployed is changed else 'FAILED ⚠️' if loki_env_deployed is failed else 'EXISTS' }}"
+
+- name: Create Loki data directory
+  ansible.builtin.file:
+    path: "{{ loki_data_path }}"
+    state: directory
+    owner: "{{ user_loki.name }}"
+    group: "{{ user_loki.gid }}"
+    mode: '0755'

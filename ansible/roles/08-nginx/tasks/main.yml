@@ -1,0 +1,59 @@
+# Main tasks for 08-nginx role
+
+---
+- name: Backup existing Nginx configuration
+  include_tasks: backup.yml
+  tags: [nginx, backup]
+
+- name: Deploy main Nginx configuration
+  include_tasks: nginx-conf.yml
+  tags: [nginx, nginx-config]
+
+- name: Deploy modular configurations
+  include_tasks: modular-configs.yml
+  tags: [nginx, nginx-config, modular-configs]
+
+- name: Deploy site configurations
+  include_tasks: sites.yml
+  tags: [nginx, nginx-sites]
+
+- name: Generate self-signed SSL placeholder certificates
+  include_tasks: ssl-placeholders.yml
+  when: not (generate_ssl_certificates | bool)
+  tags: [nginx, ssl-placeholders]
+
+- name: Display SSL certificate skip message
+  ansible.builtin.debug:
+    msg:
+      - "Real SSL Certificate Generation: SKIPPED ⏭️"
+      - "Using self-signed placeholders instead"
+      - "Reason: DNS not pointing to new VPS yet (generate_ssl_certificates: false)"
+      - "Run after DNS migration: ansible-playbook -i inventory/production.yml playbooks/site.yml --tags nginx-ssl"
+  when: not (generate_ssl_certificates | bool)
+  tags: [nginx]
+
+- name: Generate Let's Encrypt SSL certificates
+  include_tasks: ssl.yml
+  when: generate_ssl_certificates | bool
+  tags: [nginx, nginx-ssl]
+
+- name: Enable sites
+  include_tasks: enable-sites.yml
+  when: enable_sites | bool
+  tags: [nginx, enable-sites]
+
+- name: Test Nginx configuration
+  include_tasks: test-config.yml
+  when: test_nginx_config | bool
+  tags: [nginx, test]
+
+- name: Restart Nginx service
+  ansible.builtin.systemd:
+    name: nginx
+    state: restarted
+  when: restart_nginx | bool
+  tags: [nginx, restart]
+
+- name: Verify Nginx deployment
+  include_tasks: verify.yml
+  tags: [nginx, verify]

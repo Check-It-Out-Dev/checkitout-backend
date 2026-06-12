@@ -1,0 +1,21 @@
+# Automation verification
+
+---
+- name: List all cron jobs for root
+  ansible.builtin.command: crontab -l
+  register: root_cron
+  changed_when: false
+  ignore_errors: yes
+
+- name: Count root cron jobs
+  ansible.builtin.debug:
+    msg: "Root cron jobs configured: {{ root_cron.stdout_lines | select('search', '^[^#]') | list | length }}"
+  when: root_cron.rc == 0
+
+- name: Display automation summary
+  ansible.builtin.debug:
+    msg:
+      - "Automation configured successfully"
+      - "Systemd timers active (certbot, logrotate)"
+      - "Cron jobs configured for maintenance tasks"
+      - "Logrotate configured for application logs"

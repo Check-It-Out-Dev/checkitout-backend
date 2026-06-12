@@ -1,0 +1,90 @@
+# Actuator Configuration
+management:
+  # Endpoint configuration
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info,metrics,prometheus,env,loggers,threaddump,heapdump,conditions
+      path-mapping:
+        health: health
+        info: info
+  
+  # Endpoint settings
+  endpoint:
+    health:
+      enabled: true
+      show-details: when-authorized
+      show-components: when-authorized
+      probes:
+        enabled: true
+      group:
+        readiness:
+          include: db,redis,diskSpace
+          show-details: always
+        liveness:
+          include: ping,diskSpace
+          show-details: always
+    
+    info:
+      enabled: true
+    
+    metrics:
+      enabled: true
+    
+    prometheus:
+      enabled: true
+    
+    env:
+      enabled: true
+      show-values: when-authorized
+  
+  # Metrics configuration
+  metrics:
+    enabled: true
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+    tags:
+      application: ${spring.application.name}
+      environment: ${app.environment:development}
+  
+  # Info endpoint configuration
+  info:
+    env:
+      enabled: true
+    git:
+      enabled: true
+      mode: simple
+    build:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+  simple:
+    metrics:
+      export:
+        enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+        descriptions: true
+        step: 1m
+
+# Application info for actuator/info endpoint
+info:
+  app:
+    name: ${spring.application.name}
+    description: Instagram Platform Backend Service
+    version: '@project.version@'
+    encoding: ${server.servlet.encoding.charset}
+  java:
+    version: ${java.version}
+    vendor: ${java.vendor}
+  build:
+    artifact: '@project.artifactId@'
+    group: '@project.groupId@'
+    version: '@project.version@'
+    time: '@project.build.time@'

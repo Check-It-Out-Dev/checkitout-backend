@@ -1,0 +1,57 @@
+# mTLS certificate generation for Loki
+
+---
+- name: Check if mTLS script exists
+  ansible.builtin.stat:
+    path: "{{ loki_config_source }}/setup-certificates.sh"
+  delegate_to: localhost
+  become: false
+  register: mtls_script
+
+- name: Copy mTLS certificate generation script
+  ansible.builtin.copy:
+    src: "{{ loki_config_source }}/setup-certificates.sh"
+    dest: "{{ loki_config_path }}/setup-certificates.sh"
+    owner: root
+    group: root
+    mode: '0755'
+  when: mtls_script.stat.exists
+  register: mtls_script_copied
+
+- name: Fix line endings in script (convert CRLF to LF)
+  ansible.builtin.shell: "dos2unix {{ loki_config_path }}/setup-certificates.sh || sed -i 's/\\r$//' {{ loki_config_path }}/setup-certificates.sh"
+  when: mtls_script.stat.exists and mtls_script_copied is changed
+  ignore_errors: yes
+
+- name: Verify script was copied to VPS
+  ansible.builtin.stat:
+    path: "{{ loki_config_path }}/setup-certificates.sh"
+  register: mtls_script_on_vps
+
+- name: Display mTLS script copy status
+  ansible.builtin.debug:
+    msg: "mTLS script on VPS: {{ 'EXISTS ✅' if mtls_script_on_vps.stat.exists else 'MISSING ⚠️' }}"
+
+- name: Generate mTLS certificates
+  ansible.builtin.shell: "bash {{ loki_config_path }}/setup-certificates.sh"
+  args:
+    chdir: "{{ loki_config_path }}"
+    creates: "{{ loki_mtls_path }}/client.crt"
+    executable: /bin/bash
+  when: mtls_script.stat.exists and mtls_script_on_vps.stat.exists
+  ignore_errors: yes
+  register: mtls_gen_result
+
+- name: Set mTLS certificate permissions
+  ansible.builtin.file:
+    path: "{{ loki_mtls_path }}"
+    owner: root
+    group: root
+    mode: '0750'
+    state: directory
+    recurse: yes
+  when: mtls_script.stat.exists
+
+- name: Display mTLS certificate status
+  ansible.builtin.debug:
+    msg: "{{ 'mTLS certificates generated' if mtls_script.stat.exists else 'mTLS script not found - copy from deployment/loki/' }}"

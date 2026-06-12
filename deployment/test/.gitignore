@@ -1,0 +1,44 @@
+# Test deployment files to ignore
+
+# Generated environment files
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+/tmp/
+
+# Test results
+test-results/
+*.test-result
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Generated secrets (should never be committed)
+secrets.env
+*.secrets
+hcp-credentials
+vault-token
+
+# Docker volumes (local testing)
+volumes/
+data/
+
+# Backup files
+*.backup
+*.bak
+backup/
+
+# IDE files
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db

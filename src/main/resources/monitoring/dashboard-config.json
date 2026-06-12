@@ -1,0 +1,132 @@
+{
+  "dashboard": {
+    "title": "File Upload System Dashboard",
+    "refresh": "10s",
+    "panels": [
+      {
+        "title": "Upload Requests per Minute",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(uploads_requests_total[1m])",
+            "legendFormat": "Requests/min"
+          }
+        ]
+      },
+      {
+        "title": "Success vs Failure Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(uploads_success_total[5m])",
+            "legendFormat": "Success"
+          },
+          {
+            "expr": "rate(uploads_failures_total[5m])",
+            "legendFormat": "Failures"
+          }
+        ]
+      },
+      {
+        "title": "Rate Limit Violations",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(rate(uploads_rate_limit_hits[5m])) by (limit_type)",
+            "legendFormat": "{{limit_type}}"
+          }
+        ]
+      },
+      {
+        "title": "Active Uploads",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "uploads_active",
+            "format": "short"
+          }
+        ]
+      },
+      {
+        "title": "Average File Size",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "uploads_file_size_bytes_mean",
+            "format": "bytes"
+          }
+        ]
+      },
+      {
+        "title": "Storage Used",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "storage_total_bytes",
+            "format": "bytes",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": 0, "color": "green" },
+                { "value": 5368709120, "color": "yellow" },
+                { "value": 8589934592, "color": "red" }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "title": "API Response Times",
+        "type": "heatmap",
+        "targets": [
+          {
+            "expr": "uploads_signed_url_generation_time_seconds_bucket",
+            "format": "heatmap"
+          }
+        ]
+      },
+      {
+        "title": "Uploads by Hour",
+        "type": "bar-gauge",
+        "targets": [
+          {
+            "expr": "sum(uploads_by_hour) by (hour)",
+            "legendFormat": "Hour {{hour}}"
+          }
+        ]
+      }
+    ],
+    "alerts": [
+      {
+        "name": "High Failure Rate",
+        "condition": "rate(uploads_failures_total[5m]) / rate(uploads_requests_total[5m]) > 0.1",
+        "for": "5m",
+        "severity": "critical",
+        "annotations": {
+          "summary": "Upload failure rate exceeds 10%",
+          "description": "The upload failure rate has been above 10% for the last 5 minutes"
+        }
+      },
+      {
+        "name": "Storage Service Down",
+        "condition": "up{job='upload-system',component='firebase_storage'} == 0",
+        "for": "1m",
+        "severity": "critical",
+        "annotations": {
+          "summary": "Firebase Storage connection lost",
+          "description": "Cannot connect to Firebase Storage service"
+        }
+      },
+      {
+        "name": "Rate Limit Storm",
+        "condition": "rate(uploads_rate_limit_hits[1m]) > 10",
+        "for": "2m",
+        "severity": "warning",
+        "annotations": {
+          "summary": "High rate of rate limit violations",
+          "description": "More than 10 rate limit violations per minute"
+        }
+      }
+    ]
+  }
+}

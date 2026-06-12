@@ -1,0 +1,46 @@
+# Admin CI/CD scripts deployment
+
+---
+- name: Find admin scripts in repository
+  ansible.builtin.find:
+    paths: "{{ playbook_dir }}/../../scripts"
+    patterns: "*.sh"
+    recurse: yes
+  delegate_to: localhost
+  become: false
+  register: admin_scripts_found
+  ignore_errors: yes
+
+- name: Display admin scripts found locally
+  ansible.builtin.debug:
+    msg: "Found {{ admin_scripts_found.files | default([]) | length }} admin script(s) in local repository"
+
+- name: Deploy admin scripts
+  ansible.builtin.copy:
+    src: "{{ item.path }}"
+    dest: "{{ scripts_admin_scripts_path }}/{{ item.path | basename }}"
+    owner: "{{ user_scripts_admin.name }}"
+    group: "docker-secrets-admin"
+    mode: "{{ script_permissions }}"
+  loop: "{{ admin_scripts_found.files | default([]) }}"
+  when: admin_scripts_found.files is defined and admin_scripts_found.files | length > 0
+  ignore_errors: yes
+  register: admin_scripts_deployed
+
+- name: Verify admin scripts deployed to VPS
+  ansible.builtin.stat:
+    path: "{{ scripts_admin_scripts_path }}/{{ item.path | basename }}"
+  loop: "{{ admin_scripts_found.files | default([]) }}"
+  when: admin_scripts_found.files is defined and admin_scripts_found.files | length > 0
+  register: admin_scripts_verify
+  ignore_errors: yes
+
+- name: Display admin scripts deployment confirmation
+  ansible.builtin.debug:
+    msg:
+      - "Admin Scripts Deployment Status:"
+      - "{{ item.item.path | basename }}: {{ 'DEPLOYED ✅' if item.stat.exists else 'FAILED ⚠️' }}"
+  loop: "{{ admin_scripts_verify.results | default([]) }}"
+  when: admin_scripts_verify.results is defined
+  loop_control:
+    label: "{{ item.item.path | basename }}"

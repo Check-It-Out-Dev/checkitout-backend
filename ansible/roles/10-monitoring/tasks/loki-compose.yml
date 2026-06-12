@@ -1,0 +1,28 @@
+# Loki Docker Compose deployment
+
+---
+- name: Deploy Loki Docker Compose file
+  ansible.builtin.copy:
+    src: "{{ loki_config_source }}/docker-compose.yml"
+    dest: "{{ loki_config_path }}/docker-compose.yml"
+    owner: "{{ user_loki.name }}"
+    group: "{{ user_loki.gid }}"
+    mode: '0644'
+  register: loki_compose_deployed
+
+- name: Display Loki compose deployment status
+  ansible.builtin.debug:
+    msg: "Loki docker-compose.yml: {{ 'DEPLOYED ✅' if loki_compose_deployed is changed else 'FAILED ⚠️' if loki_compose_deployed is failed else 'EXISTS' }}"
+
+- name: Validate Loki Docker Compose syntax
+  ansible.builtin.command: docker compose config
+  args:
+    chdir: "{{ loki_config_path }}"
+  become_user: "{{ user_loki.name }}"
+  register: loki_compose_validation
+  changed_when: false
+  ignore_errors: yes
+
+- name: Display Loki compose validation result
+  ansible.builtin.debug:
+    msg: "{{ 'Loki compose valid' if loki_compose_validation.rc == 0 else 'Loki compose validation failed' }}"

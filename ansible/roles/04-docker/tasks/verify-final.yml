@@ -1,0 +1,35 @@
+# Final Docker configuration verification
+
+---
+- name: Test Docker functionality with hello-world
+  ansible.builtin.command: docker run --rm hello-world
+  register: docker_test
+  changed_when: false
+
+- name: Verify Docker test succeeded
+  ansible.builtin.assert:
+    that:
+      - docker_test.rc == 0
+      - "'Hello from Docker!' in docker_test.stdout"
+    success_msg: "Docker functionality verified"
+
+- name: Test container on test network
+  ansible.builtin.command: "docker run --rm --network {{ docker_networks.test.name }} alpine ping -c 2 {{ docker_networks.test.gateway }}"
+  register: network_test
+  changed_when: false
+  when: create_docker_networks | bool
+
+- name: Verify network connectivity
+  ansible.builtin.assert:
+    that:
+      - network_test.rc == 0
+    success_msg: "Docker network connectivity verified"
+  when: create_docker_networks | bool
+
+- name: Display Docker configuration summary
+  ansible.builtin.debug:
+    msg:
+      - "Docker daemon configured with journald logging"
+      - "Networks: {{ 'Created by Ansible' if create_docker_networks else 'Managed by docker-compose (dynamic)' }}"
+      - "Volumes created for test, prod, and monitoring"
+      - "Volume permissions configured"

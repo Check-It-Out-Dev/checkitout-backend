@@ -1,0 +1,17 @@
+# Backup existing Nginx configuration
+
+---
+- name: Backup nginx.conf
+  ansible.builtin.copy:
+    src: /etc/nginx/nginx.conf
+    dest: "/etc/nginx/backups/nginx.conf.backup-{{ ansible_date_time.date }}"
+    remote_src: yes
+    mode: '0644'
+  ignore_errors: yes
+
+- name: Backup sites-enabled
+  ansible.builtin.shell: |
+    if [ -d /etc/nginx/sites-enabled ] && [ "$(ls -A /etc/nginx/sites-enabled)" ]; then
+      cp -r /etc/nginx/sites-enabled /etc/nginx/backups/sites-enabled.backup-{{ ansible_date_time.date }}
+    fi
+  ignore_errors: yes

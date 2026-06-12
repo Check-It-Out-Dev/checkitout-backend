@@ -1,0 +1,18 @@
+# Web root directories creation
+
+---
+- name: Create production website directory (checkitout.app)
+  ansible.builtin.file:
+    path: "{{ web_root_prod }}"
+    state: directory
+    owner: "{{ user_prod_deploy.name }}"
+    group: www-data
+    mode: "{{ dir_permissions_standard }}"
+
+- name: Create test website directory (check-it-out.pl)
+  ansible.builtin.file:
+    path: "{{ web_root_test }}"
+    state: directory
+    owner: "{{ user_test_deploy.name }}"
+    group: www-data
+    mode: "{{ dir_permissions_standard }}"

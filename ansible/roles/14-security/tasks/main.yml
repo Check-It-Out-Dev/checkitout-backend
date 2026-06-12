@@ -1,0 +1,26 @@
+# Main tasks for 14-security role
+
+---
+- name: Verify AppArmor status
+  include_tasks: apparmor.yml
+  when: verify_apparmor | bool
+  tags: [security, apparmor]
+
+- name: Apply file immutability
+  include_tasks: immutable.yml
+  when: apply_immutable_flags | bool
+  tags: [security, immutable]
+
+- name: Run security audit
+  include_tasks: audit.yml
+  when: run_security_audit | bool
+  tags: [security, audit]
+
+- name: Configure Fail2Ban (optional)
+  include_tasks: fail2ban.yml
+  when: configure_fail2ban | bool
+  tags: [security, fail2ban]
+
+- name: Verify security hardening
+  include_tasks: verify.yml
+  tags: [security, verify]

@@ -1,0 +1,23 @@
+# Production environment Docker Compose deployment
+
+---
+- name: Deploy production Docker Compose file
+  ansible.builtin.copy:
+    src: "{{ compose_source_path }}/prod/docker-compose-prod.yml"
+    dest: "{{ prod_deployment_path }}/docker-compose-prod.yml"
+    owner: "{{ user_prod_deploy.name }}"
+    group: "{{ user_prod_deploy.gid }}"
+    mode: '0644'
+  register: prod_compose_deployed
+
+- name: Display prod compose deployment status
+  ansible.builtin.debug:
+    msg: "Prod docker-compose.yml: {{ 'DEPLOYED ✅' if prod_compose_deployed is changed else 'FAILED ⚠️' if prod_compose_deployed is failed else 'EXISTS' }}"
+
+- name: Create symlink for docker-compose.yml
+  ansible.builtin.file:
+    src: "{{ prod_deployment_path }}/docker-compose-prod.yml"
+    dest: "{{ prod_deployment_path }}/docker-compose.yml"
+    state: link
+    owner: "{{ user_prod_deploy.name }}"
+    group: "{{ user_prod_deploy.gid }}"

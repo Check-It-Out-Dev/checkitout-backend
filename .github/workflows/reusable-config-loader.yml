@@ -1,0 +1,322 @@
+name: Config Loader with Template Resolution
+# Refactored version - outputs single JSON object with template resolution
+# Reduces 50+ outputs to 1 JSON output
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+        description: 'Environment name (test, prod, etc)'
+      config-path:
+        required: false
+        type: string
+        default: 'src/main/resources'
+        description: 'Path to config files'
+    outputs:
+      config-json:
+        description: 'Complete configuration as JSON object'
+        value: ${{ jobs.load.outputs.config-json }}
+      config-b64:
+        description: 'Base64 encoded config (for special chars)'
+        value: ${{ jobs.load.outputs.config-b64 }}
+
+jobs:
+  load:
+    runs-on: [self-hosted, Linux, x64]
+    outputs:
+      config-json: ${{ steps.final.outputs.config }}
+      config-b64: ${{ steps.final.outputs.config_b64 }}
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Install tools
+        run: |
+          echo "📦 Installing yq and jq for YAML/JSON processing..."
+          # Create local bin directory
+          mkdir -p $HOME/.local/bin
+          
+          # Download yq
+          wget -q https://github.com/mikefarah/yq/releases/download/v4.44.6/yq_linux_amd64 -O $HOME/.local/bin/yq
+          chmod +x $HOME/.local/bin/yq
+          
+          # Add to PATH
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          
+          # Verify installations
+          $HOME/.local/bin/yq --version
+          jq --version
+          
+      - name: Merge and resolve templates
+        id: final
+        run: |
+          ENV="${{ inputs.environment }}"
+          
+          echo "🔄 Processing configuration for environment: $ENV"
+          
+          # Validate environment is not empty
+          if [ -z "$ENV" ]; then
+            echo "❌ ERROR: Environment is empty!"
+            exit 1
+          fi
+          
+          echo "Environment confirmed: '$ENV'"
+          
+          # Step 1: Merge YAML files
+          echo "📋 Merging deployment-defaults.yml and deployment-${ENV}.yml..."
+          yq eval-all '. as $item ireduce ({}; . * $item)' \
+            ${{ inputs.config-path }}/deployment-defaults.yml \
+            ${{ inputs.config-path }}/deployment-${ENV}.yml \
+            > merged.yml
+            
+          # Step 2: Convert to JSON for easier manipulation
+          echo "🔄 Converting to JSON..."
+          yq eval -o=json '.' merged.yml > merged.json
+          
+          # Step 3: Apply template resolution and conventions
+          echo "🎯 Applying template resolution..."
+          echo "Environment value: $ENV"
+          
+          # First, let's verify the templates before resolution
+          echo "📋 Templates before resolution:"
+          jq -r '.deployment.container' merged.json
+          
+          jq --arg env "$ENV" '
+            # Function to replace templates in strings
+            def resolve_templates:
+              if type == "string" then
+                gsub("\\{environment\\}"; $env) |
+                gsub("\\$\\{environment\\}"; $env) |
+                gsub("\\$\\{deployment\\.environment\\}"; $env)
+              else
+                .
+              end;
+            
+            # Walk entire structure and resolve templates
+            walk(resolve_templates) |
+            
+            # Add derived values based on conventions
+            .deployment.derived = {
+              # Paths
+              deployment_path: (.deployment.destination.deployment.path // "/opt/instagram-platform/\($env)/deployment"),
+              runtime_path: (.deployment.destination.runtime.path // "/opt/instagram-platform/\($env)/runtime"),
+              backup_path: (.deployment.backup.base.path // "/opt/instagram-platform/\($env)/backups"),
+              
+              # Names
+              systemd_service: (.deployment.systemd.service.name // "instagram-platform-\($env)"),
+              app_container: "instagram-platform-\($env)",
+              db_container: "instagram-platform-\($env)-db",
+              database_name: (.spring.datasource.database // "instagram_platform_\($env)"),
+              
+              # Container names (use resolved value from templates)
+              container_user: .deployment.container.user.name,
+              container_group: .deployment.container.group.name,
+              
+              # GSM
+              gsm_project: (.deployment.gsm.project.id // "check-it-out-\($env)"),
+              gsm_secret_prefix: (.deployment.gsm.secret.prefix // "\($env | ascii_upcase)_"),
+              
+              # Files
+              compose_file: "docker-compose-\($env).yml",
+              service_file: "instagram-platform-\($env).service",
+              state_file: (.deployment.systemd.service.state.file // "/run/instagram-platform-\($env)/state"),
+              lock_file: (.deployment.systemd.lock.file // "/var/lock/instagram-platform-\($env).lock"),
+              
+              # GSM init image
+              gsm_init_image_full: "\(.deployment.registry.primary)/check-it-out-dev/checkitout-be/google-secrets-init:latest"
+            } |
+            
+            # Create flattened structure for easier access
+            . + {
+              _flat: {
+                # Essential values at top level
+                environment: $env,
+                environment_name: (.deployment.environment // $env),
+                spring_profile: $env,
+                registry_primary: .deployment.registry.primary,
+                image_name: .deployment.image.name,
+                server_port: (.server.port // 8080),
+                
+                # Use derived values with fallback to explicit
+                deployment_path: .deployment.derived.deployment_path,
+                runtime_path: .deployment.derived.runtime_path,
+                backup_path: .deployment.derived.backup_path,
+                backup_retention_count: (.deployment.backup.retention.count // 7),
+                
+                container_user_name: .deployment.derived.container_user,
+                container_user_id: (.deployment.container.user.id // 1000),
+                container_group_name: .deployment.derived.container_group,
+                container_group_id: (.deployment.container.group.id // 1000),
+                
+                systemd_service_name: .deployment.derived.systemd_service,
+                database_name: .deployment.derived.database_name,
+                database_host: (.spring.datasource.host // "postgres"),
+                db_port: (.spring.datasource.host_port // .spring.datasource.port // 5432),
+                
+                # All other commonly used values
+                admin_user: .deployment.server.admin.user.name,
+                admin_home_directory: .deployment.server.admin.user.home,
+                admin_package_path: .deployment.admin.package.path,
+                gcp_project_id: .deployment.derived.gsm_project,
+                gsm_secret_prefix: .deployment.derived.gsm_secret_prefix,
+                gcp_sa_key_path: .deployment.gsm.credentials.host.location,
+                gsm_creds_container_path: (.GSM_CREDS_CONTAINER_PATH // "/run/secrets"),
+                compose_file: .deployment.derived.compose_file,
+                app_container_name: .deployment.derived.app_container,
+                db_container_name: .deployment.derived.db_container,
+                state_file: .deployment.derived.state_file,
+                lock_file: .deployment.derived.lock_file,
+                
+                # Health check
+                health_check_url: "http://localhost:\(.server.port // 8080)\(.server.servlet["context-path"] // "/api")\(.management.endpoints.web["base-path"] // "/actuator")/health",
+                health_check_attempts: (.deployment.health.check.application.attempts // 60),
+                health_check_interval: (.deployment.health.check.interval.seconds // 10),
+                
+                # Build configuration
+                java_version: .deployment.java.version,
+                java_distribution: (.deployment.java.distribution // "temurin"),
+                image_platforms: (.deployment.image.platforms // "linux/amd64"),
+                maven_memory_max: (.deployment.maven.memory.max // "12g"),
+                maven_threads: (.deployment.maven.threads // "C2"),
+                docker_platform: .deployment.docker.platform,
+                
+                # Images
+                deployment_image_name: .deployment.image.name,
+                postgres_image: (.postgres.image // "postgres:16.9"),
+                gsm_init_image_full: .deployment.derived.gsm_init_image_full,
+                
+                # Paths
+                source_deployment_folder: $env,
+                target_base_path: .deployment.secure.base.path,
+                log_base_path: .deployment.base.log.path,
+                docker_compose_file: .deployment.derived.compose_file,
+                
+                # Server configuration
+                context_path: (.server.servlet["context-path"] // "/api"),
+                actuator_path: (.management.endpoints.web["base-path"] // "/actuator"),
+                
+                # Timeouts
+                gsm_cli_timeout: (.deployment.gsm.cli.timeout // 60),
+                init_retry_count: (.deployment.gsm.init.retry.count // 5),
+                init_retry_delay: (.deployment.gsm.init.retry.delay // 5),
+                max_wait_seconds: (.deployment.gsm.init.max.wait.seconds // 300),
+                check_interval: (.deployment.health.check.interval.seconds // 10),
+                script_execution_timeout_seconds: (.deployment.script.execution.timeout.seconds // 600),
+                
+                # Other configuration
+                app_port: .deployment.app.port.binding,
+                build_timestamp: (now | tostring),
+                use_sudo_docker: (.deployment.security["use-sudo-docker"] // true),
+                
+                # Test deploy user configuration
+                test_deploy_user_name: (.deployment.test.deploy.user.name // ""),
+                test_deploy_user_home: (.deployment.test.deploy.user.home // ""),
+                
+                # CI/CD Logging configuration
+                cicd_log_base: (.deployment.cicd.log.base.path // "/var/log/CiCd"),
+                cicd_group_name: (.deployment.cicd.group.name // "instagram-cicd"),
+                cicd_log_enabled: (.deployment.cicd.log.enabled // true),
+                cicd_log_path: (.deployment.cicd.log.base.path // "/var/log/CiCd"),
+                cicd_log_file: (.deployment.cicd.log.file // "instagram-platform-cicd.log"),
+                cicd_log_group: (.deployment.cicd.log.group // "instagram-cicd"),
+                cicd_log_permissions: (.deployment.cicd.log.permissions // "0664"),
+                cicd_log_immutable: (.deployment.cicd.log.immutable // true)
+              }
+            }
+          ' merged.json > final-config.json
+          
+          # Debug after template resolution
+          echo ""
+          echo "🔍 After template resolution:"
+          echo "Container config from deployment:"
+          jq -r '.deployment.container' final-config.json
+          echo ""
+          echo "Derived values:"
+          jq -r '.deployment.derived | {container_user, container_group}' final-config.json
+          echo ""
+          echo "Flat values:"
+          jq -r '._flat | {container_user_name, container_user_id, container_group_name, container_group_id}' final-config.json
+          
+          # Verify critical values are populated
+          echo ""
+          echo "🔍 Verifying critical values for backup:"
+          ADMIN_HOME=$(jq -r '._flat.admin_home_directory // empty' final-config.json)
+          DEPLOYMENT_PATH=$(jq -r '._flat.deployment_path // empty' final-config.json)
+          BACKUP_PATH=$(jq -r '._flat.backup_path // empty' final-config.json)
+          
+          if [ -z "$ADMIN_HOME" ] || [ -z "$DEPLOYMENT_PATH" ] || [ -z "$BACKUP_PATH" ]; then
+            echo "❌ ERROR: Critical values missing after template resolution!"
+            echo "  admin_home_directory: '$ADMIN_HOME'"
+            echo "  deployment_path: '$DEPLOYMENT_PATH'"
+            echo "  backup_path: '$BACKUP_PATH'"
+            echo ""
+            echo "Full _flat section:"
+            jq '._flat' final-config.json
+            exit 1
+          else
+            echo "✅ All critical values present:"
+            echo "  admin_home_directory: $ADMIN_HOME"
+            echo "  deployment_path: $DEPLOYMENT_PATH"
+            echo "  backup_path: $BACKUP_PATH"
+          fi
+          
+          # Output as compact JSON
+          CONFIG_JSON=$(jq -c . final-config.json)
+          echo "config=$CONFIG_JSON" >> $GITHUB_OUTPUT
+          
+          # Also output as base64 for safety
+          CONFIG_B64=$(echo "$CONFIG_JSON" | base64 -w 0)
+          echo "config_b64=$CONFIG_B64" >> $GITHUB_OUTPUT
+          
+          # Debug: Show size
+          SIZE=$(echo "$CONFIG_JSON" | wc -c)
+          echo "📊 Config JSON size: $SIZE bytes ($(($SIZE / 1024))KB)"
+          
+          # Debug: Show key configuration values
+          echo "📋 Key configuration values:"
+          jq -r '._flat | to_entries | .[] | "  \(.key): \(.value)"' final-config.json | head -20
+          echo "  ... and $(jq -r '._flat | to_entries | length' final-config.json) more values"
+          
+          # Debug: Show container-specific values
+          echo ""
+          echo "🐳 Container configuration:"
+          jq -r '.deployment.container' final-config.json
+          echo ""
+          echo "📦 Resolved container values:"
+          jq -r '._flat | {container_user_name, container_user_id, container_group_name, container_group_id}' final-config.json
+          
+      - name: Generate summary
+        run: |
+          CONFIG='${{ steps.final.outputs.config }}'
+          
+          echo "# 📋 Configuration Loaded" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 🎯 Environment: ${{ inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Extract key values from JSON
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          
+          echo "$CONFIG" | jq -r '._flat | {
+            "Environment": .environment,
+            "Registry": .registry_primary,
+            "Image": .image_name,
+            "Container User": .container_user_name,
+            "Container Group": .container_group_name,
+            "App Container": .app_container_name,
+            "Database": .database_name,
+            "Service Name": .systemd_service_name,
+            "Deployment Path": .deployment_path,
+            "Server Port": .server_port
+          } | to_entries | .[] | "| \(.key) | \(.value) |"' >> $GITHUB_STEP_SUMMARY
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Configuration Size" >> $GITHUB_STEP_SUMMARY
+          SIZE=$(echo "$CONFIG" | wc -c)
+          echo "- JSON size: $SIZE bytes ($(($SIZE / 1024))KB)" >> $GITHUB_STEP_SUMMARY
+          echo "- Total values: $(echo "$CONFIG" | jq -r '._flat | length') flattened properties" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Template resolution completed successfully!" >> $GITHUB_STEP_SUMMARY

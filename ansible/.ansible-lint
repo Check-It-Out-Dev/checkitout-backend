@@ -1,0 +1,78 @@
+# Ansible Lint Configuration
+# Instagram Platform VPS Deployment
+
+---
+# Exclude paths from linting
+exclude_paths:
+  - .github/
+  - .molecule/
+  - .cache/
+  - molecule/
+  - venv/
+
+# Enable specific rules
+enable_list:
+  - no-changed-when
+  - no-handler
+  - unnamed-task
+  - name[casing]
+  - yaml[line-length]
+
+# Disable specific rules
+skip_list:
+  - role-name  # We use numbered role names (01-base-system)
+  - fqcn-builtins  # We use ansible.builtin. already
+  - yaml[line-length]  # Some lines in docker-compose need to be long
+
+# Set line length limit (default: 160)
+max_line_length: 200
+
+# Use progressive mode (fail only on new issues)
+progressive: false
+
+# Treat warnings as errors
+strict: false
+
+# Profile (production = strictest, but we'll use moderate)
+profile: moderate
+
+# Kinds of files to check
+kinds:
+  - playbook: "playbooks/*.yml"
+  - tasks: "**/tasks/*.yml"
+  - vars: "**/vars/*.yml"
+  - defaults: "**/defaults/*.yml"
+  - meta: "**/meta/*.yml"
+  - handlers: "**/handlers/*.yml"
+
+# Mock modules (for testing without dependencies)
+mock_modules:
+  - docker_network
+  - docker_volume
+  - docker_container
+
+# Mock roles
+mock_roles:
+  - geerlingguy.docker
+  - geerlingguy.nginx
+
+# Warn level
+warn_list:
+  - experimental
+  - role-name
+
+# Offline mode (don't download schemas)
+offline: false
+
+# Skip specific files
+skip_list:
+  - name[template]  # Allow template variable names in file names
+  - risky-file-permissions  # We explicitly set permissions
+
+# Custom rules
+rules:
+  line-length:
+    max: 200
+  braces:
+    min-spaces-inside: 0
+    max-spaces-inside: 1

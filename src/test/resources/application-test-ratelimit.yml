@@ -1,0 +1,29 @@
+# Test Rate Limiting Configuration
+rate-limit:
+  enabled: true
+  storage: in-memory  # Use in-memory for tests
+  
+  # GDPR settings for testing
+  gdpr:
+    enabled: true
+    data-retention-hours: 1  # Shorter retention for tests
+    anonymize-keys: true
+    audit-violations: true
+    export-enabled: true
+  
+  # Cleanup configuration
+  cleanup:
+    enabled: true
+    interval: 5000  # 5 seconds for tests
+  
+  # Test-specific endpoint limits
+  endpoints:
+    "/test/**":
+      requests: 5
+      duration: 60
+      
+  # Exclude test endpoints
+  excluded-paths: 
+    - /health
+    - /actuator/**
+    - /test/unlimited

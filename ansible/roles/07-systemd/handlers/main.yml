@@ -1,0 +1,13 @@
+# Handlers for 07-systemd role
+
+---
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Restart flask-auth-app
+  ansible.builtin.systemd:
+    name: flask-auth-app
+    state: restarted
+    daemon_reload: yes
+  when: enable_services | bool

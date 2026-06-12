@@ -1,0 +1,373 @@
+services:
+  # Init container that fetches secrets from Google Secrets Manager
+  google-secrets-init:
+    image: "${GSM_INIT_IMAGE_FULL:-PIPELINE_MUST_SET_GSM_INIT_IMAGE_NO_FALLBACK_INTENDED}"
+    container_name: "${APP_CONTAINER_NAME:-instagram-platform-prod}-gsm-init"
+    logging:
+      driver: "journald"
+      options:
+        tag: "instagram-prod-gsm-init"
+        labels: "environment,service,version"
+    user: "${CONTAINER_USER_ID:-1006}:${CONTAINER_GROUP_ID:-1006}"
+    environment:
+      # Core configuration
+      - GCP_PROJECT_ID=${GCP_PROJECT_ID:-check-it-out-prod}
+      - GSM_INIT_DEBUG=${GSM_INIT_DEBUG:-false}
+      - ENVIRONMENT=${ENVIRONMENT:-prod}
+      - TARGET_USER=${TARGET_USER:-1006}
+      - TARGET_GROUP=${TARGET_GROUP:-1006}
+      # Secret prefix - used for stripping when writing (not filtering)
+      - GSM_SECRET_PREFIX=${GSM_SECRET_PREFIX:-PROD_}
+      # IMPORTANT: Strip prefix when writing for Spring Boot compatibility
+      - STRIP_PREFIX_ON_WRITE=true
+      # GCP Service Account key path (can be directory or file)
+      - GCP_SA_KEY_PATH=${GCP_SA_KEY_PATH:-/run/secrets}
+      # CI/CD environment detection
+      - CI=${CI:-false}
+      - GITHUB_ACTIONS=${GITHUB_ACTIONS:-false}
+      # Container identity
+      - CONTAINER_USER_NAME=${CONTAINER_USER_NAME:-instagram-prod-deploy}
+      - CONTAINER_GROUP_NAME=${CONTAINER_GROUP_NAME:-docker-secrets-prod}
+      - CONTAINER_USER_ID=${CONTAINER_USER_ID:-1006}
+      - CONTAINER_GROUP_ID=${CONTAINER_GROUP_ID:-1006}
+      # GCP CLI optimization
+      - GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/service-account.json
+      - XDG_CONFIG_HOME=/tmp
+      - XDG_CACHE_HOME=/tmp
+      - HOME=/tmp
+      - CLOUDSDK_CORE_DISABLE_PROMPTS=1
+      - GCLOUD_SILENCE_WARNINGS=1
+      - CLOUDSDK_PYTHON_SITEPACKAGES=0
+      # Timeout configuration
+      - GSM_CLI_TIMEOUT=${GSM_CLI_TIMEOUT:-60}
+      - INIT_RETRY_COUNT=${INIT_RETRY_COUNT:-5}
+      - INIT_RETRY_DELAY=${INIT_RETRY_DELAY:-5}
+      # Default values to prevent warnings
+      - INIT_STATUS=${INIT_STATUS:-}
+      - GSM_INIT_STATUS=${GSM_INIT_STATUS:-}
+      - GSM_SECRET_COUNT=${GSM_SECRET_COUNT:-}
+    volumes:
+      - secrets-storage:/app/config
+      - backup-storage:/app/backup
+      - "${GCP_SA_KEY_PATH:-/etc/instagram-platform/prod/secrets}:/run/secrets:ro"
+    working_dir: /app/config
+    networks:
+      - instagram-network
+    restart: "no"
+    # Security best practices
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - SETUID
+      - SETGID
+    # Temporary storage
+    tmpfs:
+      - /app/test-results
+      - /tmp
+      - /var/tmp
+      - /app/logs
+      - /app/.config
+    # Healthcheck to verify successful completion
+    healthcheck:
+      test: ["CMD", "sh", "-c", "test -f /app/config/.init-complete && grep -q success /app/config/.init-complete"]
+      interval: 2s
+      timeout: 10s
+      retries: 60
+      start_period: 5s
+    # Resource limits - reduced for temporary init container
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1024M
+        reservations:
+          cpus: '1'
+          memory: 512M
+
+  # Redis Master for Rate Limiting and Caching - WITH FIXES APPLIED
+  redis:
+    image: redis:7-alpine
+    container_name: instagram-platform-prod-redis
+    hostname: redis-master
+    command: redis-server --appendonly yes --maxmemory 1024mb --maxmemory-policy allkeys-lru --bind 0.0.0.0 --protected-mode no
+    # Start after postgres is healthy to prevent simultaneous startup memory pressure.
+    # GSM dependency is transitive (postgres depends on GSM).
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:6380:6379"  # Different port to avoid conflict with test
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      instagram-network:
+        ipv4_address: 172.21.0.10
+        aliases:
+          - redis-master
+          - redis
+    logging:
+      driver: "journald"
+      options:
+        tag: "instagram-prod-redis"
+        labels: "environment,service,version"
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1024M
+        reservations:
+          cpus: '0.5'
+          memory: 768M
+
+  # Redis Sentinel for High Availability - WITH FIXES APPLIED
+  redis-sentinel:
+    image: redis:7-alpine
+    container_name: instagram-platform-prod-redis-sentinel
+    hostname: redis-sentinel
+    # Use the fixed entrypoint script
+    entrypoint: ["/sentinel-entrypoint.sh"]
+    volumes:
+      - ./sentinel-entrypoint.sh:/sentinel-entrypoint.sh:ro
+    environment:
+      # Use static IP to bypass DNS issues (FIX APPLIED)
+      - REDIS_HOST=172.21.0.10
+      - REDIS_PORT=6379
+      - SENTINEL_PORT=26379
+      - MAX_TRIES=60  # Increased for better reliability
+      - RETRY_DELAY=3
+    ports:
+      - "127.0.0.1:26380:26379"  # Different port to avoid conflict with test
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      instagram-network:
+        aliases:
+          - sentinel
+          - redis-sentinel
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -p 26379 ping | grep PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    logging:
+      driver: "journald"
+      options:
+        tag: "instagram-prod-sentinel"
+        labels: "environment,service,version"
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1024M
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # PostgreSQL database service - SELF-HOSTED (replaced OVH managed DB)
+  # Same idempotent init pattern as test — entrypoint runs INIT_PROD_DATABASE.sql
+  # on every startup via a background wrapper, ensuring user/schema/sequences are correct.
+  postgres:
+    image: "${POSTGRES_IMAGE:-postgres:16.9}"
+    container_name: "${DB_CONTAINER_NAME:-instagram-platform-prod-db}"
+    restart: unless-stopped
+    depends_on:
+      google-secrets-init:
+        condition: service_completed_successfully
+        restart: true
+    entrypoint: ["/postgres-entrypoint.sh"]
+    command: ["postgres"]
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --locale=en_US.UTF-8
+    ports:
+      - "127.0.0.1:${DB_PORT:-5433}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - secrets-storage:/app/config:ro,z
+      - ./postgres-entrypoint.sh:/postgres-entrypoint.sh:ro,z
+      - ./INIT_PROD_DATABASE.sql:/docker-entrypoint-initdb.d/INIT_PROD_DATABASE.sql:ro,z
+    healthcheck:
+      test: |
+        CMD-SHELL
+        if [ -f /app/config/secrets.env ]; then
+          . /app/config/secrets.env;
+          pg_isready -U ${POSTGRES_USER:-postgres} -h localhost -p 5432 &&
+          psql -U ${POSTGRES_USER:-postgres} -h localhost -p 5432 -d ${DATABASE_NAME:-checkitout_app_prod_database} -c 'SELECT 1' > /dev/null 2>&1 &&
+          echo "Database ready";
+        else
+          echo "Secrets not ready";
+          exit 1;
+        fi
+      interval: 5s
+      timeout: 10s
+      retries: 60
+      start_period: 45s
+    networks:
+      - instagram-network
+    logging:
+      driver: "journald"
+      options:
+        tag: "instagram-prod-postgres"
+        labels: "environment,service,version"
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2048M
+        reservations:
+          cpus: '1'
+          memory: 1536M
+
+  # Spring Boot Application - PRODUCTION WITH SELF-HOSTED DATABASE
+  # NOTE: Actuator endpoint exposure is controlled by application-prod.yml
+  # (management.endpoints.web.exposure.include), NOT by Docker environment variables.
+  app:
+    image: "${MAIN_APP_IMAGE:-PIPELINE_MUST_SET_MAIN_APP_IMAGE_NO_FALLBACK_INTENDED}"
+    container_name: "${APP_CONTAINER_NAME:-instagram-platform-prod}-app"
+    logging:
+      driver: "journald"
+      options:
+        tag: "instagram-prod-app"
+        labels: "environment,service,version"
+    user: "${CONTAINER_USER_ID:-1006}:${CONTAINER_GROUP_ID:-1006}"
+    # Mount the entrypoint script and use it
+    entrypoint: ["/app/spring-boot-entrypoint.sh"]
+    ports:
+      - "127.0.0.1:${SERVER_PORT:-8083}:${SERVER_PORT:-8083}"
+    volumes:
+      # Secrets from GSM - Spring Boot will read directly from files
+      - secrets-storage:/app/config:ro,z
+      # GCP service account for direct access (for fallback)
+      - "${GCP_SA_KEY_PATH:-/etc/instagram-platform/prod/secrets}:/run/secrets:ro"
+      # Log directory
+      - "${LOG_DIR:-/var/log/instagram-platform}:/var/log/instagram-platform:rw"
+      # Mount the entrypoint script
+      - ./spring-boot-entrypoint.sh:/app/spring-boot-entrypoint.sh:ro
+    environment:
+      # Spring Boot profile
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-prod}
+      # Database connection info - self-hosted Docker PostgreSQL (same host)
+      - DATABASE_HOST=${DATABASE_HOST:-postgres}
+      - DATABASE_PORT=${DATABASE_PORT:-5432}
+      - DATABASE_NAME=${DATABASE_NAME:-checkitout_app_prod_database}
+      # GCP Integration Configuration (for fallback)
+      - GCP_SA_KEY_PATH=${GCP_SA_KEY_PATH:-/etc/instagram-platform/prod/secrets}
+      - GCP_CREDS_CONTAINER_PATH=/run/secrets
+      # JVM settings - increased for production workload
+      - JAVA_OPTS=${JAVA_OPTS:--XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0 -Xmx3584m -Xms2048m -Djava.security.egd=file:/dev/./urandom}
+      # Server configuration
+      - SERVER_PORT=${SERVER_PORT:-8083}
+      - MANAGEMENT_SERVER_PORT=${SERVER_PORT:-8083}
+      # Tell Spring Boot where to find secrets (ProductionSecretService will use this)
+      - SECRETS_MOUNT_PATH=/app/config
+      - SECRETS_DEVELOPMENT_MODE=false
+    depends_on:
+      google-secrets-init:
+        condition: service_completed_successfully
+        restart: true  # Restart app if init container restarts
+      postgres:
+        condition: service_healthy
+        restart: true
+      redis:
+        condition: service_healthy
+      redis-sentinel:
+        condition: service_healthy
+    networks:
+      - instagram-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:${SERVER_PORT:-8083}/api/actuator/health || exit 1"]
+      interval: 60s  # Increased from 30s
+      timeout: 30s   # Increased from 10s
+      retries: 20    # Increased from 10
+      start_period: 180s  # Increased from 120s
+    # Security best practices
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    # Resource limits - optimized for 16GB/8CPU VPS with external database
+    deploy:
+      resources:
+        limits:
+          cpus: '3.5'
+          memory: 5120M
+        reservations:
+          cpus: '2.5'
+          memory: 3584M
+
+volumes:
+  secrets-storage:
+    driver: local
+    name: "${COMPOSE_PROJECT_NAME:-instagram-platform-prod}_secrets-storage"
+    labels:
+      - "com.instagram.volume.type=secrets"
+      - "com.instagram.volume.lifecycle=ephemeral"
+      - "com.instagram.volume.owner=${CONTAINER_USER_ID:-1006}"
+      - "com.instagram.volume.group=${CONTAINER_GROUP_ID:-1006}"
+
+  backup-storage:
+    driver: local
+    name: "${COMPOSE_PROJECT_NAME:-instagram-platform-prod}_backup-storage"
+    labels:
+      - "com.instagram.volume.type=backup"
+      - "com.instagram.volume.lifecycle=ephemeral"
+
+  postgres-data:
+    driver: local
+    name: "${COMPOSE_PROJECT_NAME:-instagram-platform-prod}_postgres-data"
+    labels:
+      - "com.instagram.volume.type=database"
+      - "com.instagram.volume.lifecycle=persistent"
+      - "com.instagram.volume.backup=required"
+      - "com.instagram.volume.preserve=true"
+      - "com.instagram.volume.description=PostgreSQL database - DO NOT DELETE"
+
+  redis-data:
+    driver: local
+    name: "${COMPOSE_PROJECT_NAME:-instagram-platform-prod}_redis-data"
+    labels:
+      - "com.instagram.volume.type=cache"
+      - "com.instagram.volume.lifecycle=persistent"
+      - "com.instagram.volume.backup=optional"
+      - "com.instagram.volume.description=Redis cache with HA"
+
+networks:
+  instagram-network:
+    driver: bridge
+    name: "${COMPOSE_PROJECT_NAME:-instagram-platform-prod}_network"
+    internal: false
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.21.0.0/16
+          gateway: 172.21.0.1
+    driver_opts:
+      com.docker.network.bridge.enable_icc: "true"
+      com.docker.network.bridge.enable_ip_masquerade: "true"
+      com.docker.network.driver.mtu: "1500"
+    labels:
+      - "com.instagram.network.type=production"
+      - "com.instagram.network.purpose=production-deployment"
+      - "com.instagram.network.created=${BUILD_TIMESTAMP:-unknown}"

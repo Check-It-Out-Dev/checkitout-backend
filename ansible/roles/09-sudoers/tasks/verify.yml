@@ -1,0 +1,45 @@
+# Sudoers configuration verification
+
+---
+- name: List all Instagram Platform sudoers files
+  ansible.builtin.find:
+    paths: "{{ sudoers_dir }}"
+    patterns: "instagram-*"
+  register: sudoers_files
+
+- name: Verify sudoers files have correct permissions
+  ansible.builtin.stat:
+    path: "{{ item.path }}"
+  register: sudoers_perms
+  loop: "{{ sudoers_files.files }}"
+
+- name: Assert sudoers files have 440 permissions
+  ansible.builtin.assert:
+    that:
+      - item.stat.mode == '0440'
+      - item.stat.pw_name == 'root'
+      - item.stat.gr_name == 'root'
+    fail_msg: "Incorrect permissions on {{ item.item.path }}"
+    success_msg: "Correct permissions on {{ item.item.path }}"
+  loop: "{{ sudoers_perms.results }}"
+
+- name: Validate all sudoers files with visudo
+  ansible.builtin.command: "visudo -c -f {{ item.path }}"
+  loop: "{{ sudoers_files.files }}"
+  register: all_sudoers_validation
+  changed_when: false
+
+- name: Display sudoers validation results
+  ansible.builtin.debug:
+    msg:
+      - "File: {{ item.item.path }}"
+      - "Status: {{ 'VALID' if item.rc == 0 else 'INVALID' }}"
+  loop: "{{ all_sudoers_validation.results }}"
+
+- name: Display sudoers deployment summary
+  ansible.builtin.debug:
+    msg:
+      - "Sudoers files deployed: {{ sudoers_files.matched }}"
+      - "All files validated with visudo"
+      - "All files have correct permissions (440, root:root)"
+      - "Sudo access configured for deployment users"

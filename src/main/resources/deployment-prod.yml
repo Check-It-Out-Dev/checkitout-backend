@@ -1,0 +1,65 @@
+# =============================================================================
+# PRODUCTION ENVIRONMENT SPECIFIC CONFIGURATION - FIXED VERSION
+# Inherits all defaults from deployment-defaults.yml
+# Only contains properties that are UNIQUE to the production environment
+# Following the same convention as test environment
+# =============================================================================
+
+deployment:
+  # Environment identifier (REQUIRED)
+  environment: prod
+    
+  # Production-specific image configuration
+  image:
+    name: check-it-out-dev/checkitout-be/instagram-platform-backend-prod
+
+
+  # Only override IDs - names follow templates from defaults.yml
+  # Template will generate: instagram-prod-deploy and docker-secrets-prod
+  container:
+    user:
+      id: 1006      # Only override ID
+    group:
+      id: 1006      # Only override ID
+      
+  # Production-specific Google Secret Manager configuration
+  gsm:
+    project:
+      id: check-it-out-prod  # Production GCP project
+    secret:
+      prefix: PROD_
+  # Production deploy user configuration
+  prod:
+    deploy:
+      user:
+        name: instagram-prod-deploy
+        home: /home/instagram-prod-deploy
+      
+  # Production-specific port binding for external access
+  app:
+    port:
+      binding: 127.0.0.1:8083
+      
+  # Production-specific overrides
+  backup:
+    retention:
+      count: 30  # Keep more backups in production
+  health:
+    endpoint:
+      initial:
+        wait:
+          seconds: 5  # Stricter health checks in production
+
+# Production-specific server configuration
+server:
+  port: 8083
+
+# Production-specific database — self-hosted Docker PostgreSQL (same host)
+# host_port is the Docker host-side port mapping (5433 to avoid conflict with test on 5432)
+# spring.datasource.port is the internal container port (always 5432)
+spring:
+  datasource:
+    host: postgres
+    port: 5432
+    database: checkitout_app_prod_database
+    host_port: 5433

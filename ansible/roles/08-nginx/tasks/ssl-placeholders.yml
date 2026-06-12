@@ -1,0 +1,132 @@
+# Generate self-signed SSL placeholder certificates
+# Used when DNS not pointing to VPS yet (can't get Let's Encrypt certs)
+
+---
+- name: Create nginx SSL directory
+  ansible.builtin.file:
+    path: /etc/nginx/ssl
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Generate default self-signed certificate for nginx
+  ansible.builtin.command: >
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048
+    -keyout /etc/nginx/ssl/self-signed.key
+    -out /etc/nginx/ssl/self-signed.crt
+    -subj "/C=PL/ST=Mazowieckie/L=Warsaw/O=CheckItOut/CN=default"
+  args:
+    creates: /etc/nginx/ssl/self-signed.crt
+
+- name: Create Let's Encrypt directories for placeholders
+  ansible.builtin.file:
+    path: "/etc/letsencrypt/live/{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  loop:
+    - "{{ domains.test }}-0002"
+    - "{{ domains.prod }}"
+    - "{{ domains.loki }}"
+
+- name: Generate self-signed certificate for test domain
+  ansible.builtin.command: >
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048
+    -keyout /etc/letsencrypt/live/{{ domains.test }}-0002/privkey.pem
+    -out /etc/letsencrypt/live/{{ domains.test }}-0002/fullchain.pem
+    -subj "/C=PL/ST=Mazowieckie/L=Warsaw/O=CheckItOut/CN={{ domains.test }}"
+  args:
+    creates: "/etc/letsencrypt/live/{{ domains.test }}-0002/fullchain.pem"
+
+- name: Create chain.pem symlink for test
+  ansible.builtin.file:
+    src: "/etc/letsencrypt/live/{{ domains.test }}-0002/fullchain.pem"
+    dest: "/etc/letsencrypt/live/{{ domains.test }}-0002/chain.pem"
+    state: link
+
+- name: Generate self-signed certificate for prod domain
+  ansible.builtin.command: >
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048
+    -keyout /etc/letsencrypt/live/{{ domains.prod }}/privkey.pem
+    -out /etc/letsencrypt/live/{{ domains.prod }}/fullchain.pem
+    -subj "/C=PL/ST=Mazowieckie/L=Warsaw/O=CheckItOut/CN={{ domains.prod }}"
+  args:
+    creates: "/etc/letsencrypt/live/{{ domains.prod }}/fullchain.pem"
+
+- name: Create chain.pem symlink for prod
+  ansible.builtin.file:
+    src: "/etc/letsencrypt/live/{{ domains.prod }}/fullchain.pem"
+    dest: "/etc/letsencrypt/live/{{ domains.prod }}/chain.pem"
+    state: link
+
+- name: Create Let's Encrypt options files (placeholders)
+  ansible.builtin.copy:
+    content: |
+      # Placeholder SSL options (self-signed certs)
+      ssl_protocols TLSv1.2 TLSv1.3;
+      ssl_prefer_server_ciphers off;
+    dest: /etc/letsencrypt/options-ssl-nginx.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Generate dhparams placeholder
+  ansible.builtin.command: openssl dhparam -out /etc/letsencrypt/ssl-dhparams.pem 2048
+  args:
+    creates: /etc/letsencrypt/ssl-dhparams.pem
+
+- name: Create Loki mTLS certificate directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  loop:
+    - /etc/nginx/certs/loki/ca
+    - /etc/nginx/certs/loki/server
+    - /etc/nginx/certs/loki/client
+
+- name: Generate Loki CA certificate (placeholder)
+  ansible.builtin.command: >
+    openssl req -x509 -nodes -days 3650 -newkey rsa:4096
+    -keyout /etc/nginx/certs/loki/ca/ca.key
+    -out /etc/nginx/certs/loki/ca/ca.crt
+    -subj "/C=PL/ST=Mazowieckie/L=Warsaw/O=CheckItOut/CN=Loki-CA"
+  args:
+    creates: /etc/nginx/certs/loki/ca/ca.crt
+
+- name: Generate Loki server certificate (placeholder)
+  ansible.builtin.command: >
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048
+    -keyout /etc/nginx/certs/loki/server/loki-server.key
+    -out /etc/nginx/certs/loki/server/loki-server-chain.crt
+    -subj "/C=PL/ST=Mazowieckie/L=Warsaw/O=CheckItOut/CN=loki.checkitout.app"
+  args:
+    creates: /etc/nginx/certs/loki/server/loki-server-chain.crt
+
+- name: Generate Loki client certificate (placeholder)
+  ansible.builtin.command: >
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048
+    -keyout /etc/nginx/certs/loki/client/alloy-client.key
+    -out /etc/nginx/certs/loki/client/alloy-client.crt
+    -subj "/C=PL/ST=Mazowieckie/L=Warsaw/O=CheckItOut/CN=alloy-client"
+  args:
+    creates: /etc/nginx/certs/loki/client/alloy-client.crt
+
+- name: Display SSL placeholder status
+  ansible.builtin.debug:
+    msg:
+      - "Self-signed SSL certificates generated (placeholders):"
+      - "  ✅ /etc/nginx/ssl/self-signed.crt (default)"
+      - "  ✅ /etc/letsencrypt/live/check-it-out.pl-0002/fullchain.pem (test)"
+      - "  ✅ /etc/letsencrypt/live/checkitout.app/fullchain.pem (prod)"
+      - "  ✅ /etc/nginx/certs/loki/ca/ca.crt (Loki CA)"
+      - "  ✅ /etc/nginx/certs/loki/server/loki-server-chain.crt (Loki server)"
+      - "  ✅ /etc/nginx/certs/loki/client/alloy-client.crt (Loki client)"
+      - ""
+      - "⚠️  These are NOT valid for production use"
+      - "After DNS migration, run: ansible-playbook -i inventory/production.yml playbooks/site.yml --tags nginx-ssl"
+      - "This will replace with real Let's Encrypt certificates"

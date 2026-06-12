@@ -1,0 +1,43 @@
+# Directory structure verification
+
+---
+- name: Verify critical directories exist
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  register: dir_check
+  failed_when: not dir_check.stat.exists or not dir_check.stat.isdir
+  loop:
+    - "{{ test_base_path }}"
+    - "{{ test_deployment_path }}"
+    - "{{ test_secrets_path }}"
+    - "{{ prod_base_path }}"
+    - "{{ prod_deployment_path }}"
+    - "{{ prod_secrets_path }}"
+    - "{{ web_root_prod }}"
+    - "{{ web_root_test }}"
+    - "{{ loki_base_path }}"
+
+- name: Verify secrets directory permissions
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  register: secrets_check
+  loop:
+    - "{{ test_secrets_path }}"
+    - "{{ prod_secrets_path }}"
+
+- name: Assert secrets directories have correct permissions (750)
+  ansible.builtin.assert:
+    that:
+      - item.stat.mode == '0750'
+    fail_msg: "Secrets directory {{ item.stat.path }} has incorrect permissions: {{ item.stat.mode }}"
+    success_msg: "Secrets directory permissions verified"
+  loop: "{{ secrets_check.results }}"
+
+- name: Display directory structure summary
+  ansible.builtin.debug:
+    msg:
+      - "Directory structure created successfully"
+      - "Test environment: {{ test_base_path }}"
+      - "Production environment: {{ prod_base_path }}"
+      - "Monitoring: {{ loki_base_path }}"
+      - "Web roots: {{ web_root_test }}, {{ web_root_prod }}"

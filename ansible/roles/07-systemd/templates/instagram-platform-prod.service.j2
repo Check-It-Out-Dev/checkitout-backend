@@ -1,0 +1,44 @@
+[Unit]
+Description=Instagram Platform Production Docker Compose Application
+Documentation=https://github.com/Check-It-Out-Dev/checkItOut-be2
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+# Restart rate limiting (prevents infinite restart loops)
+StartLimitIntervalSec=500
+StartLimitBurst=5
+
+[Service]
+Type=simple
+WorkingDirectory={{ prod_deployment_path }}
+User={{ user_prod_deploy.name }}
+Group=docker-secrets-prod
+EnvironmentFile=-{{ prod_deployment_path }}/.env
+
+# Start via systemd-wrapper script
+ExecStart=/bin/bash -c 'exec {{ prod_deployment_path }}/systemd-wrapper.sh exec-start 2>&1'
+ExecStop={{ prod_deployment_path }}/systemd-wrapper.sh stop
+
+# Restart configuration
+Restart={{ service_restart }}
+RestartSec={{ service_restart_sec }}s
+
+# Timeouts
+TimeoutStartSec={{ service_timeout_start }}
+TimeoutStopSec={{ service_timeout_stop }}
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=instagram-platform-prod
+
+# Security hardening (added per Erdős analysis recommendations)
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths={{ prod_deployment_path }}
+ReadWritePaths=/var/lib/docker
+
+[Install]
+WantedBy=multi-user.target

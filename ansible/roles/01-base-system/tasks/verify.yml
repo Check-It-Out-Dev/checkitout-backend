@@ -1,0 +1,55 @@
+# System verification tasks
+# Verify that the target system meets requirements
+
+---
+- name: Gather system facts
+  ansible.builtin.setup:
+
+- name: Verify operating system distribution
+  ansible.builtin.assert:
+    that:
+      - ansible_distribution == required_os_distribution
+    fail_msg: "System must be {{ required_os_distribution }}, found {{ ansible_distribution }}"
+    success_msg: "Operating system verified: {{ ansible_distribution }}"
+
+- name: Verify operating system version
+  ansible.builtin.assert:
+    that:
+      - ansible_distribution_version is version(required_os_version, '>=')
+    fail_msg: "System must be {{ required_os_distribution }} {{ required_os_version }} or later"
+    success_msg: "OS version verified: {{ ansible_distribution_version }}"
+
+- name: Verify architecture
+  ansible.builtin.assert:
+    that:
+      - ansible_architecture == required_architecture
+    fail_msg: "Architecture must be {{ required_architecture }}, found {{ ansible_architecture }}"
+    success_msg: "Architecture verified: {{ ansible_architecture }}"
+
+- name: Check available disk space
+  ansible.builtin.shell: |
+    df -BG / | awk 'NR==2 {print $4}' | sed 's/G$//'
+  register: available_disk_space
+  changed_when: false
+
+- name: Debug disk space output
+  ansible.builtin.debug:
+    msg: "Raw disk space output: '{{ available_disk_space.stdout }}'"
+
+- name: Verify minimum disk space (50GB)
+  ansible.builtin.assert:
+    that:
+      - available_disk_space.stdout | default('0') | trim | int >= 50
+    fail_msg: "Insufficient disk space. Need at least 50GB, found {{ available_disk_space.stdout | default('unknown') | trim }}GB"
+    success_msg: "Disk space verified: {{ available_disk_space.stdout | trim }}GB available"
+  when: available_disk_space.stdout | default('0') | trim | length > 0
+
+- name: Display system information
+  ansible.builtin.debug:
+    msg:
+      - "System: {{ ansible_distribution }} {{ ansible_distribution_version }} ({{ ansible_distribution_release }})"
+      - "Kernel: {{ ansible_kernel }}"
+      - "Architecture: {{ ansible_architecture }}"
+      - "CPUs: {{ ansible_processor_vcpus }}"
+      - "Memory: {{ ansible_memtotal_mb }}MB"
+      - "Disk available: {{ available_disk_space.stdout | default('unknown') | trim }}GB"

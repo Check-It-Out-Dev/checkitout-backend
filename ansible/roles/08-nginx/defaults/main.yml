@@ -1,0 +1,25 @@
+# Default variables for 08-nginx role
+
+---
+# Nginx installation
+install_nginx: false  # Already installed in 01-base-system
+
+# Configuration sources (two levels up from playbooks to project root)
+nginx_config_source: "{{ playbook_dir }}/../../deployment/config/nginx-refactored"
+
+# Domains
+domains:
+  prod: "checkitout.app"
+  test: "check-it-out.pl"
+  loki: "loki.checkitout.app"
+
+# SSL configuration (DISABLED - DNS not pointing to new VPS yet)
+generate_ssl_certificates: false
+certbot_email: "admin@checkitout.app"  # Change this
+
+# Site enabling
+enable_sites: true
+
+# Nginx service management
+restart_nginx: true
+test_nginx_config: true

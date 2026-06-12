@@ -1,0 +1,31 @@
+# Admin user cron jobs configuration
+
+---
+- name: Add health check cron job for admin user
+  ansible.builtin.cron:
+    name: "Instagram Platform health check"
+    minute: "*/15"
+    user: "{{ user_scripts_admin.name }}"
+    job: "{{ scripts_admin_scripts_path }}/health-check.sh >> {{ scripts_admin_path }}/logs/health-check.log 2>&1"
+    state: present
+  ignore_errors: yes
+
+- name: Add log cleanup cron job
+  ansible.builtin.cron:
+    name: "Log cleanup"
+    minute: "0"
+    hour: "1"
+    user: "{{ user_scripts_admin.name }}"
+    job: "find {{ base_cicd_log_path }} -name '*.log' -mtime +30 -delete"
+    state: present
+
+- name: List admin crontab
+  ansible.builtin.command: "crontab -u {{ user_scripts_admin.name }} -l"
+  register: admin_crontab
+  changed_when: false
+  ignore_errors: yes
+
+- name: Display admin cron jobs
+  ansible.builtin.debug:
+    var: admin_crontab.stdout_lines
+  when: admin_crontab.rc == 0

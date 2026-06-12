@@ -1,0 +1,206 @@
+# =============================================================================
+# MINIMAL SECURE SUDOERS CONFIGURATION FOR instagram-prod-deploy
+# Purpose: Only what's needed for systemd-wrapper.sh + Frontend deployment
+# File: sudo visudo -f /etc/sudoers.d/instagram-prod-deploy
+# =============================================================================
+
+# Enable environment variable preservation for HCP Vault secrets
+Defaults:instagram-prod-deploy setenv
+Defaults:instagram-prod-deploy !mail_always
+Defaults:instagram-prod-deploy !mail_badpass
+Defaults:instagram-prod-deploy !mail_no_user
+# Prevent PAM session timeout and enable non-interactive sudo (CRITICAL for systemd)
+Defaults:instagram-prod-deploy !pam_session
+Defaults:instagram-prod-deploy !use_pty
+Defaults:instagram-prod-deploy !pam_setcred
+Defaults:instagram-prod-deploy !requiretty
+
+# Additional security settings
+Defaults:instagram-prod-deploy syslog=auth
+Defaults:instagram-prod-deploy log_input, log_output
+
+# =============================================================================
+# DOCKER COMPOSE - EXPLICIT COMMANDS ONLY (NO WILDCARDS)
+# Used by systemd-wrapper.sh
+# =============================================================================
+
+# Container health checking (read-only)
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml ps google-secrets-init --format json
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml ps postgres --format json
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml ps redis --format json
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml ps redis-sentinel --format json
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml ps app --format json
+
+# Additional ps commands without --format json (used in status command)
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml ps --format json
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml ps google-secrets-init
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml ps postgres
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml ps redis
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml ps redis-sentinel
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml ps app
+
+# Container lifecycle management
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml up -d --remove-orphans
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml stop --timeout 5
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml stop --timeout 10
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml stop --timeout 15
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml stop
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml kill
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml down --remove-orphans
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml down
+
+# Container status (read-only)
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml ps
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml ps -q
+
+# Logs (read-only) - specific forms used by the wrapper
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml logs
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml logs --tail=50
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml logs google-secrets-init --tail=50
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml logs -f
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml logs -f google-secrets-init
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml logs -f postgres
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml logs -f redis
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml logs -f redis-sentinel
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml logs -f app
+
+# =============================================================================
+# DOCKER AUTHENTICATION (for pulling private images from ghcr.io)
+# =============================================================================
+
+# Docker login to GitHub Container Registry ONLY (support both flag formats)
+instagram-prod-deploy ALL=(ALL) NOPASSWD: \
+    /usr/bin/docker login ghcr.io -u * --password-stdin, \
+    /usr/bin/docker login ghcr.io --username * --password-stdin, \
+    /usr/bin/docker logout ghcr.io
+
+# Docker pull from GitHub Container Registry (needed after authentication)
+instagram-prod-deploy ALL=(ALL) NOPASSWD: \
+    /usr/bin/docker pull ghcr.io/check-it-out-dev/*, \
+    /usr/bin/docker pull ghcr.io/check-it-out-dev/checkitout-be/*, \
+    /usr/bin/docker pull ghcr.io/check-it-out-dev/checkitout-be/*\:*, \
+    /usr/bin/docker pull ghcr.io/check-it-out-dev/checkitout-be/*@sha256\:*
+
+# =============================================================================
+# DOCKER CLEANUP OPERATIONS
+# Used by systemd-wrapper.sh
+# =============================================================================
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker volume prune -f
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker network prune -f
+
+# =============================================================================
+# SYSTEMCTL - PRODUCTION SERVICE ONLY
+# Used by systemd-wrapper.sh
+# =============================================================================
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /bin/systemctl reset-failed instagram-platform-prod
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/systemctl reset-failed instagram-platform-prod
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /bin/systemctl daemon-reload
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/systemctl daemon-reload
+
+# =============================================================================
+# HEALTH CHECK OPERATIONS
+# Used for monitoring and diagnostics
+# =============================================================================
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /opt/instagram-platform/prod/deployment/check-redis-health.sh
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /bin/bash /opt/instagram-platform/prod/deployment/check-redis-health.sh
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/bash /opt/instagram-platform/prod/deployment/check-redis-health.sh
+
+# Redis CLI operations for health checks
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker exec instagram-platform-prod-redis redis-cli ping
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker exec instagram-platform-prod-redis redis-cli INFO *
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker exec instagram-platform-prod-redis-sentinel redis-cli -p 26379 ping
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker exec instagram-platform-prod-redis-sentinel redis-cli -p 26379 SENTINEL *
+instagram-prod-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker exec instagram-platform-prod-app redis-cli -h redis -p 6379 ping
+
+# Critical commands used by the modernized workflow for FE
+# rm command variations
+instagram-prod-deploy ALL=(root) NOPASSWD: /bin/rm -rf /var/www/checkitout.app/*
+instagram-prod-deploy ALL=(root) NOPASSWD: /usr/bin/rm -rf /var/www/checkitout.app/*
+
+# chown commands - all variations needed by workflow
+# Without group specification
+instagram-prod-deploy ALL=(root) NOPASSWD: /bin/chown -R instagram-prod-deploy /var/www/checkitout.app/
+instagram-prod-deploy ALL=(root) NOPASSWD: /usr/bin/chown -R instagram-prod-deploy /var/www/checkitout.app/
+# With group specification (colon format) - for GitHub Actions $CURRENT_USER:$CURRENT_USER
+instagram-prod-deploy ALL=(root) NOPASSWD: /bin/chown -R instagram-prod-deploy\:instagram-prod-deploy /var/www/checkitout.app/
+instagram-prod-deploy ALL=(root) NOPASSWD: /usr/bin/chown -R instagram-prod-deploy\:instagram-prod-deploy /var/www/checkitout.app/
+# For www-data ownership
+instagram-prod-deploy ALL=(root) NOPASSWD: /bin/chown -R www-data\:www-data /var/www/checkitout.app/
+instagram-prod-deploy ALL=(root) NOPASSWD: /usr/bin/chown -R www-data\:www-data /var/www/checkitout.app/
+
+# chmod commands
+instagram-prod-deploy ALL=(root) NOPASSWD: /bin/chmod -R 755 /var/www/checkitout.app/
+instagram-prod-deploy ALL=(root) NOPASSWD: /usr/bin/chmod -R 755 /var/www/checkitout.app/
+
+# systemctl commands for nginx
+instagram-prod-deploy ALL=(root) NOPASSWD: /bin/systemctl reload nginx
+instagram-prod-deploy ALL=(root) NOPASSWD: /usr/bin/systemctl reload nginx
+instagram-prod-deploy ALL=(root) NOPASSWD: /bin/systemctl status nginx --no-pager
+instagram-prod-deploy ALL=(root) NOPASSWD: /usr/bin/systemctl status nginx --no-pager
+instagram-prod-deploy ALL=(root) NOPASSWD: /bin/systemctl status nginx --no-pager --lines=5
+instagram-prod-deploy ALL=(root) NOPASSWD: /usr/bin/systemctl status nginx --no-pager --lines=5
+
+# ==============================================================================
+# DIRECTORY AND FILE MANAGEMENT FOR FRONTEND DEPLOYMENT
+# ==============================================================================
+
+# Create directories (required by workflow line 389)
+instagram-prod-deploy ALL=(root) NOPASSWD: /bin/mkdir -p /var/www/checkitout.app/
+instagram-prod-deploy ALL=(root) NOPASSWD: /usr/bin/mkdir -p /var/www/checkitout.app/
+instagram-prod-deploy ALL=(root) NOPASSWD: /bin/mkdir -p /var/www/checkitout.app/*
+instagram-prod-deploy ALL=(root) NOPASSWD: /usr/bin/mkdir -p /var/www/checkitout.app/*
+
+# Remove hidden files (required by workflow line 394)
+instagram-prod-deploy ALL=(root) NOPASSWD: /bin/rm -rf /var/www/checkitout.app/.??*
+instagram-prod-deploy ALL=(root) NOPASSWD: /usr/bin/rm -rf /var/www/checkitout.app/.??*
+
+# List files for debugging (useful for troubleshooting)
+instagram-prod-deploy ALL=(root) NOPASSWD: /bin/ls -la /var/www/checkitout.app/
+instagram-prod-deploy ALL=(root) NOPASSWD: /usr/bin/ls -la /var/www/checkitout.app/
+instagram-prod-deploy ALL=(root) NOPASSWD: /bin/ls -la /var/www/checkitout.app/*
+instagram-prod-deploy ALL=(root) NOPASSWD: /usr/bin/ls -la /var/www/checkitout.app/*
+instagram-prod-deploy ALL=(root) NOPASSWD: /bin/ls -ld /var/www/checkitout.app/
+instagram-prod-deploy ALL=(root) NOPASSWD: /usr/bin/ls -ld /var/www/checkitout.app/
+
+# Check disk usage (useful for monitoring)
+instagram-prod-deploy ALL=(root) NOPASSWD: /bin/du -sh /var/www/checkitout.app/
+instagram-prod-deploy ALL=(root) NOPASSWD: /usr/bin/du -sh /var/www/checkitout.app/
+
+# Block package managers
+Cmnd_Alias PACKAGE_MANAGERS_PROD = /usr/bin/apt, /usr/bin/apt-get, \
+                              /usr/sbin/dpkg, /usr/bin/snap, \
+                              /usr/bin/pip, /usr/bin/pip3, \
+                              /usr/bin/npm, /usr/bin/yarn
+
+instagram-prod-deploy ALL = (ALL) !PACKAGE_MANAGERS_PROD
+
+# Block dangerous editors and interpreters
+Cmnd_Alias DANGEROUS_TOOLS_PROD = /usr/bin/vi, /usr/bin/vim, /usr/bin/nano, \
+                             /usr/bin/emacs, /usr/bin/ed, \
+                             /usr/bin/perl, /usr/bin/ruby, \
+                             /usr/bin/php*, /usr/bin/zsh
+
+instagram-prod-deploy ALL = (ALL) !DANGEROUS_TOOLS_PROD
+
+# Block script execution from unsafe locations
+Cmnd_Alias UNSAFE_LOCATIONS_PROD_DEPLOY = /tmp/*, /var/tmp/*, /dev/shm/*, \
+                              /home/*/Downloads/*, /home/*/.local/*, \
+                              /home/*/.cache/*, /run/user/*
+
+instagram-prod-deploy ALL = (ALL) !UNSAFE_LOCATIONS_PROD_DEPLOY
+
+# =============================================================================
+# EXPLICITLY FORBIDDEN - DO NOT ADD THESE
+# =============================================================================
+# - docker compose exec (shell access to containers)
+# - docker compose run (arbitrary command execution)
+# - docker compose cp (file extraction from containers)
+# - docker exec (direct container access)
+# - docker run (creating new containers)
+# - Any commands with wildcards (*) or regex patterns
+# - Access to deployment files or .env files
+# - File operations outside of /var/www/checkitout.app/
+
+# =============================================================================
+# END OF CONFIGURATION
+# =============================================================================

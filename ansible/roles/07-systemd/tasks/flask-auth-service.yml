@@ -1,0 +1,104 @@
+# Flask authentication app for test domain protection
+# Provides basic session-based auth for check-it-out.pl test environment
+
+---
+- name: Ensure python3-venv is installed
+  ansible.builtin.apt:
+    name:
+      - python3-venv
+      - python3-pip
+    state: present
+    update_cache: yes
+  become: yes
+
+- name: Create Flask auth app directory
+  ansible.builtin.file:
+    path: "{{ flask_auth_app_dir }}"
+    state: directory
+    owner: "{{ flask_auth_app_user }}"
+    group: "{{ flask_auth_app_user }}"
+    mode: '0755'
+
+- name: Deploy Flask auth app script
+  ansible.builtin.copy:
+    src: flask-auth-app.py
+    dest: "{{ flask_auth_app_dir }}/app.py"
+    owner: "{{ flask_auth_app_user }}"
+    group: "{{ flask_auth_app_user }}"
+    mode: '0644'
+  notify: Restart flask-auth-app
+
+- name: Create Python virtual environment
+  ansible.builtin.command:
+    cmd: python3 -m venv venv
+    chdir: "{{ flask_auth_app_dir }}"
+    creates: "{{ flask_auth_app_dir }}/venv/bin/python"
+  become: yes
+  become_user: "{{ flask_auth_app_user }}"
+
+- name: Install Flask dependencies in venv
+  ansible.builtin.pip:
+    name:
+      - flask
+      - flask-bcrypt
+    virtualenv: "{{ flask_auth_app_dir }}/venv"
+    state: present
+  become: yes
+  become_user: "{{ flask_auth_app_user }}"
+
+- name: Deploy flask-auth-app systemd service
+  ansible.builtin.copy:
+    src: flask-auth-app.service
+    dest: /etc/systemd/system/flask-auth-app.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reload systemd
+
+- name: Enable flask-auth-app service
+  ansible.builtin.systemd:
+    name: flask-auth-app
+    enabled: yes
+    daemon_reload: yes
+  when: enable_services | bool
+
+- name: Start flask-auth-app service
+  ansible.builtin.systemd:
+    name: flask-auth-app
+    state: started
+  when: start_services | bool
+
+- name: Verify flask-auth-app service file
+  ansible.builtin.command: systemd-analyze verify flask-auth-app.service
+  register: flask_auth_verify
+  changed_when: false
+  failed_when: false
+
+- name: Display flask-auth-app service verification
+  ansible.builtin.debug:
+    msg: "Flask auth service verification: {{ 'OK' if flask_auth_verify.rc == 0 else 'WARNINGS' }}"
+
+# Immutable protection for production stability
+- name: Apply immutable protection to Flask auth app
+  when: flask_auth_immutable_protection | bool
+  block:
+    - name: Remove immutable flag before update (if exists)
+      ansible.builtin.command:
+        cmd: chattr -i "{{ flask_auth_app_dir }}/app.py"
+      failed_when: false
+      changed_when: false
+
+    - name: Set immutable flag on Flask auth app script
+      ansible.builtin.command:
+        cmd: chattr +i "{{ flask_auth_app_dir }}/app.py"
+      changed_when: true
+
+    - name: Verify immutable flag is set
+      ansible.builtin.command:
+        cmd: lsattr "{{ flask_auth_app_dir }}/app.py"
+      register: immutable_check
+      changed_when: false
+
+    - name: Display immutable protection status
+      ansible.builtin.debug:
+        msg: "Immutable protection: {{ 'ENABLED' if 'i' in immutable_check.stdout else 'DISABLED' }}"

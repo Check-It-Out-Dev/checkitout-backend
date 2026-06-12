@@ -1,0 +1,63 @@
+[Unit]
+Description=Instagram Platform Test Docker Compose Application
+Documentation=https://github.com/your-org/instagram-platform
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+# Auto-restart configuration
+StartLimitIntervalSec=300
+StartLimitBurst=5
+# If service fails 5 times in 300 seconds, stop trying
+
+[Service]
+# CRITICAL FIX: Type=simple for direct stdout/stderr capture
+Type=simple
+# Don't use RemainAfterExit with Type=simple
+# RemainAfterExit=yes
+
+WorkingDirectory=/opt/instagram-platform/test/deployment
+User=instagram-test-deploy
+Group=docker-secrets-test
+
+# Environment setup
+EnvironmentFile=-/opt/instagram-platform/test/deployment/.env
+Environment="PATH=/usr/local/bin:/usr/bin:/bin"
+# Disable output buffering for real-time logs
+Environment="PYTHONUNBUFFERED=1"
+Environment="UNBUFFER=1"
+
+# PRODUCTION STANDARD: Use exec-start for Type=simple
+# This keeps the process running and maintains stdout connection
+ExecStart=/bin/bash -c 'exec /opt/instagram-platform/test/deployment/systemd-wrapper.sh exec-start 2>&1'
+ExecStop=/opt/instagram-platform/test/deployment/systemd-wrapper.sh stop
+ExecReload=/bin/kill -HUP $MAINPID
+
+# Restart configuration
+Restart=on-failure
+RestartSec=30s
+TimeoutStartSec=360
+TimeoutStopSec=120
+
+# LOGGING FIX: Use journal only (view with journalctl -f)
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=instagram-platform-test
+
+# Optional: For SSH sessions, use TTY if you need real-time output
+# StandardOutput=tty
+# StandardError=tty
+# TTYPath=/dev/pts/0  # Would need dynamic detection
+
+# Startup banner (will show in journal)
+ExecStartPre=/bin/echo "========================================"
+ExecStartPre=/bin/echo "Starting Instagram Platform TEST"
+ExecStartPre=/bin/echo "Time: $(date)"
+ExecStartPre=/bin/echo "========================================"
+
+# Process management
+KillMode=mixed
+KillSignal=SIGTERM
+
+[Install]
+WantedBy=multi-user.target

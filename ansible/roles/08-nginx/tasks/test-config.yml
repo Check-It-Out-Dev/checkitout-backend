@@ -1,0 +1,21 @@
+# Test Nginx configuration
+
+---
+- name: Test Nginx configuration syntax
+  ansible.builtin.command: nginx -t
+  register: nginx_test
+  changed_when: false
+
+- name: Display Nginx test results
+  ansible.builtin.debug:
+    msg:
+      - "{{ nginx_test.stderr_lines }}"
+
+- name: Assert Nginx configuration is valid
+  ansible.builtin.assert:
+    that:
+      - nginx_test.rc == 0
+      - "'syntax is ok' in nginx_test.stderr"
+      - "'test is successful' in nginx_test.stderr"
+    success_msg: "Nginx configuration is valid"
+    fail_msg: "Nginx configuration has errors!"

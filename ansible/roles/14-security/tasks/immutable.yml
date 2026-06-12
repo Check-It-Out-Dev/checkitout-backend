@@ -1,0 +1,41 @@
+# Apply file immutability
+
+---
+- name: Display immutability warning
+  ansible.builtin.debug:
+    msg:
+      - "WARNING: Making critical files immutable"
+      - "To modify these files in the future:"
+      - "  1. Remove immutable flag: sudo chattr -i <file>"
+      - "  2. Make changes"
+      - "  3. Re-apply flag: sudo chattr +i <file>"
+
+- name: Check which files exist before applying immutability
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  register: immutable_files_check
+  loop: "{{ immutable_files }}"
+
+- name: Apply immutable flag to critical files
+  ansible.builtin.file:
+    path: "{{ item.item }}"
+    attributes: "+i"
+  loop: "{{ immutable_files_check.results }}"
+  when: item.stat.exists
+  ignore_errors: yes
+
+- name: Verify immutable flags
+  ansible.builtin.command: "lsattr {{ item.item }}"
+  loop: "{{ immutable_files_check.results }}"
+  when: item.stat.exists
+  register: lsattr_result
+  changed_when: false
+  ignore_errors: yes
+
+- name: Display immutable files
+  ansible.builtin.debug:
+    msg:
+      - "File: {{ item.item.item }}"
+      - "Attributes: {{ item.stdout | default('N/A') }}"
+  loop: "{{ lsattr_result.results }}"
+  when: item.changed is defined

@@ -1,0 +1,28 @@
+# Main tasks for 09-sudoers role
+# SECURITY CRITICAL: Configures sudo permissions
+
+---
+- name: Deploy test user sudoers file
+  include_tasks: deploy-sudoers.yml
+  vars:
+    sudoers_user: "instagram-test-deploy"
+    sudoers_file: "instagram-test-deploy"
+  tags: [sudoers, test-sudoers]
+
+- name: Deploy production user sudoers file
+  include_tasks: deploy-sudoers.yml
+  vars:
+    sudoers_user: "instagram-prod-deploy"
+    sudoers_file: "instagram-prod-deploy"
+  tags: [sudoers, prod-sudoers]
+
+- name: Deploy admin user sudoers file
+  include_tasks: deploy-sudoers.yml
+  vars:
+    sudoers_user: "instagram-scripts-admin"
+    sudoers_file: "instagram-scripts-admin"
+  tags: [sudoers, admin-sudoers]
+
+- name: Verify all sudoers files
+  include_tasks: verify.yml
+  tags: [sudoers, verify]

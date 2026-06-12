@@ -1,0 +1,450 @@
+# Common Variables for All Environments
+# Instagram Platform VPS Deployment
+#
+# These variables apply to all hosts and environments.
+# Extracted from deployment-defaults.yml and migration guides.
+#
+# Override specific values in:
+#   - group_vars/test.yml (test environment)
+#   - group_vars/prod.yml (production environment)
+#   - host_vars/vps-example01.yml (host-specific)
+
+---
+# =============================================================================
+# VPS Configuration (from 00-MIGRATION-OVERVIEW.md and 01-BASE-SYSTEM-SETUP.md)
+# =============================================================================
+
+# VPS Network Configuration
+vps_ipv4: "192.0.2.10"
+vps_ipv6: "2001:db8::10"
+vps_gateway_ipv4: "192.0.2.1"
+vps_gateway_ipv6: "2001:db8::1"
+vps_hostname: "vps-example01"
+vps_interface_name: "ens3"  # Adjust if different (use 'ip link' to check)
+
+# DNS servers
+dns_servers:
+  - "8.8.8.8"
+  - "8.8.4.4"
+dns_servers_ipv6:
+  - "2001:4860:4860::8888"
+  - "2001:4860:4860::8844"
+
+# Timezone
+server_timezone: "UTC"
+
+# =============================================================================
+# System Users and Groups (from 02-USERS-AND-GROUPS.md)
+# =============================================================================
+
+# Test environment user
+user_test_deploy:
+  name: "instagram-test-deploy"
+  uid: 1002
+  gid: 1003
+  groups:
+    - "hcp-users"
+    - "docker-secrets-test"
+    - "cicd-logs"
+  home: "/home/instagram-test-deploy"
+  shell: "/bin/bash"
+  comment: "Instagram Platform Test Environment Deploy User"
+
+# Production environment user
+user_prod_deploy:
+  name: "instagram-prod-deploy"
+  uid: 1006
+  gid: 1006
+  groups:
+    - "docker-secrets-prod"
+    - "hcp-users-prod"
+    - "docker"
+  home: "/home/instagram-prod-deploy"
+  shell: "/bin/bash"
+  comment: "Instagram Platform Production Environment Deploy User"
+
+# CI/CD Admin user
+user_scripts_admin:
+  name: "instagram-scripts-admin"
+  uid: 997
+  gid: 985
+  groups:
+    - "docker-secrets-test"
+    - "docker-secrets-prod"
+    - "cicd-logs"
+  home: "/var/lib/instagram-scripts-admin"
+  shell: "/bin/bash"
+  comment: "Instagram Platform CI/CD Admin User"
+
+# Loki monitoring user
+user_loki:
+  name: "loki"
+  uid: 995
+  gid: 984
+  groups:
+    - "adm"
+    - "systemd-journal"
+  home: "/home/loki"
+  shell: "/bin/false"
+  comment: "Loki Log Aggregation Service"
+
+# Security groups
+security_groups:
+  - name: "docker-secrets-test"
+    gid: 1005
+  - name: "docker-secrets-prod"
+    gid: 1006
+  - name: "docker-secrets-admin"
+    gid: 985
+  - name: "instagram-test-deploy"
+    gid: 1003
+  - name: "instagram-prod-deploy"
+    gid: 1009
+  - name: "hcp-users"
+    gid: 1004
+  - name: "hcp-users-prod"
+    gid: 1007
+  - name: "cicd-logs"
+    gid: 1008
+  - name: "loki"
+    gid: 984
+
+# =============================================================================
+# Directory Paths (from 03-DIRECTORY-STRUCTURE.md and deployment-defaults.yml)
+# =============================================================================
+
+# Base paths
+base_system_path: "/opt/instagram-platform"
+base_log_path: "/var/log/instagram-platform"
+base_cicd_log_path: "/var/log/CiCd"
+
+# Test environment paths
+test_base_path: "/opt/instagram-platform/test"
+test_deployment_path: "/opt/instagram-platform/test/deployment"
+test_runtime_path: "/opt/instagram-platform/test/runtime"
+test_logs_path: "/opt/instagram-platform/test/runtime/logs"
+test_backups_path: "/opt/instagram-platform/test/backups"
+test_secrets_path: "/etc/instagram-platform/test/secrets"
+
+# Production environment paths
+prod_base_path: "/opt/instagram-platform/prod"
+prod_deployment_path: "/opt/instagram-platform/prod/deployment"
+prod_runtime_path: "/opt/instagram-platform/prod/runtime"
+prod_logs_path: "/opt/instagram-platform/prod/runtime/logs"
+prod_backups_path: "/opt/instagram-platform/prod/backups"
+prod_secrets_path: "/etc/instagram-platform/prod/secrets"
+
+# Web roots
+web_root_prod: "/var/www/checkitout.app"
+web_root_test: "/var/www/check-it-out.pl"
+
+# Monitoring paths
+loki_base_path: "/opt/instagram-platform/loki"
+loki_data_path: "/opt/instagram-platform/loki/data"
+loki_config_path: "/opt/instagram-platform/loki"
+loki_secrets_path: "/opt/instagram-platform/loki/secrets"
+
+# Scripts paths
+scripts_admin_path: "/var/lib/instagram-scripts-admin"
+scripts_admin_scripts_path: "/var/lib/instagram-scripts-admin/scripts"
+scripts_system_path: "/usr/local/bin"
+
+# =============================================================================
+# Docker Configuration (from 04-DOCKER-INSTALLATION.md)
+# =============================================================================
+
+# Docker daemon configuration
+docker_log_driver: "journald"
+docker_storage_driver: "overlay2"
+docker_userland_proxy: false
+docker_live_restore: true
+
+# Docker networks
+docker_networks:
+  test:
+    name: "instagram-platform-test_network"
+    subnet: "172.20.0.0/16"
+    gateway: "172.20.0.1"
+    driver: "bridge"
+  prod:
+    name: "instagram-platform-prod_network"
+    subnet: "172.21.0.0/16"
+    gateway: "172.21.0.1"
+    driver: "bridge"
+  monitoring:
+    name: "loki-stack_monitoring"
+    subnet: "172.28.0.0/16"
+    gateway: "172.28.0.1"
+    driver: "bridge"
+
+# Docker volumes (test environment)
+docker_volumes_test:
+  - name: "instagram-platform-test_secrets-storage"
+    owner_uid: 1002
+    owner_gid: 1005
+  - name: "instagram-platform-test_backup-storage"
+  - name: "instagram-platform-test_postgres-data"
+  - name: "instagram-platform-test_redis-data"
+
+# Docker volumes (production environment - with self-hosted postgres)
+docker_volumes_prod:
+  - name: "instagram-platform-prod_secrets-storage"
+    owner_uid: 1006
+    owner_gid: 1006
+  - name: "instagram-platform-prod_backup-storage"
+  - name: "instagram-platform-prod_postgres-data"
+  - name: "instagram-platform-prod_redis-data"
+
+# Docker volumes (monitoring)
+docker_volumes_monitoring:
+  - name: "loki-stack_loki-data"
+    owner_uid: 10001  # Loki container runs as UID 10001
+    owner_gid: 10001
+  - name: "loki-stack_alloy-data"
+
+# =============================================================================
+# Application Configuration (from deployment-defaults.yml)
+# =============================================================================
+
+# Server configuration
+server_context_path: "/api"
+management_base_path: "/actuator"
+
+# Spring datasource defaults
+spring_datasource_host: "postgres"  # Container name (test) or external host (prod)
+spring_datasource_port: 5432
+spring_datasource_database_template: "instagram_platform_{environment}"
+
+# Google Secret Manager
+gsm_secrets_path: "/app/config"
+gsm_init_retry_count: 5
+gsm_init_retry_delay: 5
+gsm_init_max_wait_seconds: 300
+
+# Container registry
+container_registry_primary: "ghcr.io"
+container_image_platforms: "linux/amd64"
+
+# Java and Maven configuration
+java_version: 21
+java_distribution: "temurin"
+maven_memory_max: "12g"
+maven_threads: "C2"
+
+# Docker configuration
+docker_platform: "linux/amd64"
+docker_cache_inline: "max"
+
+# Health check configuration
+health_check_default_attempts: 30
+health_check_interval_seconds: 10
+health_check_gsm_init_attempts: 60
+health_check_database_attempts: 30
+health_check_application_attempts: 60
+
+# Timeout configuration
+timeout_build_minutes: 30
+timeout_security_scan_minutes: 10
+timeout_deploy_minutes: 15
+timeout_health_check_minutes: 5
+
+# Systemd configuration
+systemd_service_path: "/etc/systemd/system"
+systemd_lock_file_template: "/var/lock/instagram-platform-{environment}.lock"
+
+# Backup configuration
+backup_retention_count: 7
+
+# CI/CD configuration
+cicd_enabled: true
+cicd_log_enabled: true
+cicd_log_file: "instagram-platform-cicd.log"
+cicd_log_permissions: "0664"
+
+# =============================================================================
+# PostgreSQL Configuration
+# =============================================================================
+
+postgres_image: "postgres:16.9"
+postgres_test_port: 5432
+postgres_prod_port: 5433  # Host port mapping (internal is still 5432)
+
+# =============================================================================
+# Port Configuration
+# =============================================================================
+
+# Exposed ports (will be overridden per environment)
+port_ssh: 22
+port_http: 80
+port_https: 443
+
+# Internal ports (localhost only)
+port_test_app: 8082
+port_prod_app: 8083
+port_loki: 3100
+port_alloy: 12345
+port_test_postgres: 5432
+port_test_redis: 6379
+port_prod_redis: 6380
+
+# =============================================================================
+# SSL/TLS Configuration
+# =============================================================================
+
+ssl_cert_path: "/etc/letsencrypt/live"
+nginx_ssl_path: "/etc/nginx/ssl"
+loki_mtls_path: "/etc/nginx/ssl/loki"
+
+# =============================================================================
+# Firewall Configuration
+# =============================================================================
+
+# Allowed ports (from 01-BASE-SYSTEM-SETUP.md)
+firewall_allowed_tcp_ports:
+  - 22    # SSH
+  - 80    # HTTP
+  - 443   # HTTPS
+
+# SYN flood protection
+firewall_syn_flood_limit: "1/s"
+firewall_syn_flood_burst: 3
+
+# Log limit
+firewall_log_limit: "5/min"
+
+# =============================================================================
+# Kernel Parameters (from 01-BASE-SYSTEM-SETUP.md)
+# =============================================================================
+
+sysctl_parameters:
+  # IP Forwarding (disabled)
+  net.ipv4.ip_forward: 0
+  net.ipv6.conf.all.forwarding: 0
+
+  # Reverse path filtering
+  net.ipv4.conf.all.rp_filter: 1
+  net.ipv4.conf.default.rp_filter: 1
+
+  # No source routing
+  net.ipv4.conf.all.accept_source_route: 0
+  net.ipv4.conf.default.accept_source_route: 0
+  net.ipv6.conf.all.accept_source_route: 0
+  net.ipv6.conf.default.accept_source_route: 0
+
+  # Disable ICMP redirects
+  net.ipv4.conf.all.accept_redirects: 0
+  net.ipv4.conf.default.accept_redirects: 0
+  net.ipv6.conf.all.accept_redirects: 0
+  net.ipv6.conf.default.accept_redirects: 0
+  net.ipv4.conf.all.secure_redirects: 0
+  net.ipv4.conf.default.secure_redirects: 0
+
+  # ICMP protection
+  net.ipv4.icmp_echo_ignore_broadcasts: 1
+  net.ipv4.icmp_ignore_bogus_error_responses: 1
+
+  # SYN cookies
+  net.ipv4.tcp_syncookies: 1
+
+  # Log martian packets
+  net.ipv4.conf.all.log_martians: 1
+  net.ipv4.conf.default.log_martians: 1
+
+  # TCP/IP stack tuning
+  net.ipv4.tcp_fin_timeout: 30
+  net.ipv4.tcp_keepalive_time: 300
+  net.ipv4.tcp_keepalive_intvl: 15
+  net.ipv4.tcp_keepalive_probes: 5
+
+  # File descriptors
+  fs.file-max: 2097152
+
+  # Port range
+  net.ipv4.ip_local_port_range: "1024 65535"
+
+  # Connection backlog
+  net.core.somaxconn: 65535
+  net.core.netdev_max_backlog: 65535
+
+  # TCP buffers
+  net.core.rmem_max: 134217728
+  net.core.wmem_max: 134217728
+
+  # TCP Fast Open
+  net.ipv4.tcp_fastopen: 3
+
+  # VM tuning
+  vm.swappiness: 10
+  vm.dirty_ratio: 15
+  vm.dirty_background_ratio: 5
+
+  # Kernel hardening
+  kernel.dmesg_restrict: 1
+  kernel.kptr_restrict: 2
+  kernel.yama.ptrace_scope: 1
+  kernel.core_uses_pid: 1
+  fs.suid_dumpable: 0
+
+# =============================================================================
+# SSH Hardening (from 01-BASE-SYSTEM-SETUP.md)
+# =============================================================================
+
+sshd_config:
+  PermitRootLogin: "no"
+  PubkeyAuthentication: "yes"
+  PasswordAuthentication: "no"
+  ChallengeResponseAuthentication: "no"
+  PermitEmptyPasswords: "no"
+  X11Forwarding: "no"
+  AllowAgentForwarding: "no"
+  AllowTcpForwarding: "no"
+  GatewayPorts: "no"
+  MaxAuthTries: 3
+  MaxSessions: 5
+  ClientAliveInterval: 1200
+  ClientAliveCountMax: 3
+  LoginGraceTime: 60
+  LogLevel: "VERBOSE"
+
+# =============================================================================
+# Package Lists
+# =============================================================================
+
+# Essential packages to install (from 01-BASE-SYSTEM-SETUP.md)
+essential_packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - gnupg
+  - lsb-release
+  - software-properties-common
+  - build-essential
+  - gcc
+  - g++
+  - make
+  - git
+  - python3
+  - python3-pip
+  - htop
+  - vim
+  - jq
+  - wget
+  - rsync
+  - unzip
+  - certbot
+  - python3-certbot-nginx
+  - fail2ban
+  - apparmor
+  - apparmor-utils
+  - acl  # Required for setfacl - ACL management for CI/CD permissions
+
+# Docker packages
+docker_packages:
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
+  - docker-buildx-plugin
+  - docker-compose-plugin
+
+# PostgreSQL client (NOT server)
+postgresql_client_version: 16

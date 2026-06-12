@@ -1,0 +1,295 @@
+# =============================================================================
+# INTEGRATION TEST PROFILE - SERVICE INTEGRATION TESTS
+# =============================================================================
+# This profile is used for service-level integration tests.
+# Infrastructure (PostgreSQL, Redis) is provided by Testcontainers.
+# Testcontainers will override datasource and redis properties via @DynamicPropertySource.
+# SecurityContext is set programmatically (no real Firebase auth needed).
+
+spring:
+  # =============================================================================
+  # DATASOURCE - TESTCONTAINERS WILL OVERRIDE
+  # =============================================================================
+  datasource:
+    # Placeholder - overridden by TestContainersConfig @DynamicPropertySource
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/checkitout_integration
+    username: test
+    password: test
+
+    hikari:
+      pool-name: CheckItOut-Integration-Pool
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 30000
+
+  # =============================================================================
+  # LIQUIBASE - RUN TEST CONTEXT MIGRATIONS
+  # =============================================================================
+  liquibase:
+    enabled: true
+    contexts: test
+    # Use test database credentials
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    url: ${spring.datasource.url}
+
+  # =============================================================================
+  # REDIS - TESTCONTAINERS WILL OVERRIDE
+  # =============================================================================
+  data:
+    redis:
+      enabled: true
+      mode: standalone
+      # Placeholder - overridden by TestContainersConfig @DynamicPropertySource
+      host: localhost
+      port: 6379
+      password: ''
+      database: 0
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 4
+          min-idle: 1
+
+  cache:
+    type: redis
+    redis:
+      time-to-live: 5m
+      key-prefix: "checkitout:integration:"
+
+# =============================================================================
+# DISABLE RECAPTCHA FOR INTEGRATION TESTS
+# =============================================================================
+recaptcha:
+  enabled: false
+
+# =============================================================================
+# TOTP CONFIGURATION - ENABLED FOR TESTING REAL 2FA FLOW
+# =============================================================================
+totp:
+  enabled: true
+  issuer: CheckItOut-Integration
+
+# =============================================================================
+# SESSION CONFIGURATION - FIXED VALUES FOR INTEGRATION TESTS
+# =============================================================================
+session:
+  full-duration-seconds: 604800
+  partial-duration-seconds: 600
+
+# =============================================================================
+# STORAGE MODE - USE REDIS
+# =============================================================================
+storage:
+  mode: redis
+  monitoring:
+    enabled: true
+    alerts:
+      enabled: true
+
+# =============================================================================
+# GEOIP CONFIGURATION
+# =============================================================================
+geoip:
+  cache:
+    type: redis
+  gdpr:
+    enabled: true
+
+# =============================================================================
+# RATE LIMITING - HIGH LIMITS FOR INTEGRATION TESTS (NO INTERFERENCE)
+# =============================================================================
+rate-limit:
+  enabled: true
+  defaults:
+    requests: 10000
+    duration: 3600
+    auth-requests: 1000
+    auth-duration: 60
+  profiles:
+    standard:
+      requests: 10000
+      window-seconds: 3600
+      block-duration-seconds: 60
+    strict:
+      requests: 10000
+      window-seconds: 3600
+      block-duration-seconds: 60
+    relaxed:
+      requests: 10000
+      window-seconds: 3600
+      block-duration-seconds: 60
+    high:
+      requests: 10000
+      window-seconds: 3600
+      block-duration-seconds: 60
+    auth:
+      requests: 1000
+      window-seconds: 3600
+      block-duration-seconds: 60
+    admin-auth:
+      requests: 1000
+      window-seconds: 3600
+      block-duration-seconds: 60
+    company-auth:
+      requests: 1000
+      window-seconds: 3600
+      block-duration-seconds: 60
+    influencer-auth:
+      requests: 1000
+      window-seconds: 3600
+      block-duration-seconds: 60
+    unknown-auth:
+      requests: 1000
+      window-seconds: 3600
+      block-duration-seconds: 60
+
+# =============================================================================
+# ENVIRONMENT SETTINGS
+# =============================================================================
+app:
+  environment: INTEGRATION_TEST
+
+server:
+  port: 0  # Random port for tests
+  servlet:
+    context-path: /api
+
+# =============================================================================
+# LOCAL DATABASE INITIALIZATION - DISABLED FOR INTEGRATION
+# =============================================================================
+local:
+  db:
+    init:
+      enabled: false
+
+# =============================================================================
+# LOGGING - REDUCED FOR INTEGRATION TESTS
+# =============================================================================
+logging:
+  level:
+    root: WARN
+    com.sm.instagram.platform: INFO
+    com.sm.instagram.platform.integration: DEBUG
+    org.testcontainers: INFO
+    org.hibernate.SQL: WARN
+    liquibase: INFO
+
+# =============================================================================
+# CORS - ALLOW ALL FOR INTEGRATION TESTS
+# =============================================================================
+cors:
+  allowed-origins:
+    - "*"
+  allowed-methods: "*"
+  allowed-headers: "*"
+  allow-credentials: false
+
+# =============================================================================
+# ADMIN CONFIGURATION - FROM .ENV + STARTUP CHECKS DISABLED
+# =============================================================================
+admin:
+  check:
+    enabled: false
+  firebase:
+    uid: ${ADMIN_FIREBASE_UID:}
+  email: ${ADMIN_EMAIL:}
+
+# =============================================================================
+# FIREBASE CONFIGURATION - FROM .ENV (loaded by TestContainersConfig)
+# =============================================================================
+firebase:
+  service:
+    account:
+      json:
+        base64: ${FIREBASE_SERVICE_ACCOUNT_JSON:}
+  project:
+    id: check-it-out-47c50
+  validation:
+    enabled: true
+  admin:
+    setup:
+      enabled: false
+
+# =============================================================================
+# JWT AND COOKIE SECRETS - FROM .ENV
+# =============================================================================
+jwt:
+  secret: ${JWT_SECRET:}
+  cookie:
+    domain: localhost
+    secure: false
+
+cookie:
+  hmac:
+    secret: ${COOKIE_HMAC_SECRET:}
+
+# =============================================================================
+# INSTAGRAM/META CONFIGURATION - FROM .ENV
+# =============================================================================
+instagram:
+  client-id: ${INSTAGRAM_CLIENT_ID:}
+  client:
+    secret: ${INSTAGRAM_CLIENT_SECRET:}
+  test-token: ${INSTAGRAM_TEST_TOKEN:}
+
+meta:
+  app-id: ${META_APP_ID:}
+  app-secret: ${META_APP_SECRET:}
+
+# =============================================================================
+# GCP CONFIGURATION - FROM .ENV
+# =============================================================================
+gcp:
+  project-id: check-it-out-47c50
+  kms:
+    enabled: true
+    location: europe-central2
+    key-ring: instagram-tokens
+    key-name: token-encryption-key
+
+redis:
+  startup:
+    test:
+      enabled: false
+
+# =============================================================================
+# SPRINGDOC - ENABLED FOR OPENAPI SPEC GENERATION
+# =============================================================================
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: false
+
+# =============================================================================
+# ACTUATOR - CONFIGURE HEALTH ENDPOINT FOR INTEGRATION
+# =============================================================================
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
+      roles: []
+      probes:
+        enabled: true
+      group:
+        readiness:
+          include: db,diskSpace
+        liveness:
+          include: ping
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+    db:
+      enabled: true
+    ping:
+      enabled: true

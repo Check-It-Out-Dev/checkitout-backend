@@ -1,0 +1,54 @@
+# Firewall configuration tasks
+# Apply iptables rules for Instagram Platform
+
+---
+- name: Deploy firewall rules script
+  ansible.builtin.copy:
+    src: apply-firewall-rules.sh
+    dest: "{{ firewall_script_path }}"
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Apply firewall rules
+  ansible.builtin.command: "{{ firewall_script_path }}"
+  args:
+    creates: /var/run/firewall-rules-applied
+  register: firewall_result
+  changed_when: firewall_result.rc == 0
+
+- name: Display firewall rules
+  ansible.builtin.command: iptables -L -n -v
+  register: iptables_rules
+  changed_when: false
+
+- name: Show applied firewall rules
+  ansible.builtin.debug:
+    var: iptables_rules.stdout_lines
+
+- name: Install iptables-persistent
+  ansible.builtin.apt:
+    name: iptables-persistent
+    state: present
+  when: install_iptables_persistent | bool
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Save iptables rules
+  ansible.builtin.shell: |
+    iptables-save > /etc/iptables/rules.v4
+    ip6tables-save > /etc/iptables/rules.v6
+  when: install_iptables_persistent | bool
+
+- name: Enable netfilter-persistent service
+  ansible.builtin.systemd:
+    name: netfilter-persistent
+    enabled: yes
+    state: started
+  when: install_iptables_persistent | bool
+
+- name: Verify SSH port is allowed
+  ansible.builtin.command: iptables -L INPUT -n -v
+  register: ssh_rule_check
+  changed_when: false
+  failed_when: "'dpt:22' not in ssh_rule_check.stdout"

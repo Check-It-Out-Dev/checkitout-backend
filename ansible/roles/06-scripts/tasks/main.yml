@@ -1,0 +1,22 @@
+# Main tasks for 06-scripts role
+
+---
+- name: Deploy test environment scripts
+  include_tasks: test-scripts.yml
+  tags: [scripts, test-scripts]
+
+- name: Deploy production environment scripts
+  include_tasks: prod-scripts.yml
+  tags: [scripts, prod-scripts]
+
+- name: Deploy system maintenance scripts
+  include_tasks: system-scripts.yml
+  tags: [scripts, system-scripts]
+
+- name: Deploy admin CI/CD scripts
+  include_tasks: admin-scripts.yml
+  tags: [scripts, admin-scripts]
+
+- name: Verify scripts deployment
+  include_tasks: verify.yml
+  tags: [scripts, verify]

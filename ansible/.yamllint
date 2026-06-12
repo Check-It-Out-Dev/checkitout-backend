@@ -1,0 +1,67 @@
+# YAML Lint Configuration
+# Instagram Platform VPS Deployment
+
+---
+extends: default
+
+# Ignore specific paths
+ignore: |
+  .github/
+  .molecule/
+  molecule/
+  venv/
+  .cache/
+
+rules:
+  # Line length (longer than default due to Docker Compose)
+  line-length:
+    max: 200
+    level: warning
+
+  # Indentation (2 spaces)
+  indentation:
+    spaces: 2
+    indent-sequences: true
+    check-multi-line-strings: false
+
+  # Comments
+  comments:
+    min-spaces-from-content: 1
+    require-starting-space: true
+
+  # Braces
+  braces:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+
+  # Brackets
+  brackets:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+
+  # Document start (allow files without ---)
+  document-start:
+    present: true
+    level: warning
+
+  # Empty lines
+  empty-lines:
+    max: 2
+
+  # Truthy values (allow yes/no, true/false)
+  truthy:
+    allowed-values: ['true', 'false', 'yes', 'no', 'on', 'off']
+    check-keys: false
+
+  # Quoted strings
+  quoted-strings:
+    quote-type: any
+    required: only-when-needed
+
+  # Trailing spaces
+  trailing-spaces: enable
+
+  # New lines
+  new-line-at-end-of-file: enable
+  new-lines:
+    type: unix

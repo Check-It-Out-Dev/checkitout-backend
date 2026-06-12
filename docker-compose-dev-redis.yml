@@ -1,0 +1,113 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:17-alpine
+    container_name: instagram-postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for Rate Limiting and Caching
+  redis:
+    image: redis:7-alpine
+    container_name: instagram-redis
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Redis Commander - Web UI for Redis (Development Only)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: instagram-redis-commander
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    profiles:
+      - debug
+
+  # Redis Sentinel for High Availability (Optional)
+  redis-sentinel:
+    image: redis:7-alpine
+    container_name: instagram-redis-sentinel
+    command: redis-sentinel /etc/redis-sentinel/sentinel.conf
+    volumes:
+      - ./config/redis-sentinel.conf:/etc/redis-sentinel/sentinel.conf
+    depends_on:
+      - redis
+    profiles:
+      - ha
+
+  # Application (Spring Boot)
+  app:
+    build:
+      context: .
+      dockerfile: docker/instagram-platform/Dockerfile
+    container_name: instagram-app
+    environment:
+      # Spring profiles
+      SPRING_PROFILES_ACTIVE: dev,redis
+      
+      # Database configuration
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: admin
+      
+      # Redis configuration
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      
+      # Rate limiting configuration
+      RATE_LIMIT_STORAGE: redis
+      RATE_LIMIT_REDIS_CIRCUIT_BREAKER_ENABLED: "true"
+      RATE_LIMIT_REDIS_SLIDING_WINDOW_ENABLED: "true"
+      
+      # Logging
+      LOGGING_LEVEL_ROOT: INFO
+      LOGGING_LEVEL_COM_SM_INSTAGRAM_PLATFORM: DEBUG
+      REDIS_LOG_LEVEL: INFO
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  default:
+    name: instagram-network

@@ -1,0 +1,30 @@
+# Pull Docker images
+
+---
+- name: Pull test environment images
+  ansible.builtin.command: docker compose pull
+  args:
+    chdir: "{{ test_deployment_path }}"
+  become_user: "{{ user_test_deploy.name }}"
+  register: test_pull
+  changed_when: >
+    "Pulling from" in test_pull.stdout or
+    "Downloaded newer image" in test_pull.stdout
+  ignore_errors: yes
+
+- name: Pull production environment images
+  ansible.builtin.command: docker compose pull
+  args:
+    chdir: "{{ prod_deployment_path }}"
+  become_user: "{{ user_prod_deploy.name }}"
+  register: prod_pull
+  changed_when: >
+    "Pulling from" in prod_pull.stdout or
+    "Downloaded newer image" in prod_pull.stdout
+  ignore_errors: yes
+
+- name: Display image pull results
+  ansible.builtin.debug:
+    msg:
+      - "Test images pull: {{ 'Success' if test_pull.rc == 0 else 'Failed (will retry on startup)' }}"
+      - "Prod images pull: {{ 'Success' if prod_pull.rc == 0 else 'Failed (will retry on startup)' }}"

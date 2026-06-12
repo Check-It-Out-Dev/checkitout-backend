@@ -1,0 +1,102 @@
+# Privilege reduction tasks for 15-final-hardening role
+# Remove users from privileged groups (docker group = root equivalent)
+#
+# Security rationale:
+# - Docker group membership grants root-equivalent access
+# - Users should use sudo with specific commands (least privilege)
+# - instagram-prod-deploy already has sudoers for docker compose commands
+# - This is applied LAST to ensure deployment completes first
+
+---
+- name: Display privilege reduction warning
+  ansible.builtin.debug:
+    msg:
+      - "=========================================="
+      - "PRIVILEGE REDUCTION: Docker Group Cleanup"
+      - "=========================================="
+      - "Removing users from docker group for security hardening"
+      - "Users will need sudo for docker commands after this"
+      - "=========================================="
+
+- name: Get current docker group members
+  ansible.builtin.command:
+    cmd: getent group docker
+  register: docker_group_before
+  changed_when: false
+  failed_when: false
+
+- name: Display current docker group members
+  ansible.builtin.debug:
+    msg: "Current docker group: {{ docker_group_before.stdout | default('docker group not found') }}"
+
+- name: Remove ubuntu from docker group
+  ansible.builtin.command:
+    cmd: gpasswd -d ubuntu docker
+  register: remove_ubuntu_docker
+  failed_when:
+    - remove_ubuntu_docker.rc != 0
+    - "'is not a member' not in remove_ubuntu_docker.stderr"
+  changed_when: remove_ubuntu_docker.rc == 0
+  when: "'ubuntu' in (docker_group_before.stdout | default(''))"
+
+- name: Remove instagram-prod-deploy from docker group
+  ansible.builtin.command:
+    cmd: gpasswd -d instagram-prod-deploy docker
+  register: remove_prod_docker
+  failed_when:
+    - remove_prod_docker.rc != 0
+    - "'is not a member' not in remove_prod_docker.stderr"
+  changed_when: remove_prod_docker.rc == 0
+  when: "'instagram-prod-deploy' in (docker_group_before.stdout | default(''))"
+
+- name: Remove additional users from docker group
+  ansible.builtin.command:
+    cmd: "gpasswd -d {{ item }} docker"
+  loop: "{{ docker_group_remove_additional_users | default([]) }}"
+  register: remove_additional_docker
+  failed_when:
+    - remove_additional_docker.rc != 0
+    - "'is not a member' not in remove_additional_docker.stderr"
+  changed_when: remove_additional_docker.rc == 0
+  when: docker_group_remove_additional_users | default([]) | length > 0
+
+- name: Get docker group members after cleanup
+  ansible.builtin.command:
+    cmd: getent group docker
+  register: docker_group_after
+  changed_when: false
+  failed_when: false
+
+- name: Display docker group after cleanup
+  ansible.builtin.debug:
+    msg: "Docker group after cleanup: {{ docker_group_after.stdout | default('docker group not found') }}"
+
+- name: Verify ubuntu removed from docker group
+  ansible.builtin.assert:
+    that:
+      - "'ubuntu' not in (docker_group_after.stdout | default(''))"
+    fail_msg: "FAILED: ubuntu is still in docker group"
+    success_msg: "SUCCESS: ubuntu removed from docker group"
+  when: docker_group_verify_removal | default(true)
+
+- name: Verify instagram-prod-deploy removed from docker group
+  ansible.builtin.assert:
+    that:
+      - "'instagram-prod-deploy' not in (docker_group_after.stdout | default(''))"
+    fail_msg: "FAILED: instagram-prod-deploy is still in docker group"
+    success_msg: "SUCCESS: instagram-prod-deploy removed from docker group"
+  when: docker_group_verify_removal | default(true)
+
+- name: Display privilege reduction summary
+  ansible.builtin.debug:
+    msg:
+      - "=========================================="
+      - "Privilege Reduction Complete"
+      - "=========================================="
+      - "Before: {{ docker_group_before.stdout | default('N/A') }}"
+      - "After: {{ docker_group_after.stdout | default('N/A') }}"
+      - ""
+      - "Users must now use sudo for docker commands:"
+      - "  - ubuntu: sudo docker ..."
+      - "  - instagram-prod-deploy: Has sudoers rules for specific docker compose commands"
+      - "=========================================="

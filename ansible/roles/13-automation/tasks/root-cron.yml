@@ -1,0 +1,39 @@
+# Root cron jobs configuration
+
+---
+- name: Add Cloudflare IP update cron job
+  ansible.builtin.cron:
+    name: "Cloudflare IP whitelist update"
+    minute: "0"
+    hour: "*/6"
+    user: root
+    job: "/usr/local/bin/cloudflare-ip-update.sh >> /var/log/cloudflare-update.log 2>&1"
+    state: present
+
+- name: Add Docker cleanup cron job
+  ansible.builtin.cron:
+    name: "Docker cleanup"
+    minute: "0"
+    hour: "2"
+    weekday: "0"
+    user: root
+    job: "/usr/local/bin/docker-cleanup.sh >> /var/log/docker-cleanup.log 2>&1"
+    state: present
+
+- name: Add GitHub IP update cron job
+  ansible.builtin.cron:
+    name: "GitHub Actions IP update"
+    minute: "0"
+    hour: "*/6"
+    user: root
+    job: "/usr/local/bin/github-ip-update.sh >> /var/log/github-ip-update.log 2>&1"
+    state: present
+
+- name: List root crontab
+  ansible.builtin.command: crontab -l
+  register: root_crontab
+  changed_when: false
+
+- name: Display root cron jobs
+  ansible.builtin.debug:
+    var: root_crontab.stdout_lines

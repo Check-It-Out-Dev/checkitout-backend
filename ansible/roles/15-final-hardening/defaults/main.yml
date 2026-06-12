@@ -1,0 +1,25 @@
+# Default variables for 15-final-hardening role
+
+---
+# Control which hardening steps to apply
+apply_privilege_reduction: true  # ENABLED - remove users from docker group (security)
+apply_network_hardening: false  # DISABLED - use DHCP like old VPS (OVH manages IP)
+apply_firewall_hardening: true  # ENABLED - apply iptables rules for ports 22, 80, 443
+apply_ssh_hardening: false  # DISABLED - use separate playbook after deployment
+
+# Privilege reduction settings
+# Additional users to remove from docker group (besides ubuntu and instagram-prod-deploy)
+docker_group_remove_additional_users: []
+# Verify that users were actually removed from docker group
+docker_group_verify_removal: true
+
+# Inherited from 01-base-system
+configure_network: true
+configure_firewall: true
+configure_ssh: true
+
+# Network configuration (from 01-base-system)
+netplan_config_file: "/etc/netplan/01-netcfg.yaml"
+netplan_apply_timeout: 120
+firewall_script_path: "/usr/local/sbin/apply-firewall-rules.sh"
+install_iptables_persistent: true

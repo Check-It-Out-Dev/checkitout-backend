@@ -1,0 +1,43 @@
+# Main tasks for 03-directories role
+
+---
+- name: Create test environment directories
+  include_tasks: test-environment.yml
+  tags: [directories, app-dirs, test-dirs]
+
+- name: Create production environment directories
+  include_tasks: prod-environment.yml
+  tags: [directories, app-dirs, prod-dirs]
+
+- name: Create secrets directories
+  include_tasks: secrets.yml
+  tags: [directories, secrets-dirs]
+
+- name: Create web root directories
+  include_tasks: web-roots.yml
+  tags: [directories, web-dirs]
+
+- name: Create log directories
+  include_tasks: logs.yml
+  tags: [directories, log-dirs]
+
+- name: Create monitoring directories
+  include_tasks: monitoring.yml
+  when: create_monitoring | bool
+  tags: [directories, monitoring-dirs]
+
+- name: Create scripts directories
+  include_tasks: scripts.yml
+  tags: [directories, scripts-dirs]
+
+- name: Create nginx directories
+  include_tasks: nginx.yml
+  tags: [directories, nginx-dirs]
+
+- name: Setup ACLs for CI/CD admin access
+  include_tasks: acl-setup.yml
+  tags: [directories, acl-setup]
+
+- name: Verify directory structure
+  include_tasks: verify.yml
+  tags: [directories, verify]

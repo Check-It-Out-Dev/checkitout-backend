@@ -1,0 +1,218 @@
+name: Config Validator
+# Refactored version - accepts single JSON config instead of 50+ parameters
+on:
+  workflow_call:
+    inputs:
+      config-json:
+        required: true
+        type: string
+        description: 'JSON configuration object from config loader'
+      strict-mode:
+        required: false
+        type: boolean
+        default: false
+        description: 'Exit with error if validation fails'
+    outputs:
+      validation-passed:
+        value: ${{ jobs.validate.outputs.passed }}
+      missing-properties:
+        value: ${{ jobs.validate.outputs.missing }}
+
+jobs:
+  validate:
+    runs-on: [self-hosted, Linux, x64]
+    outputs:
+      passed: ${{ steps.final.outputs.passed }}
+      missing: ${{ steps.check.outputs.missing }}
+    steps:
+      - name: Validate JSON configuration
+        id: check
+        run: |
+          CONFIG='${{ inputs.config-json }}'
+          ERRORS=0
+          MISSING=""
+          
+          echo "🔍 Validating configuration JSON..."
+          
+          # Validate JSON format
+          if ! echo "$CONFIG" | jq . > /dev/null 2>&1; then
+            echo "❌ Invalid JSON format"
+            echo "passed=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+          
+          # Check required fields exist in _flat structure
+          REQUIRED_FIELDS=(
+            "_flat.environment"
+            "_flat.registry_primary"
+            "_flat.image_name"
+            "_flat.deployment_path" 
+            "_flat.container_user_name"
+            "_flat.container_user_id"
+            "_flat.container_group_name"
+            "_flat.container_group_id"
+            "_flat.database_name"
+            "_flat.server_port"
+            "_flat.admin_user"
+            "_flat.systemd_service_name"
+            "_flat.gcp_project_id"
+            "deployment.container.user.id"
+            "deployment.container.group.id"
+            "deployment.environment"
+            "deployment.image.name"
+            "server.port"
+          )
+          
+          echo "📋 Checking required fields..."
+          for field in "${REQUIRED_FIELDS[@]}"; do
+            VALUE=$(echo "$CONFIG" | jq -r ".$field // empty" 2>/dev/null)
+            if [ -z "$VALUE" ] || [ "$VALUE" = "null" ]; then
+              echo "❌ Missing required field: $field"
+              MISSING="$MISSING,$field"
+              ((ERRORS++))
+            else
+              echo "✅ Found: $field = $VALUE"
+            fi
+          done
+          
+          echo "missing=${MISSING:1}" >> $GITHUB_OUTPUT
+          echo "errors=$ERRORS" >> $GITHUB_OUTPUT
+
+      - name: Validate field formats
+        id: format
+        run: |
+          CONFIG='${{ inputs.config-json }}'
+          ERRORS=0
+          
+          echo "🔍 Validating field formats..."
+          
+          # Extract values for validation
+          CONTAINER_USER_NAME=$(echo "$CONFIG" | jq -r '._flat.container_user_name // empty')
+          CONTAINER_GROUP_NAME=$(echo "$CONFIG" | jq -r '._flat.container_group_name // empty')
+          CONTAINER_USER_ID=$(echo "$CONFIG" | jq -r '._flat.container_user_id // empty')
+          CONTAINER_GROUP_ID=$(echo "$CONFIG" | jq -r '._flat.container_group_id // empty')
+          SERVER_PORT=$(echo "$CONFIG" | jq -r '._flat.server_port // empty')
+          ENVIRONMENT=$(echo "$CONFIG" | jq -r '._flat.environment // empty')
+          
+          # Container name validation (must start with letter, contain only alphanumeric, dash, underscore)
+          if [[ ! "$CONTAINER_USER_NAME" =~ ^[a-zA-Z][a-zA-Z0-9_-]*$ ]]; then
+            echo "❌ Invalid CONTAINER_USER_NAME format: $CONTAINER_USER_NAME"
+            ((ERRORS++))
+          fi
+          
+          if [[ ! "$CONTAINER_GROUP_NAME" =~ ^[a-zA-Z][a-zA-Z0-9_-]*$ ]]; then
+            echo "❌ Invalid CONTAINER_GROUP_NAME format: $CONTAINER_GROUP_NAME"
+            ((ERRORS++))
+          fi
+          
+          # ID validation (must be numeric)
+          if [[ ! "$CONTAINER_USER_ID" =~ ^[0-9]+$ ]]; then
+            echo "❌ Invalid CONTAINER_USER_ID format (must be numeric): $CONTAINER_USER_ID"
+            ((ERRORS++))
+          fi
+          
+          if [[ ! "$CONTAINER_GROUP_ID" =~ ^[0-9]+$ ]]; then
+            echo "❌ Invalid CONTAINER_GROUP_ID format (must be numeric): $CONTAINER_GROUP_ID"
+            ((ERRORS++))
+          fi
+          
+          # Port validation (must be between 1-65535)
+          if [[ ! "$SERVER_PORT" =~ ^[0-9]+$ ]] || [ "$SERVER_PORT" -lt 1 ] || [ "$SERVER_PORT" -gt 65535 ]; then
+            echo "❌ Invalid SERVER_PORT (must be 1-65535): $SERVER_PORT"
+            ((ERRORS++))
+          fi
+          
+          # Environment validation (must be alphanumeric with dash/underscore)
+          if [[ ! "$ENVIRONMENT" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+            echo "❌ Invalid ENVIRONMENT format: $ENVIRONMENT"
+            ((ERRORS++))
+          fi
+          
+          echo "errors=$ERRORS" >> $GITHUB_OUTPUT
+
+      - name: Validate template resolution
+        id: templates
+        run: |
+          CONFIG='${{ inputs.config-json }}'
+          ERRORS=0
+          
+          echo "🔍 Checking template resolution..."
+          
+          # Check no unresolved templates remain
+          if echo "$CONFIG" | grep -E '\{environment\}|\$\{environment\}|\$\{deployment\.environment\}' > /dev/null; then
+            echo "❌ Unresolved templates found in configuration"
+            echo "$CONFIG" | grep -E '\{environment\}|\$\{environment\}|\$\{deployment\.environment\}' || true
+            ((ERRORS++))
+          fi
+          
+          # Verify derived values match expected patterns
+          ENV=$(echo "$CONFIG" | jq -r '._flat.environment')
+          SYSTEMD_SERVICE=$(echo "$CONFIG" | jq -r '._flat.systemd_service_name')
+          DATABASE_NAME=$(echo "$CONFIG" | jq -r '._flat.database_name')
+          
+          # Check systemd service name pattern
+          if [[ "$SYSTEMD_SERVICE" != "instagram-platform-${ENV}" ]]; then
+            echo "⚠️ Systemd service name doesn't match expected pattern: $SYSTEMD_SERVICE (expected: instagram-platform-${ENV})"
+          fi
+          
+          # Check database name pattern
+          if [[ "$DATABASE_NAME" != "instagram_platform_${ENV}" ]]; then
+            echo "⚠️ Database name doesn't match expected pattern: $DATABASE_NAME (expected: instagram_platform_${ENV})"
+          fi
+          
+          echo "errors=$ERRORS" >> $GITHUB_OUTPUT
+
+      - name: Final validation result
+        id: final
+        run: |
+          TOTAL_ERRORS=$((${{ steps.check.outputs.errors }} + ${{ steps.format.outputs.errors }} + ${{ steps.templates.outputs.errors }}))
+          
+          if [[ $TOTAL_ERRORS -eq 0 ]]; then
+            echo "✅ All validations passed!"
+            echo "passed=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Validation failed with $TOTAL_ERRORS errors"
+            echo "passed=false" >> $GITHUB_OUTPUT
+            if [[ "${{ inputs.strict-mode }}" == "true" ]]; then
+              exit 1
+            fi
+          fi
+          
+      - name: Generate validation summary
+        if: always()
+        run: |
+          CONFIG='${{ inputs.config-json }}'
+          
+          echo "# 🔍 Configuration Validation Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [[ "${{ steps.final.outputs.passed }}" == "true" ]]; then
+            echo "## ✅ Validation Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## ❌ Validation Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Validation Results" >> $GITHUB_STEP_SUMMARY
+          echo "- Required field errors: ${{ steps.check.outputs.errors }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Format validation errors: ${{ steps.format.outputs.errors }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Template resolution errors: ${{ steps.templates.outputs.errors }}" >> $GITHUB_STEP_SUMMARY
+          
+          if [[ -n "${{ steps.check.outputs.missing }}" ]]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### ❌ Missing Fields" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            echo "${{ steps.check.outputs.missing }}" | tr ',' '\n' >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📋 Configuration Summary" >> $GITHUB_STEP_SUMMARY
+          echo "$CONFIG" | jq -r '._flat | {
+            environment: .environment,
+            image: .image_name,
+            container_user: .container_user_name,
+            container_group: .container_group_name,
+            database: .database_name,
+            service: .systemd_service_name
+          }' | jq -r 'to_entries | .[] | "- **\(.key)**: \(.value)"' >> $GITHUB_STEP_SUMMARY

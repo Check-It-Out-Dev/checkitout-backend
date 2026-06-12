@@ -1,0 +1,28 @@
+# Handlers for 01-base-system role
+# Instagram Platform VPS
+
+---
+- name: Apply netplan configuration
+  ansible.builtin.command: netplan apply
+  listen: "Apply netplan configuration"
+
+- name: Reload sysctl
+  ansible.builtin.command: sysctl -p
+  listen: "Reload sysctl"
+
+- name: Reload sshd
+  ansible.builtin.systemd:
+    name: ssh
+    state: reloaded
+  listen: "Reload sshd"
+
+- name: Restart docker
+  ansible.builtin.systemd:
+    name: docker
+    state: restarted
+  listen: "Restart docker"
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: yes
+  listen: "Reload systemd"

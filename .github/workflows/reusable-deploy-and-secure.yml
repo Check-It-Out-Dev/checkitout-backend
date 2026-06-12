@@ -1,0 +1,708 @@
+name: 🚀 Deploy Application and Secure
+# Secure version with immutability protection
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        type: string
+        required: false
+      config-json:
+        description: 'Configuration JSON from config loader'
+        type: string
+        required: true
+      image-tag:
+        description: 'Main application Docker image tag'
+        type: string
+        required: true
+      gsm-init-image-tag:
+        description: 'GSM init container Docker image tag'
+        type: string
+        required: true
+    secrets:
+      INSTAGRAM_SCRIPTS_ADMIN_USER:
+        required: true
+      INSTAGRAM_SCRIPTS_ADMIN_SSH_KEY:
+        required: true
+      INSTAGRAM_SERVER_HOST:
+        required: true
+
+jobs:
+  deploy:
+    name: Deploy Application (Secure)
+    runs-on: [self-hosted, Linux, x64]
+    timeout-minutes: 30
+
+    steps:
+      - name: 📋 Parse Configuration
+        id: config
+        run: |
+          CONFIG='${{ inputs.config-json }}'
+          
+          # Extract essential values
+          ENVIRONMENT=$(echo "$CONFIG" | jq -r '._flat.environment // .deployment.environment')
+          ADMIN_HOME=$(echo "$CONFIG" | jq -r '._flat.admin_home_directory')
+          SCRIPT_TIMEOUT=$(echo "$CONFIG" | jq -r '._flat.script_execution_timeout_seconds // 600')
+          
+          # Set as outputs and environment
+          echo "environment=$ENVIRONMENT" >> $GITHUB_OUTPUT
+          echo "admin_home=$ADMIN_HOME" >> $GITHUB_OUTPUT
+          echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
+          echo "ADMIN_HOME=$ADMIN_HOME" >> $GITHUB_ENV
+          echo "SCRIPT_TIMEOUT=$SCRIPT_TIMEOUT" >> $GITHUB_ENV
+          echo "ADMIN_USER=${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}" >> $GITHUB_ENV
+          
+          # Display configuration
+          echo "📊 Deployment Configuration:"
+          echo "  Environment: $ENVIRONMENT"
+          echo "  Admin Home: $ADMIN_HOME"
+          echo "  Script Timeout: ${SCRIPT_TIMEOUT}s"
+          echo "  Image Tag: ${{ inputs.image-tag }}"
+          echo "  GSM Init Tag: ${{ inputs.gsm-init-image-tag }}"
+
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github/scripts/remote/
+            .github/scripts/runner/
+            deployment/${{ env.ENVIRONMENT }}/
+
+      - name: 🔐 Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          
+          # Configure SSH
+          cat >> ~/.ssh/config << EOF
+          Host deploy-server
+              HostName ${{ secrets.INSTAGRAM_SERVER_HOST }}
+              User ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}
+              IdentityFile ~/.ssh/id_rsa
+              StrictHostKeyChecking no
+              ServerAliveInterval 30
+              ServerAliveCountMax 3
+              ConnectTimeout 30
+              LogLevel ERROR
+          EOF
+          
+          ssh-keyscan -H ${{ secrets.INSTAGRAM_SERVER_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+          echo "✅ SSH configured"
+
+      - name: ☢️ Nuclear Cleanup - START
+        run: |
+          echo "☢️ NUCLEAR CLEANUP AT START"
+          
+          # FIRST: Remove all immutability with sudo
+          echo "🔓 Removing all immutability flags..."
+          ssh deploy-server << 'REMOVE_IMMUTABLE'
+            echo "Removing immutability from ${{ env.ADMIN_HOME }}..."
+            sudo /usr/bin/chattr -R -i ${{ env.ADMIN_HOME }} 2>/dev/null || true
+            echo "✅ Immutability removed"
+          REMOVE_IMMUTABLE
+          
+          # THEN: Upload and execute cleanup script
+          scp -i ~/.ssh/id_rsa \
+              .github/scripts/remote/nuclear-cleanup.sh \
+              deploy-server:${{ env.ADMIN_HOME }}/nuclear-cleanup-temp.sh
+          
+          ssh deploy-server << 'NUCLEAR_START'
+            cd ${{ env.ADMIN_HOME }}
+            chmod +x nuclear-cleanup-temp.sh
+            ./nuclear-cleanup-temp.sh
+            rm -f nuclear-cleanup-temp.sh
+            echo "✅ START cleanup complete"
+          NUCLEAR_START
+
+      - name: 📋 Generate deployment configuration
+        run: |
+          echo "🔧 Generating deployment configuration..."
+          
+          # Save config JSON
+          echo '${{ inputs.config-json }}' > /tmp/config.json
+          
+          # Validate JSON
+          if ! jq -e . >/dev/null 2>&1 </tmp/config.json; then
+            echo "❌ Invalid JSON configuration!"
+            exit 1
+          fi
+          
+          # Set up environment
+          export ENVIRONMENT="$ENVIRONMENT"
+          export IMAGE_TAG="${{ inputs.image-tag }}"
+          export GSM_INIT_IMAGE_FULL="${{ inputs.gsm-init-image-tag }}"
+          export OUTPUT_FILE="deployment/$ENVIRONMENT/.env"
+          
+          # Debug: Verify GSM_INIT_IMAGE_FULL is set correctly
+          echo "🔍 DEBUG: GSM_INIT_IMAGE_FULL = $GSM_INIT_IMAGE_FULL"
+          if [[ "$GSM_INIT_IMAGE_FULL" == *":latest"* ]]; then
+            echo "❌ ERROR: GSM_INIT_IMAGE_FULL contains ':latest' tag!"
+            exit 1
+          fi
+          
+          # Save the explicitly passed GSM init image tag
+          EXPLICIT_GSM_INIT_IMAGE="$GSM_INIT_IMAGE_FULL"
+          
+          # Export configuration values
+          jq -r '._flat | to_entries | .[] | "\(.key | ascii_upcase)=\(.value)"' /tmp/config.json > /tmp/env_exports
+          set -a
+          source /tmp/env_exports
+          set +a
+          
+          # CRITICAL: Restore the explicitly passed GSM init image tag
+          # This ensures it's not overwritten by config values
+          export GSM_INIT_IMAGE_FULL="$EXPLICIT_GSM_INIT_IMAGE"
+          
+          # Verify it's still correct
+          echo "🔍 Verifying GSM_INIT_IMAGE_FULL after config load..."
+          echo "   GSM_INIT_IMAGE_FULL = $GSM_INIT_IMAGE_FULL"
+          if [[ "$GSM_INIT_IMAGE_FULL" == *":latest"* ]]; then
+            echo "❌ ERROR: GSM_INIT_IMAGE_FULL was overwritten with ':latest' tag!"
+            exit 1
+          fi
+          
+          # Export nested values
+          jq -r '
+            .deployment as $d |
+            .server as $s |
+            .spring as $sp |
+            {
+              "DEPLOYMENT_ENVIRONMENT": $d.environment,
+              "SPRING_DATASOURCE_HOST": $sp.datasource.host,
+              "SPRING_DATASOURCE_PORT": $sp.datasource.port,
+              "DEPLOYMENT_CONTAINER_USER_NAME": $d.derived.container_user,
+              "DEPLOYMENT_CONTAINER_GROUP_NAME": $d.derived.container_group
+            } | to_entries | .[] | "\(.key)=\(.value)"
+          ' /tmp/config.json > /tmp/nested_exports
+          
+          set -a
+          source /tmp/nested_exports
+          set +a
+          
+          # Verify critical variables
+          echo "📋 Verifying critical variables..."
+          CRITICAL_VARS=(
+            "REGISTRY_PRIMARY"
+            "IMAGE_NAME"
+            "DEPLOYMENT_PATH"
+            "DATABASE_NAME"
+            "SERVER_PORT"
+            "CONTAINER_USER_NAME"
+            "CONTAINER_GROUP_NAME"
+            "APP_CONTAINER_NAME"
+            "DB_CONTAINER_NAME"
+          )
+          
+          for var in "${CRITICAL_VARS[@]}"; do
+            if [ -z "${!var:-}" ]; then
+              echo "❌ $var is NOT SET"
+              exit 1
+            else
+              printf "✅ %-30s = %s\n" "$var" "${!var:0:50}"
+            fi
+          done
+          
+          # Generate .env file
+          echo "🚀 Running generate-deployment-env.sh..."
+          bash .github/scripts/runner/generate-deployment-env.sh
+          
+          # Verify generated .env
+          if [ -f "deployment/$ENVIRONMENT/.env" ]; then
+            echo "✅ Generated .env file ($(wc -l < deployment/$ENVIRONMENT/.env) lines)"
+            
+            # CRITICAL: Verify GSM_INIT_IMAGE in the generated .env
+            echo "🔍 Verifying GSM_INIT_IMAGE in generated .env file..."
+            GSM_IMAGE_LINE=$(grep '^GSM_INIT_IMAGE=' deployment/$ENVIRONMENT/.env || true)
+            echo "   Found: $GSM_IMAGE_LINE"
+            
+            if [[ -z "$GSM_IMAGE_LINE" ]]; then
+              echo "❌ ERROR: GSM_INIT_IMAGE not found in .env file!"
+              exit 1
+            fi
+            
+            if [[ "$GSM_IMAGE_LINE" == *":latest"* ]]; then
+              echo "❌ ERROR: .env contains GSM_INIT_IMAGE with ':latest' tag!"
+              echo "Full .env content (first 20 lines):"
+              head -20 deployment/$ENVIRONMENT/.env
+              exit 1
+            fi
+            
+            echo "✅ GSM_INIT_IMAGE correctly set in .env file"
+          else
+            echo "❌ ERROR: .env file was not generated!"
+            exit 1
+          fi
+
+      - name: 🔒 Generate script checksums
+        run: |
+          DEPLOY_CHECKSUM=$(sha256sum .github/scripts/remote/deploy-and-secure.sh | cut -d' ' -f1)
+          VALIDATE_CHECKSUM=$(sha256sum .github/scripts/remote/validate-and-exec-ci-script.sh | cut -d' ' -f1)
+          
+          echo "DEPLOY_CHECKSUM=$DEPLOY_CHECKSUM" >> $GITHUB_ENV
+          echo "VALIDATE_CHECKSUM=$VALIDATE_CHECKSUM" >> $GITHUB_ENV
+
+      - name: 📤 Secure upload of deployment package
+        run: |
+          echo "📤 Preparing deployment package with immutability..."
+          
+          DEPLOY_SCRIPT="deploy-and-secure-${{ github.run_id }}.sh"
+          VALIDATOR="validate-and-exec-ci-script-${{ github.run_id }}.sh"
+          
+          # Create deployment package directory
+          ssh deploy-server "mkdir -p ${{ env.ADMIN_HOME }}/deployment-package"
+          
+          # FIXED: Package ALL deployment files, not just .env
+          echo "📦 Creating complete deployment package..."
+          cd deployment/$ENVIRONMENT
+          
+          # List all files to be packaged
+          echo "Files to be packaged:"
+          ls -la
+          
+          # Create tarball with ALL files
+          tar czf /tmp/deployment-package.tar.gz .
+          
+          # Show package contents for verification
+          echo "Package contents:"
+          tar tzf /tmp/deployment-package.tar.gz
+          
+          # Upload the complete package
+          scp -i ~/.ssh/id_rsa \
+              /tmp/deployment-package.tar.gz \
+              deploy-server:${{ env.ADMIN_HOME }}/deployment-package.tar.gz
+          
+          # Extract and immediately protect on server
+          ssh deploy-server << 'EOF'
+            cd ${{ env.ADMIN_HOME }}
+          
+            # Clean deployment-package directory first
+            rm -rf deployment-package/*
+          
+            # Extract package
+            cd deployment-package
+            tar xzf ../deployment-package.tar.gz
+            rm -f ../deployment-package.tar.gz
+          
+            # List extracted files for verification
+            echo "Extracted files:"
+            ls -la
+          
+            # Immediately make all files immutable
+            echo "🔒 Making deployment package immutable..."
+            find . -type f -exec sudo chattr +i {} \;
+          
+            # Verify protection
+            PROTECTED=$(find . -type f -exec lsattr {} \; | grep -c '^....i' || true)
+            TOTAL=$(find . -type f | wc -l)
+            echo "✅ Protected $PROTECTED of $TOTAL files in deployment package"
+          EOF
+          
+          cd ../..
+          rm -f /tmp/deployment-package.tar.gz
+          
+          # CRITICAL FIX: Upload .env to BOTH locations
+          echo "🔒 Uploading .env to admin home directory..."
+          
+          # First, verify .env exists locally
+          if [ ! -f "deployment/$ENVIRONMENT/.env" ]; then
+            echo "❌ ERROR: .env not found at deployment/$ENVIRONMENT/.env"
+            exit 1
+          fi
+          
+          # Upload .env to admin home WITH protection
+          scp -i ~/.ssh/id_rsa \
+              deployment/$ENVIRONMENT/.env \
+              deploy-server:${{ env.ADMIN_HOME }}/.env
+          
+          # Make it immutable immediately
+          ssh deploy-server << 'PROTECT_ENV'
+            cd ${{ env.ADMIN_HOME }}
+          
+            # Verify .env was uploaded
+            if [ ! -f ".env" ]; then
+              echo "❌ ERROR: .env not found after upload!"
+              exit 1
+            fi
+          
+            # Make immutable
+            sudo chattr +i .env
+          
+            # Verify it's protected
+            if lsattr .env 2>/dev/null | grep -q '^....i'; then
+              echo "✅ .env protected in admin home"
+            else
+              echo "❌ ERROR: Failed to make .env immutable!"
+              exit 1
+            fi
+          
+            # Also verify it exists in deployment-package
+            if [ -f "deployment-package/.env" ]; then
+              echo "✅ .env also exists in deployment-package"
+            else
+              echo "⚠️ WARNING: .env not found in deployment-package"
+            fi
+          PROTECT_ENV
+          
+          # Upload secure-logger.sh WITH protection
+          echo "🔒 Uploading secure-logger.sh with protection..."
+          
+          if [ ! -f ".github/scripts/remote/secure-logger.sh" ]; then
+            echo "❌ ERROR: secure-logger.sh not found locally at .github/scripts/remote/secure-logger.sh"
+            echo "Contents of .github/scripts/remote/:"
+            ls -la .github/scripts/remote/ || echo "Directory not found"
+            exit 1
+          fi
+          
+          echo "✅ Found secure-logger.sh locally, size: $(stat -c%s .github/scripts/remote/secure-logger.sh) bytes"
+          
+          if ! LOGGER_TIMESTAMP=$(bash .github/scripts/runner/secure-script-upload.sh \
+              .github/scripts/remote/secure-logger.sh \
+              "${{ env.ADMIN_HOME }}/secure-logger.sh" \
+              ~/.ssh/id_rsa \
+              "${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}" \
+              "${{ secrets.INSTAGRAM_SERVER_HOST }}"); then
+            echo "❌ ERROR: Failed to upload secure-logger.sh!"
+            exit 1
+          fi
+          
+          echo "✅ secure-logger.sh uploaded and protected (timestamp: $LOGGER_TIMESTAMP)"
+          
+          # CRITICAL: Verify secure-logger.sh was actually uploaded and is accessible
+          echo "🔍 CRITICAL: Verifying secure-logger.sh upload..."
+          ssh deploy-server << 'VERIFY_LOGGER'
+            cd ${{ env.ADMIN_HOME }}
+          
+            echo "=== Checking for secure-logger.sh ==="
+            if [ ! -f "secure-logger.sh" ]; then
+              echo "❌ CRITICAL ERROR: secure-logger.sh not found after upload!"
+              echo "Contents of admin home:"
+              ls -la
+              exit 1
+            fi
+          
+            if [ ! -f "secure-logger.sh.metadata" ]; then
+              echo "❌ CRITICAL ERROR: secure-logger.sh.metadata not found!"
+              echo "Contents of admin home:"
+              ls -la
+              exit 1
+            fi
+          
+            # Check if it's executable and immutable
+            echo "✅ secure-logger.sh exists"
+            ls -la secure-logger.sh*
+          
+            # Check immutability
+            if lsattr secure-logger.sh 2>/dev/null | grep -q '^....i'; then
+              echo "✅ secure-logger.sh is immutable"
+            else
+              echo "❌ WARNING: secure-logger.sh is NOT immutable!"
+            fi
+          
+            # Try to source it to ensure it's valid
+            if source secure-logger.sh; then
+              echo "✅ secure-logger.sh can be sourced successfully"
+            else
+              echo "❌ ERROR: secure-logger.sh cannot be sourced!"
+              exit 1
+            fi
+          VERIFY_LOGGER
+          
+          # Upload deployment script WITH protection
+          echo "🔒 Uploading deployment script with protection..."
+          DEPLOY_TIMESTAMP=$(bash .github/scripts/runner/secure-script-upload.sh \
+              .github/scripts/remote/deploy-and-secure.sh \
+              "${{ env.ADMIN_HOME }}/$DEPLOY_SCRIPT" \
+              ~/.ssh/id_rsa \
+              "${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}" \
+              "${{ secrets.INSTAGRAM_SERVER_HOST }}")
+          
+          echo "✅ Deploy script uploaded and protected (timestamp: $DEPLOY_TIMESTAMP)"
+          
+          # Upload validator WITH protection
+          echo "🔒 Uploading validator with protection..."
+          VALIDATE_TIMESTAMP=$(bash .github/scripts/runner/secure-script-upload.sh \
+              .github/scripts/remote/validate-and-exec-ci-script.sh \
+              "${{ env.ADMIN_HOME }}/$VALIDATOR" \
+              ~/.ssh/id_rsa \
+              "${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}" \
+              "${{ secrets.INSTAGRAM_SERVER_HOST }}")
+          
+          echo "✅ Validator uploaded and protected (timestamp: $VALIDATE_TIMESTAMP)"
+          
+          # DEBUG: Check what files are actually present
+          echo "🔍 DEBUG: Checking all files in admin home..."
+          ssh deploy-server << 'DEBUG_CHECK'
+            cd ${{ env.ADMIN_HOME }}
+            echo "=== All files in admin home ==="
+            ls -la
+            echo ""
+            echo "=== Checking for secure-logger.sh specifically ==="
+            if [ -f "secure-logger.sh" ]; then
+              echo "✅ secure-logger.sh EXISTS"
+              ls -la secure-logger.sh*
+              echo "Checking immutability:"
+              lsattr secure-logger.sh* 2>/dev/null || echo "Could not check attributes"
+            else
+              echo "❌ secure-logger.sh NOT FOUND!"
+              echo "Searching for any logger files:"
+              find . -name "*logger*" -type f 2>/dev/null || echo "No logger files found"
+            fi
+            echo ""
+            echo "=== Checking all .sh files ==="
+            ls -la *.sh 2>/dev/null || echo "No .sh files found"
+            echo ""
+            echo "=== Checking all .metadata files ==="
+            ls -la *.metadata 2>/dev/null || echo "No .metadata files found"
+          DEBUG_CHECK
+          
+          # Verify all protection
+          echo "🔍 Verifying immutability protection..."
+          ssh deploy-server << EOF
+            echo "Checking protection status:"
+            FAILURES=0
+          
+            # Set variables for this SSH session
+            DEPLOY_SCRIPT="$DEPLOY_SCRIPT"
+            VALIDATOR="$VALIDATOR"
+          
+            # Debug: Show full path for each file
+            echo "=== Full paths being checked ==="
+            echo "1. ${{ env.ADMIN_HOME }}/.env"
+            echo "2. ${{ env.ADMIN_HOME }}/secure-logger.sh"
+            echo "3. ${{ env.ADMIN_HOME }}/\$DEPLOY_SCRIPT"
+            echo "4. ${{ env.ADMIN_HOME }}/\$VALIDATOR"
+            echo "================================"
+          
+            # Check scripts
+            for file in "${{ env.ADMIN_HOME }}/.env" \
+                       "${{ env.ADMIN_HOME }}/secure-logger.sh" \
+                       "${{ env.ADMIN_HOME }}/\$DEPLOY_SCRIPT" \
+                       "${{ env.ADMIN_HOME }}/\$VALIDATOR"; do
+              if [ -f "\$file" ]; then
+                if lsattr "\$file" 2>/dev/null | grep -q '^....i'; then
+                  echo "✅ \$(basename \$file) is immutable at \$(dirname \$file)"
+                else
+                  echo "❌ \$(basename \$file) is NOT immutable at \$(dirname \$file)!"
+                  ((FAILURES++))
+                fi
+              else
+                echo "❌ \$(basename \$file) NOT FOUND at \$(dirname \$file)!"
+                ((FAILURES++))
+              fi
+            done
+          
+            # Check deployment package
+            echo ""
+            echo "Checking deployment package:"
+            UNPROTECTED=\$(find ${{ env.ADMIN_HOME }}/deployment-package -type f -exec lsattr {} \; | grep -v '^....i' | wc -l || true)
+            if [ \$UNPROTECTED -eq 0 ]; then
+              echo "✅ All deployment package files are immutable"
+            else
+              echo "❌ \$UNPROTECTED files in deployment package are NOT immutable!"
+              ((FAILURES+=\$UNPROTECTED))
+            fi
+          
+            if [ \$FAILURES -gt 0 ]; then
+              echo "🚨 SECURITY FAILURE: \$FAILURES files are not protected!"
+              exit 1
+            fi
+          
+            echo "🎉 All files are protected!"
+          EOF
+
+      - name: 🔍 Verify script protection
+        run: |
+          echo "🔍 Verifying all scripts are properly protected..."
+          
+          DEPLOY_SCRIPT="deploy-and-secure-${{ github.run_id }}.sh"
+          VALIDATOR="validate-and-exec-ci-script-${{ github.run_id }}.sh"
+          
+          ssh deploy-server << EOF
+            cd ${{ env.ADMIN_HOME }}
+          
+            echo "Checking immutability status:"
+            for script in "$DEPLOY_SCRIPT" "$VALIDATOR" "secure-logger.sh"; do
+              if [ -f "\$script" ]; then
+                if lsattr "\$script" 2>/dev/null | grep -q '^....i'; then
+                  echo "✅ \$script is immutable"
+                else
+                  echo "❌ \$script is NOT immutable - SECURITY FAILURE!"
+                  exit 1
+                fi
+              fi
+            done
+          
+            echo "✅ All scripts are properly protected"
+          EOF
+
+      - name: 🚀 Execute Deployment
+        id: deploy
+        run: |
+          echo "🚀 Executing secure deployment..."
+          
+          DEPLOY_SCRIPT="deploy-and-secure-${{ github.run_id }}.sh"
+          VALIDATOR="validate-and-exec-ci-script-${{ github.run_id }}.sh"
+          
+          # Create a local script that will be executed on the server
+          cat > /tmp/deploy_execution.sh << 'DEPLOY_EXEC'
+          #!/bin/bash
+          set -euo pipefail
+          
+          # Change to admin home
+          cd ${{ env.ADMIN_HOME }}
+          
+          # Debug information
+          echo "=== EXECUTION ENVIRONMENT ==="
+          echo "User: $(whoami)"
+          echo "Directory: $(pwd)"
+          echo "Validator: ${{ env.ADMIN_HOME }}/VALIDATOR_SCRIPT"
+          echo "Deploy: ${{ env.ADMIN_HOME }}/DEPLOY_SCRIPT"
+          echo "============================="
+          
+          echo "=== FILES IN DIRECTORY ==="
+          ls -la | grep -E "(validate-and-exec|deploy-and-secure|secure-logger)" || echo "No matching files"
+          echo "=========================="
+          
+          # Check for secure-logger.sh specifically
+          if [ -f "secure-logger.sh" ]; then
+            echo "✅ secure-logger.sh found"
+          else
+            echo "❌ WARNING: secure-logger.sh NOT FOUND"
+          fi
+          
+          # Export required environment
+          export DEPLOYMENT_PATH=$(echo '${{ inputs.config-json }}' | jq -r '._flat.deployment_path')
+          echo "DEPLOYMENT_PATH=$DEPLOYMENT_PATH"
+          
+          # Execute with sudo matching the sudoers pattern exactly
+          # Pattern: /var/lib/***/validate-and-exec-ci-script-[0-9]*.sh *
+          exec sudo -E ${{ env.ADMIN_HOME }}/VALIDATOR_SCRIPT \
+              ${{ env.ADMIN_HOME }}/DEPLOY_SCRIPT \
+              "${{ env.DEPLOY_CHECKSUM }}"
+          DEPLOY_EXEC
+          
+          # Replace placeholders
+          sed -i "s/VALIDATOR_SCRIPT/$VALIDATOR/g" /tmp/deploy_execution.sh
+          sed -i "s/DEPLOY_SCRIPT/$DEPLOY_SCRIPT/g" /tmp/deploy_execution.sh
+          
+          # Copy and execute
+          scp -i ~/.ssh/id_rsa /tmp/deploy_execution.sh deploy-server:/tmp/deploy_exec_${{ github.run_id }}.sh
+          
+          # Execute with single SSH command (avoids heredoc TTY issues)
+          ssh deploy-server "chmod +x /tmp/deploy_exec_${{ github.run_id }}.sh && /tmp/deploy_exec_${{ github.run_id }}.sh; rm -f /tmp/deploy_exec_${{ github.run_id }}.sh"
+          
+          rm -f /tmp/deploy_execution.sh
+
+      - name: ✅ Post-deployment Verification
+        if: success()
+        run: |
+          echo "✅ Verifying deployment..."
+          
+          CONFIG='${{ inputs.config-json }}'
+          DEPLOYMENT_PATH=$(echo "$CONFIG" | jq -r '._flat.deployment_path')
+          
+          ssh deploy-server << VERIFY_SSH
+            echo "🔍 Checking deployment at: $DEPLOYMENT_PATH"
+          
+            # Check for essential files
+            ESSENTIAL_FILES=(
+              "docker-compose-${ENVIRONMENT}.yml"
+              ".env"
+              "systemd-wrapper.sh"
+              "postgres-entrypoint.sh"
+              "sentinel-entrypoint.sh"
+              "spring-boot-entrypoint.sh"
+              "gsm-healthcheck.sh"
+              "INIT_${ENVIRONMENT^^}_DATABASE.sql"
+            )
+          
+            MISSING=0
+            UNPROTECTED=0
+          
+            for file in "\${ESSENTIAL_FILES[@]}"; do
+              if [ -f "$DEPLOYMENT_PATH/\$file" ]; then
+                # FIXED: Use sudo to check immutability attributes
+                if sudo /usr/bin/lsattr "$DEPLOYMENT_PATH/\$file" 2>/dev/null | grep -q '^....i'; then
+                  echo "✅ Found and protected: \$file"
+                else
+                  echo "⚠️ Found but NOT protected: \$file"
+                  ((UNPROTECTED++))
+                fi
+              else
+                echo "❌ Missing: \$file"
+                ((MISSING++))
+              fi
+            done
+          
+            if [ \$MISSING -gt 0 ]; then
+              echo "❌ ERROR: \$MISSING essential files missing!"
+              exit 1
+            fi
+          
+            if [ \$UNPROTECTED -gt 0 ]; then
+              echo "⚠️ WARNING: \$UNPROTECTED files are not immutable!"
+            fi
+          
+            echo "✅ Deployment verification passed!"
+          VERIFY_SSH
+
+      - name: 📊 Deployment Summary
+        if: always()
+        run: |
+          cat << EOF >> $GITHUB_STEP_SUMMARY
+          ## 🔒 Secure Deployment Report
+          
+          | Component | Value |
+          |-----------|-------|
+          | Environment | ${{ env.ENVIRONMENT }} |
+          | Status | ${{ job.status }} |
+          | Image Tag | ${{ inputs.image-tag }} |
+          | GSM Init Tag | ${{ inputs.gsm-init-image-tag }} |
+          | Run ID | ${{ github.run_id }} |
+          
+          ### 🔐 Security Features
+          - ✅ All scripts uploaded with immutability
+          - ✅ Deployment package protected
+          - ✅ Zero-attack-window implementation
+          - ✅ Automatic cleanup of scripts
+          
+          Status: **${{ job.status }}**
+          EOF
+
+      - name: ☢️ Nuclear Cleanup - END
+        if: always()
+        run: |
+          echo "☢️ NUCLEAR CLEANUP AT END"
+          
+          # FIRST: Remove all immutability with sudo
+          echo "🔓 Removing all immutability flags..."
+          ssh deploy-server << 'REMOVE_IMMUTABLE' || true
+            echo "Removing immutability from ${{ env.ADMIN_HOME }}..."
+            sudo /usr/bin/chattr -R -i ${{ env.ADMIN_HOME }} 2>/dev/null || true
+            echo "✅ Immutability removed"
+          REMOVE_IMMUTABLE
+          
+          # THEN: Upload and execute cleanup script
+          scp -i ~/.ssh/id_rsa \
+              .github/scripts/remote/nuclear-cleanup.sh \
+              deploy-server:${{ env.ADMIN_HOME }}/nuclear-cleanup-temp.sh || true
+          
+          ssh deploy-server << 'NUCLEAR_END' || true
+            cd ${{ env.ADMIN_HOME }}
+          
+            if [ -f nuclear-cleanup-temp.sh ]; then
+              chmod +x nuclear-cleanup-temp.sh
+              ./nuclear-cleanup-temp.sh
+            else
+              # Fallback: Safe inline cleanup
+              find . -maxdepth 1 -type f -delete 2>/dev/null || true
+              find . -maxdepth 1 -type d -not -name '.' -not -name '.ssh' -exec rm -rf {} + 2>/dev/null || true
+            fi
+          
+            echo "✅ END cleanup complete"
+          NUCLEAR_END
+          
+          # Clean up local SSH key
+          rm -f ~/.ssh/id_rsa

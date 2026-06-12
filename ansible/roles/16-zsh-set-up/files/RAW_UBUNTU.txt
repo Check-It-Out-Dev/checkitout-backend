@@ -1,0 +1,85 @@
+vps-example01% pwd
+/home/ubuntu
+vps-example01% ls -all
+drwx------    - ubuntu 11 Nov 15:30  .ansible
+drwx------    - ubuntu  1 Nov 06:37  .cache
+drwxrwxr-x    - ubuntu 16 Nov 13:38  .fzf
+drwxrwxr-x    - ubuntu 11 Nov 15:25  .local
+drwxr-xr-x    - ubuntu 16 Nov 13:37  .oh-my-zsh
+drwx------    - ubuntu 12 Nov 22:06 󰢬 .ssh
+.rw-r-----  18k root   11 Nov 17:48 󰡯 -c
+.rw------- 2.0k ubuntu 16 Nov 13:41 󱆃 .bash_history
+.rw-r--r--  220 ubuntu 31 Mar  2024 󱆃 .bash_logout
+.rw-r--r-- 4.3k ubuntu 16 Nov 14:01 󱆃 .bashrc
+.rw-rw-r--  135 ubuntu 16 Nov 14:02  .fzf.bash
+.rw-rw-r--  148 ubuntu 16 Nov 13:38  .fzf.zsh
+.rw-r--r--  807 ubuntu 31 Mar  2024 󱆃 .profile
+.rw-r--r--    0 ubuntu  1 Nov 06:37  .sudo_as_admin_successful
+.rw------- 1.7k ubuntu 16 Nov 14:01  .viminfo
+.rw-rw-r--  180 ubuntu 16 Nov 13:39  .wget-hsts
+.rw-rw-r--  51k ubuntu 16 Nov 13:41  .zcompdump
+.rw-rw-r--  61k ubuntu 16 Nov 14:02  .zcompdump-vps-example01-5.9
+.r--r--r-- 138k ubuntu 16 Nov 14:02  .zcompdump-vps-example01-5.9.zwc
+.rw------- 4.8k ubuntu 16 Nov 14:07 󱆃 .zsh_history
+.rw-rw-r-- 3.4k ubuntu 16 Nov 13:59 󱆃 .zshrc
+.rw-r-----  18k root   11 Nov 17:48 󰡯 instagram-test-deploy
+
+vps-example01% ls -all .fzf/
+drwxrwxr-x    - ubuntu 16 Nov 13:38  .git
+drwxrwxr-x    - ubuntu 16 Nov 13:38  .github
+drwxrwxr-x    - ubuntu 16 Nov 13:38  bin
+drwxrwxr-x    - ubuntu 16 Nov 13:38  doc
+drwxrwxr-x    - ubuntu 16 Nov 13:38  man
+drwxrwxr-x    - ubuntu 16 Nov 13:38  plugin
+drwxrwxr-x    - ubuntu 16 Nov 13:38  shell
+drwxrwxr-x    - ubuntu 16 Nov 13:38 󰣞 src
+drwxrwxr-x    - ubuntu 16 Nov 13:38  test
+.rw-rw-r--  467 ubuntu 16 Nov 13:38  .editorconfig
+.rw-rw-r--   97 ubuntu 16 Nov 13:38 󰊢 .gitignore
+.rw-rw-r-- 2.5k ubuntu 16 Nov 13:38  .goreleaser.yml
+.rw-rw-r--  794 ubuntu 16 Nov 13:38  .rubocop.yml
+.rw-rw-r--   32 ubuntu 16 Nov 13:38  .tool-versions
+.rw-rw-r--  29k ubuntu 16 Nov 13:38  ADVANCED.md
+.rw-rw-r-- 1.9k ubuntu 16 Nov 13:38  BUILD.md
+.rw-rw-r-- 123k ubuntu 16 Nov 13:38  CHANGELOG.md
+.rw-rw-r--  512 ubuntu 16 Nov 13:38  Dockerfile
+.rw-rw-r--  180 ubuntu 16 Nov 13:38  Gemfile
+.rw-rw-r-- 1.1k ubuntu 16 Nov 13:38  Gemfile.lock
+.rw-rw-r--  529 ubuntu 16 Nov 13:38  go.mod
+.rw-rw-r-- 5.1k ubuntu 16 Nov 13:38  go.sum
+.rwxrwxr-x  10k ubuntu 16 Nov 13:38 󰡯 install
+.rw-rw-r-- 1.9k ubuntu 16 Nov 13:38  install.ps1
+.rw-rw-r-- 1.1k ubuntu 16 Nov 13:38  LICENSE
+.rw-rw-r-- 2.0k ubuntu 16 Nov 13:38  main.go
+.rw-rw-r-- 5.8k ubuntu 16 Nov 13:38  Makefile
+.rw-rw-r--  18k ubuntu 16 Nov 13:38  README-VIM.md
+.rw-rw-r--  46k ubuntu 16 Nov 13:38 󰂺 README.md
+.rw-rw-r-- 1.3k ubuntu 16 Nov 13:38 󰒃 SECURITY.md
+.rw-rw-r--  216 ubuntu 16 Nov 13:38  typos.toml
+.rwxrwxr-x 2.5k ubuntu 16 Nov 13:38 󰡯 uninstall
+
+vps-example01% ls -all ~/.oh-my-zsh/
+drwxr-xr-x    - ubuntu 16 Nov 13:37  .devcontainer
+drwxr-xr-x    - ubuntu 16 Nov 13:37  .git
+drwxr-xr-x    - ubuntu 16 Nov 13:37  .github
+drwxr-xr-x    - ubuntu 16 Nov 13:41  cache
+drwxr-xr-x    - ubuntu 16 Nov 13:37  custom
+drwxr-xr-x    - ubuntu 16 Nov 13:37  lib
+drwxr-xr-x    - ubuntu 16 Nov 14:02  log
+drwxr-xr-x    - ubuntu 16 Nov 13:37  plugins
+drwxr-xr-x    - ubuntu 16 Nov 13:37  templates
+drwxr-xr-x    - ubuntu 16 Nov 13:37  themes
+drwxr-xr-x    - ubuntu 16 Nov 13:37  tools
+.rw-r--r--  195 ubuntu 16 Nov 13:37  .editorconfig
+.rw-r--r--  140 ubuntu 16 Nov 13:37 󰊢 .gitignore
+.rw-r--r--   49 ubuntu 16 Nov 13:37  .prettierrc
+.rw-r--r-- 3.4k ubuntu 16 Nov 13:37  CODE_OF_CONDUCT.md
+.rw-r--r-- 9.2k ubuntu 16 Nov 13:37  CONTRIBUTING.md
+.rw-r--r-- 1.1k ubuntu 16 Nov 13:37  LICENSE.txt
+.rw-r--r-- 7.5k ubuntu 16 Nov 13:37  oh-my-zsh.sh
+.rw-r--r--  21k ubuntu 16 Nov 13:37 󰂺 README.md
+.rw-r--r--  955 ubuntu 16 Nov 13:37 󰒃 SECURITY.md
+
+vps-example01% ls -all ~/.oh-my-zsh/custom/themes
+drwxrwxr-x   - ubuntu 16 Nov 13:37  powerlevel10
+.rw-r--r-- 239 ubuntu 16 Nov 13:37 󱆃 example.zsh-theme

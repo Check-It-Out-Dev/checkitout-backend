@@ -1,0 +1,20 @@
+# Main tasks for 05-secrets role
+# SECURITY CRITICAL: Handles GCP service accounts and .env files
+
+---
+- name: Deploy test environment secrets
+  include_tasks: test-secrets.yml
+  tags: [secrets, test-secrets]
+
+- name: Deploy production environment secrets
+  include_tasks: prod-secrets.yml
+  tags: [secrets, prod-secrets]
+
+- name: Deploy Loki monitoring secrets
+  include_tasks: loki-secrets.yml
+  tags: [secrets, loki-secrets]
+
+- name: Verify secrets deployment
+  include_tasks: verify.yml
+  when: validate_secrets | bool
+  tags: [secrets, verify]

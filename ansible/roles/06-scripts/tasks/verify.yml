@@ -1,0 +1,35 @@
+# Scripts deployment verification
+
+---
+- name: Verify test systemd-wrapper exists
+  ansible.builtin.stat:
+    path: "{{ test_deployment_path }}/systemd-wrapper.sh"
+  register: test_wrapper
+
+- name: Verify production systemd-wrapper exists
+  ansible.builtin.stat:
+    path: "{{ prod_deployment_path }}/systemd-wrapper.sh"
+  register: prod_wrapper
+
+- name: Assert critical scripts exist
+  ansible.builtin.assert:
+    that:
+      - test_wrapper.stat.exists
+      - prod_wrapper.stat.exists
+    success_msg: "Critical scripts deployed"
+    fail_msg: "Missing critical scripts"
+
+- name: Verify scripts are executable
+  ansible.builtin.assert:
+    that:
+      - test_wrapper.stat.executable
+      - prod_wrapper.stat.executable
+    success_msg: "Scripts are executable"
+    fail_msg: "Scripts are not executable"
+
+- name: Display scripts summary
+  ansible.builtin.debug:
+    msg:
+      - "Scripts deployed successfully"
+      - "Test systemd-wrapper: {{ test_deployment_path }}/systemd-wrapper.sh"
+      - "Prod systemd-wrapper: {{ prod_deployment_path }}/systemd-wrapper.sh"

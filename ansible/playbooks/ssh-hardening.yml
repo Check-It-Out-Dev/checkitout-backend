@@ -1,0 +1,125 @@
+# SSH Hardening Playbook - POST-DEPLOYMENT ONLY
+# Instagram Platform - Harden SSH Configuration
+#
+# ⚠️  WARNING: Run this ONLY after successful deployment and verification
+# This playbook:
+#   - Disables password authentication
+#   - Disables root login
+#   - Applies strict SSH security settings
+#
+# Prerequisites:
+#   - All users have SSH keys configured manually
+#   - You have tested SSH key access works
+#   - You have console access (OVH VNC/KVM) as backup
+#
+# Usage:
+#   ansible-playbook -i inventory/production.yml playbooks/ssh-hardening.yml
+#
+# ⚠️  AFTER running this:
+#   - Password login will be DISABLED
+#   - Only SSH key authentication will work
+#   - Ensure you have working SSH key before running!
+
+---
+- name: Instagram Platform - SSH Hardening (Post-Deployment)
+  hosts: instagram_platform
+  become: true
+  gather_facts: yes
+
+  pre_tasks:
+    - name: Display critical warning
+      ansible.builtin.debug:
+        msg:
+          - "=========================================="
+          - "⚠️  SSH HARDENING - CRITICAL WARNING ⚠️"
+          - "=========================================="
+          - "This will DISABLE password authentication!"
+          - "This will DISABLE root login!"
+          - ""
+          - "BEFORE proceeding, ensure:"
+          - "  1. All users have SSH keys configured"
+          - "  2. You have tested SSH key login works"
+          - "  3. You have console access (OVH VNC/KVM)"
+          - ""
+          - "After this, ONLY SSH key login will work!"
+          - "=========================================="
+
+    - name: Pause for 30 seconds - REVIEW WARNING ABOVE
+      ansible.builtin.pause:
+        seconds: 30
+        prompt: |
+
+          Press Ctrl+C NOW if you are not ready!
+
+          Have you verified:
+          - SSH keys work for all users?
+          - Console access available?
+          - Backup access method ready?
+
+          Continuing in 30 seconds...
+
+  tasks:
+    # =========================================================================
+    # Step 1: Deploy SSH Keys for All Users
+    # =========================================================================
+
+    - name: Configure SSH keys for all deployment users
+      include_role:
+        name: ../roles/02-users-groups
+        tasks_from: ssh-keys.yml
+      vars:
+        configure_ssh_keys: true
+
+    - name: Verify SSH keys deployed
+      ansible.builtin.stat:
+        path: "{{ item }}/.ssh/authorized_keys"
+      register: ssh_keys_check
+      loop:
+        - /home/instagram-test-deploy
+        - /home/instagram-prod-deploy
+        - /var/lib/instagram-scripts-admin
+        - /home/ubuntu
+
+    - name: Display SSH keys status
+      ansible.builtin.debug:
+        msg: "{{ item.item }}: {{ 'EXISTS' if item.stat.exists else 'MISSING' }}"
+      loop: "{{ ssh_keys_check.results }}"
+
+    # =========================================================================
+    # Step 2: Apply SSH Hardening Configuration
+    # =========================================================================
+
+    - name: Apply SSH hardening
+      include_role:
+        name: ../roles/01-base-system
+        tasks_from: ssh.yml
+      vars:
+        configure_ssh: true
+
+    # =========================================================================
+    # Verification
+    # =========================================================================
+
+    - name: Test SSH connection still works
+      ansible.builtin.wait_for_connection:
+        timeout: 30
+
+  post_tasks:
+    - name: Display completion message
+      ansible.builtin.debug:
+        msg:
+          - "=========================================="
+          - "SSH Hardening Complete!"
+          - "=========================================="
+          - "Password authentication: DISABLED"
+          - "Root login: DISABLED"
+          - "Public key authentication: REQUIRED"
+          - ""
+          - "⚠️  CRITICAL: Test SSH access NOW!"
+          - ""
+          - "In a NEW terminal, test:"
+          - "  ssh ubuntu@{{ ansible_host }}"
+          - ""
+          - "If it works, you're good!"
+          - "If it fails, use console access (OVH VNC/KVM)"
+          - "=========================================="

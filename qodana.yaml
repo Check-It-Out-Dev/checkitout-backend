@@ -1,0 +1,328 @@
+#-------------------------------------------------------------------------------#
+#           Qodana DEEP Runtime Error Detection Configuration                   #
+#    Focus: Real Runtime Exceptions in Production (Zero Tolerance)             #
+#    Tech Stack: Spring Boot, Hibernate, Redis, Firebase, MaxMind, Liquibase  #
+#-------------------------------------------------------------------------------#
+version: "1.0"
+
+# Use the JVM linter for maximum analysis depth
+linter: jetbrains/qodana-jvm:2025.2
+projectJDK: "21"
+
+# Start with qodana.recommended profile for comprehensive analysis
+profile:
+  name: qodana.recommended
+
+# ========== CRITICAL RUNTIME ERROR INSPECTIONS ==========
+include:
+  # NULL POINTER & REFERENCE ERRORS
+  - name: NullableProblems
+  - name: ConstantConditions
+  - name: NullArgumentToVariableArgMethod
+  - name: OptionalGetWithoutIsPresent
+  - name: ReturnNull
+  - name: NullabilityAnnotations
+  - name: NullArgumentToMethodWithNotNullParameter
+  - name: DereferencingNullableExpression
+  - name: NullAssignmentToNotNullField
+
+  # CLASS CAST & TYPE SAFETY ERRORS
+  - name: ClassCastException
+  - name: CastConflictsWithInstanceof
+  - name: SuspiciousInstanceOfGuard
+  - name: UncheckedWarning
+  - name: RawTypeCanBeGeneric
+  - name: UnusedGenericTypeParameter
+
+  # ARRAY/COLLECTION RUNTIME ERRORS
+  - name: ArrayIndexOutOfBounds
+  - name: ArrayStoreException
+  - name: IndexOutOfBoundsException
+  - name: MismatchedCollectionQueryUpdate
+  - name: CollectionAddedToSelf
+  - name: ConcurrentModificationInspection
+  - name: MismatchedArrayReadWrite
+
+  # ARITHMETIC & NUMERIC ERRORS
+  - name: DivideByZero
+  - name: NumberFormatException
+  - name: MalformedFormatString
+  - name: IntegerDivisionInFloatingPointContext
+  - name: NumericOverflow
+  - name: BigDecimalLegacyMethod
+  - name: FloatingPointEquality
+
+  # EXCEPTION HANDLING ERRORS
+  - name: ThrowableNotThrown
+  - name: ThrowableResultOfMethodCallIgnored
+  - name: ThrowableInstanceNeverThrown
+  - name: CaughtExceptionImmediatelyRethrown
+  - name: EmptyCatchBlock
+  - name: FinallyBlockCannotCompleteNormally
+  - name: ReturnFromFinallyBlock
+  - name: ThrowFromFinallyBlock
+
+  # RESOURCE LEAKS & MEMORY ERRORS
+  - name: IOResourceOpenedButNotSafelyClosed
+  - name: JDBCResourceOpenedButNotSafelyClosed
+  - name: SocketOpenedButNotSafelyClosed
+  - name: StreamOpenedButNotSafelyClosed
+  - name: AutoCloseableResource
+  - name: ResourceNotClosedInTryWithResources
+  - name: MemoryLeak
+  - name: ThreadLocalNotRemoved
+
+  # INFINITE LOOPS & STACK OVERFLOW
+  - name: InfiniteLoopStatement
+  - name: InfiniteRecursion
+  - name: TailRecursion
+  - name: WhileLoopSpinsOnField
+
+  # CONCURRENCY & THREAD SAFETY
+  - name: DoubleCheckedLocking
+  - name: FieldAccessedSynchronizedAndUnsynchronized
+  - name: NonThreadSafeLazyInitialization
+  - name: AccessToNonThreadSafeStaticFieldFromInstance
+  - name: WaitNotInSynchronizedContext
+  - name: WaitCalledOnCondition
+  - name: NotifyCalledOnCondition
+  - name: SynchronizationOnLocalVariableOrMethodParameter
+  - name: ThreadRunNotCalled
+  - name: ThreadStartInConstructor
+  - name: AccessToStaticFieldLockedOnInstance
+  - name: NonAtomicOperationOnVolatileField
+  - name: VolatileFieldCanBeFinal
+  - name: PublicFieldAccessedInSynchronizedContext
+  - name: RaceCondition
+  - name: DeadlockDetection
+
+  # JPA/HIBERNATE SPECIFIC RUNTIME ERRORS
+  - name: JpaMissingIdInspection
+  - name: JpaQueryApiInspection
+  - name: JpaModelErrorInspection
+  - name: JpaORMDomInspection
+  - name: JpaAttributeTypeInspection
+  - name: JpaDataSourceORMInspection
+  - name: HibernateConfigDomInspection
+  - name: HibernateMappingDomInspection
+  - name: JPAAnnotationInspection
+  - name: JpaEntityListenerInspection
+  - name: JpaConflictingAnnotationsInspection
+  - name: JpaQlInspection
+  - name: JpaEntityListenerWarningInspection
+  - name: JpaObjectClassSignatureInspection
+  - name: JpaMissingIdClassInspection
+  - name: NonUniqueResultException
+  - name: LazyInitializationException
+  - name: OptimisticLockException
+  - name: PessimisticLockException
+  - name: TransactionRequiredException
+  - name: NoResultException
+
+  # SQL & DATABASE RUNTIME ERRORS
+  - name: SqlNoDataSourceInspection
+  - name: SqlTypeInspection
+  - name: SqlWithoutWhereInspection
+  - name: SqlInsertValuesInspection
+  - name: SqlDialectInspection
+  - name: SqlDuplicateColumnInspection
+  - name: SqlResolveInspection
+  - name: SqlNullComparisonInspection
+  - name: SqlSignatureInspection
+  - name: SqlStorageInspection
+  - name: SqlUnreachableCodeInspection
+  - name: SqlCaseVsIfInspection
+  - name: SqlAddNotNullColumnInspection
+  - name: SqlAggregatesInspection
+  - name: SqlAutoIncrementDuplicateInspection
+  - name: SqlCheckUsingColumnsInspection
+  - name: SqlConstantConditionInspection
+  - name: SqlCurrentSchemaInspection
+
+  # SPRING FRAMEWORK RUNTIME ERRORS
+  - name: SpringUnsatisfiedDependencyInspection
+  - name: SpringDependsOnUnresolvedBeanInspection
+  - name: SpringBeanInstantiationInspection
+  - name: SpringTransactionOnNonPublicMethod
+  - name: SpringAutowiredFieldsWarningInspection
+  - name: SpringCircularDependency
+  - name: SpringConfigurationProxyMethods
+  - name: SpringComponentScan
+  - name: SpringContextIndexInspection
+  - name: SpringDependencyInjectionInspection
+  - name: SpringEventListenerInspection
+  - name: SpringFacetInspection
+  - name: SpringHandlerMethodInspection
+  - name: SpringIncorrectResourceTypeInspection
+  - name: SpringIncompatibleBeansInspection
+  - name: SpringInjectionValueStyleInspection
+  - name: SpringJavaAutowiredFieldsWarningInspection
+  - name: SpringJavaInjectionPointsAutowiringInspection
+  - name: SpringLookupInjectionInspection
+  - name: SpringMVCViewInspection
+  - name: SpringPlaceholdersInspection
+  - name: SpringQualifierCopyableLombokAnnotationInspection
+  - name: SpringRequiredAnnotationInspection
+  - name: SpringTestingDirtiesContextInspection
+  - name: SpringXmlAutowiredFieldInspection
+
+  # SPRING BOOT SPECIFIC
+  - name: SpringBootApplicationPropertiesInspection
+  - name: SpringBootApplicationYamlInspection
+  - name: SpringBootConfigurationPropertiesInspection
+  - name: SpringBootPropertyAnnotationInspection
+  - name: SpringBootRestControllerInspection
+  - name: ConfigurationProperties
+  - name: InvalidConfigurationPropertyName
+  - name: InvalidConfigurationPropertyValue
+  - name: UnresolvedPropertyKey
+  - name: DuplicatePropertyInspection
+
+  # SPRING SECURITY CONTEXT ERRORS
+  - name: SpringSecurityModelInspection
+  - name: SpringSecurityAnnotationBeanPointersResolveInspection
+  - name: SecurityContextNotFound
+  - name: AuthenticationObjectNotFound
+  - name: AccessDeniedException
+
+  # REDIS/CACHE SPECIFIC ERRORS
+  - name: CacheNameInspection
+  - name: CacheableComponentsInspection
+  - name: CacheAnnotationsMissingInspection
+  - name: RedisConnectionFailureException
+  - name: RedisPoolExhaustedException
+  - name: RedisCommandExecutionException
+  - name: RedisSystemException
+  - name: RedisSerializationException
+  - name: PoolException
+  - name: JedisConnectionException
+  - name: LettuceConnectionException
+
+  # LIQUIBASE MIGRATION ERRORS
+  - name: LiquibaseChangeSetValidation
+  - name: LiquibaseChecksumValidation
+  - name: MigrationFailedException
+  - name: ValidationFailedException
+  - name: ChangeLogParseException
+  - name: DatabaseException
+  - name: LiquibaseContextMismatch
+  - name: LiquibaseRollbackFailed
+
+  # FIREBASE AUTHENTICATION ERRORS
+  - name: FirebaseAuthException
+  - name: FirebaseAuthenticationNotInitialized
+  - name: FirebaseNullContext
+  - name: FirebaseTokenVerificationFailed
+  - name: FirebaseUserNotFound
+  - name: FirebaseInvalidCredentials
+  - name: FirebaseInitializationException
+
+  # MAXMIND GEOIP2 ERRORS
+  - name: AddressNotFoundException
+  - name: InvalidDatabaseException
+  - name: GeoIP2Exception
+  - name: MaxMindDatabaseCorruption
+  - name: MaxMindReaderNotClosed
+  - name: MaxMindInvalidIPAddress
+
+  # SERIALIZATION/DESERIALIZATION ERRORS
+  - name: SerializableHasSerialVersionUIDField
+  - name: NonSerializableFieldInSerializableClass
+  - name: NonSerializableObjectPassedToObjectStream
+  - name: SerializableInnerClassWithNonSerializableOuterClass
+  - name: ReadObjectAndWriteObjectPrivate
+  - name: TransientFieldNotInitialized
+  - name: JsonProcessingException
+  - name: JacksonAnnotationInspection
+
+  # EQUALS/HASHCODE CONTRACT VIOLATIONS
+  - name: EqualsAndHashcode
+  - name: EqualsWhichDoesntCheckParameterClass
+  - name: EqualsWithItself
+  - name: EqualsUsesNonFinalVariable
+  - name: NonFinalFieldReferencedInHashCode
+  - name: EqualsHashCodeCalledOnUrl
+
+  # CLASSPATH & CLASSLOADER ERRORS
+  - name: ClassNotFoundInspection
+  - name: NoClassDefFoundInspection
+  - name: ClassCircularityError
+  - name: IncompatibleClassChangeError
+  - name: LinkageError
+  - name: VerifyError
+  - name: UnsatisfiedLinkError
+
+  # METHOD INVOCATION ERRORS
+  - name: IllegalAccessError
+  - name: IllegalArgumentException
+  - name: IllegalStateException
+  - name: UnsupportedOperationException
+  - name: AbstractMethodError
+  - name: NoSuchMethodError
+  - name: NoSuchFieldError
+
+  # Include all category groups for Spring, JPA, and SQL
+  - name: "category:Spring/Spring Core"
+  - name: "category:Spring/Spring Boot"
+  - name: "category:Spring/Spring Security"
+  - name: "category:Spring/Spring Data"
+  - name: "category:JPA"
+  - name: "category:SQL"
+  - name: "category:Java/Error handling"
+  - name: "category:Java/Probable bugs"
+  - name: "category:Java/Threading issues"
+  - name: "category:Java/Resource management"
+
+# EXCLUDE NON-RUNTIME INSPECTIONS & PATHS
+exclude:
+  # PATHS TO EXCLUDE
+  - name: All
+    paths:
+      - target
+      - build
+      - out
+      - .mvn
+      - .gradle
+      - .idea
+      - node_modules
+      - generated
+      - generated-sources
+      - generated-test-sources
+      - test-output
+      - logs
+      - tmp
+      - temp
+      - cache
+      - dist
+      - bin
+      - obj
+      - .git
+      - .svn
+      - coverage
+      - .nyc_output
+      - .vscode
+      - .settings
+      - .project
+      - .classpath
+      - "**/*.min.js"
+      - "**/*.min.css"
+      - "**/vendor/**"
+      - "**/third-party/**"
+      - "**/external/**"
+      - "**/migrations/**"
+      - "**/db/migration/**"
+
+# QUALITY GATES - Set failure conditions for runtime errors
+failureConditions:
+  severityThresholds:
+    critical: 0    # Zero tolerance for critical runtime errors
+    high: 5        # Maximum 5 high severity issues
+    moderate: 20   # Maximum 20 moderate issues
+    low: 100       # Allow up to 100 low severity issues
+    info: 1000     # Info level issues are allowed
+
+# OPTIONAL: Custom inspection profile for severity overrides
+# Save this in a separate file: .qodana/runtime-profile.yaml
+# Then reference it using:
+# profile:
+#   path: .qodana/runtime-profile.yaml
