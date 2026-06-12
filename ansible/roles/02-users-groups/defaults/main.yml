@@ -1,0 +1,14 @@
+# Default variables for 02-users-groups role
+
+---
+# User and group configurations are in group_vars/all.yml
+
+# SSH configuration (DISABLED - keys deployed manually after deployment)
+configure_ssh_keys: false
+ssh_key_type: "rsa"
+ssh_key_bits: 4096
+
+# Home directory permissions
+user_home_permissions: "0750"
+ssh_directory_permissions: "0700"
+authorized_keys_permissions: "0600"

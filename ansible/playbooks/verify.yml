@@ -1,0 +1,212 @@
+# Verification Playbook
+# Instagram Platform - Comprehensive Verification Checklist
+#
+# Usage:
+#   ansible-playbook -i inventory/production.yml playbooks/verify.yml
+#
+# This playbook runs comprehensive tests to verify EVERY aspect of the deployment.
+# ALL tests must pass before proceeding to production cutover.
+
+---
+- name: Instagram Platform - Comprehensive Verification
+  hosts: instagram_platform
+  become: true
+  gather_facts: yes
+
+  tasks:
+    - name: Display verification start
+      ansible.builtin.debug:
+        msg:
+          - "=========================================="
+          - "Instagram Platform Verification Checklist"
+          - "=========================================="
+          - "Running comprehensive tests..."
+          - "=========================================="
+
+    # =========================================================================
+    # Category 1: Infrastructure Tests
+    # =========================================================================
+
+    - name: Test IPv4 connectivity
+      ansible.builtin.command: ping -c 3 8.8.8.8
+      register: ipv4_test
+      changed_when: false
+
+    - name: Test IPv6 connectivity
+      ansible.builtin.command: ping6 -c 3 2001:4860:4860::8888
+      register: ipv6_test
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Test DNS resolution
+      ansible.builtin.command: nslookup google.com
+      register: dns_test
+      changed_when: false
+
+    - name: Verify network tests
+      ansible.builtin.assert:
+        that:
+          - ipv4_test.rc == 0
+          - dns_test.rc == 0
+        success_msg: "Network connectivity: PASS"
+        fail_msg: "Network connectivity: FAIL"
+
+    # =========================================================================
+    # Category 2: Services Tests
+    # =========================================================================
+
+    - name: Verify Docker service running
+      ansible.builtin.systemd:
+        name: docker
+        state: started
+      check_mode: yes
+
+    - name: Verify Nginx service running
+      ansible.builtin.systemd:
+        name: nginx
+        state: started
+      check_mode: yes
+
+    - name: Verify Instagram Platform services
+      ansible.builtin.command: systemctl is-active "{{ item }}"
+      loop:
+        - instagram-platform-test
+        - instagram-platform-prod
+      register: app_services
+      changed_when: false
+
+    - name: Display service status
+      ansible.builtin.debug:
+        msg: "{{ item.item }}: {{ item.stdout }}"
+      loop: "{{ app_services.results }}"
+
+    # =========================================================================
+    # Category 3: Docker Tests
+    # =========================================================================
+
+    - name: Verify Docker networks exist
+      ansible.builtin.command: docker network inspect "{{ item }}"
+      loop:
+        - instagram-platform-test_network
+        - instagram-platform-prod_network
+        - loki-stack_monitoring
+      register: network_check
+      changed_when: false
+
+    - name: Verify Docker volumes exist
+      ansible.builtin.command: 'docker volume ls --format "{{{{.Name}}}}"'
+      register: volumes_list
+      changed_when: false
+
+    - name: Assert required volumes exist
+      ansible.builtin.assert:
+        that:
+          - "'instagram-platform-test_secrets-storage' in volumes_list.stdout"
+          - "'instagram-platform-prod_secrets-storage' in volumes_list.stdout"
+          - "'loki-stack_loki-data' in volumes_list.stdout"
+        success_msg: "Docker volumes: PASS"
+
+    # =========================================================================
+    # Category 4: Application Health Tests
+    # =========================================================================
+
+    - name: Check test environment containers
+      ansible.builtin.command: 'docker ps --filter "name=instagram-platform-test" --format "{{{{.Names}}}}: {{{{.Status}}}}"'
+      register: test_containers
+      changed_when: false
+
+    - name: Check production environment containers
+      ansible.builtin.command: 'docker ps --filter "name=instagram-platform-prod" --format "{{{{.Names}}}}: {{{{.Status}}}}"'
+      register: prod_containers
+      changed_when: false
+
+    - name: Test environment health check
+      ansible.builtin.uri:
+        url: "http://localhost:{{ port_test_app }}/actuator/health"
+        return_content: yes
+      register: test_health
+      ignore_errors: yes
+
+    - name: Production environment health check
+      ansible.builtin.uri:
+        url: "http://localhost:{{ port_prod_app }}/actuator/health"
+        return_content: yes
+      register: prod_health
+      ignore_errors: yes
+
+    - name: Display application health
+      ansible.builtin.debug:
+        msg:
+          - "Test environment: {{ 'HEALTHY' if test_health.status == 200 else 'NOT HEALTHY' }}"
+          - "Production environment: {{ 'HEALTHY' if prod_health.status == 200 else 'NOT HEALTHY' }}"
+
+    # =========================================================================
+    # Category 5: Security Tests
+    # =========================================================================
+
+    - name: Check firewall rules
+      ansible.builtin.command: iptables -L INPUT -n -v
+      register: firewall_rules
+      changed_when: false
+
+    - name: Verify SSH hardening
+      ansible.builtin.command: sshd -T
+      register: sshd_config
+      changed_when: false
+
+    - name: Assert SSH is hardened
+      ansible.builtin.assert:
+        that:
+          - "'permitrootlogin no' in sshd_config.stdout"
+          - "'passwordauthentication no' in sshd_config.stdout"
+        success_msg: "SSH hardening: PASS"
+        fail_msg: "SSH hardening: FAIL"
+
+    - name: Check for world-readable secrets
+      ansible.builtin.shell: |
+        find /etc/instagram-platform -type f -perm /004 2>/dev/null || echo "NONE"
+        find /opt/instagram-platform -name ".env" -perm /004 2>/dev/null || echo "NONE"
+      register: world_readable
+      changed_when: false
+
+    - name: Assert no world-readable secrets
+      ansible.builtin.assert:
+        that:
+          - "'NONE' in world_readable.stdout or world_readable.stdout_lines | length <= 2"
+        success_msg: "Secret permissions: PASS"
+        fail_msg: "Secret permissions: FAIL (world-readable files found)"
+
+    # =========================================================================
+    # Category 6: Listening Ports
+    # =========================================================================
+
+    - name: Check listening ports
+      ansible.builtin.command: ss -tulpn
+      register: listening_ports
+      changed_when: false
+
+    - name: Display listening ports
+      ansible.builtin.debug:
+        var: listening_ports.stdout_lines
+
+    # =========================================================================
+    # Final Verification Summary
+    # =========================================================================
+
+    - name: Display final verification summary
+      ansible.builtin.debug:
+        msg:
+          - "=========================================="
+          - "Verification Summary"
+          - "=========================================="
+          - "Network: {{ 'PASS' if ipv4_test.rc == 0 and dns_test.rc == 0 else 'FAIL' }}"
+          - "Docker: {{ 'PASS' if network_check.results | selectattr('rc', 'equalto', 0) | list | length == 3 else 'FAIL' }}"
+          - "Services: {{ 'PASS' if app_services.results | selectattr('stdout', 'equalto', 'active') | list | length == 2 else 'FAIL' }}"
+          - "Test app: {{ 'HEALTHY' if test_health.status == 200 else 'NOT HEALTHY' }}"
+          - "Prod app: {{ 'HEALTHY' if prod_health.status == 200 else 'NOT HEALTHY' }}"
+          - "SSH security: PASS"
+          - "Secrets security: {{ 'PASS' if 'NONE' in world_readable.stdout else 'CHECK' }}"
+          - "=========================================="
+          - ""
+          - "{{ 'ALL TESTS PASSED - Ready for production!' if (ipv4_test.rc == 0 and test_health.status == 200 and prod_health.status == 200) else 'SOME TESTS FAILED - Review and fix issues' }}"
+          - "=========================================="

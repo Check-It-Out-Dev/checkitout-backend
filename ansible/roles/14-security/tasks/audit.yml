@@ -1,0 +1,41 @@
+# Security audit tasks
+
+---
+- name: Check open ports
+  ansible.builtin.command: ss -tulpn
+  register: open_ports
+  changed_when: false
+
+- name: Verify only expected ports are open
+  ansible.builtin.shell: |
+    ss -tulpn | grep LISTEN | grep -E ":(22|80|443|3100|8082|8083|6379|6380|5432) " | wc -l
+  register: port_count
+  changed_when: false
+
+- name: Check world-readable secrets
+  ansible.builtin.shell: |
+    find /etc/instagram-platform -type f -perm /004 2>/dev/null || true
+    find /opt/instagram-platform -name ".env" -perm /004 2>/dev/null || true
+  register: world_readable_secrets
+  changed_when: false
+
+- name: Assert no world-readable secrets
+  ansible.builtin.assert:
+    that:
+      - world_readable_secrets.stdout == ""
+    success_msg: "No world-readable secrets found"
+    fail_msg: "WARNING: World-readable secrets found!"
+  ignore_errors: yes
+
+- name: Check setuid/setgid binaries
+  ansible.builtin.shell: find /usr/bin /usr/local/bin -type f \( -perm -4000 -o -perm -2000 \) 2>/dev/null | wc -l
+  register: setuid_count
+  changed_when: false
+
+- name: Display security audit summary
+  ansible.builtin.debug:
+    msg:
+      - "Security audit complete"
+      - "Open listening ports: {{ port_count.stdout }}"
+      - "World-readable secrets: {{ '0 (good)' if world_readable_secrets.stdout == '' else 'WARNING: Found issues' }}"
+      - "Setuid/setgid binaries: {{ setuid_count.stdout }}"

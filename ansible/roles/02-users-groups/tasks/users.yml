@@ -1,0 +1,104 @@
+# User creation tasks
+
+---
+- name: Create instagram-test-deploy user
+  ansible.builtin.user:
+    name: "{{ user_test_deploy.name }}"
+    uid: "{{ user_test_deploy.uid }}"
+    group: "{{ user_test_deploy.gid }}"
+    groups: "{{ user_test_deploy.groups }}"
+    append: yes
+    home: "{{ user_test_deploy.home }}"
+    shell: "{{ user_test_deploy.shell }}"
+    comment: "{{ user_test_deploy.comment }}"
+    create_home: yes
+    state: present
+
+- name: Set instagram-test-deploy home permissions
+  ansible.builtin.file:
+    path: "{{ user_test_deploy.home }}"
+    owner: "{{ user_test_deploy.name }}"
+    group: "{{ user_test_deploy.gid }}"
+    mode: "{{ user_home_permissions }}"
+    state: directory
+
+- name: Create instagram-prod-deploy user
+  ansible.builtin.user:
+    name: "{{ user_prod_deploy.name }}"
+    uid: "{{ user_prod_deploy.uid }}"
+    group: "{{ user_prod_deploy.gid }}"
+    groups: "{{ user_prod_deploy.groups }}"
+    append: yes
+    home: "{{ user_prod_deploy.home }}"
+    shell: "{{ user_prod_deploy.shell }}"
+    comment: "{{ user_prod_deploy.comment }}"
+    create_home: yes
+    state: present
+
+- name: Set instagram-prod-deploy home permissions
+  ansible.builtin.file:
+    path: "{{ user_prod_deploy.home }}"
+    owner: "{{ user_prod_deploy.name }}"
+    group: "{{ user_prod_deploy.gid }}"
+    mode: "{{ user_home_permissions }}"
+    state: directory
+
+- name: Create instagram-scripts-admin user
+  ansible.builtin.user:
+    name: "{{ user_scripts_admin.name }}"
+    uid: "{{ user_scripts_admin.uid }}"
+    group: "{{ user_scripts_admin.gid }}"
+    groups: "{{ user_scripts_admin.groups }}"
+    append: yes
+    home: "{{ user_scripts_admin.home }}"
+    shell: "{{ user_scripts_admin.shell }}"
+    comment: "{{ user_scripts_admin.comment }}"
+    create_home: yes
+    state: present
+
+- name: Set instagram-scripts-admin home permissions
+  ansible.builtin.file:
+    path: "{{ user_scripts_admin.home }}"
+    owner: "{{ user_scripts_admin.name }}"
+    group: "{{ user_scripts_admin.gid }}"
+    mode: "{{ user_home_permissions }}"
+    state: directory
+
+- name: Create loki user
+  ansible.builtin.user:
+    name: "{{ user_loki.name }}"
+    uid: "{{ user_loki.uid }}"
+    group: "{{ user_loki.gid }}"
+    groups: "{{ user_loki.groups }}"
+    append: yes
+    home: "{{ user_loki.home }}"
+    shell: "{{ user_loki.shell }}"
+    comment: "{{ user_loki.comment }}"
+    create_home: yes
+    state: present
+
+- name: Set loki home permissions
+  ansible.builtin.file:
+    path: "{{ user_loki.home }}"
+    owner: "{{ user_loki.name }}"
+    group: "{{ user_loki.gid }}"
+    mode: "{{ user_home_permissions }}"
+    state: directory
+
+- name: Add ubuntu user to docker and secrets groups
+  ansible.builtin.user:
+    name: ubuntu
+    groups:
+      - docker
+      - docker-secrets-test
+      - docker-secrets-prod
+    append: yes
+
+- name: Display created users
+  ansible.builtin.debug:
+    msg: "Created user: {{ item.name }} (UID: {{ item.uid }})"
+  loop:
+    - "{{ user_test_deploy }}"
+    - "{{ user_prod_deploy }}"
+    - "{{ user_scripts_admin }}"
+    - "{{ user_loki }}"

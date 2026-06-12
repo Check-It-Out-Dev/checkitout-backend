@@ -1,0 +1,78 @@
+# Test environment scripts deployment
+
+---
+- name: Deploy test systemd-wrapper script
+  ansible.builtin.copy:
+    src: "{{ local_scripts_path }}/test/systemd-wrapper.sh"
+    dest: "{{ test_deployment_path }}/systemd-wrapper.sh"
+    owner: "{{ user_test_deploy.name }}"
+    group: "{{ user_test_deploy.gid }}"
+    mode: "{{ script_permissions }}"
+  tags: [systemd-wrappers]
+  register: test_systemd_wrapper
+
+- name: Deploy test Spring Boot entrypoint
+  ansible.builtin.copy:
+    src: "{{ local_scripts_path }}/test/spring-boot-entrypoint.sh"
+    dest: "{{ test_deployment_path }}/spring-boot-entrypoint.sh"
+    owner: "{{ user_test_deploy.name }}"
+    group: "{{ user_test_deploy.gid }}"
+    mode: "{{ script_permissions }}"
+  tags: [entrypoint-scripts]
+  ignore_errors: yes
+  register: test_springboot_script
+
+- name: Deploy test PostgreSQL entrypoint
+  ansible.builtin.copy:
+    src: "{{ local_scripts_path }}/test/postgres-entrypoint.sh"
+    dest: "{{ test_deployment_path }}/postgres-entrypoint.sh"
+    owner: "{{ user_test_deploy.name }}"
+    group: "{{ user_test_deploy.gid }}"
+    mode: "{{ script_permissions }}"
+  tags: [entrypoint-scripts]
+  ignore_errors: yes
+  register: test_postgres_script
+
+- name: Deploy test Redis Sentinel entrypoint
+  ansible.builtin.copy:
+    src: "{{ local_scripts_path }}/test/sentinel-entrypoint.sh"
+    dest: "{{ test_deployment_path }}/sentinel-entrypoint.sh"
+    owner: "{{ user_test_deploy.name }}"
+    group: "{{ user_test_deploy.gid }}"
+    mode: "{{ script_permissions }}"
+  tags: [entrypoint-scripts]
+  ignore_errors: yes
+  register: test_sentinel_script
+
+- name: Deploy test GSM health check script
+  ansible.builtin.copy:
+    src: "{{ local_scripts_path }}/test/gsm-healthcheck.sh"
+    dest: "{{ test_deployment_path }}/gsm-healthcheck.sh"
+    owner: "{{ user_test_deploy.name }}"
+    group: "{{ user_test_deploy.gid }}"
+    mode: "{{ script_permissions }}"
+  tags: [health-check-scripts]
+  ignore_errors: yes
+  register: test_gsm_health_script
+
+- name: Deploy test Redis health check script
+  ansible.builtin.copy:
+    src: "{{ local_scripts_path }}/test/check-redis-health.sh"
+    dest: "{{ test_deployment_path }}/check-redis-health.sh"
+    owner: "{{ user_test_deploy.name }}"
+    group: "{{ user_test_deploy.gid }}"
+    mode: "{{ script_permissions }}"
+  tags: [health-check-scripts]
+  ignore_errors: yes
+  register: test_redis_health_script
+
+- name: Display test scripts deployment summary
+  ansible.builtin.debug:
+    msg:
+      - "Test Scripts Deployment Status:"
+      - "  systemd-wrapper.sh: {{ 'DEPLOYED' if test_systemd_wrapper is changed else 'FAILED ⚠️' if test_systemd_wrapper is failed else 'EXISTS' }}"
+      - "  spring-boot-entrypoint.sh: {{ 'DEPLOYED' if test_springboot_script is changed else 'FAILED ⚠️' if test_springboot_script is failed else 'EXISTS' }}"
+      - "  postgres-entrypoint.sh: {{ 'DEPLOYED' if test_postgres_script is changed else 'FAILED ⚠️' if test_postgres_script is failed else 'EXISTS' }}"
+      - "  sentinel-entrypoint.sh: {{ 'DEPLOYED' if test_sentinel_script is changed else 'FAILED ⚠️' if test_sentinel_script is failed else 'EXISTS' }}"
+      - "  gsm-healthcheck.sh: {{ 'DEPLOYED' if test_gsm_health_script is changed else 'FAILED ⚠️' if test_gsm_health_script is failed else 'EXISTS' }}"
+      - "  check-redis-health.sh: {{ 'DEPLOYED' if test_redis_health_script is changed else 'FAILED ⚠️' if test_redis_health_script is failed else 'EXISTS' }}"

@@ -1,0 +1,29 @@
+# Enable site configurations
+
+---
+- name: Remove default Nginx site
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Create symlinks for enabled sites
+  ansible.builtin.file:
+    src: "/etc/nginx/sites-available/{{ item }}"
+    dest: "/etc/nginx/sites-enabled/{{ item }}"
+    state: link
+  loop:
+    - checkitout.app.conf
+    - check-it-out.pl.conf
+    - loki.checkitout.app.conf
+    - 00-default.conf
+  ignore_errors: yes
+  notify: Reload Nginx
+
+- name: List enabled sites
+  ansible.builtin.command: ls -l /etc/nginx/sites-enabled/
+  register: enabled_sites
+  changed_when: false
+
+- name: Display enabled sites
+  ansible.builtin.debug:
+    var: enabled_sites.stdout_lines

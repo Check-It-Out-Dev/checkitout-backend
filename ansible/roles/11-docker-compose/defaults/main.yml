@@ -1,0 +1,11 @@
+# Default variables for 11-docker-compose role
+
+---
+# Docker Compose source (two levels up from playbooks to project root)
+compose_source_path: "{{ playbook_dir }}/../../deployment"
+
+# Validate compose files
+validate_compose: true
+
+# Pull images after deployment
+pull_images: false  # Set to true to pre-pull Docker images

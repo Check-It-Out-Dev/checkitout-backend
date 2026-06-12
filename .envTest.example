@@ -1,0 +1,14 @@
+# =============================================================================
+# TEST/STAGING ENVIRONMENT VARIABLES (template)
+# Copy to .envTest and fill in real values. Never commit .envTest to git.
+# =============================================================================
+
+# --- Database ---
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_NAME=checkitout_test
+DATABASE_USERNAME=checkitout_test
+DATABASE_PASSWORD=your-test-db-password
+
+# --- Firebase (test project) ---
+FIREBASE_SERVICE_ACCOUNT_BASE64=your-base64-encoded-test-service-account-json

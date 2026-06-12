@@ -1,0 +1,171 @@
+# Application Startup Playbook
+# Instagram Platform - Start All Applications
+#
+# This playbook starts the Instagram Platform applications after infrastructure deployment.
+#
+# Usage:
+#   ansible-playbook -i inventory/production.yml playbooks/startup.yml
+#
+# Prerequisites:
+#   - playbooks/site.yml completed successfully
+#   - All infrastructure deployed
+#   - Docker networks and volumes created
+#   - Secrets deployed
+#
+# What this playbook does:
+#   1. Starts Loki monitoring stack
+#   2. Starts test environment (5 containers)
+#   3. Starts production environment (4 containers)
+#   4. Waits for health checks to pass
+#   5. Verifies all containers are healthy
+
+---
+- name: Instagram Platform - Start Applications
+  hosts: instagram_platform
+  become: true
+  gather_facts: yes
+
+  tasks:
+    - name: Display startup information
+      ansible.builtin.debug:
+        msg:
+          - "=========================================="
+          - "Instagram Platform Application Startup"
+          - "=========================================="
+          - "Starting: Monitoring + Test + Production"
+          - "Expected duration: 5-10 minutes"
+          - "=========================================="
+
+    # =========================================================================
+    # Step 1: Start Loki Monitoring Stack
+    # =========================================================================
+
+    - name: Start Loki monitoring stack
+      ansible.builtin.shell: docker compose up -d
+      args:
+        chdir: "{{ loki_config_path }}"
+      become_user: "{{ user_loki.name }}"
+      register: loki_start
+      ignore_errors: yes
+
+    - name: Wait for Loki to be healthy
+      ansible.builtin.wait_for:
+        port: "{{ port_loki }}"
+        host: localhost
+        timeout: 60
+      ignore_errors: yes
+
+    - name: Display Loki startup result
+      ansible.builtin.debug:
+        msg: "{{ 'Loki stack started' if loki_start.rc == 0 else 'Loki start failed (check logs)' }}"
+
+    # =========================================================================
+    # Step 2: Start Test Environment
+    # =========================================================================
+
+    - name: Start test environment service
+      ansible.builtin.systemd:
+        name: instagram-platform-test
+        state: started
+
+    - name: Wait for test service to be active
+      ansible.builtin.wait_for:
+        timeout: 30
+
+    - name: Wait for test application health endpoint
+      ansible.builtin.uri:
+        url: "http://localhost:{{ port_test_app }}/actuator/health"
+        status_code: 200
+        timeout: 10
+      register: test_health
+      until: test_health.status == 200
+      retries: 60
+      delay: 10
+      ignore_errors: yes
+
+    - name: Display test environment startup result
+      ansible.builtin.debug:
+        msg: "{{ 'Test environment HEALTHY' if test_health.status == 200 else 'Test environment startup in progress or failed' }}"
+
+    # =========================================================================
+    # Step 3: Start Production Environment
+    # =========================================================================
+
+    - name: Start production environment service
+      ansible.builtin.systemd:
+        name: instagram-platform-prod
+        state: started
+
+    - name: Wait for production service to be active
+      ansible.builtin.wait_for:
+        timeout: 30
+
+    - name: Wait for production application health endpoint
+      ansible.builtin.uri:
+        url: "http://localhost:{{ port_prod_app }}/actuator/health"
+        status_code: 200
+        timeout: 10
+      register: prod_health
+      until: prod_health.status == 200
+      retries: 60
+      delay: 5
+      ignore_errors: yes
+
+    - name: Display production environment startup result
+      ansible.builtin.debug:
+        msg: "{{ 'Production environment HEALTHY' if prod_health.status == 200 else 'Production environment startup in progress or failed' }}"
+
+    # =========================================================================
+    # Step 4: Verify All Containers
+    # =========================================================================
+
+    - name: Get test environment containers
+      ansible.builtin.command: 'docker ps -a --filter "name=instagram-platform-test" --format "{{{{.Names}}}}: {{{{.Status}}}}"'
+      register: test_containers
+      changed_when: false
+
+    - name: Display test containers status
+      ansible.builtin.debug:
+        var: test_containers.stdout_lines
+
+    - name: Get production environment containers
+      ansible.builtin.command: 'docker ps -a --filter "name=instagram-platform-prod" --format "{{{{.Names}}}}: {{{{.Status}}}}"'
+      register: prod_containers
+      changed_when: false
+
+    - name: Display production containers status
+      ansible.builtin.debug:
+        var: prod_containers.stdout_lines
+
+    - name: Get Loki stack containers
+      ansible.builtin.command: 'docker ps -a --filter "name=loki" --format "{{{{.Names}}}}: {{{{.Status}}}}"'
+      register: loki_containers
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Display Loki containers status
+      ansible.builtin.debug:
+        var: loki_containers.stdout_lines
+      when: loki_containers.rc == 0
+
+    # =========================================================================
+    # Final Summary
+    # =========================================================================
+
+    - name: Display startup completion summary
+      ansible.builtin.debug:
+        msg:
+          - "=========================================="
+          - "Application Startup Complete!"
+          - "=========================================="
+          - "Test environment: {{ 'HEALTHY' if test_health.status == 200 else 'CHECK LOGS' }}"
+          - "Production environment: {{ 'HEALTHY' if prod_health.status == 200 else 'CHECK LOGS' }}"
+          - "Monitoring stack: Started"
+          - ""
+          - "Health endpoints:"
+          - "  Test: http://localhost:8082/actuator/health"
+          - "  Prod: http://localhost:8083/actuator/health"
+          - ""
+          - "Next: Run verification checklist"
+          - "  ansible-playbook -i inventory/production.yml playbooks/verify.yml"
+          - "=========================================="

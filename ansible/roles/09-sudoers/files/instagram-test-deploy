@@ -1,0 +1,289 @@
+# =============================================================================
+# MINIMAL SECURE SUDOERS CONFIGURATION FOR instagram-test-deploy
+# Purpose: Only what's needed for systemd-wrapper.sh + Frontend deployment
+# File: sudo visudo -f /etc/sudoers.d/instagram-test-deploy
+# =============================================================================
+
+# Enable environment variable preservation for HCP Vault secrets
+Defaults:instagram-test-deploy setenv
+Defaults:instagram-test-deploy !mail_always
+Defaults:instagram-test-deploy !mail_badpass
+Defaults:instagram-test-deploy !mail_no_user
+Defaults:instagram-scripts-admin syslog=auth
+Defaults:instagram-scripts-admin log_input, log_output
+Defaults:instagram-scripts-admin !requiretty
+
+# =============================================================================
+# DOCKER COMPOSE - EXPLICIT COMMANDS ONLY (NO WILDCARDS)
+# Used by systemd-wrapper.sh
+# =============================================================================
+
+# Container health checking (read-only)
+instagram-test-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/test/deployment/docker-compose-test.yml ps google-secrets-init --format json
+instagram-test-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/test/deployment/docker-compose-test.yml ps postgres --format json
+instagram-test-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/test/deployment/docker-compose-test.yml ps redis --format json
+instagram-test-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/test/deployment/docker-compose-test.yml ps redis-sentinel --format json
+instagram-test-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/test/deployment/docker-compose-test.yml ps app --format json
+
+# Container lifecycle management
+instagram-test-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/test/deployment/docker-compose-test.yml up -d --remove-orphans
+instagram-test-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/test/deployment/docker-compose-test.yml stop --timeout 5
+instagram-test-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/test/deployment/docker-compose-test.yml stop --timeout 10
+instagram-test-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/test/deployment/docker-compose-test.yml stop --timeout 15
+instagram-test-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/test/deployment/docker-compose-test.yml kill
+instagram-test-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/test/deployment/docker-compose-test.yml down --remove-orphans
+
+# Container status (read-only)
+instagram-test-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/test/deployment/docker-compose-test.yml ps
+instagram-test-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/test/deployment/docker-compose-test.yml ps -q
+
+# Logs (read-only) - specific forms used by the wrapper
+instagram-test-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/test/deployment/docker-compose-test.yml logs --tail=50
+instagram-test-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/test/deployment/docker-compose-test.yml logs google-secrets-init --tail=50
+instagram-test-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/test/deployment/docker-compose-test.yml logs -f
+instagram-test-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/test/deployment/docker-compose-test.yml logs -f google-secrets-init
+instagram-test-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/test/deployment/docker-compose-test.yml logs -f postgres
+instagram-test-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/test/deployment/docker-compose-test.yml logs -f redis
+instagram-test-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/test/deployment/docker-compose-test.yml logs -f redis-sentinel
+instagram-test-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker compose -f /opt/instagram-platform/test/deployment/docker-compose-test.yml logs -f app
+
+# =============================================================================
+# DOCKER CLEANUP OPERATIONS
+# Used by systemd-wrapper.sh
+# =============================================================================
+instagram-test-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker volume prune -f
+instagram-test-deploy ALL=(ALL) NOPASSWD: /usr/bin/docker network prune -f
+
+# =============================================================================
+# SYSTEMCTL - TEST SERVICE ONLY
+# Used by systemd-wrapper.sh
+# =============================================================================
+instagram-test-deploy ALL=(ALL) NOPASSWD: /bin/systemctl reset-failed instagram-platform-test
+instagram-test-deploy ALL=(ALL) NOPASSWD: /usr/bin/systemctl reset-failed instagram-platform-test
+instagram-test-deploy ALL=(ALL) NOPASSWD: /bin/systemctl daemon-reload
+instagram-test-deploy ALL=(ALL) NOPASSWD: /usr/bin/systemctl daemon-reload
+
+# Rules for Frontend
+# Allow test deployment user to manage frontend files
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/rm -rf /var/www/check-it-out.pl/*
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/cp -r /var/www/check-it-out.pl/dist/fuse/* /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/systemctl reload nginx
+
+# Optional: Allow directory creation if needed
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/mkdir -p /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/chown -R www-data\:www-data /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/chmod -R 755 /var/www/check-it-out.pl/
+
+# Additional permissions for rsync deployment
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/rsync -avz --progress -e ssh dist/fuse/ /var/www/check-it-out.pl/
+
+# ESSENTIAL visudo rules - Based on your actual CI/CD workflow
+# These are the EXACT commands from your workflow + minimal safety additions
+#
+# Add to: /etc/sudoers.d/frontend-deployment
+# Replace 'instagram-test-deploy' with your actual deployment username
+
+# Commands from your CI/CD workflow
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/rm -rf /var/www/check-it-out.pl/*
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/chown -R instagram-test-deploy\:instagram-test-deploy /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/chown -R www-data\:www-data /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/chmod -R 755 /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/systemctl reload nginx
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/systemctl status nginx
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/systemctl status nginx --no-pager
+
+# Safety additions (in case paths vary)
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/rm -rf /var/www/check-it-out.pl/*
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/chown -R instagram-test-deploy\:instagram-test-deploy /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/chown -R www-data\:www-data /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/chmod -R 755 /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/systemctl reload nginx
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/systemctl status nginx
+
+# Comprehensive visudo rules for frontend deployment
+# Save as: /etc/sudoers.d/frontend-deployment
+# Or add to /etc/sudoers using: sudo visudo
+#
+# IMPORTANT: Replace 'instagram-test-deploy' with your actual deployment username
+
+# ==============================================================================
+# DIRECTORY AND FILE MANAGEMENT
+# ==============================================================================
+
+# Remove files and directories
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/rm -rf /var/www/check-it-out.pl/*
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/rm -rf /var/www/check-it-out.pl/*
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/rm -rf /var/www/check-it-out.pl/.??*
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/rm -rf /var/www/check-it-out.pl/.??*
+
+# Create directories
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/mkdir -p /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/mkdir -p /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/mkdir -p /var/www/check-it-out.pl/*
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/mkdir -p /var/www/check-it-out.pl/*
+
+# ==============================================================================
+# OWNERSHIP CHANGES (Critical for rsync deployment)
+# ==============================================================================
+
+# Change ownership TO deployment user (for rsync to work)
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/chown instagram-test-deploy\:instagram-test-deploy /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/chown instagram-test-deploy\:instagram-test-deploy /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/chown -R instagram-test-deploy\:instagram-test-deploy /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/chown -R instagram-test-deploy\:instagram-test-deploy /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/chown -R instagram-test-deploy\:instagram-test-deploy /var/www/check-it-out.pl/*
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/chown -R instagram-test-deploy\:instagram-test-deploy /var/www/check-it-out.pl/*
+
+# Change ownership BACK to www-data (for nginx to serve files)
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/chown www-data\:www-data /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/chown www-data\:www-data /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/chown -R www-data\:www-data /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/chown -R www-data\:www-data /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/chown -R www-data\:www-data /var/www/check-it-out.pl/*
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/chown -R www-data\:www-data /var/www/check-it-out.pl/*
+
+# ==============================================================================
+# FILE PERMISSIONS
+# ==============================================================================
+
+# Change permissions
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/chmod 755 /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/chmod 755 /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/chmod -R 755 /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/chmod -R 755 /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/chmod -R 755 /var/www/check-it-out.pl/*
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/chmod -R 755 /var/www/check-it-out.pl/*
+
+# More restrictive permissions if needed
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/chmod -R 644 /var/www/check-it-out.pl/*
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/chmod -R 644 /var/www/check-it-out.pl/*
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/chmod -R 750 /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/chmod -R 750 /var/www/check-it-out.pl/
+
+# ==============================================================================
+# FILE OPERATIONS
+# ==============================================================================
+
+# Copy operations
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/cp -r * /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/cp -r * /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/cp -rf * /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/cp -rf * /var/www/check-it-out.pl/
+
+# Move operations
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/mv /var/www/check-it-out.pl/* /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/mv /var/www/check-it-out.pl/* /var/www/check-it-out.pl/
+
+# Rsync operations (if you want to use sudo rsync)
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/rsync * /var/www/check-it-out.pl/
+
+# ==============================================================================
+# SERVICE MANAGEMENT
+# ==============================================================================
+
+# Nginx control
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/systemctl start nginx
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/systemctl start nginx
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/systemctl stop nginx
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/systemctl stop nginx
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/systemctl restart nginx
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/systemctl restart nginx
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/systemctl reload nginx
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/systemctl reload nginx
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/systemctl status nginx
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/systemctl status nginx
+
+# Nginx configuration test
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/sbin/nginx -t
+instagram-test-deploy ALL=(root) NOPASSWD: /sbin/nginx -t
+
+# ==============================================================================
+# CACHE AND TEMPORARY FILES
+# ==============================================================================
+
+# Clear nginx cache if you use it
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/rm -rf /var/cache/nginx/*
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/rm -rf /var/cache/nginx/*
+
+# Clear temporary deployment files
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/rm -rf /tmp/deploy-*
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/rm -rf /tmp/deploy-*
+
+# ==============================================================================
+# LOG ACCESS (for debugging deployments)
+# ==============================================================================
+
+# View nginx logs
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/tail -f /var/log/nginx/access.log
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/tail -f /var/log/nginx/error.log
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/tail -n * /var/log/nginx/access.log
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/tail -n * /var/log/nginx/error.log
+
+# ==============================================================================
+# BACKUP OPERATIONS (if needed)
+# ==============================================================================
+
+# Create backups
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/tar -czf /tmp/app-backup-*.tar.gz /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/tar -czf /tmp/app-backup-*.tar.gz /var/www/check-it-out.pl/
+
+# ==============================================================================
+# FILE LISTING AND INSPECTION
+# ==============================================================================
+
+# List files (useful for debugging)
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/ls -la /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/ls -la /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/ls -la /var/www/check-it-out.pl/*
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/ls -la /var/www/check-it-out.pl/*
+
+# Check disk usage
+instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/du -sh /var/www/check-it-out.pl/
+instagram-test-deploy ALL=(root) NOPASSWD: /bin/du -sh /var/www/check-it-out.pl/
+
+# Block package managers
+Cmnd_Alias PACKAGE_MANAGERS_TEST = /usr/bin/apt, /usr/bin/apt-get, \
+                              /usr/sbin/dpkg, /usr/bin/snap, \
+                              /usr/bin/pip, /usr/bin/pip3, \
+                              /usr/bin/npm, /usr/bin/yarn
+
+instagram-test-deploy ALL = (ALL) !PACKAGE_MANAGERS_TEST
+
+# Block dangerous editors and interpreters
+Cmnd_Alias DANGEROUS_TOOLS_TEST = /usr/bin/vi, /usr/bin/vim, /usr/bin/nano, \
+                             /usr/bin/emacs, /usr/bin/ed, \
+                             /usr/bin/perl, /usr/bin/ruby, \
+                             /usr/bin/php*, /usr/bin/zsh
+
+instagram-test-deploy ALL = (ALL) !DANGEROUS_TOOLS_TEST
+
+# Block script execution from unsafe locations
+Cmnd_Alias UNSAFE_LOCATIONS_TEST_DEPLOY = /tmp/*, /var/tmp/*, /dev/shm/*, \
+                              /home/*/Downloads/*, /home/*/.local/*, \
+                              /home/*/.cache/*, /run/user/*
+
+instagram-test-deploy ALL = (ALL) !UNSAFE_LOCATIONS_TEST_DEPLOY
+# ==============================================================================
+# OPTIONAL: CERTIFICATE MANAGEMENT (if using Let's Encrypt)
+# ==============================================================================
+
+# Certbot operations
+# instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/certbot renew --nginx
+# instagram-test-deploy ALL=(root) NOPASSWD: /usr/bin/certbot certonly --nginx -d check-it-out.pl
+
+# ==============================================================================
+# SECURITY NOTES:
+# ==============================================================================
+# 1. This configuration is extensive but still maintains security by:
+#    - Limiting commands to specific paths (/var/www/check-it-out.pl/)
+#    - Not using dangerous wildcards in critical areas
+#    - Only allowing specific service management commands
+#
+# 2. You can comment out any lines you don't need
+#
+# 3. Always test with: sudo -l (as the deployment user)
+#
+# 4. The escaped colons (\:) in chown commands are important
+#
+# 5. Some systems have commands in /bin, others in /usr/bin - we include both
+# ==============================================================================

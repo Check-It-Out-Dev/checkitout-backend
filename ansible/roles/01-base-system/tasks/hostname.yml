@@ -1,0 +1,27 @@
+# Hostname configuration tasks
+
+---
+- name: Set system hostname
+  ansible.builtin.hostname:
+    name: "{{ vps_hostname }}"
+
+- name: Update /etc/hosts with hostname
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    line: "{{ item }}"
+    create: yes
+  loop:
+    - ""
+    - "# Instagram Platform VPS"
+    - "{{ vps_ipv4 }} {{ vps_hostname }} {{ vps_hostname }}.local"
+    - "{{ vps_ipv6 }} {{ vps_hostname }} {{ vps_hostname }}.local"
+  when: update_hosts_file | bool
+
+- name: Verify hostname
+  ansible.builtin.command: hostname
+  register: hostname_result
+  changed_when: false
+
+- name: Display configured hostname
+  ansible.builtin.debug:
+    msg: "Hostname set to: {{ hostname_result.stdout }}"

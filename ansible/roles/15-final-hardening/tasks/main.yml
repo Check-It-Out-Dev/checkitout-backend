@@ -1,0 +1,115 @@
+# Main tasks for 15-final-hardening role
+# FINAL PHASE: Apply network, firewall, and SSH hardening
+#
+# ⚠️  WARNING: These tasks may temporarily disrupt SSH connection
+# These are applied LAST to ensure deployment completes successfully first
+#
+# Order:
+# 1. Privilege reduction (remove users from docker group)
+# 2. Network configuration (could change IP/routing)
+# 3. Firewall rules (could block ports)
+# 4. SSH hardening (could disable password/root login)
+
+---
+- name: Display final hardening warning
+  ansible.builtin.debug:
+    msg:
+      - "=========================================="
+      - "FINAL HARDENING PHASE"
+      - "=========================================="
+      - "Privilege Reduction: {{ 'WILL APPLY' if apply_privilege_reduction | default(true) else 'SKIPPED' }}"
+      - "Network: {{ 'WILL APPLY' if apply_network_hardening | default(true) else 'SKIPPED (VPS already configured)' }}"
+      - "Firewall: {{ 'WILL APPLY' if apply_firewall_hardening | default(true) else 'SKIPPED' }}"
+      - "SSH: {{ 'WILL APPLY' if apply_ssh_hardening | default(true) else 'SKIPPED (use separate playbook)' }}"
+      - ""
+      - "These changes may temporarily affect connectivity"
+      - "Ensure you have console access before proceeding"
+      - "=========================================="
+
+- name: Pause for review (10 seconds)
+  ansible.builtin.pause:
+    seconds: 10
+    prompt: "Final hardening will begin in 10 seconds. Press Ctrl+C to cancel."
+
+# =========================================================================
+# Step 1: Privilege Reduction (Docker Group Cleanup)
+# =========================================================================
+
+- name: Apply privilege reduction
+  include_tasks: privilege-reduction.yml
+  when: apply_privilege_reduction | default(true)
+  tags: [final-hardening, privilege-reduction, security]
+
+- name: Display privilege reduction skip message
+  ansible.builtin.debug:
+    msg: "Privilege reduction: SKIPPED"
+  when: not (apply_privilege_reduction | default(true))
+  tags: [final-hardening, privilege-reduction]
+
+# =========================================================================
+# Step 2: Network Configuration
+# =========================================================================
+
+- name: Apply network configuration
+  include_tasks: network.yml
+  when: apply_network_hardening | default(true)
+  tags: [final-hardening, network]
+
+- name: Display network configuration skip message
+  ansible.builtin.debug:
+    msg: "Network configuration: SKIPPED"
+  when: not (apply_network_hardening | default(true))
+  tags: [final-hardening, network]
+
+# =========================================================================
+# Step 2: Firewall Configuration
+# =========================================================================
+
+- name: Apply firewall configuration
+  include_tasks: firewall.yml
+  when: apply_firewall_hardening | default(true)
+  tags: [final-hardening, firewall]
+
+# =========================================================================
+# Step 3: SSH Hardening (VERY LAST)
+# =========================================================================
+
+- name: Display SSH hardening skip message
+  ansible.builtin.debug:
+    msg:
+      - "SSH Hardening: SKIPPED"
+      - "Use playbooks/ssh-hardening.yml after deployment completes"
+      - "Command: ansible-playbook -i inventory/production.yml playbooks/ssh-hardening.yml"
+  when: not (apply_ssh_hardening | default(true))
+  tags: [final-hardening, ssh]
+
+# =========================================================================
+# Verification
+# =========================================================================
+
+- name: Verify SSH connection still works
+  ansible.builtin.wait_for_connection:
+    timeout: 30
+
+- name: Display final hardening completion
+  ansible.builtin.debug:
+    msg:
+      - "=========================================="
+      - "Final Hardening Complete!"
+      - "=========================================="
+      - "Privilege Reduction: {{ 'Applied ✅' if apply_privilege_reduction | default(true) else 'Skipped' }}"
+      - "Network: {{ 'Applied ✅' if apply_network_hardening | default(true) else 'Skipped (already configured)' }}"
+      - "Firewall: {{ 'Applied ✅' if apply_firewall_hardening | default(true) else 'Skipped' }}"
+      - "SSH Hardening: {{ 'Skipped (use ssh-hardening.yml playbook)' if not apply_ssh_hardening | default(true) else 'Applied ✅' }}"
+      - ""
+      - "✅ VPS is now hardened and ready"
+      - ""
+      - "Security notes:"
+      - "  - Users removed from docker group (use sudo for docker commands)"
+      - "  - instagram-prod-deploy uses sudoers rules for specific commands"
+      - ""
+      - "Next steps:"
+      - "  1. Test SSH: ssh ubuntu@{{ ansible_host }}"
+      - "  2. Verify services: make verify"
+      - "  3. Start applications: make start"
+      - "=========================================="

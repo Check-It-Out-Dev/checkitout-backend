@@ -1,0 +1,48 @@
+# Docker network creation
+
+---
+- name: Create test environment Docker network
+  community.docker.docker_network:
+    name: "{{ docker_networks.test.name }}"
+    driver: "{{ docker_networks.test.driver }}"
+    ipam_config:
+      - subnet: "{{ docker_networks.test.subnet }}"
+        gateway: "{{ docker_networks.test.gateway }}"
+    state: present
+
+- name: Create production environment Docker network
+  community.docker.docker_network:
+    name: "{{ docker_networks.prod.name }}"
+    driver: "{{ docker_networks.prod.driver }}"
+    ipam_config:
+      - subnet: "{{ docker_networks.prod.subnet }}"
+        gateway: "{{ docker_networks.prod.gateway }}"
+    state: present
+
+- name: Create monitoring Docker network
+  community.docker.docker_network:
+    name: "{{ docker_networks.monitoring.name }}"
+    driver: "{{ docker_networks.monitoring.driver }}"
+    ipam_config:
+      - subnet: "{{ docker_networks.monitoring.subnet }}"
+        gateway: "{{ docker_networks.monitoring.gateway }}"
+    state: present
+
+- name: Verify networks created
+  ansible.builtin.command: docker network ls
+  register: docker_networks_list
+  changed_when: false
+
+- name: Display created networks
+  ansible.builtin.debug:
+    var: docker_networks_list.stdout_lines
+
+- name: Verify test network exists
+  ansible.builtin.command: "docker network inspect {{ docker_networks.test.name }}"
+  register: test_network_check
+  changed_when: false
+  failed_when: false
+
+- name: Display test network status
+  ansible.builtin.debug:
+    msg: "Test network {{ docker_networks.test.name }}: {{ 'EXISTS' if test_network_check.rc == 0 else 'NOT FOUND' }}"

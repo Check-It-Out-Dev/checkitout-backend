@@ -1,0 +1,76 @@
+# Ansible Inventory - Production VPS
+# Instagram Platform Deployment
+#
+# This inventory defines the new VPS (192.0.2.10) as the target
+# for deploying the Instagram Platform infrastructure.
+#
+# Usage:
+#   ansible-playbook -i inventory/production.yml playbooks/site.yml
+
+---
+all:
+  children:
+    # Production VPS group
+    instagram_platform:
+      hosts:
+        vps-example01:
+          # Connection details
+          ansible_host: 192.0.2.10
+          ansible_user: ubuntu
+          ansible_become: true
+          ansible_become_method: sudo
+          ansible_become_flags: '-H -S -n'
+
+          # SSH connection settings
+          ansible_ssh_private_key_file: ~/.ssh/id_ed25519
+          ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o PasswordAuthentication=no -o PreferredAuthentications=publickey'
+
+          # SSH pipelining for better performance
+          ansible_ssh_pipelining: true
+
+          # Python interpreter (auto-detect)
+          ansible_python_interpreter: /usr/bin/python3
+
+          # Host-specific variables
+          vps_hostname: vps-example01
+          vps_ipv4: 192.0.2.10
+          vps_ipv6: 2001:db8::10
+          vps_gateway_ipv4: 192.0.2.1
+          vps_gateway_ipv6: 2001:db8::1
+
+      # Group variables (apply to all hosts in instagram_platform group)
+      vars:
+        # Environment tag
+        deployment_type: production
+
+        # Operating system
+        target_os: Ubuntu
+        target_os_version: "24.04"
+        target_os_codename: noble
+
+        # Timezone
+        server_timezone: UTC
+
+        # Enable both test and prod environments on this VPS
+        enable_test_environment: true
+        enable_prod_environment: true
+        enable_monitoring: true
+
+# Optional: Define environment-specific groups
+test_environment:
+  hosts:
+    vps-example01:
+  vars:
+    environment: test
+
+production_environment:
+  hosts:
+    vps-example01:
+  vars:
+    environment: prod
+
+monitoring_environment:
+  hosts:
+    vps-example01:
+  vars:
+    environment: monitoring

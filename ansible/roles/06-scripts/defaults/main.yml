@@ -1,0 +1,8 @@
+# Default variables for 06-scripts role
+
+---
+# Script permissions
+script_permissions: "0755"
+
+# Script sources (from project deployment directory - two levels up from playbooks)
+local_scripts_path: "{{ playbook_dir }}/../../deployment"

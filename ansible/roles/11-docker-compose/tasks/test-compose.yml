@@ -1,0 +1,23 @@
+# Test environment Docker Compose deployment
+
+---
+- name: Deploy test Docker Compose file
+  ansible.builtin.copy:
+    src: "{{ compose_source_path }}/test/docker-compose-test.yml"
+    dest: "{{ test_deployment_path }}/docker-compose-test.yml"
+    owner: "{{ user_test_deploy.name }}"
+    group: "{{ user_test_deploy.gid }}"
+    mode: '0644'
+  register: test_compose_deployed
+
+- name: Display test compose deployment status
+  ansible.builtin.debug:
+    msg: "Test docker-compose.yml: {{ 'DEPLOYED ✅' if test_compose_deployed is changed else 'FAILED ⚠️' if test_compose_deployed is failed else 'EXISTS' }}"
+
+- name: Create symlink for docker-compose.yml
+  ansible.builtin.file:
+    src: "{{ test_deployment_path }}/docker-compose-test.yml"
+    dest: "{{ test_deployment_path }}/docker-compose.yml"
+    state: link
+    owner: "{{ user_test_deploy.name }}"
+    group: "{{ user_test_deploy.gid }}"

@@ -1,0 +1,26 @@
+# =============================================================================
+# PRODUCTION ENVIRONMENT VARIABLES (template)
+# Copy to .envProd and fill in real values. Never commit .envProd to git.
+# In deployed environments these come from Google Secret Manager instead —
+# see docs/operations/deployment.md.
+# =============================================================================
+
+# --- Database (managed PostgreSQL) ---
+DATABASE_HOST=your-postgres-host.example.com
+DATABASE_PORT=5432
+DATABASE_NAME=checkitout
+DATABASE_USERNAME=checkitout_app
+DATABASE_PASSWORD=your-strong-db-password
+
+# --- Firebase (production project) ---
+FIREBASE_SERVICE_ACCOUNT_BASE64=your-base64-encoded-prod-service-account-json   # base64 -w 0 service-account.json
+
+# --- Stripe (LIVE mode — only after go-live) ---
+STRIPE_PUBLIC_KEY=pk_live_your-public-key
+STRIPE_PRIVATE_KEY=sk_live_your-secret-key
+STRIPE_WEBHOOK_SECRET=whsec_your-webhook-secret
+
+# --- Secrets (rotate independently of dev) ---
+JWT_SECRET=your-prod-jwt-secret-min-256-bits
+COOKIE_HMAC_SECRET=your-prod-cookie-hmac-secret
+CONSENT_HMAC_SECRET=your-prod-consent-hmac-secret

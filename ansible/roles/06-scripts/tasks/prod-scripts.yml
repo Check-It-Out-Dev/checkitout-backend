@@ -1,0 +1,78 @@
+# Production environment scripts deployment
+
+---
+- name: Deploy production systemd-wrapper script
+  ansible.builtin.copy:
+    src: "{{ local_scripts_path }}/prod/systemd-wrapper.sh"
+    dest: "{{ prod_deployment_path }}/systemd-wrapper.sh"
+    owner: "{{ user_prod_deploy.name }}"
+    group: "{{ user_prod_deploy.gid }}"
+    mode: "{{ script_permissions }}"
+  tags: [systemd-wrappers]
+  register: prod_systemd_wrapper
+
+- name: Deploy production Spring Boot entrypoint
+  ansible.builtin.copy:
+    src: "{{ local_scripts_path }}/prod/spring-boot-entrypoint.sh"
+    dest: "{{ prod_deployment_path }}/spring-boot-entrypoint.sh"
+    owner: "{{ user_prod_deploy.name }}"
+    group: "{{ user_prod_deploy.gid }}"
+    mode: "{{ script_permissions }}"
+  tags: [entrypoint-scripts]
+  ignore_errors: yes
+  register: prod_springboot_script
+
+- name: Deploy production PostgreSQL entrypoint
+  ansible.builtin.copy:
+    src: "{{ local_scripts_path }}/prod/postgres-entrypoint.sh"
+    dest: "{{ prod_deployment_path }}/postgres-entrypoint.sh"
+    owner: "{{ user_prod_deploy.name }}"
+    group: "{{ user_prod_deploy.gid }}"
+    mode: "{{ script_permissions }}"
+  tags: [entrypoint-scripts]
+  ignore_errors: yes
+  register: prod_postgres_script
+
+- name: Deploy production Redis Sentinel entrypoint
+  ansible.builtin.copy:
+    src: "{{ local_scripts_path }}/prod/sentinel-entrypoint.sh"
+    dest: "{{ prod_deployment_path }}/sentinel-entrypoint.sh"
+    owner: "{{ user_prod_deploy.name }}"
+    group: "{{ user_prod_deploy.gid }}"
+    mode: "{{ script_permissions }}"
+  tags: [entrypoint-scripts]
+  ignore_errors: yes
+  register: prod_sentinel_script
+
+- name: Deploy production GSM health check script
+  ansible.builtin.copy:
+    src: "{{ local_scripts_path }}/prod/gsm-healthcheck.sh"
+    dest: "{{ prod_deployment_path }}/gsm-healthcheck.sh"
+    owner: "{{ user_prod_deploy.name }}"
+    group: "{{ user_prod_deploy.gid }}"
+    mode: "{{ script_permissions }}"
+  tags: [health-check-scripts]
+  ignore_errors: yes
+  register: prod_gsm_health_script
+
+- name: Deploy production Redis health check script
+  ansible.builtin.copy:
+    src: "{{ local_scripts_path }}/prod/check-redis-health.sh"
+    dest: "{{ prod_deployment_path }}/check-redis-health.sh"
+    owner: "{{ user_prod_deploy.name }}"
+    group: "{{ user_prod_deploy.gid }}"
+    mode: "{{ script_permissions }}"
+  tags: [health-check-scripts]
+  ignore_errors: yes
+  register: prod_redis_health_script
+
+- name: Display production scripts deployment summary
+  ansible.builtin.debug:
+    msg:
+      - "Production Scripts Deployment Status:"
+      - "  systemd-wrapper.sh: {{ 'DEPLOYED' if prod_systemd_wrapper is changed else 'FAILED ⚠️' if prod_systemd_wrapper is failed else 'EXISTS' }}"
+      - "  spring-boot-entrypoint.sh: {{ 'DEPLOYED' if prod_springboot_script is changed else 'FAILED ⚠️' if prod_springboot_script is failed else 'EXISTS' }}"
+      - "  postgres-entrypoint.sh: {{ 'DEPLOYED' if prod_postgres_script is changed else 'FAILED ⚠️' if prod_postgres_script is failed else 'EXISTS' }}"
+      - "  sentinel-entrypoint.sh: {{ 'DEPLOYED' if prod_sentinel_script is changed else 'FAILED ⚠️' if prod_sentinel_script is failed else 'EXISTS' }}"
+      - "  gsm-healthcheck.sh: {{ 'DEPLOYED' if prod_gsm_health_script is changed else 'FAILED ⚠️' if prod_gsm_health_script is failed else 'EXISTS' }}"
+      - "  check-redis-health.sh: {{ 'DEPLOYED' if prod_redis_health_script is changed else 'FAILED ⚠️' if prod_redis_health_script is failed else 'EXISTS' }}"

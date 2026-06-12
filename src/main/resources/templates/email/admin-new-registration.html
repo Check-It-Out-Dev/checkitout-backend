@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title th:text="#{email.admin_new_registration.title}">New User Registered</title>
+    <!--[if mso]>
+    <style>
+        table { border-collapse: collapse; }
+        .button { padding: 14px 32px !important; }
+    </style>
+    <![endif]-->
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; line-height: 1.6; color: #333333; background-color: #f4f4f4;">
+
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f4f4f4;">
+        <tr>
+            <td style="padding: 20px 0;">
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: 0 auto; max-width: 600px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" align="center">
+
+                    <!-- Header Section -->
+                    <tr>
+                        <td style="background-color: #667eea; padding: 40px 20px; text-align: center; color: #ffffff; border-radius: 8px 8px 0 0;">
+                            <!--[if mso]>
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                            <tr>
+                            <td style="background-color: #667eea; padding: 40px 20px; text-align: center;">
+                            <![endif]-->
+                            <h1 style="margin: 0; padding: 0; font-size: 24px; font-weight: 600; color: #ffffff;" th:text="#{email.admin_new_registration.title}">New User Registered</h1>
+                            <!--[if mso]>
+                            </td>
+                            </tr>
+                            </table>
+                            <![endif]-->
+                        </td>
+                    </tr>
+
+                    <!-- Body Section -->
+                    <tr>
+                        <td style="padding: 40px 30px;">
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+
+                                <!-- Intro text -->
+                                <tr>
+                                    <td style="padding-bottom: 20px; font-size: 16px; color: #555555; line-height: 1.6;" th:text="#{email.admin_new_registration.intro}">
+                                        A new user has registered on the platform.
+                                    </td>
+                                </tr>
+
+                                <!-- User details table -->
+                                <tr>
+                                    <td style="padding-bottom: 20px;">
+                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f8f9fa; border-radius: 6px;">
+                                            <tr>
+                                                <td style="padding: 15px 20px; font-size: 14px; color: #6c757d; font-weight: 600; width: 120px; border-bottom: 1px solid #e9ecef;" th:text="#{email.admin_new_registration.name_label}">Name</td>
+                                                <td style="padding: 15px 20px; font-size: 14px; color: #333333; border-bottom: 1px solid #e9ecef;" th:text="${userName}">John Doe</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 15px 20px; font-size: 14px; color: #6c757d; font-weight: 600; width: 120px; border-bottom: 1px solid #e9ecef;" th:text="#{email.admin_new_registration.email_label}">Email</td>
+                                                <td style="padding: 15px 20px; font-size: 14px; color: #333333; border-bottom: 1px solid #e9ecef;" th:text="${userEmail}">john@example.com</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 15px 20px; font-size: 14px; color: #6c757d; font-weight: 600; width: 120px;" th:text="#{email.admin_new_registration.type_label}">User Type</td>
+                                                <td style="padding: 15px 20px; font-size: 14px; color: #333333;" th:text="${userType}">INFLUENCER</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                                <!-- CTA Button -->
+                                <tr>
+                                    <td style="padding: 20px 0; text-align: center;">
+                                        <!--[if mso]>
+                                        <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="[(${dashboardLink})]" style="height:48px;v-text-anchor:middle;width:220px;" arcsize="13%" stroke="f" fillcolor="#667eea">
+                                        <w:anchorlock/>
+                                        <center style="color:#ffffff;font-family:sans-serif;font-size:16px;font-weight:600;">[(#{email.admin_new_registration.button})]</center>
+                                        </v:roundrect>
+                                        <![endif]-->
+                                        <!--[if !mso]><!-->
+                                        <a th:href="${dashboardLink}" style="display: inline-block; background-color: #667eea; color: #ffffff !important; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-weight: 600; font-size: 16px; line-height: 20px; text-align: center; min-width: 150px;" th:text="#{email.admin_new_registration.button}">
+                                            View in Admin Panel
+                                        </a>
+                                        <!--<![endif]-->
+                                    </td>
+                                </tr>
+
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Footer Section -->
+                    <tr>
+                        <td style="background-color: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #e9ecef; border-radius: 0 0 8px 8px;">
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                <tr>
+                                    <td style="padding-bottom: 8px;">
+                                        <span style="color: #667eea; font-weight: 600; font-size: 14px;" th:text="#{email.common.footer.company}">CheckItOut Team</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-top: 10px; font-size: 13px; color: #999999;">
+                                        <span>&copy; </span><span th:text="${currentYear}">2026</span><span> Check It Out. </span><span th:text="#{email.common.footer.rights}">All rights reserved.</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

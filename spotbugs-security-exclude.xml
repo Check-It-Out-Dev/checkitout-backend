@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!-- Exclude test classes from security analysis -->
+    <Match>
+        <Class name="~.*Test" />
+    </Match>
+    <Match>
+        <Class name="~.*Tests" />
+    </Match>
+    <Match>
+        <Class name="~.*TestCase" />
+    </Match>
+    
+    <!-- Exclude generated code -->
+    <Match>
+        <Package name="~.*\.generated\..*" />
+    </Match>
+    
+    <!-- Exclude specific false positives -->
+    <!-- Example:
+    <Match>
+        <Class name="com.sm.instagram.platform.config.SecurityConfig" />
+        <Bug pattern="HARD_CODE_PASSWORD" />
+    </Match>
+    -->
+</FindBugsFilter>

@@ -1,0 +1,23 @@
+# Main tasks for 10-monitoring role
+
+---
+- name: Deploy Loki configuration
+  include_tasks: loki-config.yml
+  tags: [monitoring, loki-config]
+
+- name: Deploy Alloy configuration
+  include_tasks: alloy-config.yml
+  tags: [monitoring, alloy-config]
+
+- name: Deploy Loki Docker Compose file
+  include_tasks: loki-compose.yml
+  tags: [monitoring, loki-compose]
+
+- name: Generate mTLS certificates
+  include_tasks: mtls-certs.yml
+  when: generate_mtls_certs | bool
+  tags: [monitoring, mtls-certs]
+
+- name: Verify monitoring stack deployment
+  include_tasks: verify.yml
+  tags: [monitoring, verify]

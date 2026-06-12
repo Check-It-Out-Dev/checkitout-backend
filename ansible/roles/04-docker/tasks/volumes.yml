@@ -1,0 +1,37 @@
+# Docker volume creation
+
+---
+- name: Create test environment Docker volumes
+  community.docker.docker_volume:
+    name: "{{ item.name }}"
+    state: present
+  loop: "{{ docker_volumes_test }}"
+
+- name: Create production environment Docker volumes
+  community.docker.docker_volume:
+    name: "{{ item.name }}"
+    state: present
+  loop: "{{ docker_volumes_prod }}"
+
+- name: Create monitoring Docker volumes
+  community.docker.docker_volume:
+    name: "{{ item.name }}"
+    state: present
+  loop: "{{ docker_volumes_monitoring }}"
+
+- name: List all Docker volumes
+  ansible.builtin.command: docker volume ls
+  register: docker_volumes_list
+  changed_when: false
+
+- name: Display created volumes
+  ansible.builtin.debug:
+    var: docker_volumes_list.stdout_lines
+
+- name: Verify volume count
+  ansible.builtin.assert:
+    that:
+      - docker_volumes_list.stdout is search('instagram-platform-test')
+      - docker_volumes_list.stdout is search('instagram-platform-prod')
+      - docker_volumes_list.stdout is search('loki-stack')
+    success_msg: "All required volumes created"

@@ -1,0 +1,42 @@
+# SSL certificate generation with Let's Encrypt
+
+---
+- name: Generate SSL certificate for production domain
+  ansible.builtin.command: >
+    certbot certonly --nginx
+    --non-interactive
+    --agree-tos
+    --email {{ certbot_email }}
+    -d {{ domains.prod }}
+  args:
+    creates: "/etc/letsencrypt/live/{{ domains.prod }}/fullchain.pem"
+  register: prod_cert
+
+- name: Generate SSL certificate for test domain
+  ansible.builtin.command: >
+    certbot certonly --nginx
+    --non-interactive
+    --agree-tos
+    --email {{ certbot_email }}
+    -d {{ domains.test }}
+  args:
+    creates: "/etc/letsencrypt/live/{{ domains.test }}/fullchain.pem"
+  register: test_cert
+
+- name: Generate SSL certificate for Loki domain
+  ansible.builtin.command: >
+    certbot certonly --nginx
+    --non-interactive
+    --agree-tos
+    --email {{ certbot_email }}
+    -d {{ domains.loki }}
+  args:
+    creates: "/etc/letsencrypt/live/{{ domains.loki }}/fullchain.pem"
+  register: loki_cert
+
+- name: Display SSL certificate status
+  ansible.builtin.debug:
+    msg:
+      - "Production cert: {{ 'Generated' if prod_cert.changed else 'Already exists' }}"
+      - "Test cert: {{ 'Generated' if test_cert.changed else 'Already exists' }}"
+      - "Loki cert: {{ 'Generated' if loki_cert.changed else 'Already exists' }}"

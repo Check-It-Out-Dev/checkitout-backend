@@ -1,0 +1,40 @@
+# Kernel parameter configuration tasks
+# Apply security and performance sysctl settings
+
+---
+- name: Backup existing sysctl.conf
+  ansible.builtin.copy:
+    src: /etc/sysctl.conf
+    dest: "/etc/sysctl.conf.backup-{{ ansible_date_time.date }}"
+    remote_src: yes
+    mode: '0644'
+  ignore_errors: yes
+
+- name: Deploy sysctl configuration
+  ansible.builtin.template:
+    src: sysctl.conf.j2
+    dest: "{{ sysctl_config_file }}"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reload sysctl
+
+- name: Apply sysctl parameters immediately
+  ansible.builtin.command: "sysctl -p {{ sysctl_config_file }}"
+  register: sysctl_result
+  changed_when: sysctl_result.rc == 0
+
+- name: Verify critical sysctl parameters
+  ansible.builtin.command: "sysctl {{ item }}"
+  loop:
+    - net.ipv4.conf.all.rp_filter
+    - net.ipv4.tcp_syncookies
+    - kernel.dmesg_restrict
+    - fs.file-max
+  register: sysctl_verification
+  changed_when: false
+
+- name: Display verified sysctl parameters
+  ansible.builtin.debug:
+    msg: "{{ item.stdout }}"
+  loop: "{{ sysctl_verification.results }}"

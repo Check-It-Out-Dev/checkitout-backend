@@ -1,0 +1,18 @@
+# Handlers for 08-nginx role
+
+---
+- name: Reload Nginx
+  ansible.builtin.systemd:
+    name: nginx
+    state: reloaded
+  listen: "Reload Nginx"
+
+- name: Restart Nginx
+  ansible.builtin.systemd:
+    name: nginx
+    state: restarted
+  listen: "Restart Nginx"
+
+- name: Test Nginx Config
+  ansible.builtin.command: nginx -t
+  listen: "Test Nginx Config"

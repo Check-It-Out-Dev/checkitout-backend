@@ -1,0 +1,388 @@
+# File: sudo visudo -f /etc/sudoers.d/instagram-scripts-admin
+# Defaults for instagram-scripts-admin user
+Defaults:instagram-scripts-admin !requiretty
+Defaults:instagram-scripts-admin setenv
+Defaults:instagram-scripts-admin !mail_always
+Defaults:instagram-scripts-admin !mail_badpass
+Defaults:instagram-scripts-admin !mail_no_user
+
+# NEW: Prevent PAM session timeout
+Defaults:instagram-scripts-admin !pam_session
+Defaults:instagram-scripts-admin !use_pty
+Defaults:instagram-scripts-admin !pam_setcred
+
+# FIXED: Preserve critical environment variables through sudo
+Defaults:instagram-scripts-admin env_keep += "ENV_FILE_PATH PWD HOME ENVIRONMENT DEPLOYMENT_PATH BACKUP_BASE_PATH RETENTION_COUNT GITHUB_RUN_ID TIMESTAMP SCRIPT_EXECUTION_TIMEOUT_SECONDS SYSTEMD_SERVICE HCP_APP_NAME RUNTIME_PATH REMOTE_SCRIPT_PATH HEALTH_CHECK_TIMEOUT HCP_SECRET_PREFIX CICD_LOG_BASE CICD_LOG_FILE CICD_LOG_PATH CICD_OPERATION CICD_TIMESTAMP CONTAINER_GROUP_NAME CONTAINER_USER_NAME ADMIN_BASE ADMIN_PACKAGE_PATH IMAGE_TAG HCP_INIT_IMAGE_FULL OUTPUT_FILE CICD_LOG_ENABLED CICD_LOG_GROUP GITHUB_RUN_NUMBER SERVICE_START_TIMEOUT SERVICE_STOP_TIMEOUT VALIDATION_TIMEOUT SHA256_CHECKSUM ADMIN_HOME"
+
+# Additional security settings
+Defaults:instagram-scripts-admin syslog=auth
+Defaults:instagram-scripts-admin log_input, log_output
+
+# ================================================================================
+# CI/CD LOGGING OPERATIONS
+# ================================================================================
+
+# Instagram Scripts Admin Secure Sudoers Configuration
+# For immutability implementation with chattr
+
+# Allow instagram-scripts-admin to use chattr for immutability
+instagram-scripts-admin ALL=(root) NOPASSWD: /usr/bin/chattr
+
+# Consolidated log management rules are in the main section below
+
+# Existing permissions (keep these)
+instagram-scripts-admin ALL=(instagram-test-deploy) NOPASSWD: ALL
+instagram-scripts-admin ALL=(root) NOPASSWD: /usr/bin/su - instagram-deploy-admin -c *
+# Allow rm operations for cleanup (consolidated)
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/rm -rf /var/lib/instagram-scripts-admin/*, \
+    /usr/bin/rm -rf /var/lib/instagram-scripts-admin/.*, \
+    /usr/bin/rm -rf /var/lib/instagram-scripts-admin/..?*, \
+    /usr/bin/rm -rf /var/lib/instagram-scripts-admin/.[!.]*
+
+# Allow chmod/chown for secure-logger.sh (consolidated)
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/chmod 750 /var/lib/instagram-scripts-admin/secure-logger.sh, \
+    /usr/bin/chmod 640 /var/lib/instagram-scripts-admin/secure-logger.sh.metadata, \
+    /usr/bin/chown instagram-scripts-admin\:instagram-scripts-admin /var/lib/instagram-scripts-admin/secure-logger.sh*
+
+# Allow execution wrapper scripts in /tmp (with specific pattern for security)
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /bin/chmod +x /tmp/deploy_exec_[0-9]*.sh, \
+    /tmp/deploy_exec_[0-9]*.sh, \
+    /bin/rm -f /tmp/deploy_exec_[0-9]*.sh
+
+# Allow creation and management of CI/CD log directories (using mkdir -p pattern)
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/mkdir -p /var/log/CiCd*, \
+    /usr/bin/chmod 755 /var/log/CiCd*, \
+    /usr/bin/chown instagram-scripts-admin\:instagram-cicd /var/log/CiCd*
+
+# Allow creation and management of CI/CD log files
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/touch /var/log/CiCd/*/*, \
+    /usr/bin/chmod 640 /var/log/CiCd/*/cicd-*.log, \
+    /usr/bin/chown instagram-scripts-admin\:instagram-cicd /var/log/CiCd/*/cicd-*.log, \
+    /usr/bin/chattr +a /var/log/CiCd/*/cicd-*.log, \
+    /usr/bin/chattr -a /var/log/CiCd/*/cicd-*.log
+
+# Allow tee for writing to log files (already covered by general pattern above)
+# Using the general pattern from log setup section instead
+
+# Allow tail for reading log files
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/tail -* /var/log/CiCd/*/*.log, \
+    /usr/bin/tail /var/log/CiCd/*/*.log
+
+# ================================================================================
+# NUCLEAR CLEANUP OPERATIONS (SIMPLIFIED v3)
+# ================================================================================
+
+# Allow removing ALL immutability before nuclear cleanup script
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/chattr -R -i /var/lib/instagram-scripts-admin, \
+    /usr/bin/chattr -R -i /home/instagram-test-deploy
+
+# ================================================================================
+# NUCLEAR CLEANUP OPERATIONS (COMPREHENSIVE v2)
+# ================================================================================
+
+# Allow chattr operations for nuclear cleanup in admin home directory
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/chattr -R -i /var/lib/instagram-scripts-admin/*, \
+    /usr/bin/chattr -R -i /var/lib/instagram-scripts-admin/.*, \
+    /usr/bin/chattr -i /var/lib/instagram-scripts-admin/*.sh, \
+    /usr/bin/chattr -i /var/lib/instagram-scripts-admin/*.yml, \
+    /usr/bin/chattr -i /var/lib/instagram-scripts-admin/*.yaml, \
+    /usr/bin/chattr -i /var/lib/instagram-scripts-admin/.env*, \
+    /usr/bin/chattr -i /var/lib/instagram-scripts-admin/*.metadata, \
+    /usr/bin/chattr +i /var/lib/instagram-scripts-admin/*.sh, \
+    /usr/bin/chattr +i /var/lib/instagram-scripts-admin/*.yml, \
+    /usr/bin/chattr +i /var/lib/instagram-scripts-admin/*.yaml, \
+    /usr/bin/chattr +i /var/lib/instagram-scripts-admin/.env*, \
+    /usr/bin/chattr +i /var/lib/instagram-scripts-admin/*.metadata, \
+    /usr/bin/chattr +i /var/lib/instagram-scripts-admin/secure-logger.sh, \
+    /usr/bin/chattr -i /var/lib/instagram-scripts-admin/secure-logger.sh
+
+# Additional patterns for comprehensive cleanup
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/chattr -R -i /var/lib/instagram-scripts-admin, \
+    /usr/bin/chattr -R -i /var/lib/instagram-scripts-admin/deployment-package, \
+    /usr/bin/chattr -R -i /var/lib/instagram-scripts-admin/deployment-package/*, \
+    /usr/bin/chattr -i /var/lib/instagram-scripts-admin/nuclear-cleanup-temp.sh
+
+# Specific chattr operations for .env files
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/chattr +i /var/lib/instagram-scripts-admin/.env, \
+    /usr/bin/chattr -i /var/lib/instagram-scripts-admin/.env, \
+    /usr/bin/chattr +i /var/lib/instagram-scripts-admin/.env*, \
+    /usr/bin/chattr -i /var/lib/instagram-scripts-admin/.env*
+
+# For test-deploy user home cleanup (health checks)
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/chattr -R -i /home/instagram-test-deploy/*, \
+    /usr/bin/chattr -R -i /home/instagram-test-deploy/.*
+
+# Allow lsattr for checking immutability status
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/lsattr /var/lib/instagram-scripts-admin/*, \
+    /usr/bin/lsattr /var/lib/instagram-scripts-admin/.*, \
+    /usr/bin/lsattr /var/lib/instagram-scripts-admin/.env, \
+    /usr/bin/lsattr /var/lib/instagram-scripts-admin/.env*, \
+    /usr/bin/lsattr /home/instagram-test-deploy/*, \
+    /usr/bin/lsattr /home/instagram-test-deploy/.*
+
+# Allow ls for directory listings (consolidated)
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/ls -la /var/log/CiCd/*, \
+    /usr/bin/ls -la /var/log/CiCd/*/*, \
+    /usr/bin/ls -la /opt/instagram-platform/*/backups/
+
+# ================================================================================
+# DEPLOYMENT PATH VERIFICATION (NEW)
+# ================================================================================
+
+# Allow lsattr for deployment paths to verify immutability (READ-ONLY)
+# This is only for verification - all chattr operations are done by validated scripts
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/lsattr /opt/instagram-platform/test/deployment/*, \
+    /usr/bin/lsattr /opt/instagram-platform/prod/deployment/*, \
+    /usr/bin/lsattr /opt/instagram-platform/test/deployment/.*, \
+    /usr/bin/lsattr /opt/instagram-platform/prod/deployment/.*, \
+    /usr/bin/lsattr /opt/instagram-platform/test/deployment/.env, \
+    /usr/bin/lsattr /opt/instagram-platform/prod/deployment/.env
+
+# ================================================================================
+# DOCKER OPERATIONS (MINIMAL - SECURITY HARDENED)
+# ================================================================================
+# NOTE: Docker compose is managed by systemd service, not directly by CI/CD
+# Only status checking is needed
+
+# Allow Docker status commands only
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/docker ps, \
+    /usr/bin/docker ps -*, \
+    /usr/bin/docker ps --*
+
+# ================================================================================
+# PRODUCTION DOCKER COMPOSE OPERATIONS (FOR CI/CD MONITORING)
+# ================================================================================
+
+# Production container health checking (read-only)
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml ps google-secrets-init --format json, \
+    /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml ps redis --format json, \
+    /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml ps redis-sentinel --format json, \
+    /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml ps app --format json
+
+# Production container status (read-only)
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml ps, \
+    /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml ps -q, \
+    /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml ps --format json
+
+# Production logs (read-only) - for CI/CD monitoring
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml logs --tail=50, \
+    /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml logs google-secrets-init --tail=50, \
+    /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml logs redis --tail=50, \
+    /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml logs redis-sentinel --tail=50, \
+    /usr/bin/docker compose -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml logs app --tail=50
+
+# Allow systemctl operations for services (consolidated)
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/systemctl start instagram-platform-*, \
+    /usr/bin/systemctl stop instagram-platform-*, \
+    /usr/bin/systemctl restart instagram-platform-*, \
+    /usr/bin/systemctl reload-or-restart instagram-platform-*, \
+    /usr/bin/systemctl status instagram-platform-*, \
+    /usr/bin/systemctl status instagram-platform-* --no-pager*, \
+    /usr/bin/systemctl is-active instagram-platform-*, \
+    /usr/bin/systemctl is-active --quiet instagram-platform-*, \
+    /usr/bin/systemctl show instagram-platform-* --property=*, \
+    /usr/bin/systemctl reset-failed instagram-platform-*, \
+    /usr/bin/systemctl daemon-reload
+
+# Allow journalctl for service logs (consolidated)
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/journalctl -u instagram-platform-* -n *, \
+    /usr/bin/journalctl -u instagram-platform-* --no-pager*
+
+# ================================================================================
+# PRODUCTION SERVICE HEALTH CHECK OPERATIONS
+# ================================================================================
+
+# Allow execution of production health check script
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /opt/instagram-platform/prod/deployment/check-redis-health.sh, \
+    /bin/bash /opt/instagram-platform/prod/deployment/check-redis-health.sh
+
+# Allow Redis CLI operations for production health checks
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/docker exec instagram-platform-prod-redis redis-cli ping, \
+    /usr/bin/docker exec instagram-platform-prod-redis redis-cli INFO *, \
+    /usr/bin/docker exec instagram-platform-prod-redis-sentinel redis-cli -p 26379 ping, \
+    /usr/bin/docker exec instagram-platform-prod-redis-sentinel redis-cli -p 26379 SENTINEL *, \
+    /usr/bin/docker exec instagram-platform-prod-app redis-cli -h redis -p 6379 ping
+
+# ================================================================================
+# CI/CD DEPLOYMENT SCRIPTS - COMPREHENSIVE PERMISSIONS
+# ================================================================================
+
+# Allow direct script execution with any parameters
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /var/lib/instagram-scripts-admin/validate-and-exec-ci-script-[0-9]*.sh *, \
+    /var/lib/instagram-scripts-admin/deploy-and-secure-[0-9]*.sh *, \
+    /var/lib/instagram-scripts-admin/secure-logger.sh *, \
+    /var/lib/instagram-scripts-admin/deploy-env-validator.sh *
+
+# Allow execution of validator calling deploy script
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /var/lib/instagram-scripts-admin/validate-and-exec-ci-script-[0-9]*.sh /var/lib/instagram-scripts-admin/deploy-and-secure-[0-9]*.sh [a-zA-Z0-9]*
+
+# Allow script execution via bash -c (used by validate-and-exec internally)
+# This is needed when validate-and-exec uses: sudo -E /bin/bash -c "cd ... && ./script"
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /bin/bash -c cd\ \\'/var/lib/instagram-scripts-admin\\'\ *\ \\&\\&\ *\ \\&\\&\ *\ \\&\\&\ ./*, \
+    /usr/bin/timeout --preserve-status --signal=TERM --kill-after=10 [0-9]* /bin/bash -c cd\ \\'/var/lib/instagram-scripts-admin\\'\ *
+
+# Allow sudo -E for environment preservation wrapper scripts
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/sudo -E /tmp/backup-wrapper-[0-9]*.sh /var/lib/instagram-scripts-admin/validate-and-exec-ci-script-[0-9]*.sh /var/lib/instagram-scripts-admin/backup-pre-deploy-[0-9]*.sh /var/lib/instagram-scripts-admin/backup-pre-deploy-[0-9]*.sh.sha256, \
+    /usr/bin/sudo -E /tmp/reload-wrapper-[0-9]*.sh /var/lib/instagram-scripts-admin/validate-and-exec-ci-script-[0-9]*.sh /var/lib/instagram-scripts-admin/reload-and-validate-[0-9]*.sh /var/lib/instagram-scripts-admin/reload-and-validate-[0-9]*.sh.sha256
+
+# ================================================================================
+# DEPLOYMENT OPERATIONS
+# ================================================================================
+
+# File operations for deployment setup (removed - duplicates pattern-based rules above)
+
+# Directory creation for deployment paths (consolidated)
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/mkdir -p /opt/instagram-platform/*/runtime, \
+    /usr/bin/mkdir -p /opt/instagram-platform/*/deployment, \
+    /usr/bin/mkdir -p /var/lib/instagram-scripts-admin/deployment-package
+
+# Package management operations (consolidated)
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/mv deployment-package.tar.gz /var/lib/instagram-scripts-admin/deployment-package.tar.gz, \
+    /usr/bin/cp deployment-package.tar.gz /var/lib/instagram-scripts-admin/deployment-package.tar.gz, \
+    /usr/bin/rm -f /var/lib/instagram-scripts-admin/deployment-package.tar.gz, \
+    /usr/bin/rm -f /tmp/deployment-package-[0-9]*.tar.gz
+
+# Package extraction (consolidated)
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/tar -C /var/lib/instagram-scripts-admin --no-same-owner -xzf /var/lib/instagram-scripts-admin/deployment-package.tar.gz, \
+    /usr/bin/tar -C /var/lib/instagram-scripts-admin --no-same-owner -xzvf /var/lib/instagram-scripts-admin/deployment-package.tar.gz, \
+    /usr/bin/tar -xzf /tmp/deployment-package-[0-9]*.tar.gz --strip-components=1, \
+    /usr/bin/tar -xzf /tmp/deployment-package-[0-9]*.tar.gz --no-same-owner --strip-components=1
+
+# Cleanup operations (consolidated and pattern-based)
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/rm -rf /var/lib/instagram-scripts-admin/deployment-package/, \
+    /usr/bin/rm -f /var/lib/instagram-scripts-admin/*-[0-9]*.sh, \
+    /usr/bin/rm -f /var/lib/instagram-scripts-admin/*-[0-9]*.sh.sha256, \
+    /usr/bin/rm -f /var/lib/instagram-scripts-admin/*-[0-9]*.sh.metadata, \
+    /usr/bin/rm -f /var/lib/instagram-scripts-admin/secure-logger.sh*, \
+    /usr/bin/rm -f /var/lib/instagram-scripts-admin/deploy-env-validator.sh
+
+# Allow chattr operations for backup cleanup
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/chattr -R -i /opt/instagram-platform/test/backups/*_backup, \
+    /usr/bin/chattr -R -i /opt/instagram-platform/test/backups/*_pre-deployment_backup, \
+    /usr/bin/chattr -R -i /opt/instagram-platform/test/backups/*_post-deployment_backup, \
+    /usr/bin/chattr -R -i /opt/instagram-platform/prod/backups/*_backup, \
+    /usr/bin/chattr -R -i /opt/instagram-platform/prod/backups/*_pre-deployment_backup, \
+    /usr/bin/chattr -R -i /opt/instagram-platform/prod/backups/*_post-deployment_backup
+
+# Allow cleanup operations on old backups (consolidated)
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/rm -rf /opt/instagram-platform/*/backups/*_backup, \
+    /usr/bin/rm -rf /opt/instagram-platform/*/backups/*_pre-deployment_backup, \
+    /usr/bin/rm -rf /opt/instagram-platform/*/backups/*_post-deployment_backup
+
+# ================================================================================
+# PRODUCTION DEPLOYMENT FILE OPERATIONS
+# ================================================================================
+
+# Allow reading production configuration files for validation
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/cat /opt/instagram-platform/prod/deployment/docker-compose-prod.yml, \
+    /usr/bin/cat /opt/instagram-platform/prod/deployment/.env, \
+    /usr/bin/test -f /opt/instagram-platform/prod/deployment/docker-compose-prod.yml, \
+    /usr/bin/test -f /opt/instagram-platform/prod/deployment/.env
+
+# Allow checking production deployment directory
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/ls -la /opt/instagram-platform/prod/deployment/, \
+    /usr/bin/ls -la /opt/instagram-platform/prod/deployment/*, \
+    /usr/bin/ls -la /opt/instagram-platform/prod/runtime/
+
+# ================================================================================
+# RELOAD AND VALIDATE OPERATIONS (NEW)
+# ================================================================================
+
+# Allow execution of reload-and-validate and backup scripts
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /var/lib/instagram-scripts-admin/reload-and-validate-[0-9]*.sh *, \
+    /var/lib/instagram-scripts-admin/backup-pre-deploy-[0-9]*.sh *
+
+# Allow validate-and-exec calling reload/backup scripts
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /var/lib/instagram-scripts-admin/validate-and-exec-ci-script-[0-9]*.sh /var/lib/instagram-scripts-admin/reload-and-validate-[0-9]*.sh [a-zA-Z0-9]*, \
+    /var/lib/instagram-scripts-admin/validate-and-exec-ci-script-[0-9]*.sh /var/lib/instagram-scripts-admin/backup-pre-deploy-[0-9]*.sh [a-zA-Z0-9]*
+
+# File operations for CI/CD scripts (consolidated pattern-based)
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/chmod +x /var/lib/instagram-scripts-admin/*-[0-9]*.sh, \
+    /usr/bin/chmod 750 /var/lib/instagram-scripts-admin/*-[0-9]*.sh, \
+    /usr/bin/chmod 640 /var/lib/instagram-scripts-admin/*-[0-9]*.sh.metadata, \
+    /usr/bin/chown instagram-scripts-admin\:instagram-scripts-admin /var/lib/instagram-scripts-admin/*-[0-9]*.sh, \
+    /usr/bin/chown instagram-scripts-admin\:instagram-scripts-admin /var/lib/instagram-scripts-admin/*-[0-9]*.sh.metadata
+
+# Cleanup operations for CI/CD scripts (covered by pattern-based rules above)
+
+# Immutability operations for reload and backup scripts
+instagram-scripts-admin ALL=(root) NOPASSWD: \
+    /usr/bin/chattr +i /var/lib/instagram-scripts-admin/reload-and-validate-[0-9]*.sh, \
+    /usr/bin/chattr +i /var/lib/instagram-scripts-admin/reload-and-validate-[0-9]*.sh.metadata, \
+    /usr/bin/chattr +i /var/lib/instagram-scripts-admin/backup-pre-deploy-[0-9]*.sh, \
+    /usr/bin/chattr +i /var/lib/instagram-scripts-admin/backup-pre-deploy-[0-9]*.sh.metadata, \
+    /usr/bin/chattr -i /var/lib/instagram-scripts-admin/reload-and-validate-[0-9]*.sh, \
+    /usr/bin/chattr -i /var/lib/instagram-scripts-admin/reload-and-validate-[0-9]*.sh.metadata, \
+    /usr/bin/chattr -i /var/lib/instagram-scripts-admin/backup-pre-deploy-[0-9]*.sh, \
+    /usr/bin/chattr -i /var/lib/instagram-scripts-admin/backup-pre-deploy-[0-9]*.sh.metadata
+
+# ================================================================================
+# YAML/FILE VALIDATION OPERATIONS - REMOVED
+# ================================================================================
+# NOTE: YAML validation is done internally in deploy-and-secure.sh
+# yamllint, cat, and sed are NOT used by the CI/CD pipeline
+
+
+# ================================================================================
+# SECURITY RESTRICTIONS
+# ================================================================================
+
+# Block package managers
+Cmnd_Alias PACKAGE_MANAGERS = /usr/bin/apt, /usr/bin/apt-get, \
+                              /usr/sbin/dpkg, /usr/bin/snap, \
+                              /usr/bin/pip, /usr/bin/pip3, \
+                              /usr/bin/npm, /usr/bin/yarn
+
+instagram-scripts-admin ALL = (ALL) !PACKAGE_MANAGERS
+
+# Block dangerous editors and interpreters
+Cmnd_Alias DANGEROUS_TOOLS = /usr/bin/vi, /usr/bin/vim, /usr/bin/nano, \
+                             /usr/bin/emacs, /usr/bin/ed, \
+                             /usr/bin/perl, /usr/bin/ruby, \
+                             /usr/bin/php*, /usr/bin/zsh
+
+instagram-scripts-admin ALL = (ALL) !DANGEROUS_TOOLS
+
+# Block script execution from unsafe locations
+Cmnd_Alias UNSAFE_LOCATIONS = /tmp/*, /var/tmp/*, /dev/shm/*, \
+                              /home/*/Downloads/*, /home/*/.local/*, \
+                              /home/*/.cache/*, /run/user/*
+
+instagram-scripts-admin ALL = (ALL) !UNSAFE_LOCATIONS

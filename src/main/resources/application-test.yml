@@ -1,0 +1,361 @@
+# =============================================================================
+# TEST ENVIRONMENT - AUTOMATICALLY INHERITS FROM application.yml
+# =============================================================================
+
+# Frontend URL configuration
+frontend:
+  url: https://check-it-out.pl
+
+spring:
+  
+  # =============================================================================
+  # TEST DATABASE (DOCKER CONTAINER)
+  # =============================================================================
+  datasource:
+    host: ${DATABASE_HOST}  # From environment (secret)
+    port: ${DATABASE_PORT:5432}
+    database: instagram_platform_test
+    url: jdbc:postgresql://${spring.datasource.host}:${spring.datasource.port}/${spring.datasource.database}
+    # Application uses the restricted user
+    username: app_user_test
+    password: ${DATABASE_PASSWORD}  # From environment (secret)
+    
+    # Test pool (moderate size)
+    hikari:
+      pool-name: CheckItOut-Test-Pool
+      maximum-pool-size: 10
+      minimum-idle: 2
+      # SSL disabled for container networking
+      data-source-properties:
+        ssl: false
+        sslmode: disable
+  
+  # Test-specific JPA settings (only visual)
+  jpa:
+    show-sql: false  # Show SQL in test logs
+    properties:
+      hibernate:
+        format_sql: true  # Format for readability
+        generate_statistics: false  # No statistics in test
+  
+  # Liquibase for test
+  liquibase:
+    contexts: test
+    # IMPORTANT: Liquibase runs as app user (owns the public schema)
+    user: app_user_test
+    password: ${DATABASE_PASSWORD}  # From environment (secret)
+    # URL for Liquibase (uses application database)
+    url: jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT:5432}/instagram_platform_test
+  
+  # =============================================================================
+  # TEST REDIS (DOCKER CONTAINER)
+  # =============================================================================
+  data:
+    redis:
+      mode: standalone
+      host: redis  # Connect to Docker Redis service
+      port: 6379
+      password:
+      database: 0
+      lettuce:
+        pool:
+          max-active: 10
+          max-idle: 8
+          min-idle: 2
+  
+  cache:
+    type: redis
+    redis:
+      time-to-live: 30m
+      key-prefix: "checkitout:test:"
+
+# =============================================================================
+# TEST ENVIRONMENT SETTINGS
+# =============================================================================
+app:
+  environment: TEST
+  base-url: https://check-it-out.pl
+
+server:
+  port: 8082
+  address: 0.0.0.0
+  servlet:
+    context-path: /api
+  error:
+    include-stacktrace: never  # Hardened 2026-06: no stack traces in responses (match prod, pentest)
+    include-message: never  # Hardened 2026-06: no exception messages in responses (match prod, pentest)
+
+# =============================================================================
+# TEST SECRETS (FROM GOOGLE SECRET MANAGER)
+# =============================================================================
+secrets:
+  development:
+    mode: false  # Use mounted secrets from init container
+
+# Backend JWT Configuration (from GSM)
+jwt:
+  secret: ${JWT_SECRET:}  # From GSM (TEST_JWT_SECRET)
+  cookie:
+    domain: .check-it-out.pl  # Leading dot for subdomain cookies
+    secure: true  # HTTPS required in test
+
+# Cookie HMAC Configuration (from GSM)
+cookie:
+  hmac:
+    secret: ${COOKIE_HMAC_SECRET:}  # From GSM (TEST_COOKIE_HMAC_SECRET)
+
+firebase:
+  service:
+    account:
+      json:
+        base64: ${FIREBASE_SERVICE_ACCOUNT_JSON:}
+  project:
+    id: check-it-out-47c50  # TEST Firebase project (constant)
+
+# Meta App Configuration for Test
+meta:
+  app-id: ${META_APP_ID:1000000000000001}           # From env/secrets
+  app-secret: ${META_APP_SECRET:}  # From env/secrets
+
+# Admin Configuration
+admin:
+  firebase:
+    uid: ${ADMIN_FIREBASE_UID}  # From GSM (TEST_ADMIN_FIREBASE_UID)
+  email: ${ADMIN_EMAIL}  # From GSM (TEST_ADMIN_EMAIL)
+
+instagram:
+  test:
+    token: ${INSTAGRAM_TEST_TOKEN:}
+    validation:
+      enabled: true
+      startup-check: true
+  client-id: ${INSTAGRAM_CLIENT_ID:2000000000000001}  # TEST Instagram App ID (constant)
+  client:
+    secret: ${INSTAGRAM_CLIENT_SECRET:}  # From env/secrets
+  redirect-uri: https://check-it-out.pl/api/auth/social/callback/instagram  # Backend OAuth callback with /api/ prefix
+  validation:
+    enabled: true
+
+# =============================================================================
+# GCP CONFIGURATION FOR TEST
+# =============================================================================
+gcp:
+  project-id: check-it-out-47c50
+  bucket-name: check-it-out-47c50.firebasestorage.app
+  storage:
+    enabled: true
+  kms:
+    enabled: true
+    location: europe-central2  # Warsaw, Poland
+    key-ring: instagram-tokens
+    key-name: token-encryption-key
+    totp-key-name: totp-secrets-key
+
+# =============================================================================
+# FILE UPLOAD CONFIGURATION
+# =============================================================================
+file-upload:
+  max-file-size: 10485760
+  allowed-extensions: jpg,jpeg,png,gif,webp
+  signed-url-expiration-minutes: 5
+  storage-path-pattern: content/{userId}/{timestamp}_{filename}
+  tracking:
+    enabled: true
+    cleanup-orphaned-uploads: true
+    orphaned-upload-timeout-hours: 1
+
+# =============================================================================
+# GEOIP CONFIGURATION FOR TEST
+# =============================================================================
+geoip:
+  storage:
+    bucket: check-it-out-47c50-geoip-private  # TEST shares Firebase with LOCAL
+    enabled: true
+    max-age-days: 7  # Check for updates if database older than 7 days
+  download:
+    source: firebase  # All TEST instances download from Firebase Storage
+
+# =============================================================================
+# CONTAINER USER CONFIGURATION - SINGLE SOURCE OF TRUTH
+# =============================================================================
+# Container User/Group Configuration for Docker builds
+# Based on VPS user: instagram-test-deploy (uid=1002, gid=1005 for docker-secrets-test)
+
+
+  # Source configuration
+  source:
+    deployment:
+      folder:
+        name: test
+
+  spring:
+    profiles:
+      active: test
+  environment:
+    name: test
+
+  # Log Directory Structure
+  log:
+    base:
+      path: /var/log/instagram-platform
+
+# =============================================================================
+# TEST LOGGING
+# =============================================================================
+logging:
+  level:
+    root: INFO
+    com.sm.instagram.platform: INFO
+    
+    # =====================================================================
+    # STARTUP VALIDATORS - Always show initialization logs in test
+    # =====================================================================
+    # Main application validator
+    com.sm.instagram.platform.common.validator.ApplicationStartupValidator: INFO
+    
+    # Security validators
+    com.sm.instagram.platform.common.security.MaxMindStartupValidator: INFO
+    com.sm.instagram.platform.auth.validator.RecaptchaStartupValidator: INFO
+    com.sm.instagram.platform.auth.validator.TotpQRCodeStartupValidator: INFO
+    com.sm.instagram.platform.auth.social.instagram.InstagramStartupValidator: INFO
+    
+    # Validation services with startup checks
+    com.sm.instagram.platform.auth.validator.TotpValidationService: INFO
+    com.sm.instagram.platform.storage.service.SignedUrlValidationService: INFO
+    com.sm.instagram.platform.common.redis.RedisValidationService: INFO
+    com.sm.instagram.platform.common.security.KMSValidationService: INFO
+    com.sm.instagram.platform.util.ServiceAccountKeyValidator: INFO
+    
+    # General validator packages (catch-all for any new validators)
+    com.sm.instagram.platform.common.validator: INFO
+    com.sm.instagram.platform.auth.validator: INFO
+    
+    # Secrets and credentials (important for startup)
+    com.sm.instagram.platform.secrets: INFO
+    com.sm.instagram.platform.common.credentials: INFO
+    
+    # Framework logging
+    org.hibernate.SQL: INFO
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN  # Less verbose than dev
+    org.hibernate.engine.internal.StatisticalLoggingSessionEventListener: WARN  # Suppress session metrics
+    liquibase: INFO
+    com.zaxxer.hikari: INFO
+  file:
+    name: /var/log/instagram-platform/test/application.log
+
+# =============================================================================
+# REDIS STARTUP CONNECTIVITY TEST
+# =============================================================================
+redis:
+  startup:
+    test:
+      enabled: true
+      fail-fast: true  # Fail application startup if Redis not available in test
+      timeout: 5000ms
+      retry-attempts: 3
+
+# =============================================================================
+# MONITORING FOR TEST
+# =============================================================================
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info,metrics,prometheus,hcp-vault
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: when-authorized
+      group:
+        readiness:
+          include: db,diskSpace,liquibase
+        liveness:
+          include: ping
+  server:
+    port: ${server.port}
+  health:
+    redis:
+      enabled: true
+    readinessstate:
+      enabled: true
+    db:
+      enabled: true
+    ping:
+      enabled: true
+    diskSpace:
+      enabled: true
+    liquibase:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+      environment: ${app.environment:test}
+
+# Swagger disabled for test
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+# =============================================================================
+# STORAGE MODE FOR TEST
+# =============================================================================
+storage:
+  mode: redis  # Test environment uses Redis
+
+# Rate limiting for test
+rate-limit:
+  enabled: true
+  algorithm: sliding-window
+  max-entries: 100000
+  cleanup:
+    enabled: true
+    interval: 300000
+  redis:
+    key-prefix: "rl:test:"
+    enable-fallback: true
+    connection-timeout: 2000
+    sliding-window:
+      enabled: true
+      precision: 10
+    circuit-breaker:
+      enabled: true
+      failure-threshold: 5
+      success-threshold: 3
+      timeout: 30s
+      fallback-to-memory: true
+  metrics:
+    enabled: true
+    optimized: true
+  excluded-paths: /health,/actuator/**,/swagger-ui/**,/v3/api-docs/**
+  defaults:
+    requests: 100
+    duration: 3600
+    auth-requests: 20
+    auth-duration: 300
+    upload-requests: 10
+    upload-duration: 3600
+  upload:
+    per-hour: 10
+    per-day: 50
+    global-per-minute: 100
+    max-user-storage: 1073741824
+    max-file-size: 104857600
+
+# =============================================================================
+# CORS FOR TEST
+# =============================================================================
+cors:
+  allowed-origins:
+    - https://check-it-out.pl
+    - https://www.check-it-out.pl
+    - https://app.check-it-out.pl
+    - https://www.app.check-it-out.pl
+    - http://localhost:4200
+    - https://localhost:4200

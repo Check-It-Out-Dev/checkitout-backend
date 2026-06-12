@@ -1,0 +1,63 @@
+[Unit]
+Description=Loki Logging Stack with Grafana Alloy (Docker Compose)
+Documentation=https://grafana.com/docs/loki/latest/ https://grafana.com/docs/alloy/latest/
+After=docker.service network-online.target
+Wants=network-online.target docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+RemainAfterExit=yes
+
+# Working directory
+WorkingDirectory=/opt/instagram-platform/loki
+
+# User and group (adjust as needed)
+User=root
+Group=docker
+
+# Environment
+EnvironmentFile=/opt/instagram-platform/loki/.env
+Environment="DOCKER_CLIENT_TIMEOUT=120"
+Environment="COMPOSE_HTTP_TIMEOUT=120"
+Environment="HOSTNAME=%H"
+
+# Pre-start: Clean up old containers and pull latest images
+ExecStartPre=-/usr/bin/docker-compose down --remove-orphans
+ExecStartPre=/usr/bin/docker-compose pull
+
+# Start command
+ExecStart=/usr/bin/docker-compose up -d --remove-orphans
+
+# Stop command
+ExecStop=/usr/bin/docker-compose down
+
+# Reload command (recreate containers)
+ExecReload=/usr/bin/docker-compose up -d --force-recreate
+
+# Restart policy
+Restart=always
+RestartSec=10s
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/instagram-platform/loki /var/lib/docker
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=loki-stack
+
+# Timeouts
+TimeoutStartSec=300
+TimeoutStopSec=60
+
+[Install]
+WantedBy=multi-user.target

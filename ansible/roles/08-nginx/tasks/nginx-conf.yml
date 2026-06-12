@@ -1,0 +1,24 @@
+# Deploy main nginx.conf
+
+---
+- name: Check if custom nginx.conf exists
+  ansible.builtin.stat:
+    path: "{{ nginx_config_source }}/nginx.conf"
+  delegate_to: localhost
+  become: false
+  register: nginx_conf_source
+
+- name: Deploy custom nginx.conf
+  ansible.builtin.copy:
+    src: "{{ nginx_config_source }}/nginx.conf"
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: '0644'
+    validate: 'nginx -t -c %s'
+  when: nginx_conf_source.stat.exists
+  notify: Reload Nginx
+
+- name: Display nginx.conf deployment status
+  ansible.builtin.debug:
+    msg: "{{ 'Custom nginx.conf deployed' if nginx_conf_source.stat.exists else 'Using default nginx.conf' }}"

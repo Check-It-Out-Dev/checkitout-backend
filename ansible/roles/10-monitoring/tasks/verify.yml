@@ -1,0 +1,63 @@
+# Monitoring stack verification
+
+---
+- name: Verify all critical Loki files exist
+  ansible.builtin.stat:
+    path: "{{ item.path }}"
+  register: loki_critical_files
+  loop:
+    - path: "{{ loki_config_path }}/docker-compose.yml"
+      name: "Docker Compose file"
+    - path: "{{ loki_config_path }}/loki-config.yaml"
+      name: "Loki configuration"
+    - path: "{{ loki_config_path }}/runtime.yaml"
+      name: "Loki runtime config"
+    - path: "{{ loki_config_path }}/.env"
+      name: "Environment file"
+    - path: "{{ loki_secrets_path }}/service-account.json"
+      name: "GCP service account"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Validate critical files are present
+  ansible.builtin.assert:
+    that:
+      - item.stat.exists
+      - item.stat.isreg  # Must be a regular file, not directory
+    fail_msg: "CRITICAL: {{ item.item.name }} is missing or is a directory at {{ item.item.path }}"
+    success_msg: "{{ item.item.name }} present and is a file"
+  loop: "{{ loki_critical_files.results }}"
+  loop_control:
+    label: "{{ item.item.name }}"
+
+- name: Verify runtime.yaml has correct ownership for container
+  ansible.builtin.stat:
+    path: "{{ loki_config_path }}/runtime.yaml"
+  register: runtime_yaml_stat
+
+- name: Check runtime.yaml ownership
+  ansible.builtin.assert:
+    that:
+      - runtime_yaml_stat.stat.uid == loki_container_uid
+    fail_msg: "runtime.yaml should be owned by UID {{ loki_container_uid }} (container user), not {{ runtime_yaml_stat.stat.uid }}"
+    success_msg: "runtime.yaml has correct ownership (UID {{ loki_container_uid }})"
+
+- name: Verify service-account.json has correct ownership for container
+  ansible.builtin.stat:
+    path: "{{ loki_secrets_path }}/service-account.json"
+  register: sa_json_stat
+
+- name: Check service-account.json ownership
+  ansible.builtin.assert:
+    that:
+      - sa_json_stat.stat.uid == loki_container_uid
+    fail_msg: "service-account.json should be owned by UID {{ loki_container_uid }} (container user), not {{ sa_json_stat.stat.uid }}"
+    success_msg: "service-account.json has correct ownership (UID {{ loki_container_uid }})"
+
+- name: Display monitoring deployment summary
+  ansible.builtin.debug:
+    msg:
+      - "Loki configuration deployed to {{ loki_config_path }}"
+      - "All critical files present and validated"
+      - "Container files owned by UID {{ loki_container_uid }}"
+      - "Loki stack will be started in playbooks/startup.yml"

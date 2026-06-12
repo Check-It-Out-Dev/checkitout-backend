@@ -1,0 +1,13 @@
+# Default variables for 09-sudoers role
+
+---
+# Sudoers file permissions (CRITICAL - do not change)
+sudoers_file_permissions: "0440"
+sudoers_owner: "root"
+sudoers_group: "root"
+
+# Validate before deploying (ALWAYS keep true)
+validate_sudoers: true
+
+# Sudoers file paths
+sudoers_dir: "/etc/sudoers.d"

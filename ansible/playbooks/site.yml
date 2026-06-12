@@ -1,0 +1,129 @@
+# Main Deployment Playbook
+# Instagram Platform VPS - Complete Infrastructure Deployment
+#
+# This playbook orchestrates all roles to deploy the complete Instagram Platform
+# infrastructure from scratch on a new Ubuntu 24.04 VPS.
+#
+# Usage:
+#   ansible-playbook -i inventory/production.yml playbooks/site.yml --vault-password-file ~/.ansible/vault-pass
+#
+# Estimated time: 30-60 minutes (depending on network speed and package downloads)
+#
+# What this playbook does:
+#   - Configures base system (packages, network, firewall, SSH)
+#   - Creates users and groups with exact UIDs/GIDs
+#   - Creates complete directory structure
+#   - Configures Docker (daemon, networks, volumes)
+#   - Deploys secrets (GCP service accounts, .env files)
+#   - Deploys scripts (systemd wrappers, entrypoints)
+#   - Creates systemd services
+#   - Configures Nginx (web server, reverse proxy, SSL)
+#   - Configures sudo permissions
+#   - Deploys monitoring stack (Loki + Alloy)
+#   - Deploys Docker Compose files
+#   - Configures automation (cron, timers)
+#   - Applies security hardening
+#
+# What this playbook does NOT do:
+#   - Start applications (use playbooks/startup.yml)
+#   - Verify deployment (use playbooks/verify.yml)
+
+---
+- name: Instagram Platform VPS - Complete Deployment
+  hosts: instagram_platform
+  become: true
+  gather_facts: yes
+
+  pre_tasks:
+    - name: Display deployment information
+      ansible.builtin.debug:
+        msg:
+          - "=========================================="
+          - "Instagram Platform VPS Deployment"
+          - "=========================================="
+          - "Target: {{ inventory_hostname }} ({{ ansible_host }})"
+          - "OS: {{ ansible_distribution }} {{ ansible_distribution_version }}"
+          - "Deploying: Test + Production + Monitoring"
+          - "=========================================="
+
+    - name: Verify we have vault access
+      ansible.builtin.debug:
+        msg: "Vault variables accessible"
+      no_log: true
+
+  roles:
+    # Phase 3: Critical Infrastructure
+    - role: ../roles/01-base-system
+      tags: [phase3, base-system]
+
+    - role: ../roles/02-users-groups
+      tags: [phase3, users-groups]
+
+    - role: ../roles/03-directories
+      tags: [phase3, directories]
+
+    - role: ../roles/04-docker
+      tags: [phase3, docker]
+
+    # Phase 4: Security & Configuration
+    - role: ../roles/05-secrets
+      tags: [phase4, secrets]
+
+    - role: ../roles/06-scripts
+      tags: [phase4, scripts]
+
+    - role: ../roles/07-systemd
+      tags: [phase4, systemd]
+
+    - role: ../roles/09-sudoers
+      tags: [phase4, sudoers]
+
+    # Phase 5: Web & Applications
+    - role: ../roles/08-nginx
+      tags: [phase5, nginx]
+
+    - role: ../roles/10-monitoring
+      tags: [phase5, monitoring]
+
+    - role: ../roles/11-docker-compose
+      tags: [phase5, docker-compose]
+
+    # Phase 6: Automation & Security
+    - role: ../roles/13-automation
+      tags: [phase6, automation]
+
+    - role: ../roles/14-security
+      tags: [phase6, security]
+
+    # Phase 7: Final Hardening (LAST - may affect SSH connectivity)
+    - role: ../roles/15-final-hardening
+      tags: [phase7, final-hardening]
+
+  post_tasks:
+    - name: Display deployment completion message
+      ansible.builtin.debug:
+        msg:
+          - "=========================================="
+          - "Deployment Complete!"
+          - "=========================================="
+          - "Infrastructure: DEPLOYED"
+          - "Security: CONFIGURED"
+          - "Applications: CONFIGURED (not started)"
+          - "Monitoring: CONFIGURED (not started)"
+          - ""
+          - "Next steps:"
+          - "  1. Review deployment: ansible-playbook -i inventory/production.yml playbooks/verify.yml"
+          - "  2. Start applications: ansible-playbook -i inventory/production.yml playbooks/startup.yml"
+          - "  3. Verify everything: ansible-playbook -i inventory/production.yml playbooks/verify.yml"
+          - "=========================================="
+
+    - name: Create deployment completion marker
+      ansible.builtin.copy:
+        content: |
+          Deployment completed: {{ ansible_date_time.iso8601 }}
+          By: {{ ansible_user_id }}
+          From: {{ ansible_hostname }}
+        dest: /opt/instagram-platform/.deployment-complete
+        owner: root
+        group: root
+        mode: '0644'

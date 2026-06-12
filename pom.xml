@@ -1,0 +1,1738 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.4.5</version>
+		<relativePath/>
+	</parent>
+
+	<groupId>com.sm.instagram</groupId>
+	<artifactId>InstagramPlatform</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>InstagramPlatform</name>
+	<description>Instagram platform</description>
+
+	<properties>
+		<!-- Java version consistency -->
+		<java.version>21</java.version>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
+		
+		<!-- Encoding consistency across all environments -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+		
+		<!-- Plugin versions for reproducible builds -->
+		<maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+		<maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
+		<maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
+		<versions-maven-plugin.version>2.16.2</versions-maven-plugin.version>
+		
+		<!-- Dependency versions to avoid conflicts -->
+		<org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
+		<jjwt.version>0.11.5</jjwt.version>
+		
+		<!-- Build configuration -->
+		<skipTests>false</skipTests>
+		<jar.finalName>app</jar.finalName>
+		
+		<!-- Test configuration -->
+		<skip.unit.tests>false</skip.unit.tests>
+		<skip.integration.tests>true</skip.integration.tests>
+
+		<!-- E2E Test Suite Skip Flags (use -Dskip.X.tests=true to skip specific suites) -->
+		<skip.normal.tests>false</skip.normal.tests>
+		<skip.session-expiry.tests>false</skip.session-expiry.tests>
+		<skip.multi-user.tests>false</skip.multi-user.tests>
+		<skip.rate-limiting.tests>false</skip.rate-limiting.tests>
+		<skip.admin.tests>false</skip.admin.tests>
+		<skip.security.tests>false</skip.security.tests>
+		<skip.consolidated.tests>false</skip.consolidated.tests>
+		<skip.partnership.tests>false</skip.partnership.tests>
+		<skip.notification.tests>false</skip.notification.tests>
+		<skip.consent.tests>false</skip.consent.tests>
+		<skip.registry.tests>false</skip.registry.tests>
+		<skip.step-up.tests>false</skip.step-up.tests>
+		<skip.influencer-verification.tests>false</skip.influencer-verification.tests>
+		<skip.subscription.tests>false</skip.subscription.tests>
+		<skip.payments-off.tests>false</skip.payments-off.tests>
+
+		<!-- JaCoCo configuration -->
+		<argLine>-Djava.net.preferIPv4Stack=true</argLine>
+		<jacoco.skip>false</jacoco.skip>
+		<coverage.enabled>true</coverage.enabled>
+		
+		<!-- Liquibase default properties -->
+		<liquibase.url>jdbc:postgresql://localhost:5432/checkitout</liquibase.url>
+		<liquibase.username>checkitout</liquibase.username>
+		<liquibase.password>checkitout</liquibase.password>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<!-- Override specific versions to avoid conflicts -->
+			<dependency>
+				<groupId>com.google.http-client</groupId>
+				<artifactId>google-http-client</artifactId>
+				<version>1.44.1</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>32.1.3-jre</version>
+			</dependency>
+			<!-- Override httpclient to exclude commons-logging -->
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpclient</artifactId>
+				<version>4.5.14</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<!-- Core Spring Boot Starters -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+		</dependency>
+
+		<!-- Data + DB -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>42.7.3</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+		<!-- Thymeleaf for email templates -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+		<!-- Explicit actuator dependencies for better classpath resolution -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-actuator-autoconfigure</artifactId>
+		</dependency>
+		<!-- Micrometer for metrics (required by actuator) -->
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- Other Functional Dependencies -->
+		<dependency>
+			<groupId>com.google.firebase</groupId>
+			<artifactId>firebase-admin</artifactId>
+			<version>9.3.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+				<!-- Exclude gRPC dependencies to avoid version conflicts -->
+				<exclusion>
+					<groupId>io.grpc</groupId>
+					<artifactId>grpc-context</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.grpc</groupId>
+					<artifactId>grpc-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.grpc</groupId>
+					<artifactId>grpc-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.grpc</groupId>
+					<artifactId>grpc-stub</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<!-- Google Cloud reCAPTCHA Enterprise -->
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-recaptchaenterprise</artifactId>
+			<version>3.32.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<!-- Google Cloud Storage SDK for signed URL generation -->
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-storage</artifactId>
+			<version>2.32.0</version>
+		</dependency>
+		<!-- Google Auth Library for service account credentials -->
+		<dependency>
+			<groupId>com.google.auth</groupId>
+			<artifactId>google-auth-library-oauth2-http</artifactId>
+			<version>1.20.0</version>
+		</dependency>
+
+		<!-- Google Cloud KMS for token encryption -->
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-kms</artifactId>
+			<version>2.34.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- Explicit gRPC dependencies with specific versions to fix ClassNotFoundException -->
+		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-context</artifactId>
+			<version>1.59.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-api</artifactId>
+			<version>1.59.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-core</artifactId>
+			<version>1.59.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-stub</artifactId>
+			<version>1.59.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-netty-shaded</artifactId>
+			<version>1.59.0</version>
+		</dependency>
+		<!-- OpenCensus dependencies to fix tracing issues -->
+		<dependency>
+			<groupId>io.opencensus</groupId>
+			<artifactId>opencensus-api</artifactId>
+			<version>0.31.1</version>
+		</dependency>
+		<dependency>
+			<groupId>io.opencensus</groupId>
+			<artifactId>opencensus-impl</artifactId>
+			<version>0.31.1</version>
+		</dependency>
+		<!-- Bridge commons-logging to SLF4J -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+		</dependency>
+		
+		<!-- MaxMind GeoIP2 for IP geolocation -->
+		<dependency>
+			<groupId>com.maxmind.geoip2</groupId>
+			<artifactId>geoip2</artifactId>
+			<version>4.2.0</version>
+		</dependency>
+		
+		<!-- Apache Commons Compress for tar.gz extraction -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+			<version>1.26.0</version>
+		</dependency>
+		
+		<!-- Spring and Jackson Dependencies -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+		</dependency>
+		<!-- For HTTP client configuration and retry logic -->
+		<dependency>
+			<groupId>org.springframework.retry</groupId>
+			<artifactId>spring-retry</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aspects</artifactId>
+		</dependency>
+		<!-- For configuration properties validation -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<!-- Resilience4j for Circuit Breaker pattern -->
+		<dependency>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-spring-boot3</artifactId>
+			<version>2.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-circuitbreaker</artifactId>
+			<version>2.1.0</version>
+		</dependency>
+		<!-- Stripe Java SDK for payment processing -->
+		<dependency>
+			<groupId>com.stripe</groupId>
+			<artifactId>stripe-java</artifactId>
+			<version>31.4.1</version>
+		</dependency>
+		<!-- Apache Commons Pool for Redis connection pooling -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-pool2</artifactId>
+			<version>2.12.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.8.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>3.2.0</version>
+		</dependency>
+
+		<!-- Validation -->
+		<dependency>
+			<groupId>jakarta.validation</groupId>
+			<artifactId>jakarta.validation-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate.validator</groupId>
+			<artifactId>hibernate-validator</artifactId>
+		</dependency>
+
+		<!-- Optional/Dev -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- Spring Dotenv - loads .env file for local dev and tests -->
+		<dependency>
+			<groupId>me.paulschwarz</groupId>
+			<artifactId>spring-dotenv</artifactId>
+			<version>4.0.0</version>
+			<!-- No scope specified = compile scope (available everywhere including tests) -->
+			<!-- Removed optional flag to ensure it's always included -->
+		</dependency>
+
+		<!-- Notification -->
+		<dependency>
+			<groupId>io.hypersistence</groupId>
+			<artifactId>hypersistence-utils-hibernate-63</artifactId>
+			<version>3.14.1</version>
+		</dependency>
+		<dependency>
+			<groupId>net.javacrumbs.shedlock</groupId>
+			<artifactId>shedlock-spring</artifactId>
+			<version>5.12.0</version>
+		</dependency>
+		<dependency>
+			<groupId>net.javacrumbs.shedlock</groupId>
+			<artifactId>shedlock-provider-jdbc-template</artifactId>
+			<version>5.12.0</version>
+		</dependency>
+
+		<!-- Testing -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+			<exclusions>
+				<!-- Exclude jsonassert to prevent android-json conflict (χ = 2 -> χ = 1) -->
+				<exclusion>
+					<groupId>org.skyscreamer</groupId>
+					<artifactId>jsonassert</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<!-- Testcontainers for real PostgreSQL in tests -->
+		<!-- Version 2.0.3 required for Docker Engine 29.x compatibility -->
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers</artifactId>
+			<version>2.0.3</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers-postgresql</artifactId>
+			<version>2.0.3</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers-junit-jupiter</artifactId>
+			<version>2.0.3</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- GreenMail - In-memory SMTP server for E2E email testing -->
+		<dependency>
+			<groupId>com.icegreen</groupId>
+			<artifactId>greenmail-spring</artifactId>
+			<version>2.1.2</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- CHROMATIC FIX: dotenv-java dependency REMOVED -->
+		<!-- Theorem 2.2: χ(G)=2, min exclusions=1. spring-dotenv provides dotenv-java transitively -->
+		<!-- with compile scope. Our explicit test scope was causing NoClassDefFoundError at runtime -->
+
+		<!-- H2 removed - using real PostgreSQL via Testcontainers -->
+		<!-- JWT dependencies for backend token generation -->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>${jjwt.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>${jjwt.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>${jjwt.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- TOTP 2FA Support -->
+		<dependency>
+			<groupId>com.warrenstrange</groupId>
+			<artifactId>googleauth</artifactId>
+			<version>1.4.0</version>
+		</dependency>
+		<!-- Better TOTP library with proven QR code generation -->
+		<dependency>
+			<groupId>dev.samstevens.totp</groupId>
+			<artifactId>totp</artifactId>
+			<version>1.7.1</version>
+		</dependency>
+		<!-- QR Code Generation with ZXing -->
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>core</artifactId>
+			<version>3.5.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>javase</artifactId>
+			<version>3.5.3</version>
+		</dependency>
+		<!-- Embedded Redis for Testing -->
+		<dependency>
+			<groupId>com.github.codemonstur</groupId>
+			<artifactId>embedded-redis</artifactId>
+			<version>1.4.3</version>
+			<scope>test</scope>
+			<exclusions>
+				<!-- Exclude android-json to avoid duplicate JSONObject -->
+				<exclusion>
+					<groupId>com.vaadin.external.google</groupId>
+					<artifactId>android-json</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- JUnit Platform Suite for test suites -->
+		<dependency>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-suite-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-suite-engine</artifactId>
+			<scope>test</scope>
+		</dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>7.9.0</version>
+            <scope>test</scope>
+        </dependency>
+		<!-- OkHttp MockWebServer for testing HTTP clients -->
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>mockwebserver</artifactId>
+			<version>4.12.0</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Cucumber BDD Framework for E2E Tests -->
+		<dependency>
+			<groupId>io.cucumber</groupId>
+			<artifactId>cucumber-java</artifactId>
+			<version>7.15.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.cucumber</groupId>
+			<artifactId>cucumber-spring</artifactId>
+			<version>7.15.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.cucumber</groupId>
+			<artifactId>cucumber-junit-platform-engine</artifactId>
+			<version>7.15.0</version>
+			<scope>test</scope>
+		</dependency>
+    </dependencies>
+
+	<build>
+		<!-- Consistent JAR naming across environments -->
+		<finalName>${jar.finalName}</finalName>
+		
+		<!-- Resource handling - prevent filtering of binary files -->
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+			</resource>
+		</resources>
+
+		<plugins>
+			<!-- Spring Boot Maven Plugin - simplified for consistency -->
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</exclude>
+					</excludes>
+					<!-- Ensure consistent fat JAR creation -->
+					<mainClass>com.sm.instagram.platform.InstagramPlatformApplication</mainClass>
+					<layout>JAR</layout>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Maven Compiler Plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+					<compilerArgs>
+						<arg>-parameters</arg>
+					</compilerArgs>
+					<!-- Parallel compilation optimization -->
+					<fork>true</fork>
+					<meminitial>128m</meminitial>
+					<maxmem>1024m</maxmem>
+					<compilerArgument>-J-Xss4m</compilerArgument>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>${lombok.version}</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
+
+			<!-- Surefire Plugin - optimized for suite-level Redis -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${maven-surefire-plugin.version}</version>
+				<configuration>
+					<skipTests>${skipTests}</skipTests>
+					<!-- Suite-level Redis optimization:
+					     forkCount=1 ensures single JVM for all tests,
+					     reuseForks=true keeps the JVM alive,
+					     This guarantees single Redis instance -->
+					<forkCount>1</forkCount>
+					<reuseForks>true</reuseForks>
+					<!-- Parallel execution within the single JVM -->
+					<parallel>classes</parallel>
+					<threadCount>4</threadCount>
+					<perCoreThreadCount>false</perCoreThreadCount>
+					<useUnlimitedThreads>false</useUnlimitedThreads>
+					<systemPropertyVariables>
+						<user.timezone>UTC</user.timezone>
+						<file.encoding>UTF-8</file.encoding>
+						<spring.profiles.active>test</spring.profiles.active>
+						<!-- Force suite-level Redis initialization -->
+						<redis.suite.enabled>true</redis.suite.enabled>
+					</systemPropertyVariables>
+					<argLine>
+						@{argLine}
+						-Dfile.encoding=UTF-8
+						-Duser.timezone=UTC
+						-Djava.security.egd=file:/dev/./urandom
+						--add-opens java.base/java.lang=ALL-UNNAMED
+						-Xmx2048m
+						-XX:+UseG1GC
+					</argLine>
+				</configuration>
+			</plugin>
+
+			<!-- Surefire Report Plugin - HTML Test Reports -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>${maven-surefire-plugin.version}</version>
+				<configuration>
+					<outputDirectory>${project.build.directory}/site/surefire</outputDirectory>
+					<showSuccess>true</showSuccess>
+					<outputName>surefire-report</outputName>
+				</configuration>
+				<executions>
+					<execution>
+						<id>generate-test-report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report-only</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Failsafe Plugin - consistent integration test environment -->
+			<!-- Skipped by default; enabled via -Pintegration or -Pe2e profiles -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>${maven-failsafe-plugin.version}</version>
+				<configuration>
+					<skip>${skip.integration.tests}</skip>
+					<systemPropertyVariables>
+						<user.timezone>UTC</user.timezone>
+						<file.encoding>UTF-8</file.encoding>
+						<spring.profiles.active>test</spring.profiles.active>
+					</systemPropertyVariables>
+					<argLine>
+						@{argLine}
+						-Dfile.encoding=UTF-8
+						-Duser.timezone=UTC
+						-Djava.security.egd=file:/dev/./urandom
+						--add-opens java.base/java.lang=ALL-UNNAMED
+					</argLine>
+				</configuration>
+			</plugin>
+
+			<!-- Versions Plugin -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>versions-maven-plugin</artifactId>
+				<version>${versions-maven-plugin.version}</version>
+				<configuration>
+					<generateBackupPoms>false</generateBackupPoms>
+				</configuration>
+			</plugin>
+
+			<!-- Liquibase Plugin -->
+			<plugin>
+				<groupId>org.liquibase</groupId>
+				<artifactId>liquibase-maven-plugin</artifactId>
+				<version>4.24.0</version>
+				<configuration>
+					<changeLogFile>src/main/resources/db/changelog/changelog.xml</changeLogFile>
+					<driver>org.postgresql.Driver</driver>
+					<url>${liquibase.url}</url>
+					<username>${liquibase.username}</username>
+					<password>${liquibase.password}</password>
+					<verbose>true</verbose>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.postgresql</groupId>
+						<artifactId>postgresql</artifactId>
+						<version>${postgresql.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+
+			<!-- Enforcer Plugin - ensure build consistency -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>3.4.1</version>
+				<executions>
+					<execution>
+						<id>enforce-maven</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireMavenVersion>
+									<version>[3.8.0,)</version>
+								</requireMavenVersion>
+								<requireJavaVersion>
+									<version>[21,22)</version>
+								</requireJavaVersion>
+								<bannedDependencies>
+									<excludes>
+										<exclude>commons-logging:commons-logging</exclude>
+										<!-- Ban android-json globally to prevent JSONObject conflicts -->
+										<exclude>com.vaadin.external.google:android-json</exclude>
+									</excludes>
+									<searchTransitive>true</searchTransitive>
+								</bannedDependencies>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- JaCoCo Plugin - Code Coverage (Unit + Integration + E2E) -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.11</version>
+				<configuration>
+					<excludes>
+						<exclude>**/config/**</exclude>
+						<exclude>**/exception/**</exclude>
+						<exclude>**/*Application.class</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<!-- 1. Prepare agent for Unit Tests (Surefire) -->
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<destFile>${project.build.directory}/jacoco-unit.exec</destFile>
+							<append>true</append>
+						</configuration>
+					</execution>
+
+					<!-- 2. Prepare agent for E2E Tests (Failsafe - e2e profile) -->
+					<execution>
+						<id>prepare-agent-integration</id>
+						<goals>
+							<goal>prepare-agent-integration</goal>
+						</goals>
+						<configuration>
+							<!-- Default for E2E tests; integration profile overrides this -->
+							<destFile>${project.build.directory}/jacoco-e2e.exec</destFile>
+							<append>true</append>
+						</configuration>
+					</execution>
+
+					<!-- 3. Generate Unit Test Report -->
+					<execution>
+						<id>report-unit</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<dataFile>${project.build.directory}/jacoco-unit.exec</dataFile>
+							<outputDirectory>${project.build.directory}/site/jacoco-unit</outputDirectory>
+						</configuration>
+					</execution>
+
+					<!-- 4. Generate E2E Test Report -->
+					<execution>
+						<id>report-e2e</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<dataFile>${project.build.directory}/jacoco-e2e.exec</dataFile>
+							<outputDirectory>${project.build.directory}/site/jacoco-e2e</outputDirectory>
+						</configuration>
+					</execution>
+
+					<!-- Merge + Combined Report moved to -Pcoverage profile -->
+					<!-- Run: mvn verify -Pcoverage (after running unit/integration/e2e tests) -->
+				</executions>
+			</plugin>
+
+			<!-- OWASP Dependency Check Plugin -->
+			<plugin>
+				<groupId>org.owasp</groupId>
+				<artifactId>dependency-check-maven</artifactId>
+				<version>9.0.9</version>
+				<configuration>
+					<failBuildOnCVSS>7</failBuildOnCVSS>
+					<suppressionFile>owasp-suppressions.xml</suppressionFile>
+					<!-- Disable auto-update in CI/CD environments -->
+					<autoUpdate>true</autoUpdate>
+					<!-- NVD API Key can be provided via environment variable -->
+					<!-- nvdApiKey>${env.NVD_API_KEY}</nvdApiKey -->
+					<!-- Use data directory that can be cached -->
+					<dataDirectory>${user.home}/.m2/repository/org/owasp/dependency-check-data</dataDirectory>
+					<!-- Continue on error if NVD is unavailable -->
+					<failOnError>false</failOnError>
+				</configuration>
+			</plugin>
+
+			<!-- SpotBugs Plugin -->
+			<plugin>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+				<version>4.8.3.0</version>
+				<configuration>
+					<effort>Max</effort>
+					<threshold>Low</threshold>
+					<xmlOutput>true</xmlOutput>
+					<failOnError>true</failOnError>
+					<includeFilterFile>spotbugs-security-include.xml</includeFilterFile>
+					<excludeFilterFile>spotbugs-security-exclude.xml</excludeFilterFile>
+					<plugins>
+						<plugin>
+							<groupId>com.h3xstream.findsecbugs</groupId>
+							<artifactId>findsecbugs-plugin</artifactId>
+							<version>1.12.0</version>
+						</plugin>
+					</plugins>
+				</configuration>
+			</plugin>
+
+			<!-- PMD Plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>3.23.0</version>
+				<configuration>
+					<targetJdk>21</targetJdk>
+					<failOnViolation>false</failOnViolation>
+					<printFailingErrors>true</printFailingErrors>
+					<includeTests>false</includeTests>
+					<linkXRef>false</linkXRef>
+					<minimumTokens>100</minimumTokens>
+					<rulesets>
+						<!-- Use custom ruleset if available, otherwise fall back to defaults -->
+						<ruleset>${project.basedir}/pmd-ruleset.xml</ruleset>
+					</rulesets>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Spotless Plugin for Code Formatting -->
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>2.41.1</version>
+				<configuration>
+					<java>
+						<googleJavaFormat>
+							<version>1.19.1</version>
+							<style>GOOGLE</style>
+						</googleJavaFormat>
+						<removeUnusedImports/>
+						<trimTrailingWhitespace/>
+						<endWithNewline/>
+					</java>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<!-- Environment-specific profiles -->
+	<profiles>
+		<!-- Test Profile - excludes devtools and optimizes for containers -->
+		<profile>
+			<id>test</id>
+			<properties>
+				<!-- Default: don't skip tests, but allow override -->
+				<skipTests>false</skipTests>
+				<!-- Enable unit tests, disable integration tests -->
+				<skip.unit.tests>false</skip.unit.tests>
+				<skip.integration.tests>true</skip.integration.tests>
+			</properties>
+			<build>
+				<plugins>
+					<!-- Surefire Plugin - Unit Tests Only for TST Profile -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>${maven-surefire-plugin.version}</version>
+						<configuration>
+							<!-- Respect the skipTests parameter (can be overridden) -->
+							<skipTests>${skipTests}</skipTests>
+							<!-- Include only unit tests, exclude integration tests -->
+							<includes>
+								<include>**/*Test.java</include>
+							</includes>
+							<excludes>
+								<exclude>**/*IntegrationTest.java</exclude>
+								<exclude>**/*IT.java</exclude>
+							</excludes>
+							<systemPropertyVariables>
+								<user.timezone>UTC</user.timezone>
+								<file.encoding>UTF-8</file.encoding>
+								<spring.profiles.active>test</spring.profiles.active>
+							</systemPropertyVariables>
+							<argLine>
+								@{argLine}
+								-Dfile.encoding=UTF-8
+								-Duser.timezone=UTC
+								-Djava.security.egd=file:/dev/./urandom
+								--add-opens java.base/java.lang=ALL-UNNAMED
+							</argLine>
+						</configuration>
+					</plugin>
+					
+					<plugin>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-maven-plugin</artifactId>
+						<configuration>
+							<excludes>
+								<exclude>
+									<groupId>org.projectlombok</groupId>
+									<artifactId>lombok</artifactId>
+								</exclude>
+								<exclude>
+									<groupId>org.springframework.boot</groupId>
+									<artifactId>spring-boot-devtools</artifactId>
+								</exclude>
+							</excludes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- Production Profile -->
+		<profile>
+			<id>production</id>
+			<properties>
+				<skipTests>true</skipTests>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-maven-plugin</artifactId>
+						<configuration>
+							<excludes>
+								<exclude>
+									<groupId>org.projectlombok</groupId>
+									<artifactId>lombok</artifactId>
+								</exclude>
+								<exclude>
+									<groupId>org.springframework.boot</groupId>
+									<artifactId>spring-boot-devtools</artifactId>
+								</exclude>
+							</excludes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- Integration Profile - Service Integration Tests with TestContainers -->
+		<!-- These tests use full Spring context but no HTTP layer -->
+		<!-- Naming: *IntegrationTest.java (not *IT.java which is for E2E/Cucumber) -->
+		<!-- Run: mvn verify -Pintegration -->
+		<profile>
+			<id>integration</id>
+			<properties>
+				<skipTests>true</skipTests>
+				<skip.unit.tests>true</skip.unit.tests>
+				<skip.integration.tests>false</skip.integration.tests>
+			</properties>
+			<build>
+				<plugins>
+					<!-- JaCoCo - Override destFile for Service Integration Tests -->
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>0.8.11</version>
+						<executions>
+							<execution>
+								<id>prepare-agent-integration</id>
+								<goals>
+									<goal>prepare-agent-integration</goal>
+								</goals>
+								<configuration>
+									<destFile>${project.build.directory}/jacoco-integration.exec</destFile>
+									<append>true</append>
+								</configuration>
+							</execution>
+							<execution>
+								<id>report-integration</id>
+								<phase>post-integration-test</phase>
+								<goals>
+									<goal>report</goal>
+								</goals>
+								<configuration>
+									<dataFile>${project.build.directory}/jacoco-integration.exec</dataFile>
+									<outputDirectory>${project.build.directory}/site/jacoco-integration</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<version>${maven-failsafe-plugin.version}</version>
+						<executions>
+							<execution>
+								<id>service-integration-tests</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>integration-test</goal>
+								</goals>
+								<configuration>
+									<skipTests>false</skipTests>
+									<!-- Include only service integration tests (*IntegrationTest.java) -->
+									<!-- *IT.java pattern is reserved for E2E/Cucumber tests -->
+									<includes>
+										<include>**/integration/**/*IntegrationTest.java</include>
+									</includes>
+									<excludes>
+										<exclude>**/e2e/**</exclude>
+									</excludes>
+									<forkCount>1</forkCount>
+									<reuseForks>true</reuseForks>
+									<argLine>
+										@{argLine}
+										-Dfile.encoding=UTF-8
+										-Duser.timezone=UTC
+										-Djava.security.egd=file:/dev/./urandom
+										--add-opens java.base/java.lang=ALL-UNNAMED
+										-Xmx2048m
+									</argLine>
+									<systemPropertyVariables>
+										<spring.profiles.active>integration</spring.profiles.active>
+										<user.timezone>UTC</user.timezone>
+										<file.encoding>UTF-8</file.encoding>
+									</systemPropertyVariables>
+									<reportsDirectory>${project.build.directory}/failsafe-reports/integration</reportsDirectory>
+								</configuration>
+							</execution>
+							<execution>
+								<id>verify-integration</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>verify</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- E2E Profile - Cucumber BDD Tests with Real Redis -->
+		<profile>
+			<id>e2e</id>
+			<properties>
+				<skipTests>true</skipTests>
+				<skip.unit.tests>true</skip.unit.tests>
+				<skip.integration.tests>false</skip.integration.tests>
+			</properties>
+			<build>
+				<plugins>
+					<!-- ============================================== -->
+					<!-- MAVEN FAILSAFE - MULTIPLE SEQUENTIAL SUITES   -->
+					<!-- ============================================== -->
+					<!-- Suite 1: Normal E2E tests (7 days session)    -->
+					<!-- Suite 2: Session expiry tests (15 sec session)-->
+					<!-- Each suite runs in isolation with own config  -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<version>${maven-failsafe-plugin.version}</version>
+						<configuration>
+							<!-- Common configuration for all executions -->
+							<skip>false</skip>
+							<skipTests>false</skipTests>
+							<argLine>
+								@{argLine}
+								-Dfile.encoding=UTF-8
+								-Duser.timezone=UTC
+								-Djava.security.egd=file:/dev/./urandom
+								--add-opens java.base/java.lang=ALL-UNNAMED
+								-Xmx2048m
+							</argLine>
+						</configuration>
+						<executions>
+							<!-- Disable the default execution to prevent running without proper config -->
+							<execution>
+								<id>default</id>
+								<phase>none</phase>
+							</execution>
+							<!-- ============================================== -->
+							<!-- SUITE 1: Normal E2E Tests (7 days session)    -->
+							<!-- ============================================== -->
+							<execution>
+								<id>normal-e2e-tests</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>integration-test</goal>
+								</goals>
+								<configuration>
+									<skipTests>${skip.normal.tests}</skipTests>
+									<includes>
+										<include>**/RunCucumberIT.java</include>
+									</includes>
+									<forkCount>1</forkCount>
+									<reuseForks>false</reuseForks>
+									<!-- Session + Rate limit config (HIGH limits - no interference) -->
+									<argLine>@{argLine} -DFULLSESSION=604800 -DPARTIALSESSION=600 -DRL_STANDARD_REQ=10000 -DRL_STANDARD_WIN=60 -DRL_STANDARD_BLOCK=10 -DRL_STRICT_REQ=10000 -DRL_STRICT_WIN=60 -DRL_STRICT_BLOCK=10 -DRL_RELAXED_REQ=10000 -DRL_RELAXED_WIN=60 -DRL_RELAXED_BLOCK=10 -DRL_HIGH_REQ=10000 -DRL_HIGH_WIN=60 -DRL_HIGH_BLOCK=10 -DRL_AUTH_REQ=10000 -DRL_AUTH_WIN=60 -DRL_AUTH_BLOCK=10 -DRL_ADMIN_AUTH_REQ=10000 -DRL_ADMIN_AUTH_WIN=60 -DRL_ADMIN_AUTH_BLOCK=10 -DRL_COMPANY_AUTH_REQ=10000 -DRL_COMPANY_AUTH_WIN=60 -DRL_COMPANY_AUTH_BLOCK=10 -DRL_INFLUENCER_AUTH_REQ=10000 -DRL_INFLUENCER_AUTH_WIN=60 -DRL_INFLUENCER_AUTH_BLOCK=10 -DRL_UNKNOWN_AUTH_REQ=10000 -DRL_UNKNOWN_AUTH_WIN=60 -DRL_UNKNOWN_AUTH_BLOCK=10</argLine>
+									<systemPropertyVariables>
+										<spring.profiles.active>e2e</spring.profiles.active>
+										<user.timezone>UTC</user.timezone>
+										<file.encoding>UTF-8</file.encoding>
+									</systemPropertyVariables>
+									<reportsDirectory>${project.build.directory}/failsafe-reports/normal</reportsDirectory>
+								</configuration>
+							</execution>
+
+							<!-- ============================================== -->
+							<!-- SUITE 2: Session Expiry Tests (15 sec session)-->
+							<!-- ============================================== -->
+							<execution>
+								<id>session-expiry-tests</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>integration-test</goal>
+								</goals>
+								<configuration>
+									<skipTests>${skip.session-expiry.tests}</skipTests>
+									<includes>
+										<include>**/RunSessionExpiryIT.java</include>
+									</includes>
+									<forkCount>1</forkCount>
+									<reuseForks>false</reuseForks>
+									<!-- Session (SHORT) + Rate limit config (HIGH limits - no interference) -->
+									<argLine>@{argLine} -DFULLSESSION=15 -DPARTIALSESSION=15 -DRL_STANDARD_REQ=10000 -DRL_STANDARD_WIN=60 -DRL_STANDARD_BLOCK=10 -DRL_STRICT_REQ=10000 -DRL_STRICT_WIN=60 -DRL_STRICT_BLOCK=10 -DRL_RELAXED_REQ=10000 -DRL_RELAXED_WIN=60 -DRL_RELAXED_BLOCK=10 -DRL_HIGH_REQ=10000 -DRL_HIGH_WIN=60 -DRL_HIGH_BLOCK=10 -DRL_AUTH_REQ=10000 -DRL_AUTH_WIN=60 -DRL_AUTH_BLOCK=10 -DRL_ADMIN_AUTH_REQ=10000 -DRL_ADMIN_AUTH_WIN=60 -DRL_ADMIN_AUTH_BLOCK=10 -DRL_COMPANY_AUTH_REQ=10000 -DRL_COMPANY_AUTH_WIN=60 -DRL_COMPANY_AUTH_BLOCK=10 -DRL_INFLUENCER_AUTH_REQ=10000 -DRL_INFLUENCER_AUTH_WIN=60 -DRL_INFLUENCER_AUTH_BLOCK=10 -DRL_UNKNOWN_AUTH_REQ=10000 -DRL_UNKNOWN_AUTH_WIN=60 -DRL_UNKNOWN_AUTH_BLOCK=10</argLine>
+									<systemPropertyVariables>
+										<spring.profiles.active>e2e</spring.profiles.active>
+										<user.timezone>UTC</user.timezone>
+										<file.encoding>UTF-8</file.encoding>
+									</systemPropertyVariables>
+									<reportsDirectory>${project.build.directory}/failsafe-reports/session-expiry</reportsDirectory>
+								</configuration>
+							</execution>
+
+							<!-- ============================================== -->
+							<!-- SUITE 3: Multi-User Tests (isolated actors)   -->
+							<!-- ============================================== -->
+							<execution>
+								<id>multi-user-tests</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>integration-test</goal>
+								</goals>
+								<configuration>
+									<skipTests>${skip.multi-user.tests}</skipTests>
+									<includes>
+										<include>**/RunMultiUserIT.java</include>
+									</includes>
+									<forkCount>1</forkCount>
+									<reuseForks>false</reuseForks>
+									<!-- Session + Rate limit config (HIGH limits - no interference) -->
+									<argLine>@{argLine} -DFULLSESSION=604800 -DPARTIALSESSION=600 -DRL_STANDARD_REQ=10000 -DRL_STANDARD_WIN=60 -DRL_STANDARD_BLOCK=10 -DRL_STRICT_REQ=10000 -DRL_STRICT_WIN=60 -DRL_STRICT_BLOCK=10 -DRL_RELAXED_REQ=10000 -DRL_RELAXED_WIN=60 -DRL_RELAXED_BLOCK=10 -DRL_HIGH_REQ=10000 -DRL_HIGH_WIN=60 -DRL_HIGH_BLOCK=10 -DRL_AUTH_REQ=10000 -DRL_AUTH_WIN=60 -DRL_AUTH_BLOCK=10 -DRL_ADMIN_AUTH_REQ=10000 -DRL_ADMIN_AUTH_WIN=60 -DRL_ADMIN_AUTH_BLOCK=10 -DRL_COMPANY_AUTH_REQ=10000 -DRL_COMPANY_AUTH_WIN=60 -DRL_COMPANY_AUTH_BLOCK=10 -DRL_INFLUENCER_AUTH_REQ=10000 -DRL_INFLUENCER_AUTH_WIN=60 -DRL_INFLUENCER_AUTH_BLOCK=10 -DRL_UNKNOWN_AUTH_REQ=10000 -DRL_UNKNOWN_AUTH_WIN=60 -DRL_UNKNOWN_AUTH_BLOCK=10</argLine>
+									<systemPropertyVariables>
+										<spring.profiles.active>e2e</spring.profiles.active>
+										<user.timezone>UTC</user.timezone>
+										<file.encoding>UTF-8</file.encoding>
+									</systemPropertyVariables>
+									<reportsDirectory>${project.build.directory}/failsafe-reports/multi-user</reportsDirectory>
+								</configuration>
+							</execution>
+
+							<!-- ============================================== -->
+							<!-- SUITE 4: Rate Limiting Tests (Strict limits)  -->
+							<!-- ============================================== -->
+							<!-- Tests rate limiting enforcement with strict limits.
+							     Each profile has independent configuration:
+							       RL_{PROFILE}_REQ  = requests per window
+							       RL_{PROFILE}_WIN  = window in seconds
+							       RL_{PROFILE}_BLOCK = block duration in seconds
+
+							     Test values (LOW - easy to exceed for 429 testing):
+							       STANDARD: 5 req / 60s window / 10s block
+							       STRICT:   3 req / 60s window / 10s block
+							       RELAXED: 10 req / 60s window / 10s block
+							       HIGH:    20 req / 60s window / 10s block
+							       AUTH:     5 req / 60s window / 10s block
+							       *_AUTH:   3-10 req / 60s window / 10s block
+							-->
+							<execution>
+								<id>rate-limiting-tests</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>integration-test</goal>
+								</goals>
+								<configuration>
+									<skipTests>${skip.rate-limiting.tests}</skipTests>
+									<includes>
+										<include>**/RunRateLimitingIT.java</include>
+									</includes>
+									<forkCount>1</forkCount>
+									<reuseForks>false</reuseForks>
+									<!-- Session + Rate limiting config (LOW limits - test 429 responses) -->
+									<argLine>@{argLine} -DFULLSESSION=604800 -DPARTIALSESSION=600 -DRL_STANDARD_REQ=5 -DRL_STANDARD_WIN=60 -DRL_STANDARD_BLOCK=10 -DRL_STRICT_REQ=3 -DRL_STRICT_WIN=60 -DRL_STRICT_BLOCK=10 -DRL_RELAXED_REQ=10 -DRL_RELAXED_WIN=60 -DRL_RELAXED_BLOCK=10 -DRL_HIGH_REQ=20 -DRL_HIGH_WIN=60 -DRL_HIGH_BLOCK=10 -DRL_AUTH_REQ=5 -DRL_AUTH_WIN=60 -DRL_AUTH_BLOCK=10 -DRL_ADMIN_AUTH_REQ=3 -DRL_ADMIN_AUTH_WIN=60 -DRL_ADMIN_AUTH_BLOCK=10 -DRL_COMPANY_AUTH_REQ=5 -DRL_COMPANY_AUTH_WIN=60 -DRL_COMPANY_AUTH_BLOCK=10 -DRL_INFLUENCER_AUTH_REQ=10 -DRL_INFLUENCER_AUTH_WIN=60 -DRL_INFLUENCER_AUTH_BLOCK=10 -DRL_UNKNOWN_AUTH_REQ=5 -DRL_UNKNOWN_AUTH_WIN=60 -DRL_UNKNOWN_AUTH_BLOCK=10</argLine>
+									<systemPropertyVariables>
+										<spring.profiles.active>e2e</spring.profiles.active>
+										<user.timezone>UTC</user.timezone>
+										<file.encoding>UTF-8</file.encoding>
+									</systemPropertyVariables>
+									<reportsDirectory>${project.build.directory}/failsafe-reports/rate-limiting</reportsDirectory>
+								</configuration>
+							</execution>
+
+							<!-- ============================================== -->
+							<!-- SUITE 5: Admin User Management Tests           -->
+							<!-- ============================================== -->
+							<!-- Tests admin operations: ban/unban, status changes, view users
+							     Uses real admin with 2FA, operates on existing robot users
+							     Run: mvn verify -Pe2e -Dit.test=RunAdminIT
+							-->
+							<execution>
+								<id>admin-tests</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>integration-test</goal>
+								</goals>
+								<configuration>
+									<skipTests>${skip.admin.tests}</skipTests>
+									<includes>
+										<include>**/RunAdminIT.java</include>
+									</includes>
+									<forkCount>1</forkCount>
+									<reuseForks>false</reuseForks>
+									<!-- Session + Rate limiting config (HIGH limits - don't interfere with admin ops) -->
+									<argLine>@{argLine} -DFULLSESSION=604800 -DPARTIALSESSION=600 -DRL_STANDARD_REQ=10000 -DRL_STANDARD_WIN=60 -DRL_STANDARD_BLOCK=10 -DRL_STRICT_REQ=10000 -DRL_STRICT_WIN=60 -DRL_STRICT_BLOCK=10 -DRL_RELAXED_REQ=10000 -DRL_RELAXED_WIN=60 -DRL_RELAXED_BLOCK=10 -DRL_HIGH_REQ=10000 -DRL_HIGH_WIN=60 -DRL_HIGH_BLOCK=10 -DRL_AUTH_REQ=10000 -DRL_AUTH_WIN=60 -DRL_AUTH_BLOCK=10 -DRL_ADMIN_AUTH_REQ=10000 -DRL_ADMIN_AUTH_WIN=60 -DRL_ADMIN_AUTH_BLOCK=10 -DRL_COMPANY_AUTH_REQ=10000 -DRL_COMPANY_AUTH_WIN=60 -DRL_COMPANY_AUTH_BLOCK=10 -DRL_INFLUENCER_AUTH_REQ=10000 -DRL_INFLUENCER_AUTH_WIN=60 -DRL_INFLUENCER_AUTH_BLOCK=10 -DRL_UNKNOWN_AUTH_REQ=10000 -DRL_UNKNOWN_AUTH_WIN=60 -DRL_UNKNOWN_AUTH_BLOCK=10</argLine>
+									<systemPropertyVariables>
+										<spring.profiles.active>e2e</spring.profiles.active>
+										<user.timezone>UTC</user.timezone>
+										<file.encoding>UTF-8</file.encoding>
+									</systemPropertyVariables>
+									<reportsDirectory>${project.build.directory}/failsafe-reports/admin</reportsDirectory>
+								</configuration>
+							</execution>
+
+							<!-- ============================================== -->
+							<!-- SUITE 6: Security Tests (401/403 Access Control) -->
+							<!-- ============================================== -->
+							<!-- Tests that all protected endpoints reject unauthenticated requests (401)
+							     and that role-restricted endpoints reject unauthorized roles (403).
+							     Does NOT invoke Firebase Auth - no rate limiting concerns.
+							     Uses parameterized Cucumber scenarios for comprehensive coverage.
+
+							     Run ONLY security tests (skip all other suites):
+							     mvn verify -Pe2e -Dskip.normal.tests=true -Dskip.session-expiry.tests=true -Dskip.multi-user.tests=true -Dskip.rate-limiting.tests=true -Dskip.admin.tests=true
+
+							     IMPORTANT: Do NOT use -Dit.test=RunSecurityIT as it overrides ALL suite includes!
+							-->
+							<execution>
+								<id>security-tests</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>integration-test</goal>
+								</goals>
+								<configuration>
+									<skipTests>${skip.security.tests}</skipTests>
+									<includes>
+										<include>**/RunSecurityIT.java</include>
+									</includes>
+									<forkCount>1</forkCount>
+									<reuseForks>false</reuseForks>
+									<!-- Session + Rate limiting config (HIGH limits - no interference) -->
+									<argLine>@{argLine} -DFULLSESSION=604800 -DPARTIALSESSION=600 -DRL_STANDARD_REQ=10000 -DRL_STANDARD_WIN=60 -DRL_STANDARD_BLOCK=10 -DRL_STRICT_REQ=10000 -DRL_STRICT_WIN=60 -DRL_STRICT_BLOCK=10 -DRL_RELAXED_REQ=10000 -DRL_RELAXED_WIN=60 -DRL_RELAXED_BLOCK=10 -DRL_HIGH_REQ=10000 -DRL_HIGH_WIN=60 -DRL_HIGH_BLOCK=10 -DRL_AUTH_REQ=10000 -DRL_AUTH_WIN=60 -DRL_AUTH_BLOCK=10 -DRL_ADMIN_AUTH_REQ=10000 -DRL_ADMIN_AUTH_WIN=60 -DRL_ADMIN_AUTH_BLOCK=10 -DRL_COMPANY_AUTH_REQ=10000 -DRL_COMPANY_AUTH_WIN=60 -DRL_COMPANY_AUTH_BLOCK=10 -DRL_INFLUENCER_AUTH_REQ=10000 -DRL_INFLUENCER_AUTH_WIN=60 -DRL_INFLUENCER_AUTH_BLOCK=10 -DRL_UNKNOWN_AUTH_REQ=10000 -DRL_UNKNOWN_AUTH_WIN=60 -DRL_UNKNOWN_AUTH_BLOCK=10</argLine>
+									<systemPropertyVariables>
+										<spring.profiles.active>e2e</spring.profiles.active>
+										<user.timezone>UTC</user.timezone>
+										<file.encoding>UTF-8</file.encoding>
+									</systemPropertyVariables>
+									<reportsDirectory>${project.build.directory}/failsafe-reports/security</reportsDirectory>
+								</configuration>
+							</execution>
+
+							<!-- ============================================== -->
+							<!-- SUITE 7: Consolidated Tests (Profile, Upload, Admin Flows) -->
+							<!-- ============================================== -->
+							<!-- Consolidated test scenarios that:
+							     - Use soft assertions for comprehensive validation
+							     - Minimize Firebase logins (13-15 total)
+							     - Test profile changes, file uploads, admin status flows
+
+							     Run ONLY consolidated tests (skip all other suites):
+							     mvn verify -Pe2e -Dskip.normal.tests=true -Dskip.session-expiry.tests=true -Dskip.multi-user.tests=true -Dskip.rate-limiting.tests=true -Dskip.admin.tests=true -Dskip.security.tests=true
+							-->
+							<execution>
+								<id>consolidated-tests</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>integration-test</goal>
+								</goals>
+								<configuration>
+									<skipTests>${skip.consolidated.tests}</skipTests>
+									<includes>
+										<include>**/RunConsolidatedIT.java</include>
+									</includes>
+									<forkCount>1</forkCount>
+									<reuseForks>false</reuseForks>
+									<!-- Session + Rate limiting config (HIGH limits - no interference) -->
+									<argLine>@{argLine} -DFULLSESSION=604800 -DPARTIALSESSION=600 -DRL_STANDARD_REQ=10000 -DRL_STANDARD_WIN=60 -DRL_STANDARD_BLOCK=10 -DRL_STRICT_REQ=10000 -DRL_STRICT_WIN=60 -DRL_STRICT_BLOCK=10 -DRL_RELAXED_REQ=10000 -DRL_RELAXED_WIN=60 -DRL_RELAXED_BLOCK=10 -DRL_HIGH_REQ=10000 -DRL_HIGH_WIN=60 -DRL_HIGH_BLOCK=10 -DRL_AUTH_REQ=10000 -DRL_AUTH_WIN=60 -DRL_AUTH_BLOCK=10 -DRL_ADMIN_AUTH_REQ=10000 -DRL_ADMIN_AUTH_WIN=60 -DRL_ADMIN_AUTH_BLOCK=10 -DRL_COMPANY_AUTH_REQ=10000 -DRL_COMPANY_AUTH_WIN=60 -DRL_COMPANY_AUTH_BLOCK=10 -DRL_INFLUENCER_AUTH_REQ=10000 -DRL_INFLUENCER_AUTH_WIN=60 -DRL_INFLUENCER_AUTH_BLOCK=10 -DRL_UNKNOWN_AUTH_REQ=10000 -DRL_UNKNOWN_AUTH_WIN=60 -DRL_UNKNOWN_AUTH_BLOCK=10</argLine>
+									<environmentVariables>
+										<SESSION_DURATION_MINUTES>10080</SESSION_DURATION_MINUTES>
+										<RL_STANDARD_REQUESTS>1000</RL_STANDARD_REQUESTS>
+										<RL_STANDARD_WINDOW>60</RL_STANDARD_WINDOW>
+										<RL_STANDARD_BLOCK>10</RL_STANDARD_BLOCK>
+										<RL_STRICT_REQUESTS>1000</RL_STRICT_REQUESTS>
+										<RL_STRICT_WINDOW>60</RL_STRICT_WINDOW>
+										<RL_STRICT_BLOCK>10</RL_STRICT_BLOCK>
+										<RL_RELAXED_REQUESTS>1000</RL_RELAXED_REQUESTS>
+										<RL_RELAXED_WINDOW>60</RL_RELAXED_WINDOW>
+										<RL_RELAXED_BLOCK>10</RL_RELAXED_BLOCK>
+										<RL_HIGH_REQUESTS>1000</RL_HIGH_REQUESTS>
+										<RL_HIGH_WINDOW>60</RL_HIGH_WINDOW>
+										<RL_HIGH_BLOCK>10</RL_HIGH_BLOCK>
+										<RL_AUTH_REQUESTS>1000</RL_AUTH_REQUESTS>
+										<RL_AUTH_WINDOW>60</RL_AUTH_WINDOW>
+										<RL_AUTH_BLOCK>10</RL_AUTH_BLOCK>
+									</environmentVariables>
+									<systemPropertyVariables>
+										<spring.profiles.active>e2e</spring.profiles.active>
+										<user.timezone>UTC</user.timezone>
+										<file.encoding>UTF-8</file.encoding>
+									</systemPropertyVariables>
+									<reportsDirectory>${project.build.directory}/failsafe-reports/consolidated</reportsDirectory>
+								</configuration>
+							</execution>
+
+							<!-- ============================================== -->
+							<!-- SUITE 8: Partnership Flow Tests               -->
+							<!-- ============================================== -->
+							<!-- Tests partnership opportunity creation and management:
+							     - Company creates partnership opportunity (happy path)
+							     - Validation scenarios (future)
+							     - Photo upload flows (future)
+
+							     Uses real Firebase Auth for Company login.
+							     CRITICAL: City field must be exact string match from database.
+
+							     Run ONLY partnership tests (skip all other suites):
+							     mvn verify -Pe2e -Dskip.normal.tests=true -Dskip.session-expiry.tests=true -Dskip.multi-user.tests=true -Dskip.rate-limiting.tests=true -Dskip.admin.tests=true -Dskip.security.tests=true -Dskip.consolidated.tests=true
+							-->
+							<execution>
+								<id>partnership-tests</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>integration-test</goal>
+								</goals>
+								<configuration>
+									<skipTests>${skip.partnership.tests}</skipTests>
+									<includes>
+										<include>**/RunPartnershipFlowIT.java</include>
+									</includes>
+									<forkCount>1</forkCount>
+									<reuseForks>false</reuseForks>
+									<!-- Session + Rate limiting config (HIGH limits - no interference) -->
+									<argLine>@{argLine} -DFULLSESSION=604800 -DPARTIALSESSION=600 -DRL_STANDARD_REQ=10000 -DRL_STANDARD_WIN=60 -DRL_STANDARD_BLOCK=10 -DRL_STRICT_REQ=10000 -DRL_STRICT_WIN=60 -DRL_STRICT_BLOCK=10 -DRL_RELAXED_REQ=10000 -DRL_RELAXED_WIN=60 -DRL_RELAXED_BLOCK=10 -DRL_HIGH_REQ=10000 -DRL_HIGH_WIN=60 -DRL_HIGH_BLOCK=10 -DRL_AUTH_REQ=10000 -DRL_AUTH_WIN=60 -DRL_AUTH_BLOCK=10 -DRL_ADMIN_AUTH_REQ=10000 -DRL_ADMIN_AUTH_WIN=60 -DRL_ADMIN_AUTH_BLOCK=10 -DRL_COMPANY_AUTH_REQ=10000 -DRL_COMPANY_AUTH_WIN=60 -DRL_COMPANY_AUTH_BLOCK=10 -DRL_INFLUENCER_AUTH_REQ=10000 -DRL_INFLUENCER_AUTH_WIN=60 -DRL_INFLUENCER_AUTH_BLOCK=10 -DRL_UNKNOWN_AUTH_REQ=10000 -DRL_UNKNOWN_AUTH_WIN=60 -DRL_UNKNOWN_AUTH_BLOCK=10</argLine>
+									<systemPropertyVariables>
+										<spring.profiles.active>e2e</spring.profiles.active>
+										<user.timezone>UTC</user.timezone>
+										<file.encoding>UTF-8</file.encoding>
+									</systemPropertyVariables>
+									<reportsDirectory>${project.build.directory}/failsafe-reports/partnership</reportsDirectory>
+								</configuration>
+							</execution>
+
+							<!-- ============================================== -->
+							<!-- SUITE 9: Notification E2E Tests               -->
+							<!-- ============================================== -->
+							<!-- Tests notification CRUD via HTTP endpoints and
+							     email delivery via GreenMail in-memory SMTP.
+
+							     Run ONLY notification tests (skip all other suites):
+							     mvn verify -Pe2e -Dskip.normal.tests=true -Dskip.session-expiry.tests=true -Dskip.multi-user.tests=true -Dskip.rate-limiting.tests=true -Dskip.admin.tests=true -Dskip.security.tests=true -Dskip.consolidated.tests=true -Dskip.partnership.tests=true
+							-->
+							<execution>
+								<id>notification-tests</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>integration-test</goal>
+								</goals>
+								<configuration>
+									<skipTests>${skip.notification.tests}</skipTests>
+									<includes>
+										<include>**/RunNotificationIT.java</include>
+									</includes>
+									<forkCount>1</forkCount>
+									<reuseForks>false</reuseForks>
+									<!-- Session + Rate limiting config (HIGH limits - no interference) -->
+									<argLine>@{argLine} -DFULLSESSION=604800 -DPARTIALSESSION=600 -DRL_STANDARD_REQ=10000 -DRL_STANDARD_WIN=60 -DRL_STANDARD_BLOCK=10 -DRL_STRICT_REQ=10000 -DRL_STRICT_WIN=60 -DRL_STRICT_BLOCK=10 -DRL_RELAXED_REQ=10000 -DRL_RELAXED_WIN=60 -DRL_RELAXED_BLOCK=10 -DRL_HIGH_REQ=10000 -DRL_HIGH_WIN=60 -DRL_HIGH_BLOCK=10 -DRL_AUTH_REQ=10000 -DRL_AUTH_WIN=60 -DRL_AUTH_BLOCK=10 -DRL_ADMIN_AUTH_REQ=10000 -DRL_ADMIN_AUTH_WIN=60 -DRL_ADMIN_AUTH_BLOCK=10 -DRL_COMPANY_AUTH_REQ=10000 -DRL_COMPANY_AUTH_WIN=60 -DRL_COMPANY_AUTH_BLOCK=10 -DRL_INFLUENCER_AUTH_REQ=10000 -DRL_INFLUENCER_AUTH_WIN=60 -DRL_INFLUENCER_AUTH_BLOCK=10 -DRL_UNKNOWN_AUTH_REQ=10000 -DRL_UNKNOWN_AUTH_WIN=60 -DRL_UNKNOWN_AUTH_BLOCK=10</argLine>
+									<systemPropertyVariables>
+										<spring.profiles.active>e2e</spring.profiles.active>
+										<user.timezone>UTC</user.timezone>
+										<file.encoding>UTF-8</file.encoding>
+									</systemPropertyVariables>
+									<reportsDirectory>${project.build.directory}/failsafe-reports/notification</reportsDirectory>
+								</configuration>
+							</execution>
+
+							<!-- ============================================== -->
+							<!-- SUITE 10: Consent Module Tests                -->
+							<!-- ============================================== -->
+							<!-- Tests the full consent lifecycle: anonymous cookie consent,
+							     consent preparation, registration with/without consents,
+							     consent enforcement, re-consent flow, admin consent endpoints.
+
+							     Run ONLY consent tests (skip all other suites):
+							     mvn verify -Pe2e -Dskip.normal.tests=true -Dskip.session-expiry.tests=true -Dskip.multi-user.tests=true -Dskip.rate-limiting.tests=true -Dskip.admin.tests=true -Dskip.security.tests=true -Dskip.consolidated.tests=true -Dskip.partnership.tests=true -Dskip.notification.tests=true
+							-->
+							<execution>
+								<id>consent-tests</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>integration-test</goal>
+								</goals>
+								<configuration>
+									<skipTests>${skip.consent.tests}</skipTests>
+									<includes>
+										<include>**/RunConsentIT.java</include>
+									</includes>
+									<forkCount>1</forkCount>
+									<reuseForks>false</reuseForks>
+									<!-- Session + Rate limiting config (HIGH limits - no interference) -->
+									<argLine>@{argLine} -DFULLSESSION=604800 -DPARTIALSESSION=600 -DRL_STANDARD_REQ=10000 -DRL_STANDARD_WIN=60 -DRL_STANDARD_BLOCK=10 -DRL_STRICT_REQ=10000 -DRL_STRICT_WIN=60 -DRL_STRICT_BLOCK=10 -DRL_RELAXED_REQ=10000 -DRL_RELAXED_WIN=60 -DRL_RELAXED_BLOCK=10 -DRL_HIGH_REQ=10000 -DRL_HIGH_WIN=60 -DRL_HIGH_BLOCK=10 -DRL_AUTH_REQ=10000 -DRL_AUTH_WIN=60 -DRL_AUTH_BLOCK=10 -DRL_ADMIN_AUTH_REQ=10000 -DRL_ADMIN_AUTH_WIN=60 -DRL_ADMIN_AUTH_BLOCK=10 -DRL_COMPANY_AUTH_REQ=10000 -DRL_COMPANY_AUTH_WIN=60 -DRL_COMPANY_AUTH_BLOCK=10 -DRL_INFLUENCER_AUTH_REQ=10000 -DRL_INFLUENCER_AUTH_WIN=60 -DRL_INFLUENCER_AUTH_BLOCK=10 -DRL_UNKNOWN_AUTH_REQ=10000 -DRL_UNKNOWN_AUTH_WIN=60 -DRL_UNKNOWN_AUTH_BLOCK=10</argLine>
+									<systemPropertyVariables>
+										<spring.profiles.active>e2e</spring.profiles.active>
+										<user.timezone>UTC</user.timezone>
+										<file.encoding>UTF-8</file.encoding>
+									</systemPropertyVariables>
+									<reportsDirectory>${project.build.directory}/failsafe-reports/consent</reportsDirectory>
+								</configuration>
+							</execution>
+
+							<!-- ============================================== -->
+							<!-- SUITE 11: Registry Module Tests               -->
+							<!-- ============================================== -->
+							<!-- Tests the full company registry lifecycle: NIP lookup,
+							     confirmation, auto-activation, JDG consent flow,
+							     and permission enforcement via stubbed registry ports.
+
+							     Run ONLY registry tests (skip all other suites):
+							     mvn verify -Pe2e -Dskip.normal.tests=true -Dskip.session-expiry.tests=true -Dskip.multi-user.tests=true -Dskip.rate-limiting.tests=true -Dskip.admin.tests=true -Dskip.security.tests=true -Dskip.consolidated.tests=true -Dskip.partnership.tests=true -Dskip.notification.tests=true -Dskip.consent.tests=true
+							-->
+							<execution>
+								<id>registry-tests</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>integration-test</goal>
+								</goals>
+								<configuration>
+									<skipTests>${skip.registry.tests}</skipTests>
+									<includes>
+										<include>**/RunRegistryIT.java</include>
+									</includes>
+									<forkCount>1</forkCount>
+									<reuseForks>false</reuseForks>
+									<!-- Session + Rate limiting config (HIGH limits - no interference) -->
+									<argLine>@{argLine} -DFULLSESSION=604800 -DPARTIALSESSION=600 -DRL_STANDARD_REQ=10000 -DRL_STANDARD_WIN=60 -DRL_STANDARD_BLOCK=10 -DRL_STRICT_REQ=10000 -DRL_STRICT_WIN=60 -DRL_STRICT_BLOCK=10 -DRL_RELAXED_REQ=10000 -DRL_RELAXED_WIN=60 -DRL_RELAXED_BLOCK=10 -DRL_HIGH_REQ=10000 -DRL_HIGH_WIN=60 -DRL_HIGH_BLOCK=10 -DRL_AUTH_REQ=10000 -DRL_AUTH_WIN=60 -DRL_AUTH_BLOCK=10 -DRL_ADMIN_AUTH_REQ=10000 -DRL_ADMIN_AUTH_WIN=60 -DRL_ADMIN_AUTH_BLOCK=10 -DRL_COMPANY_AUTH_REQ=10000 -DRL_COMPANY_AUTH_WIN=60 -DRL_COMPANY_AUTH_BLOCK=10 -DRL_INFLUENCER_AUTH_REQ=10000 -DRL_INFLUENCER_AUTH_WIN=60 -DRL_INFLUENCER_AUTH_BLOCK=10 -DRL_UNKNOWN_AUTH_REQ=10000 -DRL_UNKNOWN_AUTH_WIN=60 -DRL_UNKNOWN_AUTH_BLOCK=10</argLine>
+									<systemPropertyVariables>
+										<spring.profiles.active>e2e</spring.profiles.active>
+										<user.timezone>UTC</user.timezone>
+										<file.encoding>UTF-8</file.encoding>
+									</systemPropertyVariables>
+									<reportsDirectory>${project.build.directory}/failsafe-reports/registry</reportsDirectory>
+								</configuration>
+							</execution>
+
+							<!-- ============================================== -->
+							<!-- STEP-UP AUTH: Email change step-up flow        -->
+							<!-- ============================================== -->
+							<execution>
+								<id>step-up-tests</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>integration-test</goal>
+								</goals>
+								<configuration>
+									<skipTests>${skip.step-up.tests}</skipTests>
+									<includes>
+										<include>**/RunStepUpAuthIT.java</include>
+									</includes>
+									<forkCount>1</forkCount>
+									<reuseForks>false</reuseForks>
+									<argLine>@{argLine} -DFULLSESSION=604800 -DPARTIALSESSION=600 -DRL_STANDARD_REQ=10000 -DRL_STANDARD_WIN=60 -DRL_STANDARD_BLOCK=10 -DRL_STRICT_REQ=10000 -DRL_STRICT_WIN=60 -DRL_STRICT_BLOCK=10 -DRL_RELAXED_REQ=10000 -DRL_RELAXED_WIN=60 -DRL_RELAXED_BLOCK=10 -DRL_HIGH_REQ=10000 -DRL_HIGH_WIN=60 -DRL_HIGH_BLOCK=10 -DRL_AUTH_REQ=10000 -DRL_AUTH_WIN=60 -DRL_AUTH_BLOCK=10 -DRL_ADMIN_AUTH_REQ=10000 -DRL_ADMIN_AUTH_WIN=60 -DRL_ADMIN_AUTH_BLOCK=10 -DRL_COMPANY_AUTH_REQ=10000 -DRL_COMPANY_AUTH_WIN=60 -DRL_COMPANY_AUTH_BLOCK=10 -DRL_INFLUENCER_AUTH_REQ=10000 -DRL_INFLUENCER_AUTH_WIN=60 -DRL_INFLUENCER_AUTH_BLOCK=10 -DRL_UNKNOWN_AUTH_REQ=10000 -DRL_UNKNOWN_AUTH_WIN=60 -DRL_UNKNOWN_AUTH_BLOCK=10</argLine>
+									<systemPropertyVariables>
+										<spring.profiles.active>e2e</spring.profiles.active>
+										<user.timezone>UTC</user.timezone>
+										<file.encoding>UTF-8</file.encoding>
+									</systemPropertyVariables>
+									<reportsDirectory>${project.build.directory}/failsafe-reports/step-up</reportsDirectory>
+								</configuration>
+							</execution>
+
+							<!-- ============================================== -->
+							<!-- INFLUENCER VERIFICATION E2E TESTS             -->
+							<!-- ============================================== -->
+							<execution>
+								<id>influencer-verification-tests</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>integration-test</goal>
+								</goals>
+								<configuration>
+									<skipTests>${skip.influencer-verification.tests}</skipTests>
+									<includes>
+										<include>**/RunInfluencerVerificationIT.java</include>
+									</includes>
+									<forkCount>1</forkCount>
+									<reuseForks>false</reuseForks>
+									<argLine>@{argLine} -DFULLSESSION=604800 -DPARTIALSESSION=600 -DRL_STANDARD_REQ=10000 -DRL_STANDARD_WIN=60 -DRL_STANDARD_BLOCK=10 -DRL_STRICT_REQ=10000 -DRL_STRICT_WIN=60 -DRL_STRICT_BLOCK=10 -DRL_RELAXED_REQ=10000 -DRL_RELAXED_WIN=60 -DRL_RELAXED_BLOCK=10 -DRL_HIGH_REQ=10000 -DRL_HIGH_WIN=60 -DRL_HIGH_BLOCK=10 -DRL_AUTH_REQ=10000 -DRL_AUTH_WIN=60 -DRL_AUTH_BLOCK=10 -DRL_ADMIN_AUTH_REQ=10000 -DRL_ADMIN_AUTH_WIN=60 -DRL_ADMIN_AUTH_BLOCK=10 -DRL_COMPANY_AUTH_REQ=10000 -DRL_COMPANY_AUTH_WIN=60 -DRL_COMPANY_AUTH_BLOCK=10 -DRL_INFLUENCER_AUTH_REQ=10000 -DRL_INFLUENCER_AUTH_WIN=60 -DRL_INFLUENCER_AUTH_BLOCK=10 -DRL_UNKNOWN_AUTH_REQ=10000 -DRL_UNKNOWN_AUTH_WIN=60 -DRL_UNKNOWN_AUTH_BLOCK=10</argLine>
+									<systemPropertyVariables>
+										<spring.profiles.active>e2e</spring.profiles.active>
+										<user.timezone>UTC</user.timezone>
+										<file.encoding>UTF-8</file.encoding>
+										<auth.email-verification.cooldown-seconds>0</auth.email-verification.cooldown-seconds>
+										<auth.password-reset.cooldown-seconds>0</auth.password-reset.cooldown-seconds>
+									</systemPropertyVariables>
+									<reportsDirectory>${project.build.directory}/failsafe-reports/influencer-verification</reportsDirectory>
+								</configuration>
+							</execution>
+
+							<!-- ============================================== -->
+							<!-- SUBSCRIPTION TESTS                             -->
+							<!-- ============================================== -->
+							<execution>
+								<id>subscription-tests</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>integration-test</goal>
+								</goals>
+								<configuration>
+									<skipTests>${skip.subscription.tests}</skipTests>
+									<includes>
+										<include>**/RunSubscriptionIT.java</include>
+									</includes>
+									<forkCount>1</forkCount>
+									<reuseForks>false</reuseForks>
+									<argLine>@{argLine} -DFULLSESSION=604800 -DPARTIALSESSION=600 -DRL_STANDARD_REQ=10000 -DRL_STANDARD_WIN=60 -DRL_STANDARD_BLOCK=10 -DRL_STRICT_REQ=10000 -DRL_STRICT_WIN=60 -DRL_STRICT_BLOCK=10 -DRL_RELAXED_REQ=10000 -DRL_RELAXED_WIN=60 -DRL_RELAXED_BLOCK=10 -DRL_HIGH_REQ=10000 -DRL_HIGH_WIN=60 -DRL_HIGH_BLOCK=10 -DRL_AUTH_REQ=10000 -DRL_AUTH_WIN=60 -DRL_AUTH_BLOCK=10 -DRL_ADMIN_AUTH_REQ=10000 -DRL_ADMIN_AUTH_WIN=60 -DRL_ADMIN_AUTH_BLOCK=10 -DRL_COMPANY_AUTH_REQ=10000 -DRL_COMPANY_AUTH_WIN=60 -DRL_COMPANY_AUTH_BLOCK=10 -DRL_INFLUENCER_AUTH_REQ=10000 -DRL_INFLUENCER_AUTH_WIN=60 -DRL_INFLUENCER_AUTH_BLOCK=10 -DRL_UNKNOWN_AUTH_REQ=10000 -DRL_UNKNOWN_AUTH_WIN=60 -DRL_UNKNOWN_AUTH_BLOCK=10</argLine>
+									<systemPropertyVariables>
+										<spring.profiles.active>e2e</spring.profiles.active>
+										<user.timezone>UTC</user.timezone>
+										<file.encoding>UTF-8</file.encoding>
+									</systemPropertyVariables>
+									<reportsDirectory>${project.build.directory}/failsafe-reports/subscription</reportsDirectory>
+								</configuration>
+							</execution>
+
+							<!-- ============================================== -->
+							<!-- PAYMENTS-OFF TESTS                             -->
+							<!-- Runs in its own fork with -Dapp.payments.enabled=false -->
+							<!-- because the payments-OFF Spring context is incompatible -->
+							<!-- with the payments-ON contexts used by every other suite. -->
+							<!-- ============================================== -->
+							<execution>
+								<id>payments-off-tests</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>integration-test</goal>
+								</goals>
+								<configuration>
+									<skipTests>${skip.payments-off.tests}</skipTests>
+									<includes>
+										<include>**/RunPaymentsDisabledIT.java</include>
+									</includes>
+									<forkCount>1</forkCount>
+									<reuseForks>false</reuseForks>
+									<argLine>@{argLine} -Dapp.payments.enabled=false -DFULLSESSION=604800 -DPARTIALSESSION=600 -DRL_STANDARD_REQ=10000 -DRL_STANDARD_WIN=60 -DRL_STANDARD_BLOCK=10 -DRL_STRICT_REQ=10000 -DRL_STRICT_WIN=60 -DRL_STRICT_BLOCK=10 -DRL_RELAXED_REQ=10000 -DRL_RELAXED_WIN=60 -DRL_RELAXED_BLOCK=10 -DRL_HIGH_REQ=10000 -DRL_HIGH_WIN=60 -DRL_HIGH_BLOCK=10 -DRL_AUTH_REQ=10000 -DRL_AUTH_WIN=60 -DRL_AUTH_BLOCK=10 -DRL_ADMIN_AUTH_REQ=10000 -DRL_ADMIN_AUTH_WIN=60 -DRL_ADMIN_AUTH_BLOCK=10 -DRL_COMPANY_AUTH_REQ=10000 -DRL_COMPANY_AUTH_WIN=60 -DRL_COMPANY_AUTH_BLOCK=10 -DRL_INFLUENCER_AUTH_REQ=10000 -DRL_INFLUENCER_AUTH_WIN=60 -DRL_INFLUENCER_AUTH_BLOCK=10 -DRL_UNKNOWN_AUTH_REQ=10000 -DRL_UNKNOWN_AUTH_WIN=60 -DRL_UNKNOWN_AUTH_BLOCK=10</argLine>
+									<systemPropertyVariables>
+										<spring.profiles.active>e2e</spring.profiles.active>
+										<user.timezone>UTC</user.timezone>
+										<file.encoding>UTF-8</file.encoding>
+										<app.payments.enabled>false</app.payments.enabled>
+									</systemPropertyVariables>
+									<reportsDirectory>${project.build.directory}/failsafe-reports/payments-off</reportsDirectory>
+								</configuration>
+							</execution>
+
+							<!-- ============================================== -->
+							<!-- VERIFY: Check results from all suites         -->
+							<!-- ============================================== -->
+							<execution>
+								<id>verify-all</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>verify</goal>
+								</goals>
+								<!-- Uses default summaryFile: target/failsafe-reports/failsafe-summary.xml -->
+								<!-- Failsafe aggregates results from all executions into one file -->
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- Coverage Profile - Merge JaCoCo reports from Unit + Integration + E2E -->
+		<!-- Usage: Run after executing tests with other profiles -->
+		<!--   Step 1: mvn test                    (unit tests → jacoco-unit.exec)     -->
+		<!--   Step 2: mvn verify -Pintegration   (integration → jacoco-integration.exec) -->
+		<!--   Step 3: mvn verify -Pe2e           (e2e tests → jacoco-e2e.exec)        -->
+		<!--   Step 4: mvn verify -Pcoverage      (merge all → cumulative report)      -->
+		<!-- Note: Only merges .exec files that exist - safe to run with partial data  -->
+		<profile>
+			<id>coverage</id>
+			<properties>
+				<skipTests>true</skipTests>
+				<skip.unit.tests>true</skip.unit.tests>
+				<skip.integration.tests>true</skip.integration.tests>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>0.8.11</version>
+						<executions>
+							<!-- Merge all existing .exec files -->
+							<execution>
+								<id>merge-coverage</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>merge</goal>
+								</goals>
+								<configuration>
+									<fileSets>
+										<fileSet>
+											<directory>${project.build.directory}</directory>
+											<includes>
+												<include>jacoco-unit.exec</include>
+												<include>jacoco-integration.exec</include>
+												<include>jacoco-e2e.exec</include>
+											</includes>
+										</fileSet>
+									</fileSets>
+									<destFile>${project.build.directory}/jacoco-merged.exec</destFile>
+								</configuration>
+							</execution>
+							<!-- Generate cumulative report -->
+							<execution>
+								<id>report-merged</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>report</goal>
+								</goals>
+								<configuration>
+									<dataFile>${project.build.directory}/jacoco-merged.exec</dataFile>
+									<outputDirectory>${project.build.directory}/site/jacoco-merged</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<!-- Skip Failsafe completely -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<version>${maven-failsafe-plugin.version}</version>
+						<configuration>
+							<skipTests>true</skipTests>
+							<skipITs>true</skipITs>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>

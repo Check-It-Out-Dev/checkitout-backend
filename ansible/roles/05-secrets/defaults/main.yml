@@ -1,0 +1,12 @@
+# Default variables for 05-secrets role
+
+---
+# Secret file permissions (CRITICAL - do not change)
+secret_file_permissions: "0640"
+secret_dir_permissions: "0750"
+
+# .env file deployment (disabled - managed by GitHub Actions pipeline)
+deploy_env_files: false
+
+# Validate secrets after deployment (only GCP service accounts)
+validate_secrets: true

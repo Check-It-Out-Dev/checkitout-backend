@@ -1,0 +1,24 @@
+# Default variables for 14-security role
+
+---
+# AppArmor
+verify_apparmor: true
+
+# File immutability
+apply_immutable_flags: true
+
+# Security audit
+run_security_audit: true
+
+# Fail2Ban
+configure_fail2ban: false  # Optional
+
+# Files to make immutable
+immutable_files:
+  - "{{ test_deployment_path }}/.env"
+  - "{{ prod_deployment_path }}/.env"
+  - "/etc/systemd/system/instagram-platform-test.service"
+  - "/etc/systemd/system/instagram-platform-prod.service"
+  - "/etc/sudoers.d/instagram-test-deploy"
+  - "/etc/sudoers.d/instagram-prod-deploy"
+  - "/etc/sudoers.d/instagram-scripts-admin"

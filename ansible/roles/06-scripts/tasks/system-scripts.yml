@@ -1,0 +1,29 @@
+# System maintenance scripts deployment
+
+---
+- name: Deploy Cloudflare IP update script
+  ansible.builtin.copy:
+    src: "{{ local_scripts_path }}/config/cloudflare-ip-update.sh"
+    dest: /usr/local/bin/cloudflare-ip-update.sh
+    owner: root
+    group: root
+    mode: "{{ script_permissions }}"
+  ignore_errors: yes
+  register: cloudflare_script
+
+- name: Deploy GitHub IP update script
+  ansible.builtin.copy:
+    src: "{{ local_scripts_path }}/config/update-github-ips.sh"
+    dest: /usr/local/bin/update-github-ips.sh
+    owner: root
+    group: root
+    mode: "{{ script_permissions }}"
+  ignore_errors: yes
+  register: github_script
+
+- name: Display system scripts deployment summary
+  ansible.builtin.debug:
+    msg:
+      - "System Scripts Deployment Status:"
+      - "  cloudflare-ip-update.sh: {{ 'DEPLOYED' if cloudflare_script is changed else 'FAILED ⚠️' if cloudflare_script is failed else 'EXISTS' }}"
+      - "  update-github-ips.sh: {{ 'DEPLOYED' if github_script is changed else 'FAILED ⚠️' if github_script is failed else 'EXISTS' }}"

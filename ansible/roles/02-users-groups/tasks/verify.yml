@@ -1,0 +1,42 @@
+# Verification tasks
+
+---
+- name: Verify all users exist
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ item.name }}"
+  loop:
+    - "{{ user_test_deploy }}"
+    - "{{ user_prod_deploy }}"
+    - "{{ user_scripts_admin }}"
+    - "{{ user_loki }}"
+
+- name: Verify all groups exist
+  ansible.builtin.getent:
+    database: group
+    key: "{{ item.name }}"
+  loop: "{{ security_groups }}"
+
+- name: Get user information
+  ansible.builtin.command: "id {{ item.name }}"
+  loop:
+    - "{{ user_test_deploy }}"
+    - "{{ user_prod_deploy }}"
+    - "{{ user_scripts_admin }}"
+    - "{{ user_loki }}"
+  register: user_info
+  changed_when: false
+
+- name: Display user information
+  ansible.builtin.debug:
+    msg: "{{ item.stdout }}"
+  loop: "{{ user_info.results }}"
+
+- name: Verify Docker group membership
+  ansible.builtin.command: getent group docker
+  register: docker_group_members
+  changed_when: false
+
+- name: Display Docker group members
+  ansible.builtin.debug:
+    msg: "Docker group members: {{ docker_group_members.stdout }}"

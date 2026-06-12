@@ -1,0 +1,139 @@
+# Test Environment Variables
+# Instagram Platform VPS Deployment
+#
+# These variables override values from all.yml for the test environment.
+# Extracted from deployment-test.yml
+
+---
+# =============================================================================
+# Environment Identifier
+# =============================================================================
+
+environment: "test"
+deployment_environment: "test"
+
+# =============================================================================
+# Container Image Configuration
+# =============================================================================
+
+container_image_name: "check-it-out-dev/checkitout-be/instagram-platform-backend-test"
+container_image_variant: "debug"
+
+# Docker images for compose
+gsm_init_image_full: "ghcr.io/check-it-out-dev/google-secrets-init:latest"
+main_app_image: "ghcr.io/check-it-out-dev/checkitout-be/instagram-platform-backend-test:latest"
+app_container_name: "instagram-platform-test"
+
+# =============================================================================
+# Container User/Group Configuration
+# =============================================================================
+
+container_user_id: 1002
+container_group_id: 1005
+container_user_name: "instagram-test-deploy"
+container_group_name: "docker-secrets-test"
+
+# =============================================================================
+# Google Secret Manager Configuration
+# =============================================================================
+
+gsm_project_id: "check-it-out-47c50"
+gsm_secret_prefix: "TEST_"
+gsm_service_account_path: "/etc/instagram-platform/test/secrets/service-account.json"
+
+# =============================================================================
+# Server Port Configuration
+# =============================================================================
+
+server_port: 8082
+app_port: 8082
+
+# =============================================================================
+# Database Configuration
+# =============================================================================
+
+# Test environment uses containerized PostgreSQL
+spring_datasource_host: "postgres"  # Docker container name
+spring_datasource_port: 5432
+spring_datasource_database: "instagram_platform_test"
+postgres_enabled: true  # Test has local postgres container
+
+# =============================================================================
+# Domains and URLs
+# =============================================================================
+
+test_domain: "check-it-out.pl"
+test_backend_url: "https://check-it-out.pl"
+test_frontend_url: "https://check-it-out.pl"
+
+# =============================================================================
+# Docker Compose Configuration
+# =============================================================================
+
+docker_compose_file: "docker-compose-test.yml"
+docker_compose_path: "/opt/instagram-platform/test/deployment/docker-compose-test.yml"
+
+# Expected container count for verification
+expected_container_count: 5  # google-secrets-init (exited), postgres, redis, redis-sentinel, app
+
+# Container names
+containers:
+  - "instagram-platform-test-google-secrets-init-1"
+  - "instagram-platform-test-postgres-1"
+  - "instagram-platform-test-redis-1"
+  - "instagram-platform-test-redis-sentinel-1"
+  - "instagram-platform-test-app-1"
+
+# =============================================================================
+# Systemd Service Configuration
+# =============================================================================
+
+systemd_service_name: "instagram-platform-test"
+systemd_service_user: "instagram-test-deploy"
+systemd_working_directory: "/opt/instagram-platform/test/deployment"
+
+# =============================================================================
+# Network Configuration
+# =============================================================================
+
+docker_network_name: "instagram-platform-test_network"
+docker_network_subnet: "172.20.0.0/16"
+docker_network_gateway: "172.20.0.1"
+
+# =============================================================================
+# Volume Configuration
+# =============================================================================
+
+docker_volume_secrets: "instagram-platform-test_secrets-storage"
+docker_volume_postgres: "instagram-platform-test_postgres-data"
+docker_volume_redis: "instagram-platform-test_redis-data"
+docker_volume_backup: "instagram-platform-test_backup-storage"
+
+# =============================================================================
+# Backup Configuration
+# =============================================================================
+
+backup_retention_count: 7  # Keep 7 days of backups
+
+# =============================================================================
+# Health Check Endpoints
+# =============================================================================
+
+health_check_url: "http://localhost:8082/actuator/health"
+health_check_retries: 60
+health_check_delay: 10
+
+# =============================================================================
+# Logging Configuration
+# =============================================================================
+
+log_level: "DEBUG"
+spring_profile: "test"
+
+# =============================================================================
+# Deployment Configuration
+# =============================================================================
+
+deploy_user: "instagram-test-deploy"
+deploy_group: "instagram-test-deploy"
+secrets_group: "docker-secrets-test"

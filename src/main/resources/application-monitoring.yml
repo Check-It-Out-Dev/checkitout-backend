@@ -1,0 +1,251 @@
+# =============================================================================
+# MONITORING AND METRICS CONFIGURATION
+# =============================================================================
+# This configuration file contains all monitoring-related settings
+# Include this profile: spring.profiles.include=monitoring
+
+management:
+  endpoints:
+    web:
+      exposure:
+        # Expose all monitoring endpoints
+        include: 
+          - health
+          - metrics
+          - prometheus
+          - info
+          - env
+          - configprops
+          - beans
+          - threaddump
+          - heapdump
+      base-path: /actuator
+      cors:
+        allowed-origins: "*"
+        allowed-methods: GET,POST
+        
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+      probes:
+        enabled: true
+      group:
+        # Kubernetes readiness probe
+        readiness:
+          include: 
+            - db
+            - redis
+            - diskSpace
+            - uploadSystem
+        # Kubernetes liveness probe  
+        liveness:
+          include:
+            - ping
+            - application
+            
+    metrics:
+      enabled: true
+      
+    prometheus:
+      enabled: true
+      
+    info:
+      enabled: true
+      
+  health:
+    # Custom health indicators
+    uploadSystem:
+      enabled: true
+    redis:
+      enabled: true
+    diskspace:
+      enabled: true
+      
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+        step: 60s # How often to export metrics
+        descriptions: true
+        
+    # Global metric tags
+    tags:
+      application: ${spring.application.name}
+      environment: ${spring.profiles.active:default}
+      version: ${app.version:unknown}
+      
+    # Enable JVM metrics
+    enable:
+      jvm: true
+      system: true
+      web: true
+      
+    # Custom meters
+    distribution:
+      percentiles-histogram:
+        # Enable histogram for upload timers
+        "[uploads.signed_url.generation.time]": true
+        "[uploads.confirmation.time]": true
+      percentiles:
+        # Enable percentiles for important timers
+        "[uploads.signed_url.generation.time]": 0.5,0.9,0.95,0.99
+        "[uploads.confirmation.time]": 0.5,0.9,0.95,0.99
+
+# =============================================================================
+# UPLOAD SYSTEM MONITORING CONFIGURATION
+# =============================================================================
+
+file-upload:
+  tracking:
+    enabled: true
+    cleanup-orphaned-uploads: true
+    orphaned-upload-timeout-hours: 1
+    
+  monitoring:
+    enabled: true
+    metrics:
+      enabled: true
+      detailed: true
+    alerts:
+      enabled: true
+      
+storage:
+  monitoring:
+    enabled: true
+    metrics:
+      enabled: true
+      file-size-histogram: true
+      content-type-tracking: true
+    alerts:
+      enabled: true
+      failure-rate-threshold: 0.1
+      rate-limit-threshold: 100
+      storage-usage-threshold: 0.8
+
+# =============================================================================
+# ALERT CONFIGURATION
+# =============================================================================
+
+alerts:
+  # Rate limit alert configuration
+  rate-limit:
+    threshold: 100  # Alert if more than 100 rate limit hits per hour
+    window: "1h"
+    
+  # Failure rate alert configuration
+  failure-rate:
+    threshold: 0.1  # Alert if failure rate exceeds 10%
+    window: "5m"
+    minimum-requests: 10  # Only alert if at least 10 requests in window
+    
+  # Storage usage alert configuration
+  storage-usage:
+    threshold: 0.8  # Alert when 80% of storage is used
+    check-interval: "15m"
+    
+  # System health alert configuration
+  system-health:
+    check-interval: "1m"
+    consecutive-failures: 3  # Alert after 3 consecutive health check failures
+    
+  # Webhook configuration for external alerting systems
+  webhook:
+    url: ${ALERT_WEBHOOK_URL:}  # Slack/Discord/PagerDuty webhook URL
+    timeout: 5s
+    retry:
+      enabled: true
+      max-attempts: 3
+      delay: 5s
+
+# =============================================================================
+# WEBHOOK CONFIGURATION
+# =============================================================================
+
+webhooks:
+  firebase:
+    secret: ${FIREBASE_WEBHOOK_SECRET:}
+    enabled: true
+    
+    # Security configuration
+    signature-verification: true
+    allowed-ips: 
+      - "0.0.0.0/0"  # In production, restrict to Firebase IP ranges
+      
+    # Event processing configuration
+    processing:
+      async: true
+      retry:
+        enabled: true
+        max-attempts: 3
+        delay: 1s
+
+# =============================================================================
+# LOGGING CONFIGURATION FOR MONITORING
+# =============================================================================
+
+logging:
+  pattern:
+    # Include correlation IDs and request context
+    console: "%d{ISO8601} [%thread] %-5level [%X{requestId:-}] [%X{userId:-}] %logger{36} - %msg%n"
+    file: "%d{ISO8601} [%thread] %-5level [%X{requestId:-}] [%X{userId:-}] [%X{uploadId:-}] %logger{36} - %msg%n"
+    
+  level:
+    # Upload system specific logging levels
+    com.sm.instagram.platform.storage: DEBUG
+    com.sm.instagram.platform.storage.controller.WebhookController: DEBUG
+    com.sm.instagram.platform.storage.service.FileTrackingService: DEBUG
+    com.sm.instagram.platform.storage.service.UploadMetricsService: INFO
+    com.sm.instagram.platform.storage.health: INFO
+    
+    # Monitoring and metrics
+    io.micrometer: INFO
+    org.springframework.boot.actuator: INFO
+    
+    # Reduce noise from framework
+    org.springframework.web.servlet: WARN
+    org.hibernate.engine.internal.StatisticalLoggingSessionEventListener: WARN
+
+# =============================================================================
+# PERFORMANCE MONITORING
+# =============================================================================
+
+spring:
+  # Enable async for webhook processing
+  task:
+    execution:
+      pool:
+        core-size: 2
+        max-size: 10
+        queue-capacity: 100
+      thread-name-prefix: upload-async-
+      
+  # Jackson configuration for metrics serialization
+  jackson:
+    serialization:
+      indent-output: false  # Compact JSON for metrics
+      write-dates-as-timestamps: false
+      
+# =============================================================================
+# ENVIRONMENT INFO FOR MONITORING
+# =============================================================================
+
+info:
+  app:
+    name: ${spring.application.name}
+    version: ${app.version:@project.version@}
+    description: Instagram Collaboration Platform - File Upload System
+  
+  upload-system:
+    features:
+      tracking: ${file-upload.tracking.enabled:false}
+      monitoring: ${file-upload.monitoring.enabled:false}
+      webhooks: ${webhooks.firebase.enabled:false}
+    limits:
+      max-file-size-mb: ${rate-limit.defaults.upload-requests:10}
+      hourly-limit: ${rate-limit.defaults.upload-requests:10}
+      daily-limit: ${rate-limit.defaults.upload-requests:100}
+      
+  build:
+    time: ${maven.build.timestamp:unknown}
+    java-version: ${java.version}

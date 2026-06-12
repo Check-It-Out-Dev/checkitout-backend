@@ -1,0 +1,241 @@
+# =============================================================================
+# NO-REDIS PROFILE - Run Spring without Redis dependency
+# =============================================================================
+# Use this profile to run the application without Redis
+# Database and user are auto-created by LocalDatabaseInitializer
+# Usage: java -jar app.jar --spring.profiles.active=no-redis
+# Or with Maven: mvn spring-boot:run -Dspring-boot.run.profiles=no-redis
+# =============================================================================
+
+spring:
+  # =============================================================================
+  # DATASOURCE - APPLICATION USER (created by initializer)
+  # =============================================================================
+  datasource:
+    host: localhost
+    port: 5432
+    database: postgres
+    url: jdbc:postgresql://${spring.datasource.host}:${spring.datasource.port}/${spring.datasource.database}
+    # Application user (will be created if doesn't exist)
+    username: postgres
+    password: admin
+    
+    hikari:
+      pool-name: CheckItOut-NoRedis-Pool
+      maximum-pool-size: 5
+      minimum-idle: 2
+
+  # =============================================================================
+  # LIQUIBASE - USES APPLICATION USER (after creation)
+  # =============================================================================
+  liquibase:
+    enabled: true
+    contexts: dev,local,no-redis
+    # IMPORTANT: Liquibase runs as app user (owns the public schema)
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    url: ${spring.datasource.url}
+
+  # =============================================================================
+  # DISABLE REDIS DATA CONFIGURATION
+  # =============================================================================
+  data:
+    redis:
+      # Disable Redis completely
+      enabled: false
+      repositories:
+        enabled: false
+  
+  # =============================================================================
+  # USE IN-MEMORY CACHING INSTEAD OF REDIS
+  # =============================================================================
+  cache:
+    type: simple  # Use ConcurrentHashMap-based simple cache
+    
+  # =============================================================================
+  # DISABLE REDIS AUTOCONFIGURATION
+  # =============================================================================
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration
+      - org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration.ConditionalOnRedisApplication
+
+# =============================================================================
+# POSTGRES SUPERUSER - FOR INITIAL SETUP ONLY
+# =============================================================================
+# Used by LocalDatabaseInitializer to create database and user
+postgres:
+  superuser:
+    username: postgres
+    password: admin
+
+# =============================================================================
+# LOCAL DATABASE INITIALIZATION
+# =============================================================================
+local:
+  db:
+    init:
+      enabled: true  # Auto-create database and user on startup
+      force: false   # Set to true to recreate database (WARNING: data loss!)
+
+# =============================================================================
+# UNIFIED STORAGE MODE - NO REDIS
+# =============================================================================
+storage:
+  mode: in-memory  # Use in-memory for everything (no Redis)
+  monitoring:
+    enabled: true  # Now safe with in-memory implementation
+    metrics:
+      enabled: true
+    alerts:
+      enabled: false  # Disable alerts for local dev
+
+# =============================================================================
+# RATE LIMITING CONFIGURATION (IN-MEMORY)
+# =============================================================================
+rate-limit:
+  enabled: true
+  algorithm: sliding-window
+  max-entries: 10000  # Reduced for in-memory storage
+  cleanup:
+    enabled: true
+    interval: 60000  # More frequent cleanup for in-memory
+  
+  # Disable Redis-based metrics
+  metrics:
+    enabled: true
+    optimized: false  # This disables RateLimitMetricsService
+  
+  # In-memory specific settings
+  redis:
+    enabled: false
+    enable-fallback: false
+    distributed: false  # Cannot be distributed without Redis
+    metrics-enabled: false
+    circuit-breaker:
+      enabled: false  # Disable Redis circuit breaker
+  
+  # Adjust rate limits for in-memory storage
+  defaults:
+    requests: 100
+    duration: 3600
+    auth-requests: 20
+    auth-duration: 300
+    upload-requests: 10
+    upload-duration: 3600
+  
+  # Upload-specific rate limits for in-memory storage
+  upload:
+    per-hour: 10        # Max uploads per hour per user
+    per-day: 50         # Max uploads per day per user
+    global-per-minute: 20  # Max uploads globally per minute
+    max-user-storage: 104857600  # 100MB per user
+    max-file-size: 10485760      # 10MB per file
+
+# =============================================================================
+# GEOIP CONFIGURATION (IN-MEMORY FOR NO-REDIS PROFILE)
+# =============================================================================
+geoip:
+  cache:
+    # Cache type is automatically set to in-memory via storage.mode property
+    enabled: true
+    ttl-days: 7
+    max-entries: 10000
+  impossible-travel:
+    speed-kmh: 500
+    min-minutes: 10
+  gdpr:
+    enabled: true
+    audit-retention-days: 90
+
+# =============================================================================
+# FILE UPLOAD & STORAGE CONFIGURATION (NO-REDIS)
+# =============================================================================
+file-upload:
+  max-file-size: 10485760  # 10MB
+  allowed-extensions: jpg,jpeg,png,gif,webp
+  signed-url-expiration-minutes: 5
+  storage-path-pattern: content/{userId}/{timestamp}_{filename}
+  tracking:
+    enabled: true
+    cleanup-orphaned-uploads: true
+    orphaned-upload-timeout-hours: 1
+
+
+# =============================================================================
+# DEVELOPMENT ENVIRONMENT
+# =============================================================================
+app:
+  environment: DEVELOPMENT
+
+server:
+  port: 8080
+
+# =============================================================================
+# HEALTH CHECK CONFIGURATION - DISABLE REDIS HEALTH
+# =============================================================================
+management:
+  health:
+    redis:
+      enabled: false  # Disable Redis health indicator
+    
+# =============================================================================
+# REDIS HEALTH MONITORING - DISABLED
+# =============================================================================
+redis:
+  health:
+    enabled: false
+
+# =============================================================================
+# LOGGING CONFIGURATION
+# =============================================================================
+logging:
+  level:
+    root: INFO
+    # Reduce Redis-related logging
+    io.lettuce.core: INFO
+    org.springframework.data.redis: INFO
+    org.springframework.boot.autoconfigure.data.redis: INFO
+    # Development logging
+    com.sm.instagram.platform: INFO
+    com.sm.instagram.platform.config.LocalDatabaseInitializer: INFO
+    com.sm.instagram.platform.common.ratelimit: INFO
+    org.springframework.cache: INFO
+    org.hibernate.SQL: INFO
+    liquibase: INFO
+
+# =============================================================================
+# SWAGGER ENABLED
+# =============================================================================
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    try-it-out-enabled: true
+
+# =============================================================================
+# INSTAGRAM API CONFIGURATION
+# =============================================================================
+# Meta App Configuration (Facebook App for Instagram Business Login) - TEST
+meta:
+  app-id: ${META_APP_ID:1000000000000001}  # TEST Meta App ID (hardcoded for local)
+  app-secret: ${META_APP_SECRET:}  # TEST Meta Secret (hardcoded for local)
+
+instagram:
+  test-token: ${INSTAGRAM_TEST_TOKEN:}
+  client-id: ${INSTAGRAM_CLIENT_ID:2000000000000001}  # TEST Instagram App ID
+  client:
+    secret: ${INSTAGRAM_CLIENT_SECRET:}  # TEST Instagram Secret
+  redirect-uri: https://localhost:8080/api/auth/social/callback/instagram  # Backend handles OAuth (needs SSL)
+
+# =============================================================================
+# FIREBASE CONFIGURATION
+# =============================================================================
+firebase:
+  config:
+    path: src/main/resources/service-account.json
+  project:
+    id: check-it-out-47c50  # Expected TEST Firebase instance (actual depends on service-account.json)

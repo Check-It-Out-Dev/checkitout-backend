@@ -1,0 +1,507 @@
+name: 🔐 Reload and Validate
+# Secure version with instagram-scripts-admin and immutability protection
+
+on:
+  workflow_call:
+    inputs:
+      config-json:
+        description: 'Configuration JSON from config loader'
+        type: string
+        required: true
+      validation-timeout:
+        description: 'Validation timeout in minutes'
+        type: number
+        required: false
+        default: 15
+    secrets:
+      INSTAGRAM_SERVER_HOST:
+        required: true
+      INSTAGRAM_SCRIPTS_ADMIN_USER:
+        required: true
+      INSTAGRAM_SCRIPTS_ADMIN_SSH_KEY:
+        required: true
+      TOKEN_FOR_DOCKER:
+        required: true
+        description: 'Personal Access Token with read/write packages permissions'
+
+jobs:
+  reload-validate:
+    name: Reload & Validate (Secure)
+    runs-on: [self-hosted, Linux, x64]
+    timeout-minutes: ${{ inputs.validation-timeout }}
+    outputs:
+      deployment-status: ${{ steps.validate-deployment.outputs.status }}
+    
+    steps:
+      - name: 📋 Parse Configuration
+        id: config
+        run: |
+          CONFIG='${{ inputs.config-json }}'
+          
+          # Extract values
+          echo "ENVIRONMENT=$(echo "$CONFIG" | jq -r '._flat.environment')" >> $GITHUB_ENV
+          echo "DEPLOYMENT_PATH=$(echo "$CONFIG" | jq -r '._flat.deployment_path')" >> $GITHUB_ENV
+          echo "SYSTEMD_SERVICE_NAME=$(echo "$CONFIG" | jq -r '._flat.systemd_service_name')" >> $GITHUB_ENV
+          echo "GSM_PROJECT_ID=$(echo "$CONFIG" | jq -r '._flat.gcp_project_id')" >> $GITHUB_ENV
+          echo "GSM_SECRET_PREFIX=$(echo "$CONFIG" | jq -r '._flat.gsm_secret_prefix')" >> $GITHUB_ENV
+          echo "SCRIPT_TIMEOUT=$(echo "$CONFIG" | jq -r '._flat.script_execution_timeout_seconds // 600')" >> $GITHUB_ENV
+          echo "RUNTIME_PATH=$(echo "$CONFIG" | jq -r '._flat.runtime_path')" >> $GITHUB_ENV
+          echo "ADMIN_HOME=$(echo "$CONFIG" | jq -r '._flat.admin_home_directory')" >> $GITHUB_ENV
+          
+          # CI/CD logging configuration
+          echo "CICD_LOG_ENABLED=$(echo "$CONFIG" | jq -r '._flat.cicd_log_enabled // true')" >> $GITHUB_ENV
+          echo "CICD_LOG_PATH=$(echo "$CONFIG" | jq -r '._flat.cicd_log_path // "/var/log/CiCd"')" >> $GITHUB_ENV
+          echo "CICD_LOG_FILE=$(echo "$CONFIG" | jq -r '._flat.cicd_log_file // "instagram-platform-cicd.log"')" >> $GITHUB_ENV
+          echo "CICD_LOG_GROUP=$(echo "$CONFIG" | jq -r '._flat.cicd_log_group // "instagram-cicd"')" >> $GITHUB_ENV
+          
+          # Display configuration
+          echo "📊 Reload & Validate Configuration:"
+          echo "  Environment: $ENVIRONMENT"
+          echo "  Deployment Path: $DEPLOYMENT_PATH"
+          echo "  Service Name: $SYSTEMD_SERVICE_NAME"
+          echo "  Script Timeout: ${SCRIPT_TIMEOUT}s"
+          echo "  Admin Home: $ADMIN_HOME"
+
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github/scripts/remote/
+            .github/scripts/runner/
+
+      - name: 🔐 Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          
+          # Configure SSH
+          cat >> ~/.ssh/config << EOF
+          Host admin-server
+              HostName ${{ secrets.INSTAGRAM_SERVER_HOST }}
+              User ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}
+              IdentityFile ~/.ssh/id_rsa
+              StrictHostKeyChecking no
+              ServerAliveInterval 30
+              ServerAliveCountMax 3
+              ConnectTimeout 30
+              LogLevel ERROR
+          EOF
+          
+          ssh-keyscan -H ${{ secrets.INSTAGRAM_SERVER_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+          echo "✅ SSH configured for admin user"
+
+      - name: ☢️ Nuclear Cleanup - START
+        run: |
+          echo "☢️ NUCLEAR CLEANUP AT START - Ensuring pristine environment"
+          
+          # FIRST: Remove all immutability with sudo
+          echo "🔓 Removing all immutability flags..."
+          ssh admin-server << 'REMOVE_IMMUTABLE'
+            echo "Removing immutability from ${{ env.ADMIN_HOME }}..."
+            sudo /usr/bin/chattr -R -i ${{ env.ADMIN_HOME }} 2>/dev/null || true
+            echo "✅ Immutability removed"
+          REMOVE_IMMUTABLE
+          
+          # THEN: Upload and execute cleanup script
+          scp -i ~/.ssh/id_rsa \
+              .github/scripts/remote/nuclear-cleanup.sh \
+              admin-server:${{ env.ADMIN_HOME }}/nuclear-cleanup-temp.sh
+          
+          # Execute cleanup
+          ssh admin-server << 'NUCLEAR_START'
+            cd ${{ env.ADMIN_HOME }}
+            chmod +x nuclear-cleanup-temp.sh
+          
+            echo "🔥 Executing nuclear cleanup..."
+            ./nuclear-cleanup-temp.sh
+          
+            rm -f nuclear-cleanup-temp.sh
+            echo "✅ START cleanup complete"
+          NUCLEAR_START
+
+      - name: 📝 Generate environment file
+        run: |
+          echo "📝 Generating environment file for service reload..."
+          
+          cat > .env << EOF
+          # Configuration for service reload and validation
+          export ENVIRONMENT=${{ env.ENVIRONMENT }}
+          export DEPLOYMENT_PATH=${{ env.DEPLOYMENT_PATH }}
+          export SYSTEMD_SERVICE=${{ env.SYSTEMD_SERVICE_NAME }}
+          export GSM_PROJECT_ID=${{ env.GSM_PROJECT_ID }}
+          export GSM_SECRET_PREFIX=${{ env.GSM_SECRET_PREFIX }}
+          export SCRIPT_EXECUTION_TIMEOUT_SECONDS=${{ env.SCRIPT_TIMEOUT }}
+          
+          # CI/CD Logging Configuration
+          export CICD_LOG_ENABLED=${{ env.CICD_LOG_ENABLED }}
+          export CICD_LOG_PATH=${{ env.CICD_LOG_PATH }}
+          export CICD_LOG_FILE=${{ env.CICD_LOG_FILE }}
+          export CICD_LOG_GROUP=${{ env.CICD_LOG_GROUP }}
+          
+          # GitHub context
+          export GITHUB_RUN_ID=${{ github.run_id }}
+          export GITHUB_RUN_NUMBER=${{ github.run_number }}
+          export TIMESTAMP=$(date +%s)
+          
+          # Service restart configuration
+          export RUNTIME_PATH=${{ env.RUNTIME_PATH }}
+          export SERVICE_START_TIMEOUT=600  # 10 minutes for complex stack with init containers
+          export SERVICE_STOP_TIMEOUT=120  # 2 minutes for graceful stop with cleanup
+          export VALIDATION_TIMEOUT=${{ inputs.validation-timeout }}
+          EOF
+          
+          echo "📊 Generated .env file ($(wc -l < .env) lines)"
+
+      - name: 🔒 Upload secure-logger.sh with protection
+        run: |
+          echo "🔒 Uploading secure-logger.sh dependency..."
+          
+          # Use secure upload helper
+          LOGGER_TIMESTAMP=$(bash .github/scripts/runner/secure-script-upload.sh \
+              .github/scripts/remote/secure-logger.sh \
+              "${{ env.ADMIN_HOME }}/secure-logger.sh" \
+              ~/.ssh/id_rsa \
+              "${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}" \
+              "${{ secrets.INSTAGRAM_SERVER_HOST }}")
+          
+          echo "✅ secure-logger.sh uploaded and protected (timestamp: $LOGGER_TIMESTAMP)"
+
+      - name: 📤 Secure upload of scripts
+        run: |
+          echo "📤 Uploading scripts with security metadata..."
+          
+          RELOAD_SCRIPT="reload-and-validate-${{ github.run_id }}.sh"
+          VALIDATOR="validate-and-exec-ci-script-${{ github.run_id }}.sh"
+          
+          # First copy/rename the deploy-and-validate.sh script if it exists
+          if [ -f ".github/scripts/remote/deploy-and-validate.sh" ]; then
+              cp .github/scripts/remote/deploy-and-validate.sh .github/scripts/remote/reload-and-validate.sh
+          fi
+          
+          # Get reload script checksum for validation
+          RELOAD_SHA256=$(sha256sum .github/scripts/remote/reload-and-validate.sh | cut -d' ' -f1)
+          echo "SHA256_CHECKSUM=$RELOAD_SHA256" >> $GITHUB_ENV
+          
+          # Upload environment file with protection
+          scp -i ~/.ssh/id_rsa \
+              .env \
+              admin-server:${{ env.ADMIN_HOME }}/.env
+          
+          # Make .env immutable
+          ssh admin-server "
+            cd ${{ env.ADMIN_HOME }}
+            chmod 600 .env
+            sudo chattr +i .env
+            
+            # Verify immediately
+            if lsattr .env | grep -q '^....i'; then
+              echo '✅ .env protected and verified immutable'
+            else
+              echo '❌ ERROR: .env failed to become immutable'
+              exit 1
+            fi
+          "
+          
+          # Upload reload script using secure helper
+          echo "🔒 Uploading reload script with protection..."
+          RELOAD_TIMESTAMP=$(bash .github/scripts/runner/secure-script-upload.sh \
+              .github/scripts/remote/reload-and-validate.sh \
+              "${{ env.ADMIN_HOME }}/$RELOAD_SCRIPT" \
+              ~/.ssh/id_rsa \
+              "${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}" \
+              "${{ secrets.INSTAGRAM_SERVER_HOST }}")
+          
+          echo "✅ Reload script uploaded and protected (timestamp: $RELOAD_TIMESTAMP)"
+          
+          # Upload validator script using secure helper
+          echo "🔒 Uploading validator script with protection..."
+          VALIDATOR_TIMESTAMP=$(bash .github/scripts/runner/secure-script-upload.sh \
+              .github/scripts/remote/validate-and-exec-ci-script.sh \
+              "${{ env.ADMIN_HOME }}/$VALIDATOR" \
+              ~/.ssh/id_rsa \
+              "${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}" \
+              "${{ secrets.INSTAGRAM_SERVER_HOST }}")
+          
+          echo "✅ Validator uploaded and protected (timestamp: $VALIDATOR_TIMESTAMP)"
+
+      - name: 🔧 Verify protection
+        run: |
+          echo "🔧 Verifying all files are protected..."
+          ssh admin-server "
+            cd ${{ env.ADMIN_HOME }}
+          
+            echo '📊 Checking immutability status:'
+            echo ''
+          
+            # Check each file
+            for file in .env secure-logger.sh reload-and-validate-${{ github.run_id }}.sh* validate-and-exec-ci-script-${{ github.run_id }}.sh*; do
+              if [ -f \"\$file\" ]; then
+                if lsattr \"\$file\" 2>/dev/null | grep -q '^....i'; then
+                  echo \"✅ \$file is immutable\"
+                else
+                  echo \"❌ \$file is NOT immutable!\"
+                  exit 1
+                fi
+              fi
+            done
+          
+            echo ''
+            echo '✅ All files are properly protected!'
+          "
+
+      - name: 🐳 Authenticate Docker & Pre-pull Images
+        run: |
+          echo "🐳 Authenticating Docker with ghcr.io and pre-pulling images..."
+
+          # Check if TOKEN_FOR_DOCKER is provided (MANDATORY for private images)
+          if [ -z "${{ secrets.TOKEN_FOR_DOCKER }}" ]; then
+            echo "❌ ERROR: TOKEN_FOR_DOCKER secret is required for private images"
+            echo "   Please configure TOKEN_FOR_DOCKER in repository secrets"
+            exit 1
+          fi
+
+          # Single SSH session for authentication AND pre-pull
+          ssh admin-server << 'DOCKER_AUTH_AND_PULL'
+            set -e  # Exit on any error
+
+            echo "═══════════════════════════════════════════════════════════"
+            echo "STEP 1: AUTHENTICATE TO GITHUB CONTAINER REGISTRY"
+            echo "═══════════════════════════════════════════════════════════"
+
+            # Authenticate Docker to pull from ghcr.io
+            # Using sudo -H to set HOME=/root for consistent credential storage
+            echo "Logging into GitHub Container Registry with PAT..."
+
+            if ! echo "${{ secrets.TOKEN_FOR_DOCKER }}" | sudo -H docker login ghcr.io \
+              --username ${{ github.actor }} \
+              --password-stdin; then
+              echo "❌ Docker authentication FAILED"
+              echo "   Verify that TOKEN_FOR_DOCKER has 'read:packages' and 'write:packages' permissions"
+              exit 1
+            fi
+
+            echo "✅ Successfully authenticated (credentials stored in /root/.docker/config.json)"
+            echo ""
+
+            echo "═══════════════════════════════════════════════════════════"
+            echo "STEP 2: PRE-PULL DOCKER IMAGES"
+            echo "═══════════════════════════════════════════════════════════"
+
+            # Navigate to deployment directory
+            cd ${{ env.DEPLOYMENT_PATH }}
+            echo "📁 Deployment directory: $(pwd)"
+
+            # Verify required files exist
+            COMPOSE_FILE="docker-compose-${{ env.ENVIRONMENT }}.yml"
+
+            if [ ! -f ".env" ]; then
+              echo "❌ ERROR: .env file not found"
+              ls -la
+              exit 1
+            fi
+
+            if [ ! -f "$COMPOSE_FILE" ]; then
+              echo "❌ ERROR: $COMPOSE_FILE not found"
+              ls -la
+              exit 1
+            fi
+
+            echo "✅ Found .env file (Docker Compose will read automatically)"
+            echo "✅ Found $COMPOSE_FILE"
+            echo ""
+
+            # Pre-pull ALL images defined in docker-compose.yml
+            # Docker Compose automatically reads .env for variable substitution
+            echo "🔄 Pulling all images from $COMPOSE_FILE..."
+
+            # Construct absolute path that matches sudoers NOPASSWD rule
+            FULL_COMPOSE_PATH="${{ env.DEPLOYMENT_PATH }}/$COMPOSE_FILE"
+
+            if sudo -H /usr/bin/docker compose -f "$FULL_COMPOSE_PATH" pull; then
+              echo "✅ All images pulled successfully"
+            else
+              echo "❌ Failed to pull images"
+              exit 1
+            fi
+
+            echo ""
+            echo "═══════════════════════════════════════════════════════════"
+            echo "SUCCESSFULLY PRE-PULLED IMAGES:"
+            echo "═══════════════════════════════════════════════════════════"
+            sudo docker images --filter "reference=ghcr.io/check-it-out-dev/*" --format "table {{.Repository}}:{{.Tag}}\t{{.Size}}\t{{.CreatedAt}}"
+            echo "═══════════════════════════════════════════════════════════"
+          DOCKER_AUTH_AND_PULL
+
+          echo "✅ Docker authentication and pre-pull completed successfully"
+
+      - name: 🚀 Execute service reload and validation
+        id: validate-deployment
+        run: |
+          echo "🚀 Executing service reload and validation..."
+          
+          # Create execution script
+          cat > /tmp/reload_script.sh << 'SCRIPT_END'
+          #!/bin/bash
+          cd ${{ env.ADMIN_HOME }}
+          
+          # Source environment (validator will handle immutability)
+          if [ -f ".env" ]; then
+              set -a
+              source .env
+              set +a
+          fi
+          
+          # Execute with checksum using admin privileges
+          sudo -E ${{ env.ADMIN_HOME }}/validate-and-exec-ci-script-${{ github.run_id }}.sh \
+              ${{ env.ADMIN_HOME }}/reload-and-validate-${{ github.run_id }}.sh \
+              ${{ env.SHA256_CHECKSUM }}
+          SCRIPT_END
+          
+          chmod +x /tmp/reload_script.sh
+          
+          # Execute with timeout
+          SSH_EXIT_CODE=0
+          if timeout ${{ env.SCRIPT_TIMEOUT }} ssh -o LogLevel=ERROR admin-server 'bash -s' < /tmp/reload_script.sh; then
+            echo "status=success" >> $GITHUB_OUTPUT
+            echo "✅ Service reload and validation completed successfully"
+          else
+            SSH_EXIT_CODE=$?
+            echo "status=failure" >> $GITHUB_OUTPUT
+            echo "❌ Service reload and validation failed with exit code: $SSH_EXIT_CODE"
+            exit $SSH_EXIT_CODE
+          fi
+          
+          rm -f /tmp/reload_script.sh
+
+      - name: 📋 Collect Debug Information
+        if: failure()
+        run: |
+          echo "📋 Collecting debug information..."
+          
+          ssh admin-server << 'DEBUG_SSH' || true
+            echo "=== Environment Check ==="
+            echo "Working directory: $(pwd)"
+            echo "User: $(whoami)"
+            echo "Files in home:"
+            ls -la ${{ env.ADMIN_HOME }}/ | head -20
+            
+            echo -e "\n=== CI/CD Log ==="
+            if [ -f "${{ env.CICD_LOG_PATH }}/${{ env.ENVIRONMENT }}"/*.log ]; then
+              sudo tail -100 "${{ env.CICD_LOG_PATH }}/${{ env.ENVIRONMENT }}"/*.log 2>/dev/null | head -200
+            else
+              echo "No CI/CD logs found"
+            fi
+          
+            echo -e "\n=== Systemd Service Status ==="
+            sudo systemctl status ${{ env.SYSTEMD_SERVICE_NAME }} --no-pager -n 50 || true
+          
+            echo -e "\n=== Journal Logs ==="
+            sudo journalctl -u ${{ env.SYSTEMD_SERVICE_NAME }} -n 100 --no-pager || true
+          DEBUG_SSH
+
+      - name: ✅ Post-validation Verification
+        if: success()
+        run: |
+          echo "✅ Verifying service status..."
+          
+          ssh admin-server << 'VERIFY_SSH'
+            # Check systemd service with sudo
+            if sudo /usr/bin/systemctl is-active --quiet ${{ env.SYSTEMD_SERVICE_NAME }}; then
+              echo "✅ Service ${{ env.SYSTEMD_SERVICE_NAME }} is active"
+            else
+              echo "❌ Service ${{ env.SYSTEMD_SERVICE_NAME }} is not active"
+              exit 1
+            fi
+          
+            # Show container status
+            echo -e "\n🐳 Container status:"
+            sudo /usr/bin/docker ps --filter "label=com.docker.compose.project=${{ env.ENVIRONMENT }}" \
+              --format "table {{.Names}}\t{{.Status}}\t{{.State}}" || echo "Could not get container status"
+            
+            # Check for script cleanup
+            echo -e "\n🧹 Cleanup verification:"
+            for script in "reload-and-validate-${{ github.run_id }}.sh" "validate-and-exec-ci-script-${{ github.run_id }}.sh"; do
+              if [ -f "${{ env.ADMIN_HOME }}/$script" ]; then
+                echo "⚠️ $script still exists (should have been deleted)"
+              else
+                echo "✅ $script properly cleaned up"
+              fi
+            done
+            
+            # Check logs
+            echo -e "\n📋 Recent CI/CD logs:"
+            if [ -d "${{ env.CICD_LOG_PATH }}/${{ env.ENVIRONMENT }}" ]; then
+              /usr/bin/sudo /bin/ls -la "${{ env.CICD_LOG_PATH }}/${{ env.ENVIRONMENT }}"/cicd-*-*.log 2>/dev/null | /usr/bin/tail -5 || echo "No logs found"
+            fi
+          VERIFY_SSH
+
+      - name: 📊 Reload & Validate Summary
+        if: always()
+        run: |
+          cat << EOF >> $GITHUB_STEP_SUMMARY
+          ## 🔐 Secure Reload & Validate Report
+          
+          | Component | Value |
+          |-----------|-------|
+          | Environment | ${{ env.ENVIRONMENT }} |
+          | Status | ${{ steps.validate-deployment.outputs.status }} |
+          | Deployment Path | ${{ env.DEPLOYMENT_PATH }} |
+          | Systemd Service | ${{ env.SYSTEMD_SERVICE_NAME }} |
+          | GSM Project | ${{ env.GSM_PROJECT_ID }} |
+          | Admin User | ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }} |
+          | Run ID | ${{ github.run_id }} |
+          
+          ### 🔒 Security Features
+          - ✅ Admin user with sudo privileges
+          - ✅ Scripts uploaded with immutability
+          - ✅ Checksum validation enforced
+          - ✅ Automatic cleanup of scripts
+          - ✅ secure-logger.sh preserved for reuse
+          - ✅ Immutable CI/CD audit logs
+          
+          ### 📋 Validation Process
+          - Reloaded systemd service with sudo
+          - Verified service is active
+          - Container management via Docker with sudo
+          - All operations logged to immutable logs
+          
+          Status: **${{ job.status }}**
+          EOF
+
+      - name: ☢️ Nuclear Cleanup - END
+        if: always()
+        run: |
+          echo "☢️ NUCLEAR CLEANUP AT END"
+          
+          # FIRST: Remove all immutability with sudo
+          echo "🔓 Removing all immutability flags..."
+          ssh admin-server << 'REMOVE_IMMUTABLE' || true
+            echo "Removing immutability from ${{ env.ADMIN_HOME }}..."
+            /usr/bin/sudo /usr/bin/chattr -R -i ${{ env.ADMIN_HOME }} 2>/dev/null || true
+            echo "✅ Immutability removed"
+          REMOVE_IMMUTABLE
+          
+          # THEN: Upload and execute cleanup script
+          scp -i ~/.ssh/id_rsa \
+              .github/scripts/remote/nuclear-cleanup.sh \
+              admin-server:${{ env.ADMIN_HOME }}/nuclear-cleanup-temp.sh || true
+          
+          # Execute cleanup
+          ssh admin-server << 'NUCLEAR_END' || true
+            cd ${{ env.ADMIN_HOME }}
+          
+            if [ -f nuclear-cleanup-temp.sh ]; then
+              chmod +x nuclear-cleanup-temp.sh
+              ./nuclear-cleanup-temp.sh
+            else
+              # Fallback: Safe inline cleanup
+              find . -maxdepth 1 -type f -delete 2>/dev/null || true
+              find . -maxdepth 1 -type d -not -name '.' -not -name '.ssh' -exec rm -rf {} + 2>/dev/null || true
+            fi
+          
+            echo "✅ END cleanup complete"
+          NUCLEAR_END
+          
+          # Clean up local SSH key
+          rm -f ~/.ssh/id_rsa

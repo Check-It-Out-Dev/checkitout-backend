@@ -1,0 +1,37 @@
+# Ansible Galaxy Dependencies
+# Instagram Platform VPS Deployment
+#
+# Install with: ansible-galaxy install -r requirements.yml
+
+---
+# Collections
+collections:
+  # Docker management collection
+  - name: community.docker
+    version: ">=4.8.1"
+
+  # General utilities collection
+  - name: community.general
+    version: ">=8.0.0"
+
+  # Cryptography collection (for SSL certificates, mTLS)
+  - name: community.crypto
+    version: ">=2.16.0"
+
+  # PostgreSQL management (for test database verification)
+  - name: community.postgresql
+    version: ">=3.4.0"
+
+# Roles (optional - we're building custom roles, but these can be references)
+roles:
+  # Optional: Docker role by geerlingguy (if you want to use instead of custom)
+  # - name: geerlingguy.docker
+  #   version: "7.4.1"
+
+  # Optional: Nginx role by geerlingguy (if you want to use instead of custom)
+  # - name: geerlingguy.nginx
+  #   version: "3.1.4"
+
+  # Optional: Security hardening
+  # - name: geerlingguy.security
+  #   version: "2.2.1"

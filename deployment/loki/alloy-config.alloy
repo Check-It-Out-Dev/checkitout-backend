@@ -1,0 +1,441 @@
+// Grafana Alloy Configuration for Journal to Loki
+// Version: 1.4.3 - EXPERIMENTAL FEATURES ENABLED
+// Purpose: Collect systemd journal logs and ship to Loki
+// Claude.xml Protocol Compliance: ENFORCED
+// Running with: --stability.level=experimental
+
+// =========================================================================
+// CRITICAL FIXES APPLIED (2025-09-15):
+// 1. Fixed selector syntax - NO "or" between selectors (not supported)
+// 2. Separated match blocks for different conditions (correct pattern)
+// 3. WAL enabled WITHOUT queue_config (not implemented yet)
+// 4. Removed invalid 'dir' attribute - WAL uses storage.path automatically
+// 5. Applied RE2 regex compatibility
+// 6. Batch size with proper units (MiB)
+// 7. Added Docker container label extraction (CONTAINER_TAG, CONTAINER_NAME)
+// 
+// SELECTOR SYNTAX RULES:
+// - Selectors ONLY match labels, not line content
+// - Use `{label="value"}` for exact match
+// - Use `{label=~"regex"}` for regex match
+// - Multiple labels: `{label1="value", label2=~"regex"}`
+// - NO "or" keyword - use separate stage.match blocks instead
+// - Line filtering happens INSIDE match blocks, not in selector
+// =========================================================================
+
+// =========================================================================
+// LOKI SOURCE - Journal Collection
+// =========================================================================
+loki.source.journal "system_logs" {
+    path           = "/var/log/journal"
+    format_as_json = true
+    labels         = {
+        job      = "journal",
+        instance = env("HOSTNAME"),
+    }
+    forward_to = [
+        loki.process.journal_processor.receiver,
+    ]
+}
+
+// =========================================================================
+// JOURNAL LOG PROCESSOR - Labels and routing
+// =========================================================================
+loki.process "journal_processor" {
+    forward_to = [
+        loki.process.springboot_parser.receiver,
+        loki.process.kernel_audit_parser.receiver,
+        loki.process.docker_parser.receiver,
+        loki.process.systemd_parser.receiver,
+    ]
+    
+    // Extract journal metadata as labels
+    stage.labels {
+        values = {
+            unit              = "__journal__systemd_unit",
+            hostname          = "__journal__hostname",
+            transport         = "__journal__transport",
+            systemd_cgroup    = "__journal__systemd_cgroup",
+            syslog_identifier = "__journal__syslog_identifier",
+            CONTAINER_NAME    = "__journal__container_name",
+            CONTAINER_TAG     = "__journal__container_tag",
+            IMAGE_NAME        = "__journal__image_name",
+        }
+    }
+    
+    // Map journal priority to log level
+    // Priority: 0-3 = error, 4 = warn, 5-6 = info, 7 = debug
+    stage.labels {
+        values = {
+            priority = "__journal__priority",
+        }
+    }
+    
+    stage.template {
+        source   = "priority"
+        template = `{{ if or (eq .Value "0") (eq .Value "1") (eq .Value "2") (eq .Value "3") }}error{{ else if eq .Value "4" }}warn{{ else if eq .Value "7" }}debug{{ else }}info{{ end }}`
+    }
+    
+    stage.labels {
+        values = {
+            level = "priority",
+        }
+    }
+    
+    // Drop the temporary priority label
+    stage.label_drop {
+        values = ["priority"]
+    }
+}
+
+// =========================================================================
+// SPRING BOOT LOG PARSER - Following Best Practices
+// =========================================================================
+loki.process "springboot_parser" {
+    forward_to = [loki.write.default.receiver]
+    
+    // Match Spring Boot from systemd units
+    stage.match {
+        selector = `{unit=~"checkitout.*|spring.*|instagram.*"}`
+        
+        // CRITICAL: Multiline MUST come first to reassemble logs before parsing
+        stage.multiline {
+            firstline     = `^\d{4}-\d{2}-\d{2}`
+            max_lines     = 128
+            max_wait_time = "3s"
+        }
+        
+        // Parse Spring Boot log pattern after multiline assembly
+        stage.regex {
+            expression = `(?P<timestamp>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\.\d{3})\s+(?P<level>\w+)\s+\[(?P<app>[^,]+),(?P<trace_id>[^,]*),(?P<span_id>[^,]*)\]\s+(?P<pid>\d+)\s+---\s+\[(?P<thread>[^\]]+)\]\s+(?P<logger>[^\s]+)\s+:\s+(?P<message>.*)`
+        }
+        
+        stage.timestamp {
+            source = "timestamp"
+            format = "2006-01-02 15:04:05.000"
+        }
+        
+        // Only use low-cardinality labels (BEST PRACTICE)
+        stage.labels {
+            values = {
+                level = "",
+                app   = "",
+            }
+        }
+        
+        // Parse JSON messages if present
+        stage.json {
+            expressions = {
+                json_message = "",
+            }
+            source = "message"
+        }
+        
+        // Extract error details if present
+        stage.regex {
+            expression = `(?P<exception_class>[a-zA-Z.]+Exception):\s+(?P<exception_message>[^\n]+)`
+            source     = "message"
+        }
+        
+        stage.labels {
+            values = {
+                exception_class = "",
+            }
+        }
+    }
+    
+    // Match Spring Boot from Docker containers (separate match block)
+    stage.match {
+        selector = `{unit="docker.service", CONTAINER_TAG=~".*app.*|.*spring.*|.*checkitout.*"}`
+        
+        // CRITICAL: Multiline MUST come first to reassemble logs before parsing
+        stage.multiline {
+            firstline     = `^\d{4}-\d{2}-\d{2}`
+            max_lines     = 128
+            max_wait_time = "3s"
+        }
+        
+        // Parse Spring Boot log pattern after multiline assembly
+        stage.regex {
+            expression = `(?P<timestamp>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\.\d{3})\s+(?P<level>\w+)\s+\[(?P<app>[^,]+),(?P<trace_id>[^,]*),(?P<span_id>[^,]*)\]\s+(?P<pid>\d+)\s+---\s+\[(?P<thread>[^\]]+)\]\s+(?P<logger>[^\s]+)\s+:\s+(?P<message>.*)`
+        }
+        
+        stage.timestamp {
+            source = "timestamp"
+            format = "2006-01-02 15:04:05.000"
+        }
+        
+        // Only use low-cardinality labels (BEST PRACTICE)
+        stage.labels {
+            values = {
+                level = "",
+                app   = "",
+                service_type = "springboot",
+            }
+        }
+        
+        // Parse JSON messages if present
+        stage.json {
+            expressions = {
+                json_message = "",
+            }
+            source = "message"
+        }
+        
+        // Extract error details if present
+        stage.regex {
+            expression = `(?P<exception_class>[a-zA-Z.]+Exception):\s+(?P<exception_message>[^\n]+)`
+            source     = "message"
+        }
+        
+        stage.labels {
+            values = {
+                exception_class = "",
+            }
+        }
+    }
+}
+
+// =========================================================================
+// DOCKER CONTAINER LOG PARSER - Enhanced for Production Services
+// =========================================================================
+loki.process "docker_parser" {
+    forward_to = [loki.write.default.receiver]
+    
+    // Parse Redis container logs
+    stage.match {
+        selector = `{unit="docker.service", CONTAINER_TAG=~".*redis.*"}`
+        
+        // Redis log pattern: 1:M 27 Jan 2025 10:30:15.123 * Message
+        stage.regex {
+            expression = `(?P<redis_pid>\d+):(?P<redis_role>[XCSM])\s+(?P<redis_timestamp>\d+\s+\w+\s+\d+\s+[\d:.]+)\s+(?P<redis_level>[*#\-\.])\s+(?P<redis_message>.*)`
+        }
+        
+        stage.labels {
+            values = {
+                redis_role = "",
+                service_type = "redis",
+            }
+        }
+    }
+    
+    // Parse Sentinel container logs
+    stage.match {
+        selector = `{unit="docker.service", CONTAINER_TAG=~".*sentinel.*"}`
+        
+        // Sentinel uses same format as Redis
+        stage.regex {
+            expression = `(?P<sentinel_pid>\d+):(?P<sentinel_role>[XS])\s+(?P<sentinel_timestamp>\d+\s+\w+\s+\d+\s+[\d:.]+)\s+(?P<sentinel_level>[*#\-\.])\s+(?P<sentinel_message>.*)`
+        }
+        
+        stage.labels {
+            values = {
+                sentinel_role = "",
+                service_type = "sentinel",
+            }
+        }
+    }
+    
+    // Parse GSM Init container logs
+    stage.match {
+        selector = `{unit="docker.service", CONTAINER_TAG=~".*gsm-init.*"}`
+        
+        // GSM init logs are usually plain text
+        stage.regex {
+            expression = `(?P<gsm_message>.*)`
+        }
+        
+        stage.labels {
+            values = {
+                service_type = "gsm-init",
+            }
+        }
+    }
+    
+    // Match containerd logs
+    stage.match {
+        selector = `{unit="containerd.service"}`
+        
+        stage.regex {
+            expression = `level=(?P<containerd_level>\w+)\s+ts=(?P<containerd_ts>[^\s]+)\s+.*msg="(?P<containerd_msg>[^"]+)"`
+        }
+        
+        stage.labels {
+            values = {
+                containerd_level = "",
+            }
+        }
+    }
+}
+
+// =========================================================================
+// SYSTEMD SERVICE LOG PARSER
+// =========================================================================
+loki.process "systemd_parser" {
+    forward_to = [loki.write.default.receiver]
+    
+    // SSH authentication logs
+    stage.match {
+        selector = `{unit="ssh.service"}`
+        
+        stage.regex {
+            expression = `(?P<auth_result>Accepted|Failed)\s+(?P<auth_method>\w+)\s+for\s+(?P<user>\w+)\s+from\s+(?P<client_ip>[\d.]+)`
+        }
+        
+        stage.labels {
+            values = {
+                auth_result = "",
+                auth_method = "",
+                user        = "",
+                client_ip   = "",
+            }
+        }
+        
+        // Add metric for failed SSH attempts
+        stage.metrics {
+            metric.counter {
+                name              = "ssh_failed_attempts_total"
+                description       = "Total number of failed SSH attempts"
+                prefix            = "alloy_"
+                match_all         = false
+                count_entry_bytes = false
+                source            = "auth_result"
+                value             = "Failed"
+                action            = "inc"
+            }
+        }
+    }
+    
+    // NetworkManager logs
+    stage.match {
+        selector = `{unit="NetworkManager.service"}`
+        
+        stage.regex {
+            expression = `<(?P<nm_level>\w+)>\s+\[(?P<nm_timestamp>[^\]]+)\]\s+(?P<nm_component>[^:]+):\s+(?P<nm_message>.*)`
+        }
+        
+        stage.labels {
+            values = {
+                nm_level     = "",
+                nm_component = "",
+            }
+        }
+    }
+}
+
+// =========================================================================
+// KERNEL AUDIT LOG PARSER
+// =========================================================================
+loki.process "kernel_audit_parser" {
+    forward_to = [loki.write.default.receiver]
+    
+    // Match kernel logs and filter for audit messages
+    stage.match {
+        selector = `{syslog_identifier="kernel"}`
+        pipeline_name = "kernel_audit"
+        
+        // Parse audit details
+        stage.regex {
+            expression = `audit:\s+type=(?P<audit_type>\d+)\s+audit\((?P<timestamp>[^)]+)\):(?P<audit_data>.*)`
+        }
+        
+        // Extract success/failure
+        stage.regex {
+            expression = `success=(?P<success>yes|no)`
+            source     = "audit_data"
+        }
+        
+        // Extract syscall if present
+        stage.regex {
+            expression = `syscall=(?P<syscall>\d+)`
+            source     = "audit_data"
+        }
+        
+        stage.labels {
+            values = {
+                audit_type = "",
+                success    = "",
+                syscall    = "",
+            }
+        }
+    }
+}
+
+// =========================================================================
+// OUTPUT CONFIGURATION - EXPERIMENTAL WAL (WITHOUT queue_config)
+// =========================================================================
+loki.write "default" {
+    endpoint {
+        url = "http://loki:3100/loki/api/v1/push"
+        
+        // Batch configuration
+        batch_size = "1MiB"      // Maximum batch size with units
+        batch_wait = "1s"        // Maximum wait time before sending
+        
+        // Request timeout
+        remote_timeout = "10s"
+        
+        // Optional: Basic auth (uncomment and configure if needed)
+        // basic_auth {
+        //     username = env("LOKI_USERNAME")
+        //     password = env("LOKI_PASSWORD")
+        // }
+        
+        // Optional: TLS configuration (uncomment if using HTTPS)
+        // tls_config {
+        //     insecure_skip_verify = false
+        // }
+    }
+    
+    // External labels for this Alloy instance
+    external_labels = {
+        cluster   = "production",
+        namespace = "checkitout",
+        job       = "journal",
+    }
+    
+    // EXPERIMENTAL: WAL configuration
+    // Note: queue_config appears to be documented but not yet implemented
+    // WAL directory is automatically: /var/lib/alloy/data/loki.write.default
+    // (based on --storage.path=/var/lib/alloy/data)
+    wal {
+        enabled            = true      // Enable Write-Ahead Log
+        // dir is NOT a valid attribute - uses storage.path automatically
+        max_segment_age    = "1h"      // Maximum age of WAL segments
+        min_read_frequency = "250ms"   // Minimum read frequency
+        max_read_frequency = "1s"      // Maximum read frequency  
+        drain_timeout      = "30s"     // WAL drain timeout on shutdown
+        
+        // queue_config is documented but appears not implemented yet
+        // If you get an error about queue_config, it's not available
+    }
+}
+
+// =========================================================================
+// METRICS ENDPOINT - Expose metrics for Prometheus
+// =========================================================================
+prometheus.exporter.unix "default" {
+    include_exporter_metrics = true
+    disable_collectors       = ["mdadm"]
+}
+
+// =========================================================================
+// DEPLOYMENT VERIFICATION
+// =========================================================================
+// Your docker-compose.yml shows correct experimental setup:
+//   - --stability.level=experimental ✓
+//   - --storage.path=/var/lib/alloy/data ✓
+//   - Journal mounts configured ✓
+//   - Running as root (required for journal) ✓
+//   - DAC_READ_SEARCH capability ✓
+//
+// WAL will be stored in: /var/lib/alloy/data/loki.write.default/
+// This path is automatically created based on component name.
+//
+// Note: queue_config is mentioned in docs but appears not implemented.
+// The WAL still provides durability without it.
+//
+// Health check and metrics:
+//   http://localhost:12345
+//   http://localhost:12345/metrics
+// =========================================================================

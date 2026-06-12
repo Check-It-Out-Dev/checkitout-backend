@@ -1,0 +1,27 @@
+# Ignore everything by default
+**
+
+# Only include what's needed
+!target/*.jar
+!docker/
+
+# But exclude unnecessary files
+target/*-sources.jar
+target/*-javadoc.jar
+target/maven-*
+target/test-*
+target/generated-*
+target/classes/
+target/surefire-reports/
+*.md
+*.log
+.git/
+.github/
+.idea/
+.mvn/wrapper/
+*.iml
+node_modules/
+.vscode/
+.settings/
+.project
+.classpath

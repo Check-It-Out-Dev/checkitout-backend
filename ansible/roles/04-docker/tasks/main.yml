@@ -1,0 +1,34 @@
+# Main tasks for 04-docker role
+
+---
+- name: Verify Docker is installed
+  include_tasks: verify.yml
+  tags: [docker, verify]
+
+- name: Configure Docker daemon
+  include_tasks: daemon.yml
+  when: configure_docker_daemon | bool
+  tags: [docker, docker-daemon]
+
+- name: Create Docker networks
+  include_tasks: networks.yml
+  when: create_docker_networks | bool
+  tags: [docker, docker-networks]
+
+- name: Create Docker volumes
+  include_tasks: volumes.yml
+  when: create_docker_volumes | bool
+  tags: [docker, docker-volumes]
+
+- name: Configure volume permissions
+  include_tasks: volume-permissions.yml
+  when: configure_volume_permissions | bool
+  tags: [docker, volume-permissions]
+
+- name: Configure Docker cleanup
+  include_tasks: cleanup.yml
+  tags: [docker, docker-cleanup]
+
+- name: Verify Docker configuration
+  include_tasks: verify-final.yml
+  tags: [docker, verify]

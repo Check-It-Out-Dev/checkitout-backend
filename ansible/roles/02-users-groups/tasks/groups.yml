@@ -1,0 +1,19 @@
+# Group creation tasks
+
+---
+- name: Create security groups
+  ansible.builtin.group:
+    name: "{{ item.name }}"
+    gid: "{{ item.gid }}"
+    state: present
+  loop: "{{ security_groups }}"
+
+- name: Verify Docker group exists
+  ansible.builtin.group:
+    name: docker
+    state: present
+
+- name: Display created groups
+  ansible.builtin.debug:
+    msg: "Created group: {{ item.name }} (GID: {{ item.gid }})"
+  loop: "{{ security_groups }}"

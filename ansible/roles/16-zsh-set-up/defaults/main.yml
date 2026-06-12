@@ -1,0 +1,21 @@
+# Default variables for 16-zsh-set-up role
+
+---
+# Install zsh for ubuntu user
+install_zsh: true
+
+# Install Oh-My-Zsh
+install_ohmyzsh: true
+
+# Install Powerlevel10k theme
+install_p10k: true
+
+# Zsh plugins to install
+zsh_plugins:
+  - zsh-autosuggestions
+  - zsh-syntax-highlighting
+  - zsh-completions
+  - zsh-history-substring-search
+
+# Set as default shell
+set_default_shell: true

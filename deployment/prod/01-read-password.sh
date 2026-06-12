@@ -1,0 +1,1 @@
+# This file is no longer needed - password reading is handled by postgres-entrypoint.sh

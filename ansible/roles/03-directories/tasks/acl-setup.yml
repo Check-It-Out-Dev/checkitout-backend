@@ -1,0 +1,71 @@
+# ACL setup for CI/CD admin user access
+# Ensures instagram-scripts-admin can read deployment directories for verification
+
+---
+- name: Ensure ACL package is installed
+  ansible.builtin.apt:
+    name: acl
+    state: present
+  become: true
+
+- name: Grant CI/CD admin read access to base directories
+  ansible.posix.acl:
+    path: "{{ item }}"
+    entity: "{{ user_scripts_admin.name }}"
+    etype: user
+    permissions: rx
+    state: present
+  loop:
+    - "{{ test_base_path }}"
+    - "{{ prod_base_path }}"
+  become: true
+
+- name: Grant CI/CD admin read access to deployment directories
+  ansible.posix.acl:
+    path: "{{ item }}"
+    entity: "{{ user_scripts_admin.name }}"
+    etype: user
+    permissions: rx
+    state: present
+  loop:
+    - "{{ test_deployment_path }}"
+    - "{{ prod_deployment_path }}"
+  become: true
+
+- name: Grant CI/CD admin read access to runtime directories
+  ansible.posix.acl:
+    path: "{{ item }}"
+    entity: "{{ user_scripts_admin.name }}"
+    etype: user
+    permissions: rx
+    state: present
+  loop:
+    - "{{ test_runtime_path }}"
+    - "{{ prod_runtime_path }}"
+  become: true
+
+- name: Grant CI/CD admin read access to backup directories
+  ansible.posix.acl:
+    path: "{{ item }}"
+    entity: "{{ user_scripts_admin.name }}"
+    etype: user
+    permissions: rx
+    state: present
+  loop:
+    - "{{ test_backups_path }}"
+    - "{{ prod_backups_path }}"
+  when: create_backups | bool
+  become: true
+
+- name: Verify ACLs are set correctly
+  ansible.builtin.command: "getfacl {{ item }}"
+  register: acl_check
+  changed_when: false
+  loop:
+    - "{{ test_deployment_path }}"
+    - "{{ prod_deployment_path }}"
+  become: true
+
+- name: Display ACL configuration
+  ansible.builtin.debug:
+    msg: "ACLs configured for {{ user_scripts_admin.name }} to access deployment directories"

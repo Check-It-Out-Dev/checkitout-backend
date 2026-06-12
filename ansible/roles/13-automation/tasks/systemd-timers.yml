@@ -1,0 +1,31 @@
+# Systemd timers verification
+
+---
+- name: List all active systemd timers
+  ansible.builtin.command: systemctl list-timers --all
+  register: systemd_timers
+  changed_when: false
+
+- name: Display systemd timers
+  ansible.builtin.debug:
+    var: systemd_timers.stdout_lines
+
+- name: Verify certbot timer is active
+  ansible.builtin.systemd:
+    name: certbot.timer
+  register: certbot_timer
+  check_mode: yes
+
+- name: Display certbot timer status
+  ansible.builtin.debug:
+    msg: "Certbot timer: {{ certbot_timer.status.ActiveState | default('unknown') }}"
+
+- name: Test certbot renewal (dry run)
+  ansible.builtin.command: certbot renew --dry-run
+  register: certbot_test
+  changed_when: false
+  ignore_errors: yes
+
+- name: Display certbot test result
+  ansible.builtin.debug:
+    msg: "{{ 'Certbot renewal test: SUCCESS' if certbot_test.rc == 0 else 'Certbot not configured yet (certificates will be generated in 08-nginx)' }}"

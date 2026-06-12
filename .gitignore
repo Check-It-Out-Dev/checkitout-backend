@@ -1,0 +1,102 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+spring-boot.log
+.secrets
+.qodo
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Environment files
+.env
+.envTest
+.env.local
+.envProd
+.env.prod
+!.env.example
+
+### VS Code ###
+.vscode/
+/src/main/resources/service-account.json
+.env*
+*.env
+
+# Added by cleanup script
+.idea/shelf/
+cleanup_backup_*/
+*.swp
+.env.test
+/.run
+# Production standalone configuration with sensitive data
+application-prod-standalone.yml
+firebase-admin-prod.json
+
+# Firebase service account files (sensitive)
+/src/main/resources/service-account*
+/src/main/resources/prod-standalone/
+/src/main/resources/backup/
+
+# Qodana analysis results and cache
+
+/log/
+/projectStructure/
+/.run/
+/src/main/resources/keystore.p12
+
+# Firebase
+node_modules/
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+.firebaserc.local
+firestore-debug.log
+pubsub-debug.log
+storage-debug.log
+ui-debug.log
+firebase-export-*/
+
+
+/.claude/
+/src/main/resources/application-test-local.yml
+/src/main/resources/application-test-standalone.yml
+/geoip/
+dump.*
+/.qodana/log/
+/mcp-server-neo4j-gds.log
+
+# Local junk / scratch (pre-publish hardening — can't accidentally ship)
+/nul
+nul
+logs/
+temp_failing_tests/
+
+# Templates ARE committed — only real secret files stay ignored
+!.env.example
+!.envProd.example
+!.envTest.example
+!/src/main/resources/service-account.json.example

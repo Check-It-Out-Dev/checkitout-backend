@@ -1,0 +1,28 @@
+# Production environment systemd service creation
+
+---
+- name: Deploy instagram-platform-prod.service
+  ansible.builtin.template:
+    src: instagram-platform-prod.service.j2
+    dest: /etc/systemd/system/instagram-platform-prod.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reload systemd
+
+- name: Enable instagram-platform-prod service
+  ansible.builtin.systemd:
+    name: instagram-platform-prod
+    enabled: yes
+    daemon_reload: yes
+  when: enable_services | bool
+
+- name: Verify production service file
+  ansible.builtin.command: systemd-analyze verify instagram-platform-prod.service
+  register: prod_service_verify
+  changed_when: false
+  failed_when: false
+
+- name: Display production service verification result
+  ansible.builtin.debug:
+    msg: "Production service verification: {{ 'OK' if prod_service_verify.rc == 0 else 'WARNINGS' }}"

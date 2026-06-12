@@ -1,0 +1,319 @@
+name: Aggressive Cache Cleanup (3GB Limit)
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+  workflow_dispatch:
+    inputs:
+      target_size_gb:
+        description: 'Target cache size in GB'
+        required: false
+        default: '3'
+        type: choice
+        options:
+          - '1'
+          - '2'
+          - '3'
+          - '5'
+          - '10'
+
+jobs:
+  aggressive-cleanup:
+    runs-on: [self-hosted, Linux, x64]
+    permissions:
+      packages: write
+      actions: write
+    steps:
+      - name: Setup cleanup environment
+        run: |
+          echo "TARGET_SIZE_GB=${{ github.event.inputs.target_size_gb || '3' }}" >> $GITHUB_ENV
+          echo "REGISTRY=ghcr.io" >> $GITHUB_ENV
+          echo "NAMESPACE=check-it-out-dev" >> $GITHUB_ENV
+
+      - name: Login to Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install required tools
+        run: |
+          # Install jq and other tools
+          sudo apt-get update
+          sudo apt-get install -y jq curl bc
+          
+          # Install crane for registry operations
+          curl -sL "https://github.com/google/go-containerregistry/releases/download/v0.19.0/go-containerregistry_Linux_x86_64.tar.gz" | \
+            sudo tar -xz -C /usr/local/bin crane
+
+      - name: Get all package versions with sizes
+        id: get-packages
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "📊 Fetching all container packages..."
+          
+          # Get all packages in the organization
+          PACKAGES=$(gh api \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "/orgs/${{ env.NAMESPACE }}/packages?package_type=container&per_page=100" \
+            --paginate 2>/dev/null || echo "[]")
+          
+          # Check if we got valid JSON array
+          if ! echo "$PACKAGES" | jq -e 'type == "array"' >/dev/null 2>&1; then
+            echo "❌ Failed to fetch packages or invalid response"
+            echo "$PACKAGES"
+            # Try to parse paginated response
+            PACKAGES=$(echo "$PACKAGES" | jq -s 'if type == "array" then add else . end // []')
+          fi
+          
+          echo "$PACKAGES" > packages.json
+          
+          # Extract package names safely
+          PACKAGE_COUNT=$(echo "$PACKAGES" | jq 'if type == "array" then length else 0 end')
+          echo "Found $PACKAGE_COUNT packages"
+          
+          # Get all versions for each package with detailed info
+          echo "[]" > all_versions.json
+          
+          # Process each package
+          if [ "$PACKAGE_COUNT" -gt 0 ]; then
+            echo "$PACKAGES" | jq -r '.[] | select(.name != null) | .name' | while read -r package; do
+              echo "Processing package: $package"
+              
+              # Get all versions for this package
+              VERSIONS=$(gh api \
+                -H "Accept: application/vnd.github+json" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                "/orgs/${{ env.NAMESPACE }}/packages/container/$package/versions?per_page=100&state=active" \
+                --paginate 2>/dev/null || echo "[]")
+              
+              # Handle paginated response
+              if ! echo "$VERSIONS" | jq -e 'type == "array"' >/dev/null 2>&1; then
+                VERSIONS=$(echo "$VERSIONS" | jq -s 'if type == "array" then add else . end // []')
+              fi
+              
+              # Add package name to each version
+              if [ -n "$VERSIONS" ] && [ "$VERSIONS" != "[]" ]; then
+                echo "$VERSIONS" | jq --arg pkg "$package" '
+                  if type == "array" then 
+                    .[] | select(.id != null) | . + {package_name: $pkg}
+                  else 
+                    empty 
+                  end' >> temp_versions.json
+              fi
+            done
+            
+            # Combine all versions
+            if [ -f temp_versions.json ]; then
+              jq -s '.' temp_versions.json > all_versions.json
+            fi
+          fi
+          
+          # Sort by updated_at (oldest first) and calculate sizes
+          jq '
+            if type == "array" and length > 0 then
+              sort_by(.updated_at) | 
+              map(. + {
+                size_mb: ((.metadata.container.tags // 0) as $tags | 
+                  if $tags > 0 then 100 else 50 end)
+              })
+            else
+              []
+            end
+          ' all_versions.json > sorted_versions.json
+          
+          # Calculate total size (estimate based on number of tags)
+          TOTAL_SIZE_GB=$(jq '
+            if type == "array" and length > 0 then
+              [.[] | .size_mb // 50] | add / 1024
+            else
+              0
+            end
+          ' sorted_versions.json)
+          
+          echo "Estimated total size: ${TOTAL_SIZE_GB} GB"
+          echo "total_size_gb=$TOTAL_SIZE_GB" >> $GITHUB_OUTPUT
+
+      - name: Delete old versions until target size reached
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TARGET_GB=${{ env.TARGET_SIZE_GB }}
+          
+          # Check if sorted_versions.json exists and has content
+          if [ ! -f sorted_versions.json ] || [ ! -s sorted_versions.json ]; then
+            echo "❌ No versions found to process"
+            exit 0
+          fi
+          
+          # Calculate current size
+          CURRENT_SIZE=$(jq '
+            if type == "array" and length > 0 then
+              [.[] | .size_mb // 50] | add / 1024
+            else
+              0
+            end
+          ' sorted_versions.json)
+          
+          echo "📊 Estimated current size: ${CURRENT_SIZE} GB"
+          echo "🎯 Target size: ${TARGET_GB} GB"
+          
+          if (( $(echo "$CURRENT_SIZE <= $TARGET_GB" | bc -l) )); then
+            echo "✅ Cache size is already below target. No cleanup needed."
+            exit 0
+          fi
+          
+          # Find versions to delete (oldest first, keep at least 5 most recent per package)
+          VERSIONS_TO_DELETE=$(jq --arg target "$TARGET_GB" '
+            if type == "array" and length > 0 then
+              group_by(.package_name) |
+              map(
+                # Keep at least 5 most recent versions per package
+                if length > 5 then
+                  sort_by(.updated_at) | .[0:-5]
+                else
+                  []
+                end
+              ) |
+              flatten |
+              sort_by(.updated_at) |
+              # Take versions until we reach target size
+              . as $all |
+              reduce .[] as $item (
+                {delete: [], keep: [], total_size: 0};
+                if (.total_size > (($target | tonumber) * 1024)) then
+                  {delete: .delete, keep: (.keep + [$item]), total_size: .total_size}
+                else
+                  {delete: (.delete + [$item]), keep: .keep, total_size: (.total_size + ($item.size_mb // 50))}
+                end
+              ) | .delete
+            else
+              []
+            end
+          ' sorted_versions.json)
+          
+          DELETE_COUNT=$(echo "$VERSIONS_TO_DELETE" | jq 'length')
+          DELETE_SIZE_GB=$(echo "$VERSIONS_TO_DELETE" | jq '[.[] | .size_mb // 50] | add / 1024')
+          
+          echo "🗑️ Will delete $DELETE_COUNT versions (estimated ${DELETE_SIZE_GB} GB)"
+          
+          if [ "$DELETE_COUNT" -eq 0 ]; then
+            echo "✅ No versions to delete"
+            exit 0
+          fi
+          
+          # Group deletions by package to avoid rate limits
+          echo "$VERSIONS_TO_DELETE" | jq -c '
+            group_by(.package_name) | 
+            .[] | {
+              package: .[0].package_name,
+              versions: [.[] | .id]
+            }' | while read -r group; do
+            PACKAGE_NAME=$(echo "$group" | jq -r '.package')
+            VERSION_IDS=$(echo "$group" | jq -r '.versions[]')
+            
+            echo "Deleting versions from package: $PACKAGE_NAME"
+            
+            for version_id in $VERSION_IDS; do
+              echo "  Deleting version ID: $version_id"
+              
+              gh api \
+                --method DELETE \
+                -H "Accept: application/vnd.github+json" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                "/orgs/${{ env.NAMESPACE }}/packages/container/$PACKAGE_NAME/versions/$version_id" \
+                2>/dev/null || echo "    Failed to delete version $version_id (may be in use)"
+              
+              # Small delay to avoid rate limits
+              sleep 0.5
+            done
+          done
+          
+          echo "✅ Cleanup complete!"
+
+      - name: Clean GitHub Actions cache
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "🧹 Cleaning GitHub Actions cache..."
+          
+          # Get all caches
+          CACHES=$(gh api \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "/repos/${{ github.repository }}/actions/caches?per_page=100" | \
+            jq '.actions_caches // []')
+          
+          CACHE_COUNT=$(echo "$CACHES" | jq 'length')
+          echo "Found $CACHE_COUNT caches"
+          
+          if [ "$CACHE_COUNT" -gt 5 ]; then
+            # Sort by last_accessed_at and delete oldest (keep 5 most recent)
+            echo "$CACHES" | jq -r 'sort_by(.last_accessed_at) | .[:-5] | .[].id' | while read -r cache_id; do
+              if [ -n "$cache_id" ]; then
+                echo "Deleting cache ID: $cache_id"
+                gh api \
+                  --method DELETE \
+                  -H "Accept: application/vnd.github+json" \
+                  -H "X-GitHub-Api-Version: 2022-11-28" \
+                  "/repos/${{ github.repository }}/actions/caches/$cache_id" \
+                  2>/dev/null || true
+              fi
+            done
+          fi
+
+      - name: Docker BuildKit cleanup
+        run: |
+          echo "🧹 Cleaning Docker BuildKit cache..."
+
+          # Clean buildx cache (using sudo as runner is not in docker group)
+          sudo docker buildx prune --all --force --filter until=24h || true
+
+          # Clean system
+          sudo docker system prune -af --volumes || true
+
+      - name: Final report
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "## 📊 Cache Cleanup Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Get current sizes
+          CURRENT_PACKAGES=$(gh api \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "/orgs/${{ env.NAMESPACE }}/packages?package_type=container" 2>/dev/null || echo '[]')
+          
+          # Handle response format
+          if ! echo "$CURRENT_PACKAGES" | jq -e 'type == "array"' >/dev/null 2>&1; then
+            CURRENT_PACKAGES="[]"
+          fi
+          
+          PACKAGE_INFO=$(echo "$CURRENT_PACKAGES" | jq '[.[] | select(.name != null) | {name: .name, url: .html_url}]')
+          
+          ACTIONS_CACHE=$(gh api \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "/repos/${{ github.repository }}/actions/cache/usage" 2>/dev/null || echo '{"active_caches_size_in_bytes": 0, "active_caches_count": 0}')
+          
+          echo "### Container Registry Status" >> $GITHUB_STEP_SUMMARY
+          echo "- **Target Size**: ${{ env.TARGET_SIZE_GB }} GB" >> $GITHUB_STEP_SUMMARY
+          echo "- **Packages**: $(echo "$PACKAGE_INFO" | jq 'length')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### GitHub Actions Cache" >> $GITHUB_STEP_SUMMARY
+          CACHE_GB=$(echo "$ACTIONS_CACHE" | jq -r '(.active_caches_size_in_bytes // 0) / 1073741824 | floor')
+          CACHE_COUNT=$(echo "$ACTIONS_CACHE" | jq -r '.active_caches_count // 0')
+          echo "- **Used**: ${CACHE_GB} GB" >> $GITHUB_STEP_SUMMARY
+          echo "- **Count**: ${CACHE_COUNT}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### Cleanup Actions" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Deleted old container versions" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Cleaned GitHub Actions cache" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Cleaned Docker BuildKit cache" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Run time: $(date)" >> $GITHUB_STEP_SUMMARY

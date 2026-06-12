@@ -1,0 +1,21 @@
+# Default variables for 10-monitoring role
+
+---
+# Loki configuration source (two levels up from playbooks to project root)
+loki_config_source: "{{ playbook_dir }}/../../deployment/loki"
+
+# Generate mTLS certificates
+generate_mtls_certs: true
+
+# Start Loki stack
+start_loki: false  # Started in startup playbook
+
+# Loki configuration
+loki_port: 3100
+alloy_port: 12345
+
+# Loki container user/group IDs
+# These are the UIDs that the grafana/loki container runs as internally
+# NOT the same as the host loki user (UID 995) - this is a common gotcha
+loki_container_uid: 10001
+loki_container_gid: 10001

@@ -1,0 +1,26 @@
+# Docker installation verification
+
+---
+- name: Check Docker version
+  ansible.builtin.command: docker --version
+  register: docker_version
+  changed_when: false
+
+- name: Check Docker Compose version
+  ansible.builtin.command: docker compose version
+  register: docker_compose_version
+  changed_when: false
+
+- name: Verify Docker service is running
+  ansible.builtin.systemd:
+    name: docker
+    state: started
+  check_mode: yes
+  register: docker_service
+
+- name: Display Docker information
+  ansible.builtin.debug:
+    msg:
+      - "Docker version: {{ docker_version.stdout }}"
+      - "Docker Compose version: {{ docker_compose_version.stdout }}"
+      - "Docker service status: {{ docker_service.status.ActiveState | default('unknown') }}"

@@ -1,0 +1,42 @@
+# Deploy site configurations
+
+---
+- name: Find site configs in source
+  ansible.builtin.find:
+    paths: "{{ nginx_config_source }}/sites-available"
+    patterns: "*.conf"
+  delegate_to: localhost
+  become: false
+  register: site_configs_found
+  ignore_errors: yes
+
+- name: Deploy site configs to sites-available
+  ansible.builtin.copy:
+    src: "{{ item.path }}"
+    dest: "/etc/nginx/sites-available/{{ item.path | basename }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ site_configs_found.files | default([]) }}"
+  when: site_configs_found.files is defined and site_configs_found.files | length > 0
+  notify: Reload Nginx
+  register: site_configs_deployed
+
+- name: Verify site configs exist on VPS
+  ansible.builtin.stat:
+    path: "/etc/nginx/sites-available/{{ item.path | basename }}"
+  loop: "{{ site_configs_found.files | default([]) }}"
+  when: site_configs_found.files is defined and site_configs_found.files | length > 0
+  register: site_configs_verify
+
+- name: Display site configs deployment confirmation
+  ansible.builtin.debug:
+    msg:
+      - "Nginx Site Configs Deployment:"
+      - "  Found locally: {{ site_configs_found.matched | default(0) }}"
+      - "  Deployed to /etc/nginx/sites-available/:"
+      - "{{ item.item.path | basename }}: {{ 'DEPLOYED ✅' if item.stat.exists else 'FAILED ⚠️' }}"
+  loop: "{{ site_configs_verify.results | default([]) }}"
+  when: site_configs_verify.results is defined
+  loop_control:
+    label: "{{ item.item.path | basename }}"

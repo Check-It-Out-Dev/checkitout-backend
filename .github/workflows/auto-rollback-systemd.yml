@@ -1,0 +1,569 @@
+name: 🔄 Auto Rollback (Systemd-aware)
+# Enhanced rollback workflow that properly integrates with systemd service management
+# Focused on essential and optional files only
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Target environment (test/staging/prod)'
+        required: true
+        type: string
+      deployment-path:
+        description: 'Remote deployment path'
+        required: true
+        type: string
+      backup-location:
+        description: 'Full path to the pre-deployment backup'
+        required: true
+        type: string
+      backup-timestamp:
+        description: 'Timestamp of the backup being restored'
+        required: false
+        type: string
+        default: 'unknown'
+      failure-reason:
+        description: 'Reason for the rollback'
+        required: false
+        type: string
+        default: 'Deployment failure'
+      health-check-url:
+        description: 'URL to check application health after rollback'
+        required: false
+        type: string
+        default: ''
+      health-check-timeout:
+        description: 'Seconds to wait for health check'
+        required: false
+        type: number
+        default: 30
+      systemd-service-name:
+        description: 'Name of the systemd service'
+        required: false
+        type: string
+        default: 'instagram-platform-test'
+      docker-compose-file:
+        description: 'Name of the docker-compose file (from Spring properties)'
+        required: true
+        type: string
+      container-user-name:
+        description: 'Container user name (from Spring properties)'
+        required: false
+        type: string
+        default: 'instagram-deploy'
+      container-group-name:
+        description: 'Container group name (from Spring properties)'
+        required: false
+        type: string
+        default: 'instagram-deploy'
+      deployment-server-user:
+        description: 'Deployment server user (from Spring properties)'
+        required: false
+        type: string
+        default: 'instagram-deploy'
+      expected-containers:
+        description: 'Expected number of containers (from Spring properties)'
+        required: false
+        type: string
+        default: '3'
+      server-port:
+        description: 'Server port (from Spring properties)'
+        required: false
+        type: number
+        default: 8080
+      use-sudo-docker:
+        description: 'Use sudo for docker commands (security model)'
+        required: false
+        type: boolean
+        default: false
+      admin-home-directory:
+        description: 'Admin user home directory from Spring properties'
+        required: false
+        type: string
+        default: '/var/lib/instagram-scripts-admin'
+    secrets:
+      SSH_PRIVATE_KEY:
+        required: true
+      SSH_HOST:
+        required: true
+      SSH_USERNAME:
+        required: true
+    outputs:
+      rollback-success:
+        description: 'Whether rollback was successful (true/false)'
+        value: ${{ jobs.execute-rollback.outputs.rollback-success }}
+      health-check-passed:
+        description: 'Whether health check passed after rollback'
+        value: ${{ jobs.execute-rollback.outputs.health-check-passed }}
+
+jobs:
+  execute-rollback:
+    name: Execute Systemd-aware Rollback
+    runs-on: [self-hosted, Linux, x64]
+    timeout-minutes: 15
+    outputs:
+      rollback-success: ${{ steps.rollback.outputs.rollback-success }}
+      health-check-passed: ${{ steps.rollback.outputs.health-check-passed }}
+
+    steps:
+      - name: 🔐 Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: 📥 Checkout repository (for scripts)
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github/scripts/remote/
+
+      - name: 📝 Create environment file
+        run: |
+          # Debug: Show what we're receiving
+          echo "📋 Debug - Input values:"
+          echo "   docker-compose-file: '${{ inputs.docker-compose-file }}'"
+          echo "   environment: '${{ inputs.environment }}'"
+          
+          cat > .envRollback << EOF
+          BACKUP_LOCATION="${{ inputs.backup-location }}"
+          DEPLOYMENT_PATH="${{ inputs.deployment-path }}"
+          ENVIRONMENT="${{ inputs.environment }}"
+          BACKUP_TIMESTAMP="${{ inputs.backup-timestamp }}"
+          HEALTH_CHECK_URL="${{ inputs.health-check-url }}"
+          HEALTH_CHECK_TIMEOUT="${{ inputs.health-check-timeout }}"
+          SERVICE_NAME="${{ inputs.systemd-service-name }}"
+          FAILURE_REASON="${{ inputs.failure-reason }}"
+          DOCKER_COMPOSE_FILE="${{ inputs.docker-compose-file }}"
+          GITHUB_RUN_ID="${{ github.run_id }}"
+          GITHUB_ACTOR="${{ github.actor }}"
+          CONTAINER_USER_NAME="${{ inputs.container-user-name }}"
+          CONTAINER_GROUP_NAME="${{ inputs.container-group-name }}"
+          DEPLOYMENT_SERVER_USER="${{ inputs.deployment-server-user }}"
+          EXPECTED_CONTAINERS="${{ inputs.expected-containers }}"
+          SERVER_PORT="${{ inputs.server-port }}"
+          USE_SUDO_DOCKER="${{ inputs.use-sudo-docker }}"
+          EOF
+          
+          # Debug: Show what was written
+          echo ""
+          echo "📄 Created .envRollback file:"
+          cat .envRollback
+
+      - name: 📤 Upload rollback script and environment (with checksum validation)
+        run: |
+          # Generate unique names with timestamp
+          TIMESTAMP=$(date +%s)
+          ROLLBACK_SCRIPT="execute-systemd-rollback-${GITHUB_RUN_ID}-${GITHUB_RUN_NUMBER}-${TIMESTAMP}.sh"
+          VALIDATOR_SCRIPT="validate-exec-${GITHUB_RUN_ID}-${GITHUB_RUN_NUMBER}-${TIMESTAMP}.sh"
+          # C09 FIX: No checksum file needed
+          ENV_FILE=".envRollback_${GITHUB_RUN_ID}_${GITHUB_RUN_NUMBER}_${TIMESTAMP}"
+          
+          echo "📝 Rollback script: $ROLLBACK_SCRIPT"
+          echo "📝 Validator script: $VALIDATOR_SCRIPT"
+          
+          # C09 FIX: Calculate checksum in workflow only, pass as parameter
+          CHECKSUM=$(sha256sum .github/scripts/remote/execute-systemd-rollback.sh | cut -d' ' -f1)
+          echo "🔐 Script checksum: $CHECKSUM (secure - not stored in file)"
+          
+          # Now save all variables to GITHUB_ENV
+          echo "ROLLBACK_SCRIPT=$ROLLBACK_SCRIPT" >> $GITHUB_ENV
+          echo "VALIDATOR_SCRIPT=$VALIDATOR_SCRIPT" >> $GITHUB_ENV
+          echo "ENV_FILE=$ENV_FILE" >> $GITHUB_ENV
+          echo "CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
+          
+          # Upload scripts and environment to admin home directory
+          scp -i ~/.ssh/deploy_key .github/scripts/remote/execute-systemd-rollback.sh \
+            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ inputs.admin-home-directory }}/${ROLLBACK_SCRIPT}
+          scp -i ~/.ssh/deploy_key .github/scripts/remote/validate-and-exec-ci-script.sh \
+            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ inputs.admin-home-directory }}/${VALIDATOR_SCRIPT}
+          scp -i ~/.ssh/deploy_key .envRollback \
+            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ inputs.admin-home-directory }}/${ENV_FILE}
+
+      - name: 🔄 Execute Systemd-aware Rollback (with checksum validation)
+        id: rollback
+        run: |
+          echo "🔄 Executing systemd-aware automatic rollback with checksum validation..."
+          echo "📍 Environment: ${{ inputs.environment }}"
+          echo "📁 Backup location: ${{ inputs.backup-location }}"
+          echo "🔧 Service name: ${{ inputs.systemd-service-name }}"
+          echo "🏥 Health check URL: ${{ inputs.health-check-url }}"
+          echo "⏱️ Health check timeout: ${{ inputs.health-check-timeout }} seconds"
+          
+          # Execute the rollback script on remote server with checksum validation
+          ROLLBACK_OUTPUT=$(mktemp)
+          ROLLBACK_LOG_REMOTE="${{ inputs.admin-home-directory }}/rollback_output_${ROLLBACK_SCRIPT}.log"
+          
+          echo "📝 Executing rollback script with checksum validation..."
+          ROLLBACK_SUCCESS="false"
+          HEALTH_CHECK_PASSED="unknown"
+          
+          ssh -qi ~/.ssh/deploy_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} bash -s << EOF 2>&1 | tee "$ROLLBACK_OUTPUT"
+            cd ${{ inputs.admin-home-directory }}
+            
+            # C09 FIX: No checksum file - pass checksum as parameter
+            
+            # Make both scripts executable
+            chmod 750 ${ROLLBACK_SCRIPT}
+            chmod 750 ${VALIDATOR_SCRIPT}
+            
+            # Source the environment file to check if DOCKER_COMPOSE_FILE is empty
+            source ${ENV_FILE}
+            if [ -z "\${DOCKER_COMPOSE_FILE:-}" ]; then
+                echo "ℹ️ DOCKER_COMPOSE_FILE is empty, will use default"
+            fi
+            
+            # Create a temporary symlink for the environment file (script expects .envRollback)
+            ln -sf ${ENV_FILE} .envRollback
+            
+            # Run the script through validation wrapper with sudo
+            echo "[INFO] Running rollback script with validation..."
+            echo "[INFO] Environment file: ${ENV_FILE}"
+            
+            # C09 FIX: Execute with checksum passed as parameter
+            if sudo -E ./${VALIDATOR_SCRIPT} ${{ inputs.admin-home-directory }}/${ROLLBACK_SCRIPT} ${CHECKSUM}; then
+              echo "✅ Rollback completed successfully"
+              SCRIPT_EXIT_CODE=0
+            else
+              EXIT_CODE=\$?
+              echo "================================"
+              echo "❌ Rollback failed with exit code: \$EXIT_CODE"
+              echo "    Status: ERROR"
+              echo "================================"
+              # Clean up on failure
+              rm -f ${ROLLBACK_SCRIPT} ${VALIDATOR_SCRIPT} ${ENV_FILE} .envRollback 2>/dev/null || true
+              SCRIPT_EXIT_CODE=\$EXIT_CODE
+            fi
+            
+            # Clean up validation script and environment (rollback script is already cleaned by validator)
+            rm -f ${VALIDATOR_SCRIPT} ${ENV_FILE} .envRollback 2>/dev/null || true
+            
+            # The rollback script outputs ROLLBACK_STATUS and HEALTH_CHECK_STATUS to stdout
+            # We'll capture these directly from the output
+            echo "SCRIPT_EXIT_CODE=\$SCRIPT_EXIT_CODE"
+            
+            echo "✅ Rollback execution completed and all scripts cleaned up"
+            exit \$SCRIPT_EXIT_CODE
+          EOF
+          
+          # Parse output for status with better error handling
+          echo ""
+          echo "📊 Parsing rollback output..."
+          
+          # Debug: Show what we're looking for
+          echo "🔍 Looking for status markers in output..."
+          grep -E "ROLLBACK_STATUS=|HEALTH_CHECK_STATUS=" "$ROLLBACK_OUTPUT" || echo "No status markers found"
+          
+          # Extract rollback status - the rollback script outputs these directly
+          ROLLBACK_STATUS=$(grep "^ROLLBACK_STATUS=" "$ROLLBACK_OUTPUT" | tail -1 | cut -d= -f2 || echo "UNKNOWN")
+          HEALTH_CHECK_STATUS=$(grep "^HEALTH_CHECK_STATUS=" "$ROLLBACK_OUTPUT" | tail -1 | cut -d= -f2 || echo "UNKNOWN")
+          
+          # Simple success determination - trust the rollback script's output
+          if [ "$ROLLBACK_STATUS" = "SUCCESS" ]; then
+            ROLLBACK_SUCCESS="true"
+          else
+            ROLLBACK_SUCCESS="false"
+          fi
+          
+          # Set health check status
+          if [ "$HEALTH_CHECK_STATUS" = "true" ]; then
+            HEALTH_CHECK_PASSED="true"
+          elif [ "$HEALTH_CHECK_STATUS" = "false" ]; then
+            HEALTH_CHECK_PASSED="false"
+          else
+            HEALTH_CHECK_PASSED="unknown"
+          fi
+          echo ""
+          echo "📋 Rollback Results:"
+          echo "   Rollback Status: $ROLLBACK_STATUS"
+          echo "   Rollback Success: $ROLLBACK_SUCCESS"
+          echo "   Health Check Status: $HEALTH_CHECK_STATUS"
+          echo "   Health Check Passed: $HEALTH_CHECK_PASSED"
+          
+          # Save output
+          echo "rollback-success=$ROLLBACK_SUCCESS" >> $GITHUB_OUTPUT
+          echo "health-check-passed=$HEALTH_CHECK_PASSED" >> $GITHUB_OUTPUT
+          
+          # Clean up
+          rm -f "$ROLLBACK_OUTPUT"
+          
+          if [ "$ROLLBACK_SUCCESS" != "true" ]; then
+            echo "❌ Rollback failed!"
+            exit 1
+          fi
+
+      - name: 🧹 Cleanup
+        if: always()
+        run: |
+          # Clean up local files first (except SSH key which is needed for remote cleanup)
+          rm -f .envRollback
+          
+          # Nuclear cleanup of admin home directory - preserve only .ssh
+          echo "🧹 Nuclear cleanup of admin home directory..."
+          ssh -qT -i ~/.ssh/deploy_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'EOF' || true
+            cd ${{ inputs.admin-home-directory }}
+            
+            # List what we're about to clean (for logging)
+            echo "Current home directory contents:"
+            ls -la || true
+            
+            # NUCLEAR OPTION: Delete everything except .ssh directory
+            # This ensures no scripts can be pre-staged
+            find . -mindepth 1 -name '.ssh' -prune -o -exec rm -rf {} + 2>/dev/null || true
+            
+            # Show final state
+            echo "Home directory after nuclear cleanup:"
+            ls -la || true
+            
+            echo "✅ Admin home directory nuked (except .ssh)"
+          EOF
+          
+          # Now clean up the local SSH key
+          rm -f ~/.ssh/deploy_key
+
+      - name: 📊 Generate Rollback Summary
+        if: always()
+        run: |
+          # Add emergency alert if rollback failed
+          if [ "${{ steps.rollback.outputs.rollback-success }}" != "true" ]; then
+            echo "# ⚠️🚨 EMERGENCY ALERT: ROLLBACK FAILED - MANUAL INTERVENTION REQUIRED! 🚨⚠️" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**SERVICE IS LIKELY DOWN! IMMEDIATE ACTION REQUIRED!**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "---" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "## 🔄 Systemd-aware Rollback Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📋 Rollback Details" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Environment | ${{ inputs.environment }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Service | ${{ inputs.systemd-service-name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Reason | ${{ inputs.failure-reason }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Backup Used | \`${{ inputs.backup-location }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Backup Timestamp | ${{ inputs.backup-timestamp }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Rollback Success | **${{ steps.rollback.outputs.rollback-success }}** |" >> $GITHUB_STEP_SUMMARY
+          echo "| Health Check Result | **${{ steps.rollback.outputs.health-check-passed }}** |" >> $GITHUB_STEP_SUMMARY
+          echo "| Execution Time | $(date) |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### 🔐 Security Measures" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Script executed with checksum validation" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Timestamp validation (< 10 minutes)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Automatic cleanup after execution" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Unique script naming with GitHub Run ID" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Nuclear cleanup of admin home directory" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.rollback.outputs.rollback-success }}" = "true" ]; then
+            echo "### ✅ Rollback Successful" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "The deployment has been rolled back to the previous version using systemd service management." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Key improvements in this rollback:**" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Proper systemd service integration" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Preserved persistent volumes" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Maintained service state consistency" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Avoided working directory issues" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Enhanced health monitoring with container health checks" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Comprehensive validation before marking rollback successful" >> $GITHUB_STEP_SUMMARY
+          
+            if [ "${{ steps.rollback.outputs.health-check-passed }}" = "false" ]; then
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "### ⚠️ Health Check Warning" >> $GITHUB_STEP_SUMMARY
+              echo "The application was restored but failed health checks after ~90 seconds of retries." >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "**Health Check Details:**" >> $GITHUB_STEP_SUMMARY
+              echo "- 🌐 URL: \`${{ inputs.health-check-url }}\`" >> $GITHUB_STEP_SUMMARY
+              echo "- ⏱️ Attempts: 9 attempts over ~90 seconds" >> $GITHUB_STEP_SUMMARY
+              echo "- ⏳ Initial wait: 30 seconds" >> $GITHUB_STEP_SUMMARY
+              echo "- 🔁 Retry interval: 10 seconds" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "**Recommended Actions:**" >> $GITHUB_STEP_SUMMARY
+              echo "1. Check application logs for startup errors" >> $GITHUB_STEP_SUMMARY
+              echo "2. Verify database connectivity and migrations" >> $GITHUB_STEP_SUMMARY
+              echo "3. Review container health status" >> $GITHUB_STEP_SUMMARY
+              echo "4. Check rollback logs for detailed diagnostics" >> $GITHUB_STEP_SUMMARY
+            elif [ "${{ steps.rollback.outputs.health-check-passed }}" = "true" ]; then
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "### ✅ Health Check Passed" >> $GITHUB_STEP_SUMMARY
+              echo "The application is healthy and responding correctly after rollback." >> $GITHUB_STEP_SUMMARY
+            else
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "### ℹ️ Health Check Status Unknown" >> $GITHUB_STEP_SUMMARY
+              echo "Health check status could not be determined. Please verify manually." >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "### ❌ Rollback Failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "## 🚨 **URGENT: MANUAL INTERVENTION REQUIRED!** 🚨" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "The automatic rollback process has **FAILED**. The application is likely in an **inconsistent or non-functional state**." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### ⚠️ Current Situation:" >> $GITHUB_STEP_SUMMARY
+            echo "- ❌ Deployment validation failed" >> $GITHUB_STEP_SUMMARY
+            echo "- ❌ Automatic rollback attempted but failed" >> $GITHUB_STEP_SUMMARY
+            echo "- ⚠️ Application may be down or partially running" >> $GITHUB_STEP_SUMMARY
+            echo "- ⚠️ User traffic may be affected" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### 🔴 IMMEDIATE ACTIONS REQUIRED:" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "#### 1️⃣ Connect to the server immediately:" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+            echo "ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "#### 2️⃣ Check the current system state:" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+            echo "# Check service status" >> $GITHUB_STEP_SUMMARY
+            echo "sudo systemctl status ${{ inputs.systemd-service-name }}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "# Check if any containers are running" >> $GITHUB_STEP_SUMMARY
+            if [ "${{ inputs.use-sudo-docker }}" = "true" ]; then
+              echo "sudo /usr/bin/docker ps -a | grep instagram-platform-${{ inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "docker ps -a | grep instagram-platform-${{ inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+            fi
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "# Check recent service logs" >> $GITHUB_STEP_SUMMARY
+            echo "sudo journalctl -u ${{ inputs.systemd-service-name }} -n 50 --no-pager" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "#### 3️⃣ Manual recovery options:" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Option A: Try to manually complete the rollback**" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+            echo "# Stop the service completely" >> $GITHUB_STEP_SUMMARY
+            echo "sudo systemctl stop ${{ inputs.systemd-service-name }}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "# Navigate to deployment directory" >> $GITHUB_STEP_SUMMARY
+            echo "cd ${{ inputs.deployment-path }}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "# Check if docker-compose file exists" >> $GITHUB_STEP_SUMMARY
+            echo "ls -la ${{ inputs.docker-compose-file }}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "# Try to start manually" >> $GITHUB_STEP_SUMMARY
+            if [ "${{ inputs.use-sudo-docker }}" = "true" ]; then
+              echo "sudo /usr/bin/docker compose -f ${{ inputs.docker-compose-file }} up -d" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "docker compose -f ${{ inputs.docker-compose-file }} up -d" >> $GITHUB_STEP_SUMMARY
+            fi
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Option B: Restore from a different backup**" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+            echo "# List available backups" >> $GITHUB_STEP_SUMMARY
+            echo "ls -la $(dirname ${{ inputs.deployment-path }})/backups/" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "# Choose a backup and restore manually" >> $GITHUB_STEP_SUMMARY
+            echo "# Follow the manual rollback procedure from your runbook" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Option C: Emergency restore to last known good state**" >> $GITHUB_STEP_SUMMARY
+            echo "- Check if there's a 'last-known-good' backup" >> $GITHUB_STEP_SUMMARY
+            echo "- Contact the on-call engineer if available" >> $GITHUB_STEP_SUMMARY
+            echo "- Consider reverting to a previous Docker image tag" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "#### 4️⃣ Check rollback logs for clues:" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+            echo "# View the latest rollback log" >> $GITHUB_STEP_SUMMARY
+            echo "sudo ls -la $(dirname ${{ inputs.deployment-path }})/rollback-logs/" >> $GITHUB_STEP_SUMMARY
+            echo "sudo tail -100 $(dirname ${{ inputs.deployment-path }})/rollback-logs/rollback_*.log | less" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### 📞 Escalation:" >> $GITHUB_STEP_SUMMARY
+            echo "If you cannot resolve within **15 minutes**, escalate to:" >> $GITHUB_STEP_SUMMARY
+            echo "1. Senior DevOps engineer" >> $GITHUB_STEP_SUMMARY
+            echo "2. Infrastructure team lead" >> $GITHUB_STEP_SUMMARY
+            echo "3. On-call incident manager" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### 🎫 Incident Management:" >> $GITHUB_STEP_SUMMARY
+            echo "1. **Create an incident ticket** with:" >> $GITHUB_STEP_SUMMARY
+            echo "   - Severity: **HIGH/CRITICAL**" >> $GITHUB_STEP_SUMMARY
+            echo "   - Title: Deployment rollback failed for ${{ inputs.environment }} environment" >> $GITHUB_STEP_SUMMARY
+            echo "   - Failed deployment run: [#${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+            echo "   - Time of failure: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+            echo "2. **Update status page** if customer-facing" >> $GITHUB_STEP_SUMMARY
+            echo "3. **Send alert** to relevant Slack/Teams channel" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### 🔍 Common Issues and Solutions:" >> $GITHUB_STEP_SUMMARY
+            echo "| Issue | Solution |" >> $GITHUB_STEP_SUMMARY
+            echo "|-------|----------|" >> $GITHUB_STEP_SUMMARY
+            echo "| Missing Docker images | Pull images manually or use different tags |" >> $GITHUB_STEP_SUMMARY
+            echo "| Permission issues | Check file ownership and immutable flags |" >> $GITHUB_STEP_SUMMARY
+            echo "| Port conflicts | Check if ports are already in use |" >> $GITHUB_STEP_SUMMARY
+            echo "| Database issues | Check PostgreSQL container and volumes |" >> $GITHUB_STEP_SUMMARY
+            echo "| Config issues | Verify .env file and docker-compose syntax |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### ⏰ Time is Critical!" >> $GITHUB_STEP_SUMMARY
+            echo "**Every minute counts when the service is down. Act quickly but carefully.**" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔧 Next Steps" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.rollback.outputs.rollback-success }}" = "true" ]; then
+            echo "1. 📋 Review the deployment failure logs" >> $GITHUB_STEP_SUMMARY
+            echo "2. 🐛 Fix the issue that caused the failure" >> $GITHUB_STEP_SUMMARY
+            echo "3. 🧪 Test the fix in a development environment" >> $GITHUB_STEP_SUMMARY
+            echo "4. 🚀 Re-attempt deployment with fixed code" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ⚠️ IMMEDIATE MANUAL INTERVENTION REQUIRED!" >> $GITHUB_STEP_SUMMARY
+            echo "1. 🚨 **Follow the manual recovery steps above**" >> $GITHUB_STEP_SUMMARY
+            echo "2. 📱 **Notify the on-call team immediately**" >> $GITHUB_STEP_SUMMARY
+            echo "3. 🔍 **Document what went wrong for post-mortem**" >> $GITHUB_STEP_SUMMARY
+            echo "4. 🛡️ **Once recovered, implement prevention measures**" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### 📍 Environment Information" >> $GITHUB_STEP_SUMMARY
+          echo "| Component | Details |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|---------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Deployment Path | \`${{ inputs.deployment-path }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Service Name | \`${{ inputs.systemd-service-name }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Container Prefix | \`instagram-platform-${{ inputs.environment }}-*\` |" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ inputs.health-check-url }}" != "" ]; then
+            echo "| Health Check URL | \`${{ inputs.health-check-url }}\` |" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "| Server Port | ${{ inputs.server-port }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Docker Compose File | \`${{ inputs.docker-compose-file }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### 📋 Essential Files Expected" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "docker-compose-${{ inputs.environment }}.yml" >> $GITHUB_STEP_SUMMARY
+          echo "systemd-wrapper.sh" >> $GITHUB_STEP_SUMMARY
+          echo "postgres-entrypoint.sh" >> $GITHUB_STEP_SUMMARY
+          echo "gsm-healthcheck.sh" >> $GITHUB_STEP_SUMMARY
+          echo "INIT_PROD_DATABASE.sql" >> $GITHUB_STEP_SUMMARY
+          echo "instagram-platform-${{ inputs.environment }}.service" >> $GITHUB_STEP_SUMMARY
+          echo ".env" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### 📁 Optional Files (if present)" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "spring-boot-entrypoint.sh" >> $GITHUB_STEP_SUMMARY
+          echo "01-read-password.sh" >> $GITHUB_STEP_SUMMARY
+          echo ".gitignore" >> $GITHUB_STEP_SUMMARY
+          echo ".deployment-info" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### 📚 Useful Commands" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "# View service status" >> $GITHUB_STEP_SUMMARY
+          echo "sudo systemctl status ${{ inputs.systemd-service-name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "# View recent logs" >> $GITHUB_STEP_SUMMARY
+          echo "sudo journalctl -u ${{ inputs.systemd-service-name }} -n 50 --no-pager" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "# Check container health" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ inputs.use-sudo-docker }}" = "true" ]; then
+            echo "sudo /usr/bin/docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Health}}' | grep instagram-platform-${{ inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Health}}' | grep instagram-platform-${{ inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

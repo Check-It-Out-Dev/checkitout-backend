@@ -1,0 +1,103 @@
+
+# Preserve CI/CD environment variables through sudo
+Defaults:ubuntu env_keep += "DOCKER_BUILDKIT BUILDKIT_PROGRESS BUILDKIT_INLINE_CACHE"
+Defaults:ubuntu env_keep += "GITHUB_TOKEN GITHUB_ACTOR GITHUB_REPOSITORY GITHUB_RUN_ID GITHUB_RUN_NUMBER GITHUB_SHA GITHUB_REF GITHUB_WORKFLOW"
+Defaults:ubuntu env_keep += "RUNNER_TOOL_CACHE RUNNER_OS RUNNER_ARCH RUNNER_NAME RUNNER_TEMP RUNNER_WORKSPACE"
+Defaults:ubuntu env_keep += "CI ACTIONS_CACHE_URL ACTIONS_RUNTIME_TOKEN ACTIONS_RUNTIME_URL"
+
+# Enable logging for audit trail
+Defaults:ubuntu syslog=auth
+Defaults:ubuntu log_input, log_output
+
+# ================================================================================
+# DOCKER BUILDX OPERATIONS (CI/CD BUILD PIPELINE)
+# ================================================================================
+
+# Docker buildx operations for multi-platform builds
+ubuntu ALL=(root) NOPASSWD: \
+    /usr/bin/docker buildx create --name * --driver docker-container *, \
+    /usr/bin/docker buildx inspect --bootstrap, \
+    /usr/bin/docker buildx build *, \
+    /usr/bin/docker buildx rm *, \
+    /usr/bin/docker buildx prune --all --force --filter *, \
+    /usr/bin/docker buildx prune --all --force
+
+# ================================================================================
+# DOCKER REGISTRY OPERATIONS
+# ================================================================================
+
+# Docker login to GitHub Container Registry ONLY (prevents unauthorized registry access)
+# Support both -u and --username flags (both are valid Docker CLI syntax)
+ubuntu ALL=(root) NOPASSWD: \
+    /usr/bin/docker login ghcr.io -u * --password-stdin, \
+    /usr/bin/docker login ghcr.io --username * --password-stdin, \
+    /usr/bin/docker logout ghcr.io
+
+# ================================================================================
+# DOCKER IMAGE OPERATIONS
+# ================================================================================
+
+# Docker build (standard builds without buildx)
+ubuntu ALL=(root) NOPASSWD: \
+    /usr/bin/docker build --platform linux/amd64 -f * -t ghcr.io/check-it-out-dev/checkitout-be/* *
+
+# Docker tag (only within project namespace)
+ubuntu ALL=(root) NOPASSWD: \
+    /usr/bin/docker tag ghcr.io/check-it-out-dev/checkitout-be/* ghcr.io/check-it-out-dev/checkitout-be/*
+
+# Docker push (only to project namespace)
+ubuntu ALL=(root) NOPASSWD: \
+    /usr/bin/docker push ghcr.io/check-it-out-dev/checkitout-be/*
+
+# Docker pull (only from project namespace)
+ubuntu ALL=(root) NOPASSWD: \
+    /usr/bin/docker pull ghcr.io/check-it-out-dev/*, \
+    /usr/bin/docker pull ghcr.io/check-it-out-dev/checkitout-be/*, \
+    /usr/bin/docker pull ghcr.io/check-it-out-dev/checkitout-be/*\:*, \
+    /usr/bin/docker pull ghcr.io/check-it-out-dev/checkitout-be/*@sha256\:*
+
+# ================================================================================
+# DOCKER READ-ONLY OPERATIONS
+# ================================================================================
+
+# Docker status and information commands (read-only)
+ubuntu ALL=(root) NOPASSWD: \
+    /usr/bin/docker ps, \
+    /usr/bin/docker ps -*, \
+    /usr/bin/docker ps --*, \
+    /usr/bin/docker images, \
+    /usr/bin/docker images *, \
+    /usr/bin/docker version, \
+    /usr/bin/docker info
+
+# ================================================================================
+# DOCKER CLEANUP OPERATIONS
+# ================================================================================
+
+# Docker cleanup (prevents disk space issues during CI/CD)
+ubuntu ALL=(root) NOPASSWD: \
+    /usr/bin/docker system prune -af --volumes, \
+    /usr/bin/docker image prune -f, \
+    /usr/bin/docker rmi ghcr.io/check-it-out-dev/checkitout-be/*
+
+# ================================================================================
+# CACHE DIRECTORY MANAGEMENT (LOCAL CACHE MIGRATION)
+# ================================================================================
+
+# Allow cache directory management for ubuntu user
+ubuntu ALL=(root) NOPASSWD: \
+    /usr/bin/mkdir -p /var/cache/docker/buildx*, \
+    /usr/bin/chown -R ubuntu\:ubuntu /var/cache/docker/buildx*, \
+    /usr/bin/chmod -R 755 /var/cache/docker/buildx*
+
+# Allow buildx prune for cache cleanup
+ubuntu ALL=(root) NOPASSWD: \
+    /usr/bin/docker buildx prune --filter until=* --force, \
+    /usr/bin/docker buildx prune --all --force
+
+
+ubuntu ALL=(root) NOPASSWD: \
+    /opt/mvnd/bin/mvnd, \
+    /usr/bin/killall -u ubuntu mvnd
+
+

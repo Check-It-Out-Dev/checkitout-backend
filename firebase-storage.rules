@@ -1,0 +1,90 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // ============================================
+    // PUBLIC READ ACCESS
+    // ============================================
+    // All files are publicly readable (like Instagram)
+    match /{allPaths=**} {
+      allow read: if true;
+    }
+    
+    // ============================================
+    // CONTENT UPLOADS - SIGNED URL COMPATIBLE
+    // ============================================
+    // When using signed URLs, authentication is in the URL signature
+    // Firebase Auth (request.auth) is NOT available for signed URL uploads
+    match /content/{userId}/{fileName} {
+      // Allow uploads via signed URLs
+      // The backend already verified the user when generating the signed URL
+      // We only validate file properties, not authentication
+      allow write: if isValidUpload();
+      
+      // No direct deletion allowed
+      allow delete: if false;
+    }
+    
+    // ============================================
+    // VALIDATION FUNCTIONS
+    // ============================================
+    
+    /**
+     * Validates upload requests.
+     * Only checks file properties, not authentication
+     * (Auth is handled by signed URL signature)
+     */
+    function isValidUpload() {
+      return isValidFileSize() 
+          && isValidContentType();
+          // Removed hasValidMetadata() check since it requires request.auth
+    }
+    
+    /**
+     * Checks file size limits.
+     * request.resource.size is in bytes.
+     */
+    function isValidFileSize() {
+      let maxSize = 10 * 1024 * 1024; // 10MB in bytes
+      return request.resource.size > 0 
+          && request.resource.size <= maxSize;
+    }
+    
+    /**
+     * Validates content type.
+     * Only allows image files.
+     */
+    function isValidContentType() {
+      let validTypes = ['image/jpeg', 'image/jpg', 'image/png', 
+                       'image/gif', 'image/webp'];
+      return request.resource.contentType in validTypes;
+    }
+    
+    // ============================================
+    // ADMIN ACCESS
+    // ============================================
+    // Service accounts and admin users can do anything
+    match /{allPaths=**} {
+      allow read, write: if request.auth != null 
+                        && request.auth.token.admin == true;
+    }
+    
+    // ============================================
+    // PUBLIC FOLDERS (optional)
+    // ============================================
+    match /public/{allPaths=**} {
+      allow read: if true;
+      allow write: if false; // Only backend can write here
+    }
+    
+    // ============================================
+    // TEMP UPLOADS (optional)
+    // ============================================
+    match /temp/{sessionId}/{fileName} {
+      // Anyone can upload to temp (cleaned after 24h)
+      allow write: if isValidUpload();
+      allow read: if true;
+      allow delete: if false;
+    }
+  }
+}

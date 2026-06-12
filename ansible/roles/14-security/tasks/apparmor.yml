@@ -1,0 +1,26 @@
+# AppArmor verification
+
+---
+- name: Check AppArmor status
+  ansible.builtin.command: aa-status
+  register: apparmor_status
+  changed_when: false
+
+- name: Verify AppArmor is enabled
+  ansible.builtin.assert:
+    that:
+      - "'profiles are loaded' in apparmor_status.stdout"
+    success_msg: "AppArmor is active"
+    fail_msg: "AppArmor is not active"
+
+- name: Check Docker AppArmor profile
+  ansible.builtin.shell: aa-status | grep docker
+  register: docker_apparmor
+  changed_when: false
+  ignore_errors: yes
+
+- name: Display AppArmor status
+  ansible.builtin.debug:
+    msg:
+      - "AppArmor active"
+      - "Docker profile: {{ 'Loaded' if docker_apparmor.rc == 0 else 'Not loaded' }}"

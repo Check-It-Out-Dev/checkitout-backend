@@ -1,0 +1,33 @@
+# Test environment directory creation
+
+---
+- name: Create test environment base directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ user_test_deploy.name }}"
+    group: "{{ user_test_deploy.gid }}"
+    mode: "{{ dir_permissions_standard }}"
+  loop:
+    - "{{ test_base_path }}"
+    - "{{ test_runtime_path }}"
+    - "{{ test_runtime_path }}/logs"
+    - "{{ test_runtime_path }}/temp"
+    - "{{ test_runtime_path }}/cache"
+
+- name: Create test deployment directory (CI/CD accessible)
+  ansible.builtin.file:
+    path: "{{ test_deployment_path }}"
+    state: directory
+    owner: root
+    group: docker-secrets-test
+    mode: '0755'
+
+- name: Create test backups directory (restricted)
+  ansible.builtin.file:
+    path: "{{ test_backups_path }}"
+    state: directory
+    owner: "{{ user_test_deploy.name }}"
+    group: "{{ user_test_deploy.gid }}"
+    mode: "{{ dir_permissions_restricted }}"
+  when: create_backups | bool

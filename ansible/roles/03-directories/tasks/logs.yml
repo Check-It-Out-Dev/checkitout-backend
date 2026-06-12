@@ -1,0 +1,42 @@
+# Log directories creation
+
+---
+- name: Create Instagram Platform logs base directory
+  ansible.builtin.file:
+    path: "{{ base_log_path }}"
+    state: directory
+    owner: root
+    group: adm
+    mode: "{{ dir_permissions_standard }}"
+
+- name: Create test environment logs directory
+  ansible.builtin.file:
+    path: "{{ base_log_path }}/test"
+    state: directory
+    owner: "{{ user_test_deploy.name }}"
+    group: "{{ user_test_deploy.gid }}"
+    mode: "{{ dir_permissions_standard }}"
+
+- name: Create production environment logs directory
+  ansible.builtin.file:
+    path: "{{ base_log_path }}/prod"
+    state: directory
+    owner: "{{ user_prod_deploy.name }}"
+    group: "{{ user_prod_deploy.gid }}"
+    mode: "{{ dir_permissions_standard }}"
+
+- name: Create scripts logs directory
+  ansible.builtin.file:
+    path: "{{ base_log_path }}/scripts"
+    state: directory
+    owner: "{{ user_scripts_admin.name }}"
+    group: "docker-secrets-admin"
+    mode: "{{ dir_permissions_standard }}"
+
+- name: Create CI/CD logs directory
+  ansible.builtin.file:
+    path: "{{ base_cicd_log_path }}"
+    state: directory
+    owner: "{{ user_scripts_admin.name }}"
+    group: adm
+    mode: "{{ dir_permissions_standard }}"

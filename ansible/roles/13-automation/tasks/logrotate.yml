@@ -1,0 +1,38 @@
+# Logrotate configuration
+
+---
+- name: Deploy logrotate config for Instagram Platform
+  ansible.builtin.copy:
+    dest: /etc/logrotate.d/instagram-platform
+    content: |
+      /var/log/instagram-platform/*/*.log {
+          daily
+          rotate 7
+          compress
+          delaycompress
+          missingok
+          notifempty
+          create 0640 root adm
+      }
+
+      /var/log/CiCd/*.log {
+          daily
+          rotate 30
+          compress
+          delaycompress
+          missingok
+          notifempty
+          create 0664 instagram-scripts-admin adm
+      }
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Test logrotate configuration
+  ansible.builtin.command: logrotate -d /etc/logrotate.d/instagram-platform
+  register: logrotate_test
+  changed_when: false
+
+- name: Display logrotate test result
+  ansible.builtin.debug:
+    msg: "{{ 'Logrotate config valid' if logrotate_test.rc == 0 else 'Logrotate config has issues' }}"

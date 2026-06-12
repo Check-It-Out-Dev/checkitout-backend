@@ -1,0 +1,114 @@
+name: 🧪 Test Environment Deployment
+# Secure version - deploys on push to main with immutability protection
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write     # Needed for pushing Docker images to ghcr.io
+  actions: read
+  id-token: write     # Needed for authentication (GCP, OIDC, etc.)
+
+jobs:
+  config:
+    name: Load Config
+    uses: ./.github/workflows/reusable-config-loader.yml
+    with:
+      environment: test
+      config-path: src/main/resources
+
+  validate:
+    name: Validate Config  
+    needs: config
+    uses: ./.github/workflows/reusable-config-validator.yml
+    with:
+      config-json: ${{ needs.config.outputs.config-json }}
+      strict-mode: true
+
+  build:
+    name: Build & Push
+    needs: [config, validate]
+    if: needs.validate.outputs.validation-passed == 'true'
+    uses: ./.github/workflows/reusable-maven-docker-build.yml
+    with:
+      config-json: ${{ needs.config.outputs.config-json }}
+      environment: test
+    secrets: inherit
+
+  backup:
+    name: Backup (Secure)
+    needs: [config, build]
+    uses: ./.github/workflows/reusable-pre_deployment-backup.yml
+    with:
+      config-json: ${{ needs.config.outputs.config-json }}
+      config-b64: ${{ needs.config.outputs.config-b64 }}
+    secrets:
+      INSTAGRAM_SERVER_HOST: ${{ secrets.INSTAGRAM_SERVER_HOST }}
+      INSTAGRAM_SCRIPTS_ADMIN_USER: ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}
+      INSTAGRAM_SCRIPTS_ADMIN_SSH_KEY: ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_SSH_KEY }}
+
+  deploy:
+    name: Deploy & Secure
+    needs: [config, build, backup]
+    uses: ./.github/workflows/reusable-deploy-and-secure.yml
+    with:
+      config-json: ${{ needs.config.outputs.config-json }}
+      image-tag: ${{ needs.build.outputs.image-tag-sha }}
+      gsm-init-image-tag: ${{ needs.build.outputs.gsm-init-image-tag-sha }}
+    secrets: inherit
+
+  reload-and-validate:
+    name: Reload & Validate
+    needs: [config, deploy]
+    uses: ./.github/workflows/reusable-reload-and-validate.yml
+    with:
+      config-json: ${{ needs.config.outputs.config-json }}
+    secrets: inherit
+
+  summary:
+    name: Summary
+    needs: [config, validate, build, backup, deploy, reload-and-validate]
+    if: always()
+    runs-on: [self-hosted, Linux, x64]
+    steps:
+      - name: Generate Summary
+        run: |
+          echo "# 🔄 Reload & Validate Summary (Secure)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Stage | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Config | ${{ needs.config.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Validation | ${{ needs.validate.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ${{ needs.build.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Backup (Secure) | ${{ needs.backup.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Deploy (Secure) | ${{ needs.deploy.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Reload & Validate | ${{ needs.reload-and-validate.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Extract key values from config JSON
+          CONFIG='${{ needs.config.outputs.config-json }}'
+          echo "### 📋 Configuration" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment**: $(echo "$CONFIG" | jq -r '._flat.environment')" >> $GITHUB_STEP_SUMMARY
+          echo "- **Image**: $(echo "$CONFIG" | jq -r '._flat.image_name')" >> $GITHUB_STEP_SUMMARY
+          echo "- **Service**: $(echo "$CONFIG" | jq -r '._flat.systemd_service_name')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### 🔐 Security Features" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Scripts protected with immutability" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Mandatory secure logging enforced" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Zero-attack-window implementation" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Automatic cleanup of scripts" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Admin user with proper sudo permissions" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### 🐳 Build Results" >> $GITHUB_STEP_SUMMARY
+          echo "- **App Image**: ${{ needs.build.outputs.image-tag-sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **GSM Init Image**: ${{ needs.build.outputs.gsm-init-image-tag-sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build Duration**: ${{ needs.build.outputs.build-duration }}s" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### 🚀 Deployment Status" >> $GITHUB_STEP_SUMMARY
+          echo "**Status**: ${{ needs.reload-and-validate.outputs.deployment-status }}" >> $GITHUB_STEP_SUMMARY

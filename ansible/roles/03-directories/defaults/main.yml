@@ -1,0 +1,15 @@
+# Default variables for 03-directories role
+
+---
+# All directory paths are defined in group_vars/all.yml
+
+# Directory permissions
+dir_permissions_standard: "0755"
+dir_permissions_restricted: "0750"
+dir_permissions_secrets: "0750"
+
+# Create backup directories
+create_backups: true
+
+# Create monitoring directories
+create_monitoring: true

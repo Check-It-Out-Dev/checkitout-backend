@@ -1,0 +1,20 @@
+# Main tasks for 02-users-groups role
+# Create users and groups for Instagram Platform
+
+---
+- name: Create security groups
+  include_tasks: groups.yml
+  tags: [users-groups, groups]
+
+- name: Create deployment users
+  include_tasks: users.yml
+  tags: [users-groups, users]
+
+- name: Configure SSH keys for deployment users
+  include_tasks: ssh-keys.yml
+  when: configure_ssh_keys | bool
+  tags: [users-groups, ssh-keys]
+
+- name: Verify user and group configuration
+  include_tasks: verify.yml
+  tags: [users-groups, verify]

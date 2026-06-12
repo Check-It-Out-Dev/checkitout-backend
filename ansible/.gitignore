@@ -1,0 +1,68 @@
+# Ansible .gitignore
+# Generated files and sensitive data that should not be committed
+
+# Ansible retry files
+*.retry
+
+# Ansible log files
+*.log
+ansible.log
+
+# Vault password files (CRITICAL - never commit these)
+vault-password.txt
+vault-pass*
+.vault-pass*
+*vault-pass*
+
+# Molecule temporary files
+.molecule/
+molecule/*/
+
+# Python bytecode
+*.pyc
+__pycache__/
+*.pyo
+
+# Fact cache
+/tmp/ansible_fact_cache/
+.ansible/
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Local testing files
+test_output/
+local_test/
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# SSL certificates and keys (if stored locally)
+*.key
+*.pem
+*.crt
+*.csr
+
+# Secrets and sensitive data (even if encrypted, be careful)
+# Note: vault files should be committed, but ensure they're encrypted
+# secrets/*.yml
+# !secrets/vault.yml
+
+# Local overrides
+local_overrides.yml

@@ -1,0 +1,20 @@
+# Default variables for 07-systemd role
+
+---
+# Service configuration
+enable_services: true
+start_services: false  # Services are started in startup.yml playbook
+
+# Timeout configuration (in seconds)
+service_timeout_start: 360  # 6 minutes (database init can take time)
+service_timeout_stop: 120   # 2 minutes
+
+# Restart configuration
+service_restart: "on-failure"
+service_restart_sec: 30
+
+# Flask auth app configuration (test domain protection)
+flask_auth_app_dir: "/home/ubuntu/flask-app"
+flask_auth_app_user: "ubuntu"
+flask_auth_immutable_protection: true
+deploy_flask_auth_app: true

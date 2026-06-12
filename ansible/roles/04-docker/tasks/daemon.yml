@@ -1,0 +1,60 @@
+# Docker daemon configuration
+
+---
+- name: Backup existing daemon.json if it exists
+  ansible.builtin.copy:
+    src: /etc/docker/daemon.json
+    dest: "/etc/docker/daemon.json.backup-{{ ansible_date_time.date }}"
+    remote_src: yes
+    mode: '0600'
+  when: deploy_daemon_json | default(false)
+  ignore_errors: yes
+
+- name: Deploy Docker daemon configuration
+  ansible.builtin.template:
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: '0644'
+    validate: 'python3 -m json.tool %s'
+  when: deploy_daemon_json | default(false)
+  notify: Restart Docker
+
+- name: Display daemon.json status
+  ansible.builtin.debug:
+    msg: "Docker daemon.json: {{ 'Deployed (custom config)' if deploy_daemon_json | default(false) else 'Not deployed (using Docker defaults - matches old VPS)' }}"
+
+- name: Ensure Docker service is enabled
+  ansible.builtin.systemd:
+    name: docker
+    enabled: yes
+
+- name: Restart Docker if configuration changed
+  ansible.builtin.meta: flush_handlers
+  when: restart_docker_on_config_change | bool
+
+- name: Wait for Docker to be ready
+  ansible.builtin.wait_for:
+    path: /var/run/docker.sock
+    state: present
+    timeout: 60
+
+- name: Verify Docker daemon configuration
+  ansible.builtin.command: docker info
+  register: docker_info
+  changed_when: false
+
+- name: Check Docker storage driver
+  ansible.builtin.assert:
+    that:
+      - "'Storage Driver: overlay2' in docker_info.stdout or 'Storage Driver: overlay2' in docker_info.stderr"
+    success_msg: "Docker storage driver verified: overlay2"
+  ignore_errors: yes
+
+- name: Check Docker logging driver
+  ansible.builtin.assert:
+    that:
+      - "'Logging Driver: journald' in docker_info.stdout or 'Logging Driver: journald' in docker_info.stderr"
+    success_msg: "Docker logging driver verified: journald"
+  ignore_errors: yes

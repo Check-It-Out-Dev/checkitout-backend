@@ -1,0 +1,305 @@
+name: Pre-Deployment Backup
+# Secure version with immutability protection following conventions
+
+on:
+  workflow_call:
+    inputs:
+      config-json:
+        required: true
+        type: string
+        description: 'Configuration JSON from config loader'
+      config-b64:
+        required: false
+        type: string
+        description: 'Base64 encoded configuration (deprecated - kept for compatibility)'
+    secrets:
+      INSTAGRAM_SERVER_HOST:
+        required: true
+      INSTAGRAM_SCRIPTS_ADMIN_USER:
+        required: true
+      INSTAGRAM_SCRIPTS_ADMIN_SSH_KEY:
+        required: true
+    outputs:
+      backup-created:
+        value: ${{ jobs.backup.outputs.created }}
+      backup-location:
+        value: ${{ jobs.backup.outputs.location }}
+
+jobs:
+  backup:
+    runs-on: [self-hosted, Linux, x64]
+    timeout-minutes: 15
+    outputs:
+      created: ${{ steps.execute-backup.outputs.created }}
+      location: ${{ steps.execute-backup.outputs.location }}
+
+    steps:
+      - name: 📋 Parse Configuration
+        id: config
+        run: |
+          # Store config in a file to avoid shell escaping issues
+          cat > /tmp/config.json << 'EOF'
+          ${{ inputs.config-json }}
+          EOF
+          
+          # Validate JSON
+          if ! jq empty /tmp/config.json 2>/dev/null; then
+            echo "❌ ERROR: Invalid JSON configuration"
+            exit 1
+          fi
+          
+          echo "✅ JSON validated successfully"
+          
+          # Extract values from config - following maven-docker-build pattern
+          ENVIRONMENT=$(jq -r '._flat.environment // empty' /tmp/config.json)
+          DEPLOYMENT_PATH=$(jq -r '._flat.deployment_path // empty' /tmp/config.json)
+          BACKUP_PATH=$(jq -r '._flat.backup_path // empty' /tmp/config.json)
+          RETENTION_COUNT=$(jq -r '._flat.backup_retention_count // "7"' /tmp/config.json)
+          ADMIN_HOME=$(jq -r '._flat.admin_home_directory // empty' /tmp/config.json)
+          SCRIPT_TIMEOUT=$(jq -r '._flat.script_execution_timeout_seconds // "600"' /tmp/config.json)
+          
+          # Debug output
+          echo "📊 Parsed values:"
+          echo "  Environment: $ENVIRONMENT"
+          echo "  Deployment Path: $DEPLOYMENT_PATH"
+          echo "  Backup Path: $BACKUP_PATH"
+          echo "  Retention: $RETENTION_COUNT days"
+          echo "  Admin Home: $ADMIN_HOME"
+          echo "  Script Timeout: $SCRIPT_TIMEOUT seconds"
+          
+          # Validate required values
+          if [ -z "$ENVIRONMENT" ] || [ -z "$DEPLOYMENT_PATH" ] || [ -z "$BACKUP_PATH" ] || [ -z "$ADMIN_HOME" ]; then
+            echo "❌ ERROR: Missing required configuration values"
+            echo "Available keys in _flat:"
+            jq -r '._flat | keys[]' /tmp/config.json | head -20
+            exit 1
+          fi
+          
+          # Export to environment
+          echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
+          echo "DEPLOYMENT_PATH=$DEPLOYMENT_PATH" >> $GITHUB_ENV
+          echo "BACKUP_PATH=$BACKUP_PATH" >> $GITHUB_ENV
+          echo "RETENTION_COUNT=$RETENTION_COUNT" >> $GITHUB_ENV
+          echo "ADMIN_HOME=$ADMIN_HOME" >> $GITHUB_ENV
+          echo "SCRIPT_TIMEOUT=$SCRIPT_TIMEOUT" >> $GITHUB_ENV
+
+      - name: 📥 Checkout Scripts
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github/scripts/remote/
+            .github/scripts/runner/
+
+      - name: 🔐 Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          
+          # SSH config
+          cat > ~/.ssh/config << EOF
+          Host backup-server
+              HostName ${{ secrets.INSTAGRAM_SERVER_HOST }}
+              User ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}
+              IdentityFile ~/.ssh/id_rsa
+              StrictHostKeyChecking no
+              ServerAliveInterval 30
+              ServerAliveCountMax 3
+              ConnectTimeout 30
+              LogLevel ERROR
+          EOF
+          
+          ssh-keyscan -H ${{ secrets.INSTAGRAM_SERVER_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: ☢️ Nuclear Cleanup - START
+        run: |
+          echo "☢️ NUCLEAR CLEANUP AT START - Ensuring pristine environment"
+          
+          # Remove all immutability
+          ssh backup-server << 'REMOVE_IMMUTABLE'
+            echo "Removing immutability from ${{ env.ADMIN_HOME }}..."
+            sudo /usr/bin/chattr -R -i ${{ env.ADMIN_HOME }} 2>/dev/null || true
+            echo "✅ Immutability removed"
+          REMOVE_IMMUTABLE
+          
+          # Upload and execute cleanup script
+          scp -i ~/.ssh/id_rsa \
+              .github/scripts/remote/nuclear-cleanup.sh \
+              backup-server:${{ env.ADMIN_HOME }}/nuclear-cleanup-temp.sh
+          
+          ssh backup-server << 'NUCLEAR_START'
+            cd ${{ env.ADMIN_HOME }}
+            chmod +x nuclear-cleanup-temp.sh
+            ./nuclear-cleanup-temp.sh
+            rm -f nuclear-cleanup-temp.sh
+            echo "✅ START cleanup complete"
+          NUCLEAR_START
+
+      - name: 📤 Secure upload of scripts
+        run: |
+          echo "📤 Uploading scripts with immutability protection..."
+          
+          # Define script names that match sudoers patterns
+          BACKUP_SCRIPT="backup-pre-deploy-${{ github.run_id }}.sh"
+          VALIDATOR="validate-and-exec-ci-script-${{ github.run_id }}.sh"
+          
+          # Get backup script checksum for validation
+          BACKUP_SHA256=$(sha256sum .github/scripts/remote/create-pre-deployment-backup.sh | cut -d' ' -f1)
+          echo "SHA256_CHECKSUM=$BACKUP_SHA256" >> $GITHUB_ENV
+          
+          # Create environment file
+          cat > .env << EOF
+          export ENVIRONMENT=$ENVIRONMENT
+          export DEPLOYMENT_PATH=$DEPLOYMENT_PATH
+          export BACKUP_BASE_PATH=$BACKUP_PATH
+          export RETENTION_COUNT=$RETENTION_COUNT
+          export GITHUB_RUN_ID=${{ github.run_id }}
+          export TIMESTAMP=$(date +%s)
+          export SCRIPT_EXECUTION_TIMEOUT_SECONDS=$SCRIPT_TIMEOUT
+          EOF
+          
+          # Upload environment file with protection
+          scp -i ~/.ssh/id_rsa .env backup-server:$ADMIN_HOME/.env
+          ssh backup-server "
+            cd $ADMIN_HOME
+            chmod 600 .env
+            sudo chattr +i .env
+            echo '✅ .env protected'
+          "
+          
+          # Upload secure-logger.sh using secure helper
+          echo "🔒 Uploading secure-logger.sh with protection..."
+          LOGGER_TIMESTAMP=$(bash .github/scripts/runner/secure-script-upload.sh \
+              .github/scripts/remote/secure-logger.sh \
+              "$ADMIN_HOME/secure-logger.sh" \
+              ~/.ssh/id_rsa \
+              "${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}" \
+              "${{ secrets.INSTAGRAM_SERVER_HOST }}")
+          echo "✅ secure-logger.sh uploaded and protected (timestamp: $LOGGER_TIMESTAMP)"
+          
+          # Upload backup script using secure helper
+          echo "🔒 Uploading backup script with protection..."
+          BACKUP_TIMESTAMP=$(bash .github/scripts/runner/secure-script-upload.sh \
+              .github/scripts/remote/create-pre-deployment-backup.sh \
+              "$ADMIN_HOME/$BACKUP_SCRIPT" \
+              ~/.ssh/id_rsa \
+              "${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}" \
+              "${{ secrets.INSTAGRAM_SERVER_HOST }}")
+          echo "✅ Backup script uploaded and protected (timestamp: $BACKUP_TIMESTAMP)"
+          
+          # Upload validator script using secure helper
+          echo "🔒 Uploading validator script with protection..."
+          VALIDATOR_TIMESTAMP=$(bash .github/scripts/runner/secure-script-upload.sh \
+              .github/scripts/remote/validate-and-exec-ci-script.sh \
+              "$ADMIN_HOME/$VALIDATOR" \
+              ~/.ssh/id_rsa \
+              "${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}" \
+              "${{ secrets.INSTAGRAM_SERVER_HOST }}")
+          echo "✅ Validator uploaded and protected (timestamp: $VALIDATOR_TIMESTAMP)"
+
+      - name: 🔧 Verify protection
+        run: |
+          echo "🔧 Verifying all files are protected..."
+          ssh backup-server "
+            cd $ADMIN_HOME
+          
+            echo '📊 Checking immutability status:'
+            echo ''
+          
+            # Check each file
+            for file in .env secure-logger.sh backup-pre-deploy-${{ github.run_id }}.sh* validate-and-exec-ci-script-${{ github.run_id }}.sh*; do
+              if [ -f \"\$file\" ]; then
+                if lsattr \"\$file\" 2>/dev/null | grep -q '^....i'; then
+                  echo \"✅ \$file is immutable\"
+                else
+                  echo \"❌ \$file is NOT immutable!\"
+                  exit 1
+                fi
+              fi
+            done
+          
+            echo ''
+            echo '✅ All files are properly protected!'
+          "
+
+      - name: 🚀 Execute Backup
+        id: execute-backup
+        run: |
+          echo "🚀 Starting backup..."
+          
+          # Create execution script (following deploy-and-secure pattern)
+          cat > /tmp/backup_script.sh << 'SCRIPT_END'
+          #!/bin/bash
+          cd ${{ env.ADMIN_HOME }}
+          
+          # Source environment (validator will handle immutability)
+          if [ -f ".env" ]; then
+              set -a
+              source .env
+              set +a
+          fi
+          
+          # Execute with checksum using admin privileges
+          # This now matches the sudoers pattern exactly:
+          # /var/lib/***/validate-and-exec-ci-script-[0-9]*.sh /var/lib/***/backup-pre-deploy-[0-9]*.sh *
+          sudo -E ${{ env.ADMIN_HOME }}/validate-and-exec-ci-script-${{ github.run_id }}.sh \
+              ${{ env.ADMIN_HOME }}/backup-pre-deploy-${{ github.run_id }}.sh \
+              ${{ env.SHA256_CHECKSUM }}
+          SCRIPT_END
+          
+          chmod +x /tmp/backup_script.sh
+          
+          # Execute with timeout
+          if timeout ${{ env.SCRIPT_TIMEOUT }} ssh -o LogLevel=ERROR backup-server 'bash -s' < /tmp/backup_script.sh; then
+            echo "✅ Backup completed successfully"
+            echo "created=true" >> $GITHUB_OUTPUT
+            echo "location=$BACKUP_PATH" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Backup failed"
+            echo "created=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+          
+          rm -f /tmp/backup_script.sh
+
+      - name: 📊 Verify Backup
+        if: always()
+        run: |
+          ssh backup-server "ls -la $BACKUP_PATH/ 2>/dev/null | tail -5" || echo "Could not list backup directory"
+
+      - name: ☢️ Nuclear Cleanup - END
+        if: always()
+        run: |
+          echo "☢️ NUCLEAR CLEANUP AT END"
+          
+          # FIRST: Remove all immutability with sudo
+          echo "🔓 Removing all immutability flags..."
+          ssh backup-server << 'REMOVE_IMMUTABLE' || true
+            echo "Removing immutability from ${{ env.ADMIN_HOME }}..."
+            sudo /usr/bin/chattr -R -i ${{ env.ADMIN_HOME }} 2>/dev/null || true
+            echo "✅ Immutability removed"
+          REMOVE_IMMUTABLE
+          
+          # THEN: Upload and execute cleanup script
+          scp -i ~/.ssh/id_rsa \
+              .github/scripts/remote/nuclear-cleanup.sh \
+              backup-server:${{ env.ADMIN_HOME }}/nuclear-cleanup-temp.sh || true
+          
+          # Execute cleanup
+          ssh backup-server << 'NUCLEAR_END' || true
+            cd ${{ env.ADMIN_HOME }}
+          
+            if [ -f nuclear-cleanup-temp.sh ]; then
+              chmod +x nuclear-cleanup-temp.sh
+              ./nuclear-cleanup-temp.sh
+            else
+              # Fallback: Safe inline cleanup
+              find . -maxdepth 1 -type f -delete 2>/dev/null || true
+              find . -maxdepth 1 -type d -not -name '.' -not -name '.ssh' -exec rm -rf {} + 2>/dev/null || true
+            fi
+          
+            echo "✅ END cleanup complete"
+          NUCLEAR_END
+          
+          # Clean up local SSH key
+          rm -f ~/.ssh/id_rsa .env

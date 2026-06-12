@@ -1,0 +1,28 @@
+# Test environment systemd service creation
+
+---
+- name: Deploy instagram-platform-test.service
+  ansible.builtin.template:
+    src: instagram-platform-test.service.j2
+    dest: /etc/systemd/system/instagram-platform-test.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reload systemd
+
+- name: Enable instagram-platform-test service
+  ansible.builtin.systemd:
+    name: instagram-platform-test
+    enabled: yes
+    daemon_reload: yes
+  when: enable_services | bool
+
+- name: Verify test service file
+  ansible.builtin.command: systemd-analyze verify instagram-platform-test.service
+  register: test_service_verify
+  changed_when: false
+  failed_when: false
+
+- name: Display test service verification result
+  ansible.builtin.debug:
+    msg: "Test service verification: {{ 'OK' if test_service_verify.rc == 0 else 'WARNINGS' }}"

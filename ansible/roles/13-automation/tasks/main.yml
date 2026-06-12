@@ -1,0 +1,26 @@
+# Main tasks for 13-automation role
+
+---
+- name: Configure root cron jobs
+  include_tasks: root-cron.yml
+  when: configure_root_cron | bool
+  tags: [automation, cron, root-cron]
+
+- name: Configure admin cron jobs
+  include_tasks: admin-cron.yml
+  when: configure_admin_cron | bool
+  tags: [automation, cron, admin-cron]
+
+- name: Verify systemd timers
+  include_tasks: systemd-timers.yml
+  when: verify_systemd_timers | bool
+  tags: [automation, timers]
+
+- name: Configure logrotate
+  include_tasks: logrotate.yml
+  when: configure_logrotate | bool
+  tags: [automation, logrotate]
+
+- name: Verify automation configuration
+  include_tasks: verify.yml
+  tags: [automation, verify]

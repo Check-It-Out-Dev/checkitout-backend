@@ -1,0 +1,127 @@
+# Test Environment Bootstrap Secrets - SAFE DUMMY VALUES
+# Instagram Platform VPS Deployment
+#
+# ⚠️  IMPORTANT: These are DUMMY/PLACEHOLDER values safe to commit to Git.
+#    Replace with real values AFTER deployment on the VPS.
+#
+# Only 2 types of secrets needed:
+# 1. GCP Service Account JSON (for google-secrets-init to fetch runtime secrets)
+# 2. SSH Public Key (for GitHub Actions to deploy)
+#
+# All other secrets (DB passwords, JWT, API keys) are fetched from
+# GCP Secret Manager by google-secrets-init container at runtime.
+
+---
+# =============================================================================
+# GCP Service Account JSON (Test Environment) - DUMMY VALUE
+# =============================================================================
+# This is used by google-secrets-init container to authenticate to GCP
+# and fetch runtime secrets from Secret Manager.
+#
+# ⚠️  REPLACE AFTER DEPLOYMENT:
+#    SSH to VPS and run:
+#    sudo cat > /etc/instagram-platform/test/secrets/service-account.json << 'EOF'
+#    {paste actual JSON from GCP console}
+#    EOF
+#    sudo chmod 640 /etc/instagram-platform/test/secrets/service-account.json
+#    sudo chown instagram-test-deploy:docker-secrets-test /etc/instagram-platform/test/secrets/service-account.json
+
+vault_gcp_service_account_test: |
+  {
+    "type": "service_account",
+    "project_id": "check-it-out-47c50",
+    "private_key_id": "value",
+    "private_key": "key",
+    "client_email": "value",
+    "client_id": "value",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/gsm-reader-test-883%40check-it-out-47c50.iam.gserviceaccount.com",
+    "universe_domain": "googleapis.com"
+  }
+
+# =============================================================================
+# SSH Public Key for GitHub Actions (Test Deployment) - DUMMY VALUE
+# =============================================================================
+# This allows GitHub Actions to SSH to VPS for automated deployments
+#
+# ⚠️  REPLACE AFTER DEPLOYMENT:
+#    SSH to VPS and run:
+#    echo "ssh-rsa ACTUAL_KEY github-actions-test" | sudo tee /home/instagram-test-deploy/.ssh/authorized_keys
+#    sudo chmod 600 /home/instagram-test-deploy/.ssh/authorized_keys
+#    sudo chown instagram-test-deploy:instagram-test-deploy /home/instagram-test-deploy/.ssh/authorized_keys
+
+vault_test_deploy_ssh_public_key: "publicKey"
+
+# =============================================================================
+# Ubuntu User SSH Public Key - REPLACE WITH YOUR ACTUAL KEY
+# =============================================================================
+# Your personal SSH key for accessing the VPS as ubuntu user
+#
+# ⚠️  REPLACE BEFORE DEPLOYMENT with your actual public key:
+#    vault_ubuntu_ssh_public_key: "ssh-rsa AAAAB3... your-key-comment"
+
+vault_ubuntu_ssh_public_key: "publicKey"
+
+# =============================================================================
+# SSH Public Key for instagram-scripts-admin (CI/CD Admin User) - DUMMY VALUE
+# =============================================================================
+# This allows GitHub Actions to SSH for admin/scripting tasks
+#
+# ⚠️  REPLACE AFTER DEPLOYMENT:
+#    SSH to VPS and run:
+#    echo "ssh-rsa ACTUAL_KEY github-actions-instagram-admin" | sudo tee /var/lib/instagram-scripts-admin/.ssh/authorized_keys
+#    sudo chmod 600 /var/lib/instagram-scripts-admin/.ssh/authorized_keys
+#    sudo chown instagram-scripts-admin:instagram-scripts-admin /var/lib/instagram-scripts-admin/.ssh/authorized_keys
+
+vault_admin_ssh_public_key: "publicKey"
+
+# =============================================================================
+# Loki Monitoring GCP Service Account JSON - DUMMY VALUE
+# =============================================================================
+# This is used by Loki to write logs to GCS bucket: checkitout-logs-eu
+#
+# ⚠️  REPLACE AFTER DEPLOYMENT:
+#    SSH to VPS and run:
+#    sudo cat > /opt/instagram-platform/loki/secrets/service-account.json << 'EOF'
+#    {paste actual Loki GCP service account JSON}
+#    EOF
+#    sudo chmod 640 /opt/instagram-platform/loki/secrets/service-account.json
+#    sudo chown loki:loki /opt/instagram-platform/loki/secrets/service-account.json
+
+vault_loki_gcp_service_account: |
+  {
+    "type": "service_account",
+    "project_id": "check-it-out-prod",
+    "private_key_id": "value",
+    "private_key": "key",
+    "client_email": "value",
+    "client_id": "value",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/loki-logs-writer%40check-it-out-prod.iam.gserviceaccount.com",
+    "universe_domain": "googleapis.com"
+  }
+
+# =============================================================================
+# NOTES
+# =============================================================================
+#
+# Q: Why are these dummy values?
+# A: So this file can be safely committed to Git without exposing real secrets.
+#    You replace them manually on the VPS after Ansible deployment completes.
+#
+# Q: Where are database passwords, JWT secrets, API keys?
+# A: In GCP Secret Manager! Fetched by google-secrets-init container at runtime.
+#    They are NEVER in Ansible, NEVER in Git, NEVER in .env files.
+#    This is the correct and secure approach!
+#
+# Q: Do I need to encrypt this file with ansible-vault?
+# A: NO! These are dummy values, safe to commit as plain text.
+#    Real secrets are replaced manually after deployment.
+#
+# Q: When do I replace these?
+# A: After running "make deploy", before running "make start".
+#    Ansible creates all directories/permissions, you just swap the file contents.

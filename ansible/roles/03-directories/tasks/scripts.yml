@@ -1,0 +1,26 @@
+# Scripts directories creation
+
+---
+- name: Create admin scripts base directory
+  ansible.builtin.file:
+    path: "{{ scripts_admin_path }}/scripts"
+    state: directory
+    owner: "{{ user_scripts_admin.name }}"
+    group: "docker-secrets-admin"
+    mode: "{{ dir_permissions_standard }}"
+
+- name: Create admin scripts logs directory
+  ansible.builtin.file:
+    path: "{{ scripts_admin_path }}/logs"
+    state: directory
+    owner: "{{ user_scripts_admin.name }}"
+    group: "docker-secrets-admin"
+    mode: "{{ dir_permissions_standard }}"
+
+- name: Ensure system scripts directory exists
+  ansible.builtin.file:
+    path: "{{ scripts_system_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "{{ dir_permissions_standard }}"

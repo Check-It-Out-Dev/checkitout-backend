@@ -1,0 +1,127 @@
+# =============================================================================
+# Loki Stack Environment Variables - Certificate-Based Auth Configuration
+# =============================================================================
+
+# Google Cloud Storage Configuration
+GCS_BUCKET_NAME=checkitout-logs-eu
+GCS_PROJECT_ID=check-it-out-prod
+
+# Authentication Mode (basic|certificate|both)
+AUTH_MODE=certificate
+
+# Basic Auth for nginx (OPTIONAL - only used if AUTH_MODE includes 'basic')
+NGINX_BASIC_AUTH=
+
+# Certificate-Based Authentication (mTLS)
+TLS_ENABLED=true
+TLS_VERIFY_CLIENT=on
+
+# Certificate Paths (mounted in nginx container)
+TLS_CERT_PATH=/etc/nginx/certs/loki/server/loki-server.crt
+TLS_KEY_PATH=/etc/nginx/certs/loki/server/loki-server.key
+TLS_CLIENT_CA_PATH=/etc/nginx/certs/loki/ca/ca.crt
+
+# Grafana Client Certificate (for Grafana Cloud connection)
+GRAFANA_CLIENT_CERT_PATH=/etc/nginx/certs/loki/clients/grafana/grafana-client.crt
+GRAFANA_CLIENT_KEY_PATH=/etc/nginx/certs/loki/clients/grafana/grafana-client.key
+
+# Certificate CN/DN patterns for authorization
+ALLOWED_CLIENT_CNS=grafana-cloud-client,alloy-internal
+
+# Hostname for labeling
+HOSTNAME=vps-example02
+
+# Timezone
+TZ=UTC
+
+# Resource limits - UPDATED for high volume
+LOKI_MAX_MEMORY=4G
+ALLOY_MAX_MEMORY=4G
+# IMPORTANT: For docker-compose environment variables
+LOKI_GOMEMLIMIT=3500MiB
+ALLOY_GOMEMLIMIT=3500MiB
+
+# Retention (days) - Must match GCS bucket retention
+LOG_RETENTION_DAYS=365
+
+# Rate limiting - INCREASED for high volume journal logs
+LOKI_INGESTION_RATE_MB=100
+LOKI_INGESTION_BURST_MB=200
+
+# Network Configuration
+LOKI_INTERNAL_PORT=3100
+ALLOY_INTERNAL_PORT=12345
+NGINX_EXTERNAL_PORT=443
+NGINX_HTTP_PORT=80
+
+# Domain Configuration
+LOKI_DOMAIN=loki.checkitout.app
+
+# Security Headers
+ENABLE_HSTS=true
+ENABLE_CSP=true
+
+# CORS Configuration (for Grafana Cloud)
+CORS_ALLOWED_ORIGINS=https://grafana.com,https://*.grafana.net
+
+# Rate Limiting
+RATE_LIMIT_ZONE_SIZE=20m
+
+# Certificate-authenticated clients (trusted) - INCREASED for journal logs
+RATE_LIMIT_PUSH_RATE_CERT=2000r/s
+RATE_LIMIT_QUERY_RATE_CERT=500r/s
+RATE_LIMIT_BURST_PUSH_CERT=200
+RATE_LIMIT_BURST_QUERY_CERT=50
+
+# Non-authenticated or basic auth clients (untrusted)
+RATE_LIMIT_PUSH_RATE_BASIC=10r/s
+RATE_LIMIT_QUERY_RATE_BASIC=30r/s
+RATE_LIMIT_BURST_PUSH_BASIC=20
+RATE_LIMIT_BURST_QUERY_BASIC=10
+
+# Connection limits
+RATE_LIMIT_CONN_CERT=100
+RATE_LIMIT_CONN_BASIC=10
+
+# Docker compose project name
+COMPOSE_PROJECT_NAME=loki-stack
+
+# Certificate Renewal (optional - for Let's Encrypt/ACME)
+ACME_ENABLED=false
+ACME_EMAIL=admin@checkitout.app
+
+# Monitoring & Alerting
+METRICS_ENABLED=true
+METRICS_PATH=/metrics
+HEALTH_CHECK_PATH=/ready
+
+# Debug Mode
+DEBUG=false
+
+# ===== CRITICAL VARIABLES FOR AUGUST 2025 =====
+
+# Multi-tenancy (CRITICAL - must match across stack)
+LOKI_TENANT_ID=checkitout
+
+# Loki specific settings
+LOKI_AUTH_ENABLED=false
+LOKI_LOG_LEVEL=info
+
+# Alloy specific settings
+ALLOY_LOG_LEVEL=info
+ALLOY_ENABLE_DEBUG=false
+
+# GCS Authentication (for service account)
+GOOGLE_APPLICATION_CREDENTIALS=/etc/loki/service-account.json
+
+# Performance tuning
+LOKI_GRPC_MAX_RECV_MSG_SIZE=8388608  # 8MB
+LOKI_GRPC_MAX_SEND_MSG_SIZE=8388608  # 8MB
+
+# Journal log collection settings
+JOURNAL_MAX_AGE=24h
+JOURNAL_PATH=/var/log/journal
+
+# Batch settings for high volume
+ALLOY_BATCH_WAIT=1s
+ALLOY_BATCH_SIZE=2MB

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+    <!-- 
+    This file contains suppressions for false positives in OWASP Dependency Check.
+    Only add suppressions after careful review and verification that the vulnerability
+    does not affect your application.
+    -->
+    
+    <!-- Example suppression for a false positive -->
+    <!--
+    <suppress>
+        <notes><![CDATA[
+        This vulnerability is in a transitive dependency that we don't use directly.
+        The vulnerable code path is not reachable in our application.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.example/.*$</packageUrl>
+        <cve>CVE-2023-12345</cve>
+    </suppress>
+    -->
+    
+    <!-- Spring Boot managed dependencies often have false positives -->
+    <!-- Add specific suppressions as needed after investigation -->
+    
+</suppressions>

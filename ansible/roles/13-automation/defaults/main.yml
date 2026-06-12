@@ -1,0 +1,12 @@
+# Default variables for 13-automation role
+
+---
+# Cron configuration
+configure_root_cron: true
+configure_admin_cron: true
+
+# Systemd timers
+verify_systemd_timers: true
+
+# Logrotate
+configure_logrotate: true
