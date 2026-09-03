@@ -1,5 +1,6 @@
 package com.sm.instagram.platform.integration.service.registry;
 
+import org.junit.jupiter.api.condition.EnabledIf;
 import com.sm.instagram.platform.common.exceptions.BusinessRuleTranslatableException;
 import com.sm.instagram.platform.registry.CompanyData;
 import com.sm.instagram.platform.registry.CompanyType;
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.when;
  * and unique constraint enforcement.
  */
 @DisplayName("RegistryLookupService - Confirm")
+@EnabledIf(value = "com.sm.instagram.platform.integration.ExternalCredentialsAvailable#firebase", disabledReason = "Requires real firebase test credentials (.env / classpath)")
 class RegistryLookupService_Confirm_IntegrationTest extends RegistryServiceIntegrationTestBase {
 
     @Nested

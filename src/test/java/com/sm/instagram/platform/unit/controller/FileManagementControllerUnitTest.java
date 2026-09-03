@@ -931,7 +931,24 @@ class FileManagementControllerUnitTest {
 
         @BeforeEach
         void setUp() {
-            ReflectionTestUtils.setField(controller, "webhookSecret", "");
+            // The webhook fails CLOSED (see WebhookController): a valid HMAC over
+            // the stringified payload is REQUIRED. Configure a real secret and sign
+            // each request so these tests exercise the event-handling logic through
+            // the (now mandatory) signature gate.
+            ReflectionTestUtils.setField(controller, "webhookSecret", WEBHOOK_SECRET);
+        }
+
+        /** HMAC-SHA256 (base64) of payload.toString(), matching the controller. */
+        private String sign(Map<String, Object> payload) {
+            try {
+                javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA256");
+                mac.init(new javax.crypto.spec.SecretKeySpec(
+                        WEBHOOK_SECRET.getBytes(java.nio.charset.StandardCharsets.UTF_8), "HmacSHA256"));
+                return java.util.Base64.getEncoder().encodeToString(
+                        mac.doFinal(payload.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+            } catch (Exception e) {
+                throw new IllegalStateException("failed to sign test payload", e);
+            }
         }
 
         @Nested
@@ -946,7 +963,7 @@ class FileManagementControllerUnitTest {
                 doNothing().when(trackingService).confirmUploadViaWebhook(anyString(), anyString(), anyLong(), anyString(), anyMap());
 
                 // When
-                ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(null, payload);
+                ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(sign(payload), payload);
 
                 // Then
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -968,7 +985,7 @@ class FileManagementControllerUnitTest {
                 payload.put("data", null);
 
                 // When/Then
-                assertThatThrownBy(() -> controller.handleFirebaseStorageWebhook(null, payload))
+                assertThatThrownBy(() -> controller.handleFirebaseStorageWebhook(sign(payload), payload))
                     .isInstanceOf(ValidationTranslatableException.class);
             }
 
@@ -983,7 +1000,7 @@ class FileManagementControllerUnitTest {
                 payload.put("data", data);
 
                 // When/Then
-                assertThatThrownBy(() -> controller.handleFirebaseStorageWebhook(null, payload))
+                assertThatThrownBy(() -> controller.handleFirebaseStorageWebhook(sign(payload), payload))
                     .isInstanceOf(ValidationTranslatableException.class);
             }
 
@@ -998,7 +1015,7 @@ class FileManagementControllerUnitTest {
                 payload.put("data", data);
 
                 // When/Then
-                assertThatThrownBy(() -> controller.handleFirebaseStorageWebhook(null, payload))
+                assertThatThrownBy(() -> controller.handleFirebaseStorageWebhook(sign(payload), payload))
                     .isInstanceOf(ValidationTranslatableException.class);
             }
 
@@ -1015,7 +1032,7 @@ class FileManagementControllerUnitTest {
                 payload.put("data", data);
 
                 // When
-                ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(null, payload);
+                ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(sign(payload), payload);
 
                 // Then
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -1036,7 +1053,7 @@ class FileManagementControllerUnitTest {
                 payload.put("data", data);
 
                 // When
-                ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(null, payload);
+                ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(sign(payload), payload);
 
                 // Then
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -1060,7 +1077,7 @@ class FileManagementControllerUnitTest {
                 doNothing().when(trackingService).markFileAsDeleted(anyString());
 
                 // When
-                ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(null, payload);
+                ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(sign(payload), payload);
 
                 // Then
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -1076,7 +1093,7 @@ class FileManagementControllerUnitTest {
                 payload.put("data", null);
 
                 // When/Then
-                assertThatThrownBy(() -> controller.handleFirebaseStorageWebhook(null, payload))
+                assertThatThrownBy(() -> controller.handleFirebaseStorageWebhook(sign(payload), payload))
                     .isInstanceOf(ValidationTranslatableException.class);
             }
 
@@ -1090,7 +1107,7 @@ class FileManagementControllerUnitTest {
                 payload.put("data", data);
 
                 // When/Then
-                assertThatThrownBy(() -> controller.handleFirebaseStorageWebhook(null, payload))
+                assertThatThrownBy(() -> controller.handleFirebaseStorageWebhook(sign(payload), payload))
                     .isInstanceOf(ValidationTranslatableException.class);
             }
         }
@@ -1114,7 +1131,7 @@ class FileManagementControllerUnitTest {
                 doNothing().when(trackingService).updateFileMetadata(anyString(), anyMap());
 
                 // When
-                ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(null, payload);
+                ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(sign(payload), payload);
 
                 // Then
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -1130,7 +1147,7 @@ class FileManagementControllerUnitTest {
                 payload.put("data", null);
 
                 // When/Then
-                assertThatThrownBy(() -> controller.handleFirebaseStorageWebhook(null, payload))
+                assertThatThrownBy(() -> controller.handleFirebaseStorageWebhook(sign(payload), payload))
                     .isInstanceOf(ValidationTranslatableException.class);
             }
 
@@ -1144,7 +1161,7 @@ class FileManagementControllerUnitTest {
                 payload.put("data", data);
 
                 // When/Then
-                assertThatThrownBy(() -> controller.handleFirebaseStorageWebhook(null, payload))
+                assertThatThrownBy(() -> controller.handleFirebaseStorageWebhook(sign(payload), payload))
                     .isInstanceOf(ValidationTranslatableException.class);
             }
         }
@@ -1161,7 +1178,7 @@ class FileManagementControllerUnitTest {
                 payload.put("data", new HashMap<>());
 
                 // When/Then
-                assertThatThrownBy(() -> controller.handleFirebaseStorageWebhook(null, payload))
+                assertThatThrownBy(() -> controller.handleFirebaseStorageWebhook(sign(payload), payload))
                     .isInstanceOf(ValidationTranslatableException.class);
             }
 
@@ -1173,7 +1190,7 @@ class FileManagementControllerUnitTest {
                 payload.put("eventType", "google.storage.object.unknown");
 
                 // When
-                ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(null, payload);
+                ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(sign(payload), payload);
 
                 // Then
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -1188,8 +1205,7 @@ class FileManagementControllerUnitTest {
             @Test
             @DisplayName("should reject invalid signature when secret is configured")
             void shouldRejectInvalidSignature() {
-                // Given
-                ReflectionTestUtils.setField(controller, "webhookSecret", WEBHOOK_SECRET);
+                // Given - a real secret is configured by setUp()
                 Map<String, Object> payload = new HashMap<>();
                 payload.put("eventType", "google.storage.object.finalize");
                 payload.put("data", new HashMap<>());
@@ -1197,34 +1213,37 @@ class FileManagementControllerUnitTest {
                 // When/Then
                 assertThatThrownBy(() -> controller.handleFirebaseStorageWebhook("invalid-signature", payload))
                     .isInstanceOf(BusinessRuleTranslatableException.class);
+                verifyNoInteractions(trackingService);
             }
 
             @Test
-            @DisplayName("should skip signature verification when secret is empty")
-            void shouldSkipVerificationWhenSecretIsEmpty() {
-                // Given
+            @DisplayName("should reject (fail closed) when the secret is unconfigured")
+            void shouldRejectWhenSecretIsEmpty() {
+                // Given - an unset secret must mean REJECT, never SKIP. HMAC with an
+                // empty key is forgeable by anyone who can reproduce the payload, so
+                // the old fail-open (process-when-no-secret) was a security hole.
                 ReflectionTestUtils.setField(controller, "webhookSecret", "");
                 Map<String, Object> payload = new HashMap<>();
                 payload.put("eventType", "google.storage.object.unknown");
 
-                // When
-                ResponseEntity<?> response = controller.handleFirebaseStorageWebhook("any-signature", payload);
-
-                // Then
-                assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+                // When/Then
+                assertThatThrownBy(() -> controller.handleFirebaseStorageWebhook("any-signature", payload))
+                    .isInstanceOf(BusinessRuleTranslatableException.class);
+                verifyNoInteractions(trackingService);
             }
 
             @Test
             @DisplayName("should reject when signature is null but secret is configured")
             void shouldRejectWhenSignatureIsNull() {
                 // Given
-                ReflectionTestUtils.setField(controller, "webhookSecret", WEBHOOK_SECRET);
+                String nullSig = null;
                 Map<String, Object> payload = new HashMap<>();
                 payload.put("eventType", "google.storage.object.finalize");
 
                 // When/Then
-                assertThatThrownBy(() -> controller.handleFirebaseStorageWebhook(null, payload))
+                assertThatThrownBy(() -> controller.handleFirebaseStorageWebhook(nullSig, payload))
                     .isInstanceOf(BusinessRuleTranslatableException.class);
+                verifyNoInteractions(trackingService);
             }
         }
 
@@ -1240,7 +1259,7 @@ class FileManagementControllerUnitTest {
                 doNothing().when(trackingService).confirmUploadViaWebhook(anyString(), anyString(), anyLong(), anyString(), anyMap());
 
                 // When
-                controller.handleFirebaseStorageWebhook(null, payload);
+                controller.handleFirebaseStorageWebhook(sign(payload), payload);
 
                 // Then
                 verify(trackingService).confirmUploadViaWebhook(
@@ -1265,7 +1284,7 @@ class FileManagementControllerUnitTest {
                 payload.put("data", data);
 
                 // When
-                ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(null, payload);
+                ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(sign(payload), payload);
 
                 // Then
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -1283,7 +1302,7 @@ class FileManagementControllerUnitTest {
                 payload.put("data", data);
 
                 // When
-                ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(null, payload);
+                ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(sign(payload), payload);
 
                 // Then
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -1652,9 +1671,25 @@ class FileManagementControllerUnitTest {
         @InjectMocks
         private WebhookController controller;
 
+        private static final String WEBHOOK_SECRET = "test-secret-123";
+
         @BeforeEach
         void setUp() {
-            ReflectionTestUtils.setField(controller, "webhookSecret", "");
+            // Fail-closed webhook: configure a real secret and sign every request.
+            ReflectionTestUtils.setField(controller, "webhookSecret", WEBHOOK_SECRET);
+        }
+
+        /** HMAC-SHA256 (base64) of payload.toString(), matching the controller. */
+        private String sign(Map<String, Object> payload) {
+            try {
+                javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA256");
+                mac.init(new javax.crypto.spec.SecretKeySpec(
+                        WEBHOOK_SECRET.getBytes(java.nio.charset.StandardCharsets.UTF_8), "HmacSHA256"));
+                return java.util.Base64.getEncoder().encodeToString(
+                        mac.doFinal(payload.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+            } catch (Exception e) {
+                throw new IllegalStateException("failed to sign test payload", e);
+            }
         }
 
         @Test
@@ -1670,7 +1705,7 @@ class FileManagementControllerUnitTest {
             payload.put("data", data);
 
             // When
-            ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(null, payload);
+            ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(sign(payload), payload);
 
             // Then
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -1689,7 +1724,7 @@ class FileManagementControllerUnitTest {
             payload.put("data", data);
 
             // When
-            ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(null, payload);
+            ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(sign(payload), payload);
 
             // Then
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -1709,7 +1744,7 @@ class FileManagementControllerUnitTest {
             payload.put("data", data);
 
             // When
-            ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(null, payload);
+            ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(sign(payload), payload);
 
             // Then
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -1728,7 +1763,7 @@ class FileManagementControllerUnitTest {
             payload.put("data", data);
 
             // When
-            ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(null, payload);
+            ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(sign(payload), payload);
 
             // Then
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -1751,7 +1786,7 @@ class FileManagementControllerUnitTest {
             doNothing().when(trackingService).confirmUploadViaWebhook(anyString(), anyString(), anyLong(), anyString(), anyMap());
 
             // When
-            ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(null, payload);
+            ResponseEntity<?> response = controller.handleFirebaseStorageWebhook(sign(payload), payload);
 
             // Then
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

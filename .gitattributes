@@ -1,2 +1,9 @@
 # Mark generated files for GitHub linguist
 docs/openapi/openapi.json linguist-generated=true
+
+# POSIX scripts must always check out with LF. Cloned on Windows with
+# core.autocrlf=true they otherwise get CRLF line endings, and the kernel then
+# looks for an interpreter called "/bin/sh\r" — the Maven wrapper dies with a
+# bare "no such file or directory" on Linux, macOS and WSL.
+mvnw text eol=lf
+*.sh text eol=lf

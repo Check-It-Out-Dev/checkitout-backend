@@ -376,9 +376,10 @@ class SupportTicketModelsUnitTest {
             }
 
             @Test
-            @DisplayName("should fail validation for ticket reference exceeding 20 characters")
+            @DisplayName("should fail validation for ticket reference exceeding 32 characters")
             void shouldFailValidationForLongTicketReference() {
-                ticket.setTicketReference("A".repeat(21));
+                // Widened from 20 for the pentest 3.3 format CIO-yyyyMMdd-XXXXXXXX (21 chars).
+                ticket.setTicketReference("A".repeat(33));
                 Set<ConstraintViolation<SupportTicket>> violations = validator.validate(ticket);
                 assertThat(violations).isNotEmpty();
             }

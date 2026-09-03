@@ -13,7 +13,7 @@ Feature: Admin GeoIP Analysis with Full Travel Pattern Testing (CONSOLIDATED)
   @geoip @travel-analysis @consolidated
   Scenario: ADMIN travel analysis - all tiers and risk scoring (consolidated)
     Given the application is running with real Redis
-    And "admin1" logs in as ADMIN with Firebase UID "E2EADMINUID00000000000000001" email "e2e-admin@example.test" password "ExampleE2ePass1!" and completes 2FA
+    And "admin1" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
 
     # ----- TIER 1: SAME CITY DETECTION -----
     # Test 1: Same city within 50km is detected and allowed
@@ -95,7 +95,7 @@ Feature: Admin GeoIP Analysis with Full Travel Pattern Testing (CONSOLIDATED)
   @geoip @admin-endpoints @consolidated
   Scenario: ADMIN can access all GeoIP admin endpoints (consolidated)
     Given the application is running with real Redis
-    And "admin1" logs in as ADMIN with Firebase UID "E2EADMINUID00000000000000001" email "e2e-admin@example.test" password "ExampleE2ePass1!" and completes 2FA
+    And "admin1" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
 
     # Test 1: Admin can retrieve GeoIP service metrics
     When "admin1" calls GET "/admin/geoip/metrics"
@@ -122,7 +122,7 @@ Feature: Admin GeoIP Analysis with Full Travel Pattern Testing (CONSOLIDATED)
     Given the application is running with real Redis
 
     # COMPANY user test
-    And "company1" logs in as COMPANY with Firebase UID "E2ECOMPANYUID000000000000001" email "e2e-company@example.test" password "ExampleE2ePass1!"
+    And "company1" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
     When "company1" calls GET "/admin/geoip/metrics"
     Then the response status should be 403
     When "company1" calls GET "/admin/geoip/lookup/8.8.8.8"
@@ -131,7 +131,7 @@ Feature: Admin GeoIP Analysis with Full Travel Pattern Testing (CONSOLIDATED)
     Then the response status should be 403
 
     # INFLUENCER user test (OAuth - no Firebase password verification)
-    And "influencer1" logs in as INFLUENCER via OAuth with Firebase UID "E2EINFLUENCERUID000000000001"
+    And "influencer1" logs in as INFLUENCER via OAuth with Firebase UID "SEWgduxUjRh4KDqxVWFs6zgThIa2"
     When "influencer1" calls GET "/admin/geoip/lookup/8.8.8.8"
     Then the response status should be 403
     When "influencer1" calls GET "/admin/geoip/metrics"
@@ -146,7 +146,7 @@ Feature: Admin GeoIP Analysis with Full Travel Pattern Testing (CONSOLIDATED)
   @geoip @validation @consolidated
   Scenario: GeoIP input validation returns proper error responses (consolidated)
     Given the application is running with real Redis
-    And "admin1" logs in as ADMIN with Firebase UID "E2EADMINUID00000000000000001" email "e2e-admin@example.test" password "ExampleE2ePass1!" and completes 2FA
+    And "admin1" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
 
     # Test 1: Invalid IP address is rejected with 400
     When "admin1" tests travel from IP "invalid.ip" to IP "8.8.8.8" with 30 minutes elapsed

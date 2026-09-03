@@ -1,0 +1,241 @@
+{
+	"info": {
+		"_postman_id": "metadata-api-collection",
+		"name": "Instagram Platform - Enum Metadata API",
+		"description": "Comprehensive testing collection for Enum Metadata API endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Opportunity Statuses",
+			"item": [
+				{
+					"name": "Get All Opportunity Statuses (EN)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is JSON array\", function () {",
+									"    pm.response.to.be.json;",
+									"    pm.expect(pm.response.json()).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Response time < 2000ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+									"});",
+									"",
+									"pm.test(\"Each status has required fields\", function () {",
+									"    const statuses = pm.response.json();",
+									"    statuses.forEach(status => {",
+									"        pm.expect(status).to.have.property('value');",
+									"        pm.expect(status).to.have.property('label');",
+									"        pm.expect(status).to.have.property('description');",
+									"        pm.expect(status).to.have.property('colorTheme');",
+									"        pm.expect(status).to.have.property('icon');",
+									"        pm.expect(status).to.have.property('isTerminal');",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/metadata/opportunity-statuses?lang=en",
+							"host": ["{{base_url}}"],
+							"path": ["api", "metadata", "opportunity-statuses"],
+							"query": [
+								{
+									"key": "lang",
+									"value": "en"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get All Opportunity Statuses (PL)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/metadata/opportunity-statuses?lang=pl",
+							"host": ["{{base_url}}"],
+							"path": ["api", "metadata", "opportunity-statuses"],
+							"query": [
+								{
+									"key": "lang",
+									"value": "pl"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Active Opportunity Statuses",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/metadata/opportunity-statuses/active",
+							"host": ["{{base_url}}"],
+							"path": ["api", "metadata", "opportunity-statuses", "active"]
+						}
+					}
+				},
+				{
+					"name": "Get Completed Opportunity Statuses",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/metadata/opportunity-statuses/completed",
+							"host": ["{{base_url}}"],
+							"path": ["api", "metadata", "opportunity-statuses", "completed"]
+						}
+					}
+				},
+				{
+					"name": "Get Status Transitions - APPLIED",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/metadata/opportunity-statuses/APPLIED/transitions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "metadata", "opportunity-statuses", "APPLIED", "transitions"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Account Statuses",
+			"item": [
+				{
+					"name": "Get All Account Statuses",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/metadata/account-statuses?lang=en",
+							"host": ["{{base_url}}"],
+							"path": ["api", "metadata", "account-statuses"],
+							"query": [
+								{
+									"key": "lang",
+									"value": "en"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Account Status Transitions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/metadata/account-statuses/ACTIVE/transitions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "metadata", "account-statuses", "ACTIVE", "transitions"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Consent Actions",
+			"item": [
+				{
+					"name": "Get All Consent Actions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/metadata/consent-actions?lang=en",
+							"host": ["{{base_url}}"],
+							"path": ["api", "metadata", "consent-actions"],
+							"query": [
+								{
+									"key": "lang",
+									"value": "en"
+								}
+							]
+						}
+					}
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{auth_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

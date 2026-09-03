@@ -31,6 +31,24 @@ import java.util.Set;
 public abstract class BaseService<T, I, D> implements ApplicationContextAware {
     private static final Logger log = LoggerFactory.getLogger(BaseService.class);
 
+    /**
+     * Fields the reflective {@link #patch} MUST NEVER let a client set, on any
+     * entity — identity, audit, optimistic-lock, soft-delete and session
+     * columns. The generic PATCH reflectively assigns whatever field names the
+     * request body carries, so without this an authenticated caller could,
+     * e.g., set {@code version} (corrupt optimistic locking / force a
+     * lost-update or a persistent 409), flip {@code deletedAt} (un-delete or
+     * hide a row), forge {@code updaterId}, or bump {@code tokenVersion}. These
+     * names are denied up-front (denying a field an entity doesn't declare is a
+     * harmless no-op). Entity-specific privilege fields (a User's userType,
+     * enabled, firebaseUserId, …) are the concrete service's job: override
+     * {@code patch} with an explicit allowlist switch, as UserService does —
+     * never widen the reflective path to reach them.
+     */
+    protected static final Set<String> ALWAYS_IGNORED_PATCH_FIELDS = Set.of(
+            "id", "version", "createdTime", "lastUpdateTime",
+            "deletedAt", "createdBy", "updatedBy", "updaterId", "tokenVersion");
+
     protected final SpecificationBuilder<T> specificationBuilder;
     protected final BaseRepository<T, I> repository;
     protected final ModelMapper modelMapper;
@@ -96,14 +114,20 @@ public abstract class BaseService<T, I, D> implements ApplicationContextAware {
     }
 
     public T patch(I id, Map<String, Object> updates) {
-        return patch(id, updates, Set.of("id", "createdTime", "lastUpdateTime"));
+        return patch(id, updates, ALWAYS_IGNORED_PATCH_FIELDS);
     }
 
     public T patch(I id, Map<String, Object> updates, Set<String> ignoredFields) {
         T existingEntity = findById(id);
 
+        // The protected set is ALWAYS enforced — a caller's ignoredFields may
+        // widen the denylist but can never re-expose an identity/audit/lock
+        // field by passing a narrower set.
+        Set<String> effectiveIgnored = new java.util.HashSet<>(ignoredFields);
+        effectiveIgnored.addAll(ALWAYS_IGNORED_PATCH_FIELDS);
+
         updates.forEach((fieldName, value) -> {
-            if (ignoredFields.contains(fieldName)) return;
+            if (effectiveIgnored.contains(fieldName)) return;
 
             try {
                 setFieldValue(existingEntity, fieldName, value);

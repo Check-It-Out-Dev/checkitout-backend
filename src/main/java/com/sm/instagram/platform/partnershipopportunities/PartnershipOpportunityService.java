@@ -71,6 +71,7 @@ public class PartnershipOpportunityService extends BaseService<PartnershipOpport
     private final UserPreferencesRepository userPreferencesRepository;
     private final HttpServletRequest request;
     private final com.sm.instagram.platform.subscription.CampaignLimitService campaignLimitService;
+    private final com.sm.instagram.platform.storage.service.SignedUrlService signedUrlService;
 
     protected PartnershipOpportunityService(ApplicationContext applicationContext,
                                             SpecificationBuilder<PartnershipOpportunity> specificationBuilder,
@@ -86,7 +87,8 @@ public class PartnershipOpportunityService extends BaseService<PartnershipOpport
                                             DictionaryService dictionaryService,
                                             UserPreferencesRepository userPreferencesRepository,
                                             HttpServletRequest request,
-                                            com.sm.instagram.platform.subscription.CampaignLimitService campaignLimitService) {
+                                            com.sm.instagram.platform.subscription.CampaignLimitService campaignLimitService,
+                                            com.sm.instagram.platform.storage.service.SignedUrlService signedUrlService) {
         super(applicationContext, specificationBuilder, repository, modelMapper, repositoryResolver);
         this.partnershipOpportunityRepository = repository;
         this.appliedOpportunityRepository = appliedOpportunityRepository;
@@ -99,6 +101,20 @@ public class PartnershipOpportunityService extends BaseService<PartnershipOpport
         this.userPreferencesRepository = userPreferencesRepository;
         this.request = request;
         this.campaignLimitService = campaignLimitService;
+        this.signedUrlService = signedUrlService;
+    }
+
+    /**
+     * Resolves a NEW photo's tracked upload to its BE-minted URL (pentest 3.1
+     * + owner directive 2026-06-13: the client never supplies a photo URL —
+     * the server derives it from its own {@code file_uploads} row after
+     * verifying ownership and that the blob landed in our bucket).
+     */
+    private String resolveNewPhotoUrl(String uploadId) {
+        if (uploadId == null || uploadId.isBlank()) {
+            throw new ValidationTranslatableException("validation.photo.uploadId.required");
+        }
+        return signedUrlService.resolveOwnedUpload(permissionUtils.getUserId(), uploadId).publicUrl();
     }
 
     /**
@@ -751,6 +767,15 @@ public class PartnershipOpportunityService extends BaseService<PartnershipOpport
         log.info("GDPR: Service=saveOpportunity, Operation=CREATE_OPPORTUNITY, UserID={}, CompanyID={}, Purpose=business_operation",
                 userId, dto.getCompany());
 
+        // A partnership opportunity always belongs to a company (company_id is
+        // NOT NULL on the entity). Fail fast with a clear business error rather
+        // than letting a null company slip through to a DB constraint violation
+        // at flush/commit — which, in a @Transactional test, surfaces only after
+        // the assertion (admins otherwise skip the ownership check below).
+        if (dto.getCompany() == null) {
+            throw new ResourceNotFoundException("error.business.item_not_found", "Company");
+        }
+
         // Validate that non-admin users can only create opportunities for their own company
         if (!permissionUtils.isAdmin() && dto.getCompany() != null) {
             try {
@@ -801,11 +826,15 @@ public class PartnershipOpportunityService extends BaseService<PartnershipOpport
         // Process address
         processAddress(entity, dto);
 
-        // Process photos
+        // Process photos — a NEW campaign has only new photos, so every entry
+        // must carry a tracked uploadId; the URL is BE-derived.
         if (dto.getPhotos() != null && !dto.getPhotos().isEmpty()) {
             List<PartnershipOpportunityPhoto> photos = new ArrayList<>();
             for (PartnershipOpportunityPhotoDtoIn photoDto : dto.getPhotos()) {
-                PartnershipOpportunityPhoto photo = modelMapper.map(photoDto, PartnershipOpportunityPhoto.class);
+                PartnershipOpportunityPhoto photo = new PartnershipOpportunityPhoto();
+                photo.setUrl(resolveNewPhotoUrl(photoDto.getUploadId()));
+                photo.setOrderNumber(photoDto.getOrderNumber());
+                photo.setIsCover(photoDto.getIsCover());
                 photo.setPartnershipOpportunity(entity);
                 photos.add(photo);
             }
@@ -1136,16 +1165,34 @@ public class PartnershipOpportunityService extends BaseService<PartnershipOpport
             PartnershipOpportunityPhoto photo;
 
             // Check if this is an existing photo
-            if (photoDto.getId() != null && existingPhotosById.containsKey(photoDto.getId())) {
-                // Update existing photo
+            if (photoDto.getId() != null) {
+                if (!existingPhotosById.containsKey(photoDto.getId())) {
+                    // An id that isn't one of this campaign's photos is a
+                    // client error — never silently create from it (the DTO
+                    // carries no URL to create from anyway).
+                    throw new ResourceNotFoundException("error.business.item_not_found", "Photo");
+                }
+                // Keep-by-id: the stored URL is BE-owned and never touched.
                 photo = existingPhotosById.get(photoDto.getId());
                 processedPhotoIds.add(photo.getId());
-                modelMapper.map(photoDto, photo);
             } else {
-                // Create new photo
-                photo = modelMapper.map(photoDto, PartnershipOpportunityPhoto.class);
+                // New photo — must reference a tracked upload; the URL is
+                // BE-derived (pentest 3.1 / 2026-06-13 hardening).
+                photo = new PartnershipOpportunityPhoto();
                 photo.setPartnershipOpportunity(entity);
+                photo.setUrl(resolveNewPhotoUrl(photoDto.getUploadId()));
             }
+
+            // Copy presentation fields explicitly (same idiom as
+            // updatePhotoFromMap). Never ModelMapper here: with no explicit
+            // type map, implicit STANDARD matching maps photoDto.id onto the
+            // destination path photo.partnershipOpportunity.id (the source
+            // class name PartnershipOpportunity*Photo*DtoIn supplies the
+            // parent tokens), overwriting the attached parent's identifier —
+            // Hibernate then fails the flush with "identifier of an instance
+            // of PartnershipOpportunity was altered from <photoId> to <entityId>".
+            photo.setOrderNumber(photoDto.getOrderNumber());
+            photo.setIsCover(photoDto.getIsCover());
 
             updatedPhotos.add(photo);
         }
@@ -1361,9 +1408,12 @@ public class PartnershipOpportunityService extends BaseService<PartnershipOpport
                     throw new ResourceNotFoundException("Photo with ID " + photoId + " not found");
                 }
             } else {
-                // If no ID, it's a new photo
+                // If no ID, it's a new photo — must reference a tracked
+                // upload; the URL is BE-derived (pentest 3.1 / 2026-06-13).
                 log.debug("Creating new photo");
                 photo = new PartnershipOpportunityPhoto();
+                Object uploadId = validatedPhotoMap.get("uploadId");
+                photo.setUrl(resolveNewPhotoUrl(uploadId == null ? null : uploadId.toString()));
                 updatePhotoFromMap(photo, validatedPhotoMap);
                 photo.setPartnershipOpportunity(entity);
             }
@@ -1393,9 +1443,9 @@ public class PartnershipOpportunityService extends BaseService<PartnershipOpport
      * @param photoMap The map containing the new values
      */
     private void updatePhotoFromMap(PartnershipOpportunityPhoto photo, Map<String, Object> photoMap) {
-        if (photoMap.containsKey("url")) {
-            photo.setUrl((String) photoMap.get("url"));
-        }
+        // NOTE: no "url" handling — the stored URL is BE-owned. New photos
+        // get their URL from resolveNewPhotoUrl(uploadId); existing photos'
+        // URLs are immutable through the PATCH surface (pentest 3.1).
 
         if (photoMap.containsKey(ORDER_NUMBER)) {
             photo.setOrderNumber((Integer) photoMap.get(ORDER_NUMBER));

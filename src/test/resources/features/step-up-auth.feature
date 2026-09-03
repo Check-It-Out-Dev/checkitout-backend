@@ -5,9 +5,9 @@ Feature: Step-Up Authentication for Email Change
   So that a stolen session cannot hijack my account
 
   Background:
-    Given "company1" logs in as COMPANY with Firebase UID "E2ECOMPANYUID000000000000001" email "e2e-company@example.test" password "ExampleE2ePass1!"
-    And "admin1" logs in as ADMIN with Firebase UID "E2EADMINUID00000000000000001" email "e2e-admin@example.test" password "ExampleE2ePass1!" and completes 2FA
-    And "influencer1" logs in as INFLUENCER via OAuth with Firebase UID "E2EINFLUENCERUID000000000001"
+    Given "company1" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
+    And "admin1" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
+    And "influencer1" logs in as INFLUENCER via OAuth with Firebase UID "SEWgduxUjRh4KDqxVWFs6zgThIa2"
 
   # ============================================================================
   # HAPPY PATH: Company user full email change with step-up code
@@ -48,6 +48,19 @@ Feature: Step-Up Authentication for Email Change
     Given "company1" has initialAccountSetupCompleted set to true
     When "company1" updates their email to "no-token@test.com"
     Then soft assert update status is 401
+
+  # ============================================================================
+  # NO-OP: Unchanged email in the update map needs no step-up
+  # ============================================================================
+  # The FE PATCHes the full DTO on every profile update (email is a
+  # schema-required field), including the avatar/uploadId flow. Step-up
+  # protects the email CHANGE — the same value is a no-op, not the
+  # protected action, and must pass without a token.
+  Scenario: Unchanged email does not demand a step-up token
+    Given "company1" has initialAccountSetupCompleted set to true
+    When "company1" updates their email to "norbert.marchewka4444431@gmail.com" without step-up token
+    Then soft assert update status is 200
+    And all soft assertions should pass
     And all soft assertions should pass
 
   # ============================================================================

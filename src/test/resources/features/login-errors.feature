@@ -33,7 +33,7 @@ Feature: Authentication Error Handling (CONSOLIDATED)
     Examples:
       | email                              | password           | status | message                      |
       | nonexistent.user@example.com       | AnyPassword123!    | 401    | Invalid credentials provided |
-      | e2e-company@example.test | WrongPassword123!  | 401    | Invalid credentials provided |
+      | norbert.marchewka4444431@gmail.com | WrongPassword123!  | 401    | Invalid credentials provided |
 
   # =============================================================================
   # ADMIN USER - CREDENTIAL ERRORS
@@ -49,7 +49,7 @@ Feature: Authentication Error Handling (CONSOLIDATED)
     Examples:
       | email                             | password           | status | message                      |
       | nonexistent.admin@example.com     | AnyPassword123!    | 401    | Invalid credentials provided |
-      | e2e-admin@example.test     | WrongPassword123!  | 401    | Invalid credentials provided |
+      | norbert.marchewka44@gmail.com     | WrongPassword123!  | 401    | Invalid credentials provided |
 
   # =============================================================================
   # ADMIN USER - 2FA ERRORS (CONSOLIDATED)
@@ -60,9 +60,9 @@ Feature: Authentication Error Handling (CONSOLIDATED)
   @admin @invalid-totp @2fa @kms @consolidated
   Scenario: Admin 2FA fails with all invalid TOTP codes (consolidated)
     # Single Firebase login for all TOTP error tests
-    Given an admin user with Firebase UID "E2EADMINUID00000000000000001" is synced from Firestore
+    Given an admin user with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" is synced from Firestore
     And the admin has TOTP configured in Firestore
-    When I login as admin with email "e2e-admin@example.test" and password "ExampleE2ePass1!"
+    When I login as admin with email "norbert.marchewka44@gmail.com" and password "Janekmapsa66!ppp"
     Then the Firebase authentication should succeed
     When I exchange the Firebase token for a backend session
     Then a partial session should be returned with 2FA challenge
@@ -97,7 +97,7 @@ Feature: Authentication Error Handling (CONSOLIDATED)
 
   @influencer @invalid-token @oauth
   Scenario: Influencer token exchange fails with invalid token
-    Given an influencer with Firebase UID "E2EINFLUENCERUID000000000001" has Instagram data in Firestore
+    Given an influencer with Firebase UID "SEWgduxUjRh4KDqxVWFs6zgThIa2" has Instagram data in Firestore
     When I attempt to exchange an invalid Firebase token
     Then the response status should be 400
     And the error message should contain "required"

@@ -31,6 +31,15 @@ public interface SupportTicketRepository extends BaseRepository<SupportTicket, L
     Optional<SupportTicket> findByTicketReferenceAndContactEmail(String ticketReference, String contactEmail);
 
     /**
+     * Whether a ticket with the given reference already exists. Used to
+     * guarantee uniqueness of freshly generated references (pentest 3.3).
+     *
+     * @param ticketReference The reference code to check
+     * @return true if a ticket with this reference exists
+     */
+    boolean existsByTicketReference(String ticketReference);
+
+    /**
      * Find all tickets belonging to a user.
      *
      * @param user The user who created the tickets

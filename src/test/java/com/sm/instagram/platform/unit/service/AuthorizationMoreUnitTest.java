@@ -293,6 +293,20 @@ class AuthorizationMoreUnitTest {
         }
 
         @Test
+        @DisplayName("should allow GET to /api/support/ticket/access (magic link) without authentication")
+        void shouldAllowSupportTicketMagicLinkAccess() throws Exception {
+            // Pentest 3.2/3.3 arc: the signed token IS the authorization; the
+            // filter must not 401 before the controller can verify it.
+            when(request.getRequestURI()).thenReturn("/api/support/ticket/access");
+            when(request.getMethod()).thenReturn("GET");
+            when(request.getCookies()).thenReturn(null);
+
+            jwtAuthenticationFilter.doFilter(request, response, filterChain);
+
+            verify(filterChain).doFilter(request, response);
+        }
+
+        @Test
         @DisplayName("should allow POST to /api/support/ticket/response without authentication")
         void shouldAllowSupportTicketResponse() throws Exception {
             when(request.getRequestURI()).thenReturn("/api/support/ticket/response");

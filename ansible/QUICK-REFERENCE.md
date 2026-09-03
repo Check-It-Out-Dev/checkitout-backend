@@ -176,9 +176,9 @@ ansible/
 ### Network
 
 - VPS IP: `192.0.2.10`
-- VPS IPv6: `2001:db8::10`
-- Gateway: `192.0.2.1`
-- Hostname: `vps-example01`
+- VPS IPv6: `2001:41d0:601:1100::65cd`
+- Gateway: `51.38.135.1`
+- Hostname: `vps-69c5792e`
 
 ### Docker Networks
 

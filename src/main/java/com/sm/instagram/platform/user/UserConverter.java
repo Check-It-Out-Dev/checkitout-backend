@@ -14,8 +14,12 @@ public class UserConverter {
     }
 
     public Converter<Long, User> toUserConverter() {
-        return ctx -> userRepository.findById(ctx.getSource())
-                .orElseThrow(() -> new ResourceNotFoundException("error.business.item_not_found", ctx.getSource()));
+        // Null-safe: requiredness of user references is the entity/service
+        // layer's call ("Company is required"), not a converter explosion.
+        return ctx -> ctx.getSource() == null
+                ? null
+                : userRepository.findById(ctx.getSource())
+                        .orElseThrow(() -> new ResourceNotFoundException("error.business.item_not_found", ctx.getSource()));
     }
 
     public Converter<User, Long> fromUserConverter() {

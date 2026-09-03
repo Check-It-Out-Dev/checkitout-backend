@@ -102,7 +102,7 @@ public class SupportTicket implements UpdaterTracking {
      * Used in email communications and for anonymous access.
      */
     @NotBlank(message = "Ticket reference cannot be blank")
-    @Size(max = 20, message = "Ticket reference cannot exceed 20 characters")
+    @Size(max = 32, message = "Ticket reference cannot exceed 32 characters")
     private String ticketReference;
 
     /**

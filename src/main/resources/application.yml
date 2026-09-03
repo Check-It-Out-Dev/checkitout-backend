@@ -8,9 +8,9 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: support@example.com
+    username: norbert_marchewka@checkitout.app
     password: ${MAIL_PASSWORD:}
-    from: support@example.com
+    from: norbert_marchewka@checkitout.app
     properties:
       mail:
         smtp:
@@ -30,6 +30,10 @@ spring:
   
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}  # Default to dev if not specified
+    group:
+      # dev-lite = dev + credential-less simulator extras
+      # (see application-dev-lite.yml for what it adds and why)
+      dev-lite: dev
   
   # =============================================================================
   # JPA/HIBERNATE - UNIFIED CONFIGURATION (CRITICAL FOR CONSISTENCY!)
@@ -410,8 +414,10 @@ app:
   # APPLICATION EMAIL CONFIGURATION
   # =============================================================================
   email:
-    admin-email: ${ADMIN_EMAIL}
-    from-email: support@example.com
+    # Default keeps a credential-less clone bootable (dev-lite); every managed
+    # deployment overrides via env. Must stay @Email-valid — the binder validates.
+    admin-email: ${ADMIN_EMAIL:admin@synthetic.test}
+    from-email: norbert_marchewka@checkitout.app
     enabled: true
     validation:
       enabled: true
@@ -437,7 +443,7 @@ secrets:
 
 # JWT/Security Configuration
 jwt:
-  secret: ${JWT_SECRET:CHANGE_ME_generate_a_real_256bit_JWT_secret_and_set_it_via_env_var}
+  secret: ${JWT_SECRET:ThisIsAVeryLongSecretKeyForJWTSigningAtLeast256BitsLongForHS256Algorithm}
   cookie:
     domain: localhost  # Used by @Value("${jwt.cookie.domain:localhost}")
     secure: true  # Used by @Value("${jwt.cookie.secure:true}")
@@ -445,7 +451,7 @@ jwt:
 # Cookie HMAC Configuration
 cookie:
   hmac:
-    secret: ${COOKIE_HMAC_SECRET:CHANGE_ME_generate_a_real_256bit_cookie_HMAC_secret_via_env_var}  # Used by @Value("${cookie.hmac.secret}")
+    secret: ${COOKIE_HMAC_SECRET:DifferentSecretKeyForCookieHMACSignatureValidationAlsoAtLeast256BitsLong}  # Used by @Value("${cookie.hmac.secret}")
 
 # Note: SameSite policy is hardcoded in Java:
 # - Session cookies (FirebaseIdToken, partialSession, session): SameSite=Strict
@@ -454,7 +460,7 @@ cookie:
 
 # Consent Module HMAC Configuration (separate from session cookie HMAC)
 consent:
-  hmac-secret: ${CONSENT_HMAC_SECRET:CHANGE_ME_generate_a_real_256bit_consent_HMAC_secret_via_env_var}
+  hmac-secret: ${CONSENT_HMAC_SECRET:ConsentSpecificHMACSecretKeyForConsentCookieSignatureValidationAtLeast256BitsLong}
   enforcement:
     cron: "0 0 2 * * *"       # Daily at 2 AM
     grace-period-days: 38     # Days after document update before blocking
@@ -499,7 +505,7 @@ gcp:
 
 # Meta App Configuration (Facebook App for Instagram Business Login)
 meta:
-  app-id: ${META_APP_ID:1000000000000001}          # TEST Meta App ID
+  app-id: ${META_APP_ID:770277702827785}          # TEST Meta App ID
   app-secret: ${META_APP_SECRET:}  # TEST Meta Secret
   deletion:
     cron: ${META_DELETION_CRON:0 0 3 * * *}  # Daily at 3 AM
@@ -513,7 +519,7 @@ admin:
 
 instagram:
   test-token: ${INSTAGRAM_TEST_TOKEN:}
-  client-id: ${INSTAGRAM_CLIENT_ID:2000000000000001}      # Instagram App ID (TEST)
+  client-id: ${INSTAGRAM_CLIENT_ID:2113860459101101}      # Instagram App ID (TEST)
   client:
     secret: ${INSTAGRAM_CLIENT_SECRET:}  # Instagram Secret (TEST)
   redirect-uri: https://localhost:8080/api/auth/social/callback/instagram  # Backend handles OAuth callback (HTTPS required)
@@ -603,7 +609,11 @@ qrcode:
 # =============================================================================
 maxmind:
   license:
-    key: ${MAXMIND_LICENSE_KEY}
+    # Empty default: without the key the GeoIP service boots in degraded
+    # mode (downloads + scheduled updates skip themselves) instead of
+    # killing the whole context — a fresh clone without .env must compile
+    # and pass tests.
+    key: ${MAXMIND_LICENSE_KEY:}
     account-id: ${MAXMIND_ACCOUNT_ID:1215955}
   database:
     path: ./geoip/GeoLite2-City.mmdb
@@ -616,9 +626,15 @@ maxmind:
 # STRIPE PAYMENT GATEWAY
 # =============================================================================
 stripe:
-  secret-key: ${STRIPE_PRIVATE_KEY}
-  public-key: ${STRIPE_PUBLIC_KEY}
-  webhook-secret: ${STRIPE_WEBHOOK_SECRET:whsec_PLACEHOLDER_rotate_and_set_via_env}
+  # Empty defaults keep StripeProperties bindable on a credential-less clone —
+  # StripePropertiesConfig registers it unconditionally (by design, so the
+  # payments-off path stays wireable). StripeConfig itself only loads when
+  # app.payments.enabled=true, and real deployments inject both keys via env.
+  secret-key: ${STRIPE_PRIVATE_KEY:}
+  public-key: ${STRIPE_PUBLIC_KEY:}
+  # No fallback: the old literal leaked via the public release (rotation owed
+  # by the owner) — deployments must inject the real secret via env.
+  webhook-secret: ${STRIPE_WEBHOOK_SECRET:}
   prices:
     business: price_1TDprAEF0n7JDo59KpKh8vnt
     enterprise: price_1TDprIEF0n7JDo591xcehTLl
@@ -628,7 +644,11 @@ stripe:
 # =============================================================================
 fakturownia:
   enabled: true
-  api-key: ${FAKTUROWNIA_API_KEY}
+  # Empty default: a machine without the env var must still BOOT (invoicing
+  # is an optional integration — payments work without it; unsent invoices
+  # queue as PENDING/FAILED for the retry cron). A blank key makes the
+  # adapter treat itself as unconfigured instead of failing startup.
+  api-key: ${FAKTUROWNIA_API_KEY:}
   domain: checkitout
   department-id: 1878648
   connect-timeout-ms: 5000

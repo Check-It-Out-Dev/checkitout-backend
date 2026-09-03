@@ -83,11 +83,29 @@ public class ProfileUpdateSteps extends CucumberSpringConfig {
         Long userId = actor.getSession().getUserId();
 
         Map<String, Object> update = new HashMap<>();
-        update.put(field1, "https://example.com/batch-photo.jpg");
-        update.put(field2, "Batch update description at " + System.currentTimeMillis());
+        update.put(field1, batchValueFor(actor, field1));
+        update.put(field2, batchValueFor(actor, field2));
 
         ResponseEntity<Map> response = actor.patch(restTemplate, url("/users/" + userId), update);
         log.info("[E2E] Actor '{}' batch updated {} and {} -> {}", actorName, field1, field2, response.getStatusCode());
+    }
+
+    /**
+     * Value for a batched profile field.
+     *
+     * <p>{@code profilePicture} is a stored URL rendered to other users, so
+     * the BE accepts <strong>only</strong> a tracked upload the caller made
+     * (pentest 3.1 — uploadId resolved against the {@code file_uploads}
+     * ownership table). We therefore send the {@code uploadId} the backend
+     * returned from this scenario's upload; a raw/foreign URL — or one
+     * pointing at another file in the bucket — is rejected. Every other field
+     * takes an ordinary text value.
+     */
+    private Object batchValueFor(Actor actor, String field) {
+        if ("profilePicture".equals(field)) {
+            return actor.requireResource("uploadId");
+        }
+        return "Batch update " + field + " at " + System.currentTimeMillis();
     }
 
     // =========================================================================

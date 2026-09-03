@@ -105,6 +105,9 @@ class UserServiceUnitTest {
     @Mock
     private org.springframework.context.ApplicationEventPublisher eventPublisher;
 
+    @Mock
+    private com.sm.instagram.platform.storage.service.SignedUrlService signedUrlService;
+
     private UserService service;
 
     private User createUser(Long id, String firebaseUid, UserType userType) {
@@ -153,7 +156,9 @@ class UserServiceUnitTest {
                 emailChangeService,
                 emailVerificationService,
                 legalConsentService,
-                eventPublisher
+                eventPublisher,
+                // The avatar path is uploadId-only; tests stub resolveOwnedUpload.
+                signedUrlService
         );
 
         // Setup getSelf() pattern
@@ -627,6 +632,55 @@ class UserServiceUnitTest {
             // When/Then
             assertThatThrownBy(() -> service.findById(1L))
                     .isInstanceOf(InsufficientPermissionsException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("wouldChangeEmail")
+    class WouldChangeEmailTests {
+
+        @Test
+        @DisplayName("same email is not a change — case and whitespace insensitive")
+        void sameEmailIsNotAChange() {
+            // Given
+            User user = createUser(1L, "owner-uid", UserType.COMPANY);
+            user.setEmail("owner@example.com");
+            when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+            // When/Then — the FE full-DTO PATCH carries the caller's own
+            // email; the step-up gate must not fire for it.
+            assertThat(service.wouldChangeEmail(1L, "owner@example.com")).isFalse();
+            assertThat(service.wouldChangeEmail(1L, "  OWNER@Example.COM  ")).isFalse();
+        }
+
+        @Test
+        @DisplayName("different email is a change and must be step-up gated")
+        void differentEmailIsAChange() {
+            // Given
+            User user = createUser(1L, "owner-uid", UserType.COMPANY);
+            user.setEmail("owner@example.com");
+            when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+            // When/Then
+            assertThat(service.wouldChangeEmail(1L, "new@example.com")).isTrue();
+        }
+
+        @Test
+        @DisplayName("null or blank input is not a change attempt")
+        void nullOrBlankIsNotAChange() {
+            // When/Then — validation owns the 400 for these downstream.
+            assertThat(service.wouldChangeEmail(1L, null)).isFalse();
+            assertThat(service.wouldChangeEmail(1L, "   ")).isFalse();
+        }
+
+        @Test
+        @DisplayName("unknown user defers to downstream not-found handling")
+        void unknownUserIsNotAChange() {
+            // Given
+            when(userRepository.findById(99L)).thenReturn(Optional.empty());
+
+            // When/Then
+            assertThat(service.wouldChangeEmail(99L, "x@example.com")).isFalse();
         }
     }
 

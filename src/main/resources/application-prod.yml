@@ -185,7 +185,7 @@ cookie:
 
 # Meta App Configuration for Production
 meta:
-  app-id: ${META_APP_ID:1000000000000002}           # From env/secrets
+  app-id: ${META_APP_ID:1404020194302324}           # From env/secrets
   app-secret: ${META_APP_SECRET:}  # From env/secrets
 
 # Admin Configuration
@@ -200,7 +200,7 @@ instagram:
     validation:
       enabled: true
       startup-check: false  # Different for prod
-  client-id: ${INSTAGRAM_CLIENT_ID:2000000000000002}  # PROD Instagram App ID (constant)
+  client-id: ${INSTAGRAM_CLIENT_ID:2658917770964963}  # PROD Instagram App ID (constant)
   client:
     secret: ${INSTAGRAM_CLIENT_SECRET:}  # From env/secrets
   redirect-uri: https://checkitout.app/api/auth/social/callback/instagram  # Backend OAuth callback with /api/ prefix

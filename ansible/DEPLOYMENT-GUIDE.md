@@ -285,7 +285,7 @@ curl https://check-it-out.pl/api/actuator/health
    - `check-it-out.pl` → `192.0.2.10`
    - `loki.checkitout.app` → `192.0.2.10`
 3. Update AAAA records (IPv6):
-   - `checkitout.app` → `2001:db8::10`
+   - `checkitout.app` → `2001:41d0:601:1100::65cd`
    - Same for other domains
 
 **TTL considerations:**

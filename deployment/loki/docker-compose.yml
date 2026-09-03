@@ -107,7 +107,7 @@ services:
       # Data volumes
       - alloy-data:/var/lib/alloy/data
     environment:
-      - HOSTNAME=${HOSTNAME:-vps-example02}
+      - HOSTNAME=${HOSTNAME:-vps-250d12b3}
       - GOGC=80
       - GOMEMLIMIT=3500MiB
       - GODEBUG=madvdontneed=1

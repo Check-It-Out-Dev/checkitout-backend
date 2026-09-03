@@ -410,14 +410,14 @@ gpg -c ~/.ansible/vault-pass
 
 ```
 PLAY RECAP *********************************************
-vps-example01  : ok=150  changed=120  unreachable=0  failed=0  skipped=10  rescued=0  ignored=0
+vps-69c5792e  : ok=150  changed=120  unreachable=0  failed=0  skipped=10  rescued=0  ignored=0
 ```
 
 ### Successful Startup
 
 ```
 TASK [Display startup completion summary] *************
-ok: [vps-example01] => {
+ok: [vps-69c5792e] => {
     "msg": [
         "Test environment: HEALTHY",
         "Production environment: HEALTHY",
@@ -430,7 +430,7 @@ ok: [vps-example01] => {
 
 ```
 TASK [Display final verification summary] *************
-ok: [vps-example01] => {
+ok: [vps-69c5792e] => {
     "msg": [
         "Network: PASS",
         "Docker: PASS",

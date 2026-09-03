@@ -1,17 +1,8 @@
-# checkItOut VPS Provisioning — Ansible Automation
+# Instagram Platform VPS Deployment - Ansible Automation
 
-> Role and path names still say `instagram-platform` — the product's legacy internal
-> name. Functionally identical; renaming across 15 roles wasn't worth the churn.
+**UPDATED: November 2025 - Based on Actual Deployment Experience**
 
-Automated provisioning for the checkItOut infrastructure on an Ubuntu 24.04 VPS,
-battle-tested on the production deployment (November 2025).
-
-**Documentation map:** [GETTING-STARTED](GETTING-STARTED.md) (first run) ·
-[DEPLOYMENT-GUIDE](DEPLOYMENT-GUIDE.md) (full procedure) ·
-[BEFORE-DEPLOYMENT-CHECKLIST](BEFORE-DEPLOYMENT-CHECKLIST.md) ·
-[QUICK-REFERENCE](QUICK-REFERENCE.md) (command crib sheet) ·
-[TESTING](TESTING.md) (molecule) · [TROUBLESHOOTING](TROUBLESHOOTING.md) ·
-per-role READMEs under `roles/*/`.
+Automated deployment system for Instagram Platform infrastructure on Ubuntu 24.04 VPS.
 
 **Deployment Time:** 65-75 minutes fully automated (vs 12-14 hours manual)
 **Automation Level:** 95% (only secrets need manual replacement)
@@ -78,7 +69,7 @@ This Ansible project automates the complete deployment of the Instagram Platform
 ```bash
 # Clone repository
 git clone <your-repo>
-cd checkItOut-be2/ansible
+cd checkitout-backend/ansible
 
 # Install Ansible and dependencies
 pip install ansible
@@ -290,7 +281,7 @@ See [TESTING.md](TESTING.md) for detailed testing guide.
 
 Update `inventory/production.yml`:
 - IP address: `192.0.2.10`
-- Hostname: `vps-example01`
+- Hostname: `vps-69c5792e`
 - SSH user: `ubuntu`
 - SSH key: `~/.ssh/id_rsa`
 

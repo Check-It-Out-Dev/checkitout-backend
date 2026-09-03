@@ -1050,7 +1050,7 @@ class AppliedOpportunityContentServiceUnitTest {
         void shouldReturnContentWhenUserCanView() {
             // Given
             when(permissionUtils.getUserId()).thenReturn("influencer-uid");
-            when(contentRepository.findById(1L)).thenReturn(Optional.of(testContent));
+            when(contentRepository.findByIdWithRelationships(1L)).thenReturn(Optional.of(testContent));
             when(permissionUtils.canViewAppliedOpportunity(testAppliedOpportunity)).thenReturn(true);
 
             // When
@@ -1065,7 +1065,7 @@ class AppliedOpportunityContentServiceUnitTest {
         void shouldThrowWhenContentNotFoundById() {
             // Given
             when(permissionUtils.getUserId()).thenReturn("user-uid");
-            when(contentRepository.findById(999L)).thenReturn(Optional.empty());
+            when(contentRepository.findByIdWithRelationships(999L)).thenReturn(Optional.empty());
 
             // When/Then
             assertThatThrownBy(() -> service.getContentById(999L))
@@ -1077,7 +1077,7 @@ class AppliedOpportunityContentServiceUnitTest {
         void shouldThrowWhenUserCannotViewContent() {
             // Given
             when(permissionUtils.getUserId()).thenReturn("unauthorized-uid");
-            when(contentRepository.findById(1L)).thenReturn(Optional.of(testContent));
+            when(contentRepository.findByIdWithRelationships(1L)).thenReturn(Optional.of(testContent));
             when(permissionUtils.canViewAppliedOpportunity(testAppliedOpportunity)).thenReturn(false);
 
             // When/Then

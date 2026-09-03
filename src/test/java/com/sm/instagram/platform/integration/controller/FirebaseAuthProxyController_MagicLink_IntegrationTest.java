@@ -1,5 +1,6 @@
 package com.sm.instagram.platform.integration.controller;
 
+import org.junit.jupiter.api.condition.EnabledIf;
 import com.sm.instagram.platform.auth.service.EmailVerificationService;
 import com.sm.instagram.platform.common.authorization.PermissionUtils;
 import com.sm.instagram.platform.common.exceptions.ValidationTranslatableException;
@@ -39,6 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("integration")
 @Import(ServiceIntegrationTestConfig.class)
 @DisplayName("FirebaseAuthProxyController Magic Link HTTP Integration Tests")
+@EnabledIf(value = "com.sm.instagram.platform.integration.ExternalCredentialsAvailable#firebase", disabledReason = "Requires real firebase test credentials (.env / classpath)")
 class FirebaseAuthProxyController_MagicLink_IntegrationTest {
 
     @Autowired

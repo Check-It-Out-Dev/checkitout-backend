@@ -234,7 +234,7 @@ ssh -i ~/.ssh/id_rsa ubuntu@192.0.2.10
 
 # Verify inventory
 ansible-inventory -i inventory/production.yml --graph
-ansible-inventory -i inventory/production.yml --host vps-example01
+ansible-inventory -i inventory/production.yml --host vps-69c5792e
 ```
 
 ### Vault Decryption Failed

@@ -7,7 +7,7 @@
 # Override specific values in:
 #   - group_vars/test.yml (test environment)
 #   - group_vars/prod.yml (production environment)
-#   - host_vars/vps-example01.yml (host-specific)
+#   - host_vars/vps-69c5792e.yml (host-specific)
 
 ---
 # =============================================================================
@@ -16,10 +16,10 @@
 
 # VPS Network Configuration
 vps_ipv4: "192.0.2.10"
-vps_ipv6: "2001:db8::10"
-vps_gateway_ipv4: "192.0.2.1"
-vps_gateway_ipv6: "2001:db8::1"
-vps_hostname: "vps-example01"
+vps_ipv6: "2001:41d0:601:1100::65cd"
+vps_gateway_ipv4: "51.38.135.1"
+vps_gateway_ipv6: "2001:41d0:601:1100::1"
+vps_hostname: "vps-69c5792e"
 vps_interface_name: "ens3"  # Adjust if different (use 'ip link' to check)
 
 # DNS servers

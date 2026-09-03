@@ -13,11 +13,12 @@ import org.springframework.context.annotation.Profile;
  * Each bean delegates to {@link RegistryStubState} which is configured via
  * {@link TestRegistryController} REST endpoints.
  *
- * <p><b>SECURITY:</b> Only active in {@code e2e} profile. In production,
- * the real adapters (GUS SOAP, Biała Lista REST, CEIDG REST) are used.
+ * <p><b>SECURITY:</b> Only active in the {@code e2e} and {@code dev-lite}
+ * (credential-less simulator) profiles. In production, the real adapters
+ * (GUS SOAP, Biała Lista REST, CEIDG REST) are used.
  */
 @Configuration
-@Profile("e2e & !prod & !test")
+@Profile("(e2e | dev-lite) & !prod & !test")
 public class RegistryPortStubConfig {
 
     @Bean

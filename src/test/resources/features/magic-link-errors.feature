@@ -111,10 +111,10 @@ Feature: Magic Link Error Handling
   @firebase-error @oob-lifecycle @verification
   Scenario: apply-action-code fails when verification oobCode is already used
     # Setup: Real Firebase login, generate oobCode via test endpoint (no email, no Firebase rate limit)
-    Given a company user with Firebase UID "E2ECOMPANYUID000000000000001" is synced from Firestore
-    And I login as company with email "e2e-company@example.test" and password "ExampleE2ePass1!"
+    Given a company user with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" is synced from Firestore
+    And I login as company with email "norbert.marchewka4444431@gmail.com" and password "Janekmapsa66!ppp"
     And I exchange the Firebase token for a backend session
-    And the current email is "e2e-company@example.test"
+    And the current email is "norbert.marchewka4444431@gmail.com"
     And the Firebase user has emailVerified set to false
 
     # Generate oobCode directly (bypasses email + Firebase rate limit)
@@ -139,10 +139,10 @@ Feature: Magic Link Error Handling
   @firebase-error @oob-lifecycle @password-reset
   Scenario: Password reset endpoints fail when oobCode is already consumed (consolidated)
     # Setup: Real Firebase login, generate oobCode via test endpoint
-    Given a company user with Firebase UID "E2ECOMPANYUID000000000000001" is synced from Firestore
-    And I login as company with email "e2e-company@example.test" and password "ExampleE2ePass1!"
+    Given a company user with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" is synced from Firestore
+    And I login as company with email "norbert.marchewka4444431@gmail.com" and password "Janekmapsa66!ppp"
     And I exchange the Firebase token for a backend session
-    And the current email is "e2e-company@example.test"
+    And the current email is "norbert.marchewka4444431@gmail.com"
     And the Firebase user has emailVerified set to true
     And the password reset cooldown is cleared
 
@@ -164,7 +164,7 @@ Feature: Magic Link Error Handling
     And the response messageKey should be "error.auth.invalid_action_code"
 
     # Cleanup: restore original password
-    And the Firebase user has password "ExampleE2ePass1!"
+    And the Firebase user has password "Janekmapsa66!ppp"
 
   # ===========================================================================
   # TIER 5: CROSS-ENDPOINT oobCode MISUSE
@@ -173,10 +173,10 @@ Feature: Magic Link Error Handling
   @firebase-error @oob-lifecycle @cross-endpoint
   Scenario: Verification oobCode rejected by password reset endpoints
     # Setup: Generate verification oobCode via test endpoint (no email needed)
-    Given a company user with Firebase UID "E2ECOMPANYUID000000000000001" is synced from Firestore
-    And I login as company with email "e2e-company@example.test" and password "ExampleE2ePass1!"
+    Given a company user with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" is synced from Firestore
+    And I login as company with email "norbert.marchewka4444431@gmail.com" and password "Janekmapsa66!ppp"
     And I exchange the Firebase token for a backend session
-    And the current email is "e2e-company@example.test"
+    And the current email is "norbert.marchewka4444431@gmail.com"
     And the Firebase user has emailVerified set to false
     When I generate a verification oobCode via test endpoint
 
@@ -196,10 +196,10 @@ Feature: Magic Link Error Handling
   @firebase-error @oob-lifecycle @cross-endpoint
   Scenario: Password reset oobCode rejected by apply-action-code
     # Setup: Generate password reset oobCode via test endpoint (no email needed)
-    Given a company user with Firebase UID "E2ECOMPANYUID000000000000001" is synced from Firestore
-    And I login as company with email "e2e-company@example.test" and password "ExampleE2ePass1!"
+    Given a company user with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" is synced from Firestore
+    And I login as company with email "norbert.marchewka4444431@gmail.com" and password "Janekmapsa66!ppp"
     And I exchange the Firebase token for a backend session
-    And the current email is "e2e-company@example.test"
+    And the current email is "norbert.marchewka4444431@gmail.com"
     And the Firebase user has emailVerified set to true
     And the password reset cooldown is cleared
     When I generate a password reset oobCode via test endpoint

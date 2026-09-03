@@ -237,7 +237,7 @@ class SupportTicketService_Responses_IntegrationTest extends SupportTicketServic
             supportTicketService.addAdminResponse(ticket.getId(), responseDto);
 
             verify(emailService).sendAdminResponseNotification(
-                    anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
+                    anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
         }
 
         @Test
@@ -251,7 +251,7 @@ class SupportTicketService_Responses_IntegrationTest extends SupportTicketServic
             supportTicketService.addAdminResponse(ticket.getId(), responseDto);
 
             verify(emailService, never()).sendAdminResponseNotification(
-                    anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
+                    anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
         }
 
         @Test

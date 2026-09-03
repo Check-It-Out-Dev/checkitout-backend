@@ -22,7 +22,7 @@ Feature: Multi-User Session Isolation
 
     Examples:
       | alias     | firebaseUid                      | email                              | password          |
-      | FashionCo | E2ECOMPANYUID000000000000001     | e2e-company@example.test | ExampleE2ePass1!  |
+      | FashionCo | WWXA9DehxZghyLq849TpyE4vYzZ2     | norbert.marchewka4444431@gmail.com | Janekmapsa66!ppp  |
 
   # =============================================================================
   # INFLUENCER LOGIN (OAuth via Instagram Token - NOT Email/Password)
@@ -41,7 +41,7 @@ Feature: Multi-User Session Isolation
 
     Examples:
       | alias     | firebaseUid                      |
-      | StyleGuru | E2EINFLUENCERUID000000000001     |
+      | StyleGuru | SEWgduxUjRh4KDqxVWFs6zgThIa2     |
 
   # =============================================================================
   # ADMIN LOGIN (Email/Password -> Partial Session -> 2FA -> Full Session)
@@ -58,7 +58,7 @@ Feature: Multi-User Session Isolation
 
     Examples:
       | alias      | firebaseUid                      | email                         | password          |
-      | AdminUser  | E2EADMINUID00000000000000001     | e2e-admin@example.test | ExampleE2ePass1!  |
+      | AdminUser  | 85VJgS6shAWTqby4rHypN355RWv2     | norbert.marchewka44@gmail.com | Janekmapsa66!ppp  |
 
   @multi-user @admin @2fa @manual
   Scenario Outline: Admin logs in with manual 2FA steps
@@ -72,7 +72,7 @@ Feature: Multi-User Session Isolation
 
     Examples:
       | alias      | firebaseUid                      | email                         | password          |
-      | AdminUser  | E2EADMINUID00000000000000001     | e2e-admin@example.test | ExampleE2ePass1!  |
+      | AdminUser  | 85VJgS6shAWTqby4rHypN355RWv2     | norbert.marchewka44@gmail.com | Janekmapsa66!ppp  |
 
   # =============================================================================
   # MULTI-USER COMBINATIONS
@@ -82,18 +82,18 @@ Feature: Multi-User Session Isolation
   @multi-user @all-types
   Scenario: All user types logged in simultaneously
     # Company login (email/password -> full session)
-    Given "FashionCo" logs in as COMPANY with Firebase UID "E2ECOMPANYUID000000000000001" email "e2e-company@example.test" password "ExampleE2ePass1!"
+    Given "FashionCo" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
     Then "FashionCo" should be authenticated
     And "FashionCo" should have role "COMPANY"
 
     # Influencer login (OAuth via Instagram token)
-    Given "StyleGuru" logs in as INFLUENCER via OAuth with Firebase UID "E2EINFLUENCERUID000000000001"
+    Given "StyleGuru" logs in as INFLUENCER via OAuth with Firebase UID "SEWgduxUjRh4KDqxVWFs6zgThIa2"
     Then "StyleGuru" should be authenticated
     And "StyleGuru" should have role "INFLUENCER"
     And "StyleGuru" should have OAuth authentication
 
     # Admin login with 2FA (email/password -> partial -> 2FA -> full)
-    Given "AdminUser" logs in as ADMIN with Firebase UID "E2EADMINUID00000000000000001" email "e2e-admin@example.test" password "ExampleE2ePass1!" and completes 2FA
+    Given "AdminUser" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
     Then "AdminUser" should be authenticated
     And "AdminUser" should have role "ADMIN"
     And "AdminUser" should have 2FA verified
@@ -112,11 +112,11 @@ Feature: Multi-User Session Isolation
   @multi-user @company @influencer @interaction
   Scenario: Company and influencer can interact with isolated sessions
     # Company logs in
-    Given "BrandCo" logs in as COMPANY with Firebase UID "E2ECOMPANYUID000000000000001" email "e2e-company@example.test" password "ExampleE2ePass1!"
+    Given "BrandCo" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
     Then "BrandCo" should be authenticated
 
     # Influencer logs in via OAuth
-    Given "InfluencerA" logs in as INFLUENCER via OAuth with Firebase UID "E2EINFLUENCERUID000000000001"
+    Given "InfluencerA" logs in as INFLUENCER via OAuth with Firebase UID "SEWgduxUjRh4KDqxVWFs6zgThIa2"
     Then "InfluencerA" should be authenticated
 
     # Both have isolated sessions

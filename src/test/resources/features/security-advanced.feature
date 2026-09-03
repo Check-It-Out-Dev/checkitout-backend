@@ -14,7 +14,7 @@ Feature: Advanced Security Tests (CONSOLIDATED)
 
   @company-security @403 @gdpr @consolidated
   Scenario: COMPANY security restrictions - owner-based GDPR (consolidated)
-    Given "company1" logs in as COMPANY with Firebase UID "E2ECOMPANYUID000000000000001" email "e2e-company@example.test" password "ExampleE2ePass1!"
+    Given "company1" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
 
     # ----- GDPR OTHER USER: 403 (Owner-based authorization) -----
     When "company1" makes an authenticated GET request to "/gdpr/location/export/user/{userId}" using userId 999999
@@ -38,7 +38,7 @@ Feature: Advanced Security Tests (CONSOLIDATED)
 
   @influencer-security @403 @gdpr @consolidated
   Scenario: INFLUENCER security restrictions - owner-based GDPR (consolidated)
-    Given "influencer1" logs in as INFLUENCER via OAuth with Firebase UID "E2EINFLUENCERUID000000000001"
+    Given "influencer1" logs in as INFLUENCER via OAuth with Firebase UID "SEWgduxUjRh4KDqxVWFs6zgThIa2"
 
     # ----- GDPR OTHER USER: 403 (Owner-based authorization) -----
     When "influencer1" makes an authenticated GET request to "/gdpr/location/export/user/{userId}" using userId 999999
@@ -62,7 +62,7 @@ Feature: Advanced Security Tests (CONSOLIDATED)
   @admin-2fa @partial-session @consolidated
   Scenario: ADMIN 2FA security - partial session denied, full session allowed (consolidated)
     # Admin logs in but does NOT complete 2FA - gets partial session
-    Given "admin1" logs in as ADMIN with Firebase UID "E2EADMINUID00000000000000001" email "e2e-admin@example.test" password "ExampleE2ePass1!"
+    Given "admin1" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp"
 
     # ----- PARTIAL SESSION: 401/403 (2FA not completed) -----
     When "admin1" makes a partial-session GET request to "/admin/geoip/metrics"

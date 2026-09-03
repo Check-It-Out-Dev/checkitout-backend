@@ -1,5 +1,6 @@
 package com.sm.instagram.platform.integration.service.subscription;
 
+import org.junit.jupiter.api.condition.EnabledIf;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentMethod;
 import com.stripe.model.Subscription;
@@ -20,6 +21,7 @@ import static org.assertj.core.api.Assertions.*;
  * Integration tests for TERMS_PENDING flow, acceptTerms, processExpiredGracePeriods,
  * and deactivateForAccountDeletion — real PostgreSQL + real Stripe sandbox.
  */
+@EnabledIf(value = "com.sm.instagram.platform.integration.ExternalCredentialsAvailable#stripe", disabledReason = "Requires real stripe test credentials (.env / classpath)")
 class SubscriptionService_Terms_IntegrationTest extends SubscriptionServiceIntegrationTestBase {
 
     // ========================================================================

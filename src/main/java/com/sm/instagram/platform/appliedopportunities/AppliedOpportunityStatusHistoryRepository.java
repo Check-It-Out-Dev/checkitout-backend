@@ -3,6 +3,8 @@ package com.sm.instagram.platform.appliedopportunities;
 import com.sm.instagram.platform.common.base.BaseRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -12,14 +14,30 @@ import java.util.List;
 public interface AppliedOpportunityStatusHistoryRepository extends BaseRepository<AppliedOpportunityStatusHistory, Long> {
     
     /**
-     * Find all status history entries for a specific applied opportunity, ordered by change time (newest first)
+     * Find all status history entries for a specific applied opportunity, ordered by change time (newest first).
+     * LEFT JOIN FETCH changedByUser: the controller maps each row via
+     * {@code AppliedOpportunityStatusHistoryDtoOut.fromEntity} OUTSIDE the service
+     * transaction, so the lazy changedByUser must be initialized in the query
+     * (else LazyInitializationException — caught by the FE parity sweep).
      */
-    List<AppliedOpportunityStatusHistory> findByAppliedOpportunityIdOrderByChangedAtDesc(Long appliedOpportunityId);
-    
+    @Query("SELECT h FROM AppliedOpportunityStatusHistory h "
+            + "LEFT JOIN FETCH h.changedByUser "
+            + "WHERE h.appliedOpportunity.id = :appliedOpportunityId "
+            + "ORDER BY h.changedAt DESC")
+    List<AppliedOpportunityStatusHistory> findByAppliedOpportunityIdOrderByChangedAtDesc(@Param("appliedOpportunityId") Long appliedOpportunityId);
+
     /**
-     * Find status history entries for a specific applied opportunity with pagination
+     * Find status history entries for a specific applied opportunity with pagination.
+     * changedByUser is a to-one association, so JOIN FETCH is pagination-safe
+     * (no in-memory paging). Same fromEntity-outside-transaction reason as above.
      */
-    Page<AppliedOpportunityStatusHistory> findByAppliedOpportunityIdOrderByChangedAtDesc(Long appliedOpportunityId, Pageable pageable);
+    @Query(value = "SELECT h FROM AppliedOpportunityStatusHistory h "
+            + "LEFT JOIN FETCH h.changedByUser "
+            + "WHERE h.appliedOpportunity.id = :appliedOpportunityId "
+            + "ORDER BY h.changedAt DESC",
+            countQuery = "SELECT COUNT(h) FROM AppliedOpportunityStatusHistory h "
+                    + "WHERE h.appliedOpportunity.id = :appliedOpportunityId")
+    Page<AppliedOpportunityStatusHistory> findByAppliedOpportunityIdOrderByChangedAtDesc(@Param("appliedOpportunityId") Long appliedOpportunityId, Pageable pageable);
     
     /**
      * Find all status changes made by a specific user (using Firebase ID)

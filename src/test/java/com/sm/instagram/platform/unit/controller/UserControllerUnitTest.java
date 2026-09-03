@@ -64,6 +64,9 @@ class UserControllerUnitTest {
     private com.sm.instagram.platform.auth.stepup.StepUpAuthService stepUpAuthService;
 
     @Mock
+    private com.sm.instagram.platform.common.authorization.PermissionUtils permissionUtils;
+
+    @Mock
     private SecurityContext securityContext;
 
     @Mock
@@ -83,8 +86,9 @@ class UserControllerUnitTest {
                                        TranslationService translationService,
                                        DefaultNoteService defaultNoteService,
                                        HttpServletRequest request,
-                                       com.sm.instagram.platform.auth.stepup.StepUpAuthService stepUpAuthService) {
-            super(userService, userSocialConnectionService, translationService, defaultNoteService, request, stepUpAuthService);
+                                       com.sm.instagram.platform.auth.stepup.StepUpAuthService stepUpAuthService,
+                                       com.sm.instagram.platform.common.authorization.PermissionUtils permissionUtils) {
+            super(userService, userSocialConnectionService, translationService, defaultNoteService, request, stepUpAuthService, permissionUtils);
         }
     }
 
@@ -96,7 +100,8 @@ class UserControllerUnitTest {
                 translationService,
                 defaultNoteService,
                 request,
-                stepUpAuthService
+                stepUpAuthService,
+                permissionUtils
         );
 
         // Setup default security context
@@ -1006,11 +1011,12 @@ class UserControllerUnitTest {
     class GetUserByUserIdTests {
 
         @Test
-        @DisplayName("should return user by firebase user id successfully")
+        @DisplayName("admin may look up any user by firebase id")
         void shouldReturnUserByFirebaseUserIdSuccessfully() {
             try (MockedStatic<SecurityContextHolder> mockedSecurityContext = mockStatic(SecurityContextHolder.class)) {
-                // Given
+                // Given: caller is admin, looking up someone else's uid (pentest 3.7 — allowed for admins)
                 mockedSecurityContext.when(SecurityContextHolder::getContext).thenReturn(securityContext);
+                when(permissionUtils.isAdmin()).thenReturn(true);
                 String targetUserId = "target-firebase-uid";
                 UserDtoOut expectedDto = createUserDtoOut(USER_ID, targetUserId);
                 when(userService.findByFirebaseUserIdAsDto(targetUserId)).thenReturn(expectedDto);
@@ -1027,11 +1033,46 @@ class UserControllerUnitTest {
         }
 
         @Test
+        @DisplayName("owner may look up their own record by firebase id")
+        void ownerMayLookUpOwnRecord() {
+            try (MockedStatic<SecurityContextHolder> mockedSecurityContext = mockStatic(SecurityContextHolder.class)) {
+                // Given: caller is NOT admin but is fetching their own uid
+                mockedSecurityContext.when(SecurityContextHolder::getContext).thenReturn(securityContext);
+                when(permissionUtils.isAdmin()).thenReturn(false);
+                UserDtoOut expectedDto = createUserDtoOut(USER_ID, FIREBASE_UID);
+                when(userService.findByFirebaseUserIdAsDto(FIREBASE_UID)).thenReturn(expectedDto);
+
+                // When
+                ResponseEntity<UserDtoOut> response = userController.getUserByUserId(FIREBASE_UID);
+
+                // Then
+                assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+                verify(userService).findByFirebaseUserIdAsDto(FIREBASE_UID);
+            }
+        }
+
+        @Test
+        @DisplayName("pentest 3.7: non-owner non-admin is blocked (IDOR closed)")
+        void nonOwnerNonAdminIsBlocked() {
+            try (MockedStatic<SecurityContextHolder> mockedSecurityContext = mockStatic(SecurityContextHolder.class)) {
+                // Given: caller is NOT admin and fetches someone else's uid
+                mockedSecurityContext.when(SecurityContextHolder::getContext).thenReturn(securityContext);
+                when(permissionUtils.isAdmin()).thenReturn(false);
+
+                // When/Then: blocked before any data is read
+                assertThatThrownBy(() -> userController.getUserByUserId("someone-elses-uid"))
+                        .isInstanceOf(com.sm.instagram.platform.common.exceptions.InsufficientPermissionsException.class);
+                verify(userService, never()).findByFirebaseUserIdAsDto(anyString());
+            }
+        }
+
+        @Test
         @DisplayName("should throw ResourceNotFoundException when user not found by firebase id")
         void shouldThrowWhenUserNotFoundByFirebaseId() {
             try (MockedStatic<SecurityContextHolder> mockedSecurityContext = mockStatic(SecurityContextHolder.class)) {
-                // Given
+                // Given: admin lookup of a non-existent uid
                 mockedSecurityContext.when(SecurityContextHolder::getContext).thenReturn(securityContext);
+                when(permissionUtils.isAdmin()).thenReturn(true);
                 when(userService.findByFirebaseUserIdAsDto("non-existent"))
                         .thenThrow(new ResourceNotFoundException("error.business.item_not_found", "User"));
 

@@ -113,6 +113,10 @@ public class SupportTicketController {
      * @param email     Contact email
      * @return Complete ticket with all details, responses and attachments
      */
+    // SECURITY (pentest 3.2/3.3): anonymous by-reference lookup — key the
+    // rate limit per client IP (not per user) so it actually throttles an
+    // unauthenticated enumeration attempt.
+    @RateLimit(profile = RateLimitProfile.STANDARD, keyType = RateLimitKeyType.IP_ENDPOINT)
     @GetMapping("/status")
     public ResponseEntity<SupportTicketDtoOut> getTicketByReference(
             @RequestParam String reference,
@@ -136,6 +140,22 @@ public class SupportTicketController {
     }
 
     /**
+     * Get a ticket via a signed magic-link token (unforgeable, expiring).
+     * The token is the authorization — no reference/email required.
+     *
+     * @param token signed access token from the emailed magic link
+     * @return the full ticket details
+     */
+    // SECURITY (pentest 3.2/3.3): unforgeable token — enumeration is
+    // impossible; per-IP rate limit still guards resource abuse.
+    @RateLimit(profile = RateLimitProfile.STANDARD, keyType = RateLimitKeyType.IP_ENDPOINT)
+    @GetMapping("/access")
+    public ResponseEntity<SupportTicketDtoOut> getTicketByAccessToken(@RequestParam String token) {
+        log.info("GDPR: Operation=getTicketByAccessToken, Purpose=support_access, DataAccessed=ticket.details");
+        return ResponseEntity.ok(ticketService.getTicketByAccessToken(token));
+    }
+
+    /**
      * Add a customer response to a ticket.
      *
      * @param reference Ticket reference
@@ -143,6 +163,9 @@ public class SupportTicketController {
      * @param dto       Response data
      * @return The created response DTO
      */
+    // SECURITY (pentest 3.2): anonymous customer reply — key the rate limit
+    // per client IP so an unauthenticated caller can't hammer the endpoint.
+    @RateLimit(profile = RateLimitProfile.STANDARD, keyType = RateLimitKeyType.IP_ENDPOINT)
     @PostMapping("/response")
     public ResponseEntity<TicketResponseDtoOut> addCustomerResponse(
             @RequestParam String reference,

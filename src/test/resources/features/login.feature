@@ -23,7 +23,7 @@ Feature: User Login
     # ===== PHASE 1: ADMIN ENSURES CLEAN USER STATE =====
     # Admin logs in first to restore Company user to ACTIVE status
     # This prevents test pollution from admin management tests
-    Given "Admin" logs in as ADMIN with Firebase UID "E2EADMINUID00000000000000001" email "e2e-admin@example.test" password "ExampleE2ePass1!" and completes 2FA
+    Given "Admin" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
     Then "Admin" should be authenticated
     And "Admin" should have 2FA verified
 
@@ -44,7 +44,7 @@ Feature: User Login
 
     Examples:
       | email                              | password           | firebaseUid                      |
-      | e2e-company@example.test | ExampleE2ePass1!   | E2ECOMPANYUID000000000000001     |
+      | norbert.marchewka4444431@gmail.com | Janekmapsa66!ppp   | WWXA9DehxZghyLq849TpyE4vYzZ2     |
 
   @admin @full-auth @2fa @kms
   Scenario Outline: Admin user completes full 2FA login with real TOTP from Firestore
@@ -67,7 +67,7 @@ Feature: User Login
 
     Examples:
       | email                        | password           | firebaseUid                      |
-      | e2e-admin@example.test | ExampleE2ePass1!   | E2EADMINUID00000000000000001     |
+      | norbert.marchewka44@gmail.com | Janekmapsa66!ppp   | 85VJgS6shAWTqby4rHypN355RWv2     |
 
   # =============================================================================
   # INFLUENCER OAUTH TEST (uses KMS-decrypted Instagram token)
@@ -92,4 +92,4 @@ Feature: User Login
 
     Examples:
       | firebaseUid                      |
-      | E2EINFLUENCERUID000000000001     |
+      | SEWgduxUjRh4KDqxVWFs6zgThIa2     |

@@ -85,10 +85,12 @@ public class EmailService {
      * @param ticketReference Ticket reference code
      * @param subject         Ticket subject
      * @param language        User's preferred language (en, pl, etc.)
+     * @param statusToken     Signed magic-link token for one-click ticket access
+     *                        (may be null/blank — the link then carries only the reference)
      */
     @Async
     public void sendTicketCreationConfirmation(String to, String ticketReference,
-                                                String subject, String language) {
+                                                String subject, String language, String statusToken) {
         // GDPR: Log ticket confirmation email
         log.info("GDPR: Operation=sendTicketCreationConfirmation, RecipientEmail={}, TicketRef={}, Purpose=support_notification, DataAccessed=email.address,ticket.reference",
                 maskEmail(to), ticketReference);
@@ -104,7 +106,7 @@ public class EmailService {
             Context context = new Context(locale);
             context.setVariable("ticketReference", ticketReference);
             context.setVariable("ticketSubject", subject);
-            context.setVariable("statusLink", frontendUrl + "/support/tickets/status?ref=" + ticketReference);
+            context.setVariable("statusLink", buildTicketStatusLink(ticketReference, statusToken));
             context.setVariable("currentYear", Year.now().getValue());
 
             String htmlContent;
@@ -138,6 +140,8 @@ public class EmailService {
      * @param responseContent Response content
      * @param adminName       Admin name
      * @param language        User's preferred language (en, pl, etc.)
+     * @param statusToken     Signed magic-link token for one-click ticket access
+     *                        (may be null/blank — the link then carries only the reference)
      */
     @Async
     public void sendAdminResponseNotification(
@@ -146,7 +150,8 @@ public class EmailService {
             String ticketSubject,
             String responseContent,
             String adminName,
-            String language) {
+            String language,
+            String statusToken) {
 
         // GDPR: Log admin response notification
         log.info("GDPR: Operation=sendAdminResponseNotification, RecipientEmail={}, TicketRef={}, AdminName={}, Purpose=support_update, DataAccessed=email.address,ticket.content",
@@ -165,7 +170,7 @@ public class EmailService {
             context.setVariable("ticketSubject", ticketSubject);
             context.setVariable("adminName", adminName);
             context.setVariable("responseContent", responseContent);
-            context.setVariable("statusLink", frontendUrl + "/support/tickets/status?ref=" + ticketReference);
+            context.setVariable("statusLink", buildTicketStatusLink(ticketReference, statusToken));
             context.setVariable("currentYear", Year.now().getValue());
 
             String htmlContent;
@@ -409,6 +414,21 @@ public class EmailService {
             log.error("Failed to send admin new-user notification for {}: {}",
                     maskEmail(userEmail), e.getMessage(), e);
         }
+    }
+
+    /**
+     * Build the ticket status link for support emails. Always carries the
+     * human-readable reference (?ref=) for backward compatibility; when a
+     * signed access token is supplied it also carries &token= so the link
+     * opens the ticket in one click without re-entering reference + email.
+     * The token is URL-safe base64 by construction, so no encoding is needed.
+     */
+    private String buildTicketStatusLink(String ticketReference, String statusToken) {
+        String link = frontendUrl + "/support/tickets/status?ref=" + ticketReference;
+        if (statusToken != null && !statusToken.isBlank()) {
+            link += "&token=" + statusToken;
+        }
+        return link;
     }
 
     private Locale getLocaleFromLanguage(String language) {

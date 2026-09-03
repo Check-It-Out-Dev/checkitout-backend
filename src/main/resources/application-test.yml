@@ -12,13 +12,13 @@ spring:
   # TEST DATABASE (DOCKER CONTAINER)
   # =============================================================================
   datasource:
-    host: ${DATABASE_HOST}  # From environment (secret)
+    host: ${DATABASE_HOST:localhost}  # From environment (secret)
     port: ${DATABASE_PORT:5432}
     database: instagram_platform_test
     url: jdbc:postgresql://${spring.datasource.host}:${spring.datasource.port}/${spring.datasource.database}
     # Application uses the restricted user
     username: app_user_test
-    password: ${DATABASE_PASSWORD}  # From environment (secret)
+    password: ${DATABASE_PASSWORD:admin}  # From environment (secret)
     
     # Test pool (moderate size)
     hikari:
@@ -43,9 +43,9 @@ spring:
     contexts: test
     # IMPORTANT: Liquibase runs as app user (owns the public schema)
     user: app_user_test
-    password: ${DATABASE_PASSWORD}  # From environment (secret)
+    password: ${DATABASE_PASSWORD:admin}  # From environment (secret)
     # URL for Liquibase (uses application database)
-    url: jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT:5432}/instagram_platform_test
+    url: jdbc:postgresql://${DATABASE_HOST:localhost}:${DATABASE_PORT:5432}/instagram_platform_test
   
   # =============================================================================
   # TEST REDIS (DOCKER CONTAINER)
@@ -114,14 +114,14 @@ firebase:
 
 # Meta App Configuration for Test
 meta:
-  app-id: ${META_APP_ID:1000000000000001}           # From env/secrets
+  app-id: ${META_APP_ID:770277702827785}           # From env/secrets
   app-secret: ${META_APP_SECRET:}  # From env/secrets
 
 # Admin Configuration
 admin:
   firebase:
-    uid: ${ADMIN_FIREBASE_UID}  # From GSM (TEST_ADMIN_FIREBASE_UID)
-  email: ${ADMIN_EMAIL}  # From GSM (TEST_ADMIN_EMAIL)
+    uid: ${ADMIN_FIREBASE_UID:synthetic-admin-uid-test}  # From GSM (TEST_ADMIN_FIREBASE_UID)
+  email: ${ADMIN_EMAIL:admin@synthetic.test}  # From GSM (TEST_ADMIN_EMAIL)
 
 instagram:
   test:
@@ -129,7 +129,7 @@ instagram:
     validation:
       enabled: true
       startup-check: true
-  client-id: ${INSTAGRAM_CLIENT_ID:2000000000000001}  # TEST Instagram App ID (constant)
+  client-id: ${INSTAGRAM_CLIENT_ID:2113860459101101}  # TEST Instagram App ID (constant)
   client:
     secret: ${INSTAGRAM_CLIENT_SECRET:}  # From env/secrets
   redirect-uri: https://check-it-out.pl/api/auth/social/callback/instagram  # Backend OAuth callback with /api/ prefix

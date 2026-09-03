@@ -180,9 +180,9 @@ public class InstagramStartupValidator {
             StringUtils.hasText(instagramConfig.getClientSecret()) ? instagramConfig.getClientSecret().length() : 0);
         
         // Identify which environment
-        if ("1000000000000001".equals(metaAppId)) {
+        if ("770277702827785".equals(metaAppId)) {
             log.info("   Environment:        🧪 TEST (checkitout-Test)");
-        } else if ("1000000000000002".equals(metaAppId)) {
+        } else if ("1404020194302324".equals(metaAppId)) {
             log.info("   Environment:        🚀 PRODUCTION (checkitout)");
         } else {
             log.info("   Environment:        ⚠️ Unknown Meta App ID");

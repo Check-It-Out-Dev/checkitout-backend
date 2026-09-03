@@ -13,6 +13,11 @@ public class FileUploadRequest {
     @NotBlank(message = "{validation.file.contentType.required}")
     @Pattern(regexp = "^image/(jpeg|jpg|png|gif|webp)$",
             message = "{validation.file.contentType.imagesOnly}")
+    // allowableValues mirrors the @Pattern so the generated client exposes a
+    // typed contentType enum (FileUploadRequestContentTypeEnum) instead of a
+    // bare string — docs-only, runtime validation stays the regex above.
+    @io.swagger.v3.oas.annotations.media.Schema(
+            allowableValues = {"image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"})
     private String contentType;
 
     @NotNull(message = "{validation.file.fileSize.required}")

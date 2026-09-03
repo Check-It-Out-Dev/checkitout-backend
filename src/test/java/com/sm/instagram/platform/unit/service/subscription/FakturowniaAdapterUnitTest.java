@@ -65,6 +65,51 @@ class FakturowniaAdapterUnitTest {
             assertThat(result.errorMessage()).contains("disabled");
             verifyNoInteractions(restTemplate);
         }
+
+        @Test
+        @DisplayName("should behave as disabled when the API key is blank (boot without FAKTUROWNIA_API_KEY)")
+        void shouldBehaveDisabledWhenApiKeyBlank() {
+            properties.setApiKey("");
+
+            var result = adapter.createInvoice(testRequest());
+
+            assertThat(result.success()).isFalse();
+            assertThat(result.errorMessage()).contains("disabled");
+            verifyNoInteractions(restTemplate);
+        }
+    }
+
+    @Nested
+    @DisplayName("createInvoice — idempotency-key invariant")
+    class IdempotencyKeyGuard {
+
+        @Test
+        @DisplayName("should refuse to send when the idempotency key is null (oid_unique would not dedup)")
+        void shouldRefuseNullKey() {
+            var request = new InvoicingPort.InvoiceRequest(
+                    "Test Co", "1234567890", "Street 1", "City", "00-001",
+                    "PL", "BUSINESS", new BigDecimal("29.00"), null);
+
+            var result = adapter.createInvoice(request);
+
+            assertThat(result.success()).isFalse();
+            assertThat(result.errorMessage()).contains("idempotency key");
+            verifyNoInteractions(restTemplate);
+        }
+
+        @Test
+        @DisplayName("should refuse to send when the idempotency key is blank")
+        void shouldRefuseBlankKey() {
+            var request = new InvoicingPort.InvoiceRequest(
+                    "Test Co", "1234567890", "Street 1", "City", "00-001",
+                    "PL", "BUSINESS", new BigDecimal("29.00"), "  ");
+
+            var result = adapter.createInvoice(request);
+
+            assertThat(result.success()).isFalse();
+            assertThat(result.errorMessage()).contains("idempotency key");
+            verifyNoInteractions(restTemplate);
+        }
     }
 
     @Nested
@@ -89,11 +134,29 @@ class FakturowniaAdapterUnitTest {
         }
 
         @Test
+        @DisplayName("should send the idempotency key as the Fakturownia oid")
+        void shouldSendIdempotencyKeyAsOid() {
+            var response = new FakturowniaInvoiceResponse();
+            response.setId(1L);
+            response.setNumber("1/05/2026");
+
+            when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(FakturowniaInvoiceResponse.class)))
+                    .thenReturn(new ResponseEntity<>(response, HttpStatus.CREATED));
+
+            adapter.createInvoice(testRequest());
+
+            var captor = ArgumentCaptor.forClass(HttpEntity.class);
+            verify(restTemplate).postForEntity(anyString(), captor.capture(), eq(FakturowniaInvoiceResponse.class));
+            // the dedup contract: oid = the caller's idempotency key, oid_unique on
+            assertThat(captor.getValue().getBody().toString()).contains("stripe_inv_123");
+        }
+
+        @Test
         @DisplayName("should use default country PL when buyerCountry is null")
         void shouldDefaultCountryToPL() {
             var request = new InvoicingPort.InvoiceRequest(
                     "Test Co", "1234567890", "Street 1", "City", "00-001",
-                    null, "BUSINESS", new BigDecimal("29.00"), null);
+                    null, "BUSINESS", new BigDecimal("29.00"), "cio-42");
 
             var response = new FakturowniaInvoiceResponse();
             response.setId(1L);

@@ -123,6 +123,24 @@ public class PartnershipOpportunityMapping implements MappingConfigurer {
                             .map(PartnershipOpportunityDtoIn::getContentTypes, PartnershipOpportunity::setContentTypes);
                 });
 
+        // Photo DTO → entity: explicit empty type map for the same reason as
+        // above. Without it, implicit STANDARD matching maps PhotoDtoIn.id onto
+        // the destination path partnershipOpportunity.id (the source class name
+        // PartnershipOpportunity*Photo*DtoIn supplies the parent tokens), which
+        // corrupts the attached parent's identifier when mapping onto a managed
+        // photo. Copy content fields only; id is DB-generated and the parent
+        // association is set explicitly by every call site.
+        modelMapper.emptyTypeMap(PartnershipOpportunityPhotoDtoIn.class, PartnershipOpportunityPhoto.class)
+                .addMappings(mapper -> {
+                    mapper.skip(PartnershipOpportunityPhoto::setId);
+                    mapper.skip(PartnershipOpportunityPhoto::setPartnershipOpportunity);
+                    // url is BE-derived from the tracked uploadId in the
+                    // service (pentest 3.1) — never mapped from the DTO.
+                    mapper.skip(PartnershipOpportunityPhoto::setUrl);
+                    mapper.map(PartnershipOpportunityPhotoDtoIn::getOrderNumber, PartnershipOpportunityPhoto::setOrderNumber);
+                    mapper.map(PartnershipOpportunityPhotoDtoIn::getIsCover, PartnershipOpportunityPhoto::setIsCover);
+                });
+
         // Note: PartnershipOpportunity → PartnershipOpportunityDtoOut mapping handled manually in service
         // This avoids ModelMapper configuration issues with translation DTOs
 

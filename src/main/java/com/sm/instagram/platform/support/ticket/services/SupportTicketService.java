@@ -12,6 +12,7 @@ import com.sm.instagram.platform.support.ticket.repositories.ResponseAttachmentR
 import com.sm.instagram.platform.support.ticket.repositories.SupportTicketRepository;
 import com.sm.instagram.platform.support.ticket.repositories.TicketAttachmentRepository;
 import com.sm.instagram.platform.support.ticket.repositories.TicketResponseRepository;
+import com.sm.instagram.platform.storage.service.SignedUrlService;
 import com.sm.instagram.platform.user.User;
 import com.sm.instagram.platform.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +43,8 @@ public class SupportTicketService {
     private final TicketReferenceService referenceService;
     private final EmailService emailService;
     private final PermissionUtils permissionUtils;
+    private final SignedUrlService signedUrlService;
+    private final TicketAccessTokenService accessTokenService;
 
     @Autowired
     public SupportTicketService(
@@ -52,13 +55,36 @@ public class SupportTicketService {
             UserRepository userRepository,
             TicketReferenceService referenceService,
             EmailService emailService,
-            PermissionUtils permissionUtils) {
+            PermissionUtils permissionUtils,
+            SignedUrlService signedUrlService,
+            TicketAccessTokenService accessTokenService) {
         this.ticketRepository = ticketRepository;
         this.responseRepository = responseRepository;
         this.userRepository = userRepository;
         this.referenceService = referenceService;
         this.emailService = emailService;
         this.permissionUtils = permissionUtils;
+        this.signedUrlService = signedUrlService;
+        this.accessTokenService = accessTokenService;
+    }
+
+    /**
+     * Get a ticket's full details from a signed access token (magic link).
+     * The signed token IS the authorization — no reference/email needed, and
+     * it cannot be forged or enumerated (pentest 3.2/3.3).
+     *
+     * @param token the signed access token from the magic link
+     * @return the full ticket DTO
+     * @throws AuthenticationTranslatableException if the token is invalid or expired
+     * @throws ResourceNotFoundException           if the ticket no longer exists
+     */
+    @Transactional(readOnly = true)
+    public SupportTicketDtoOut getTicketByAccessToken(String token) {
+        Long ticketId = accessTokenService.verify(token)
+                .orElseThrow(() -> new AuthenticationTranslatableException("error.auth.invalid_token"));
+        SupportTicket ticket = getTicketByIdWithAssociations(ticketId);
+        log.info("GDPR: Operation=getTicketByAccessToken, TicketID={}, Purpose=ticket_retrieval, DataAccessed=ticket.fulldetails", ticketId);
+        return convertToDto(ticket);
     }
 
     /**
@@ -103,6 +129,10 @@ public class SupportTicketService {
         ticket.setCategory(dto.getCategory());
         ticket.setStatus(TicketStatus.OPEN);
         ticket.setIpAddress(ipAddress);
+        // Error-report dump from the FE autofill flow (admin eyes only on
+        // the way back out — see getTicketById). Was silently dropped here
+        // before, which made the whole error-report pipeline a no-op.
+        ticket.setTechnicalDescription(dto.getTechnicalDescription());
 
         // Generate a unique reference code
         ticket.setTicketReference(referenceService.generateTicketReference());
@@ -120,13 +150,17 @@ public class SupportTicketService {
                 currentUserId != null ? currentUserId : "anonymous",
                 savedTicket.getTicketReference());
 
-        // Send confirmation email
+        // Send confirmation email with a one-click magic link (signed access
+        // token) so the reporter can reach the ticket without re-entering the
+        // reference + email (pentest 3.2/3.3 — the token is the authorization).
         String language = LocaleContextHolder.getLocale().getLanguage();
+        String statusToken = accessTokenService.mint(savedTicket.getId());
         emailService.sendTicketCreationConfirmation(
                 savedTicket.getContactEmail(),
                 savedTicket.getTicketReference(),
                 savedTicket.getSubject(),
-                language
+                language,
+                statusToken
         );
 
         return savedTicket;
@@ -153,12 +187,19 @@ public class SupportTicketService {
         List<TicketAttachment> attachments = new ArrayList<>();
 
         for (TicketAttachmentDtoIn attachmentDto : attachmentsDto) {
+            // SECURITY (pentest 3.1 + 2026-06-13 hardening): the client hands
+            // over ONLY the tracked uploadId; the server derives URL, name,
+            // type and size from its own tracking row after verifying
+            // ownership + that the blob landed in our bucket.
+            SignedUrlService.ResolvedUpload resolved =
+                    signedUrlService.resolveOwnedUpload(permissionUtils.getUserId(), attachmentDto.getUploadId());
+
             TicketAttachment attachment = new TicketAttachment();
             attachment.setTicket(ticket);
-            attachment.setFileName(attachmentDto.getFileName());
-            attachment.setContentType(attachmentDto.getContentType());
-            attachment.setFileUrl(attachmentDto.getFileUrl());
-            attachment.setFileSize(attachmentDto.getFileSize());
+            attachment.setFileName(resolved.filename());
+            attachment.setContentType(resolved.contentType());
+            attachment.setFileUrl(resolved.publicUrl());
+            attachment.setFileSize(resolved.fileSize());
 
             ticket.addAttachment(attachment);
             attachments.add(attachment);
@@ -342,32 +383,31 @@ public class SupportTicketService {
         List<ResponseAttachment> attachments = new ArrayList<>();
 
         for (ResponseAttachmentDtoIn attachmentDto : attachmentsDto) {
+            // SECURITY (pentest 3.1 + 2026-06-13 hardening): the client hands
+            // over ONLY the tracked uploadId; the server derives URL, name,
+            // type and size from its own tracking row after verifying
+            // ownership + that the blob landed in our bucket.
+            SignedUrlService.ResolvedUpload resolved =
+                    signedUrlService.resolveOwnedUpload(permissionUtils.getUserId(), attachmentDto.getUploadId());
+
             ResponseAttachment attachment = new ResponseAttachment();
             attachment.setResponse(response);
-            attachment.setFileName(attachmentDto.getFileName());
-            attachment.setContentType(attachmentDto.getContentType());
-            attachment.setFileUrl(attachmentDto.getFileUrl());
-            attachment.setFileSize(attachmentDto.getFileSize());
+            attachment.setFileName(resolved.filename());
+            attachment.setContentType(resolved.contentType());
+            attachment.setFileUrl(resolved.publicUrl());
+            attachment.setFileSize(resolved.fileSize());
 
             response.addAttachment(attachment);
             attachments.add(attachment);
         }
 
-        // Save the response with its new attachments
-        TicketResponse savedResponse = responseRepository.save(response);
+        // Save the response with its new attachments. The `attachments` list
+        // holds the exact managed instances we just added — after the save
+        // they carry their generated IDs, so no value-based re-filtering
+        // against the DTOs is needed (the DTO is uploadId-only anyway).
+        responseRepository.save(response);
 
-        // Get the freshly saved attachments with IDs
-        List<ResponseAttachment> savedAttachments = savedResponse.getAttachments();
-
-        // Filter to only get the newly added attachments
-        List<ResponseAttachment> newAttachments = savedAttachments.stream()
-                .filter(attachment -> attachmentsDto.stream()
-                        .anyMatch(dto -> dto.getFileName().equals(attachment.getFileName()) &&
-                                dto.getContentType().equals(attachment.getContentType()) &&
-                                dto.getFileUrl().equals(attachment.getFileUrl())))
-                .collect(Collectors.toList());
-
-        return newAttachments.stream()
+        return attachments.stream()
                 .map(this::convertToResponseAttachmentDto)
                 .collect(Collectors.toList());
     }
@@ -440,13 +480,15 @@ public class SupportTicketService {
                     adminUid, ticketId);
 
             String language = LocaleContextHolder.getLocale().getLanguage();
+            String statusToken = accessTokenService.mint(savedTicket.getId());
             emailService.sendAdminResponseNotification(
                     savedTicket.getContactEmail(),
                     savedTicket.getTicketReference(),
                     savedTicket.getSubject(),
                     savedResponse.getContent(),
                     savedResponse.getAdminName(),
-                    language
+                    language,
+                    statusToken
             );
 
             // Mark email as sent
@@ -636,7 +678,17 @@ public class SupportTicketService {
         // Fetch with associations since we're converting to DTO
         ticket = getTicketByIdWithAssociations(ticket.getId());
 
-        return convertToDto(ticket);
+        SupportTicketDtoOut dto = convertToDto(ticket);
+
+        // The stored error-report dump is admin eyes only. The entity keeps
+        // it for every ticket, but only admins reviewing a ticket get it in
+        // the response — ticket owners and the public reference+email lookup
+        // never see it.
+        if (permissionUtils.isAdmin()) {
+            dto.setTechnicalDescription(ticket.getTechnicalDescription());
+        }
+
+        return dto;
     }
 
     /**

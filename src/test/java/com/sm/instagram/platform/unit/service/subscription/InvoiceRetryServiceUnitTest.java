@@ -150,6 +150,52 @@ class InvoiceRetryServiceUnitTest {
         }
 
         @Test
+        @DisplayName("should pass a deterministic per-record idempotency key (cio-{id}) — stable across retries")
+        void shouldPassDeterministicIdempotencyKey() {
+            var invoice = createInvoice(InvoiceStatus.PENDING, 0);
+            var companyData = createCompanyData();
+
+            when(invoiceRecordRepo.findRetryable(any())).thenReturn(List.of(invoice));
+            when(companyDataRepo.findByUserId(1L)).thenReturn(Optional.of(companyData));
+            when(invoicingPort.createInvoice(any())).thenReturn(
+                    InvoicingPort.InvoiceResult.success(100L, "INV-777"));
+            when(invoiceRecordRepo.save(any())).thenAnswer(i -> i.getArgument(0));
+
+            retryService.retryFailedInvoices();
+
+            var captor = ArgumentCaptor.forClass(InvoicingPort.InvoiceRequest.class);
+            verify(invoicingPort).createInvoice(captor.capture());
+            // The key ties Fakturownia's oid_unique dedup to THIS InvoiceRecord:
+            // an immediate send and any later cron retry carry the same key, so a
+            // success-with-lost-response can never mint a second real VAT invoice.
+            assertThat(captor.getValue().idempotencyKey()).isEqualTo("cio-1");
+        }
+
+        @Test
+        @DisplayName("retries of the SAME record carry the SAME idempotency key — the dedup contract")
+        void shouldKeepTheSameKeyAcrossRetries() {
+            var invoice = createInvoice(InvoiceStatus.PENDING, 0);
+            var companyData = createCompanyData();
+
+            when(invoiceRecordRepo.findRetryable(any())).thenReturn(List.of(invoice));
+            when(companyDataRepo.findByUserId(1L)).thenReturn(Optional.of(companyData));
+            // first attempt: transient failure (e.g. timeout after remote create)
+            when(invoicingPort.createInvoice(any()))
+                    .thenReturn(InvoicingPort.InvoiceResult.failure("read timeout"))
+                    .thenReturn(InvoicingPort.InvoiceResult.success(100L, "INV-778"));
+            when(invoiceRecordRepo.save(any())).thenAnswer(i -> i.getArgument(0));
+
+            retryService.retryFailedInvoices(); // attempt 1 → FAILED
+            retryService.retryFailedInvoices(); // attempt 2 → SENT
+
+            var captor = ArgumentCaptor.forClass(InvoicingPort.InvoiceRequest.class);
+            verify(invoicingPort, times(2)).createInvoice(captor.capture());
+            assertThat(captor.getAllValues())
+                    .extracting(InvoicingPort.InvoiceRequest::idempotencyKey)
+                    .containsExactly("cio-1", "cio-1");
+        }
+
+        @Test
         @DisplayName("should mark failed when invoicing port returns failure")
         void shouldMarkFailedOnPortFailure() {
             var invoice = createInvoice(InvoiceStatus.PENDING, 0);

@@ -202,7 +202,7 @@ class InstagramSocialAuthUnitTest {
 
             @BeforeEach
             void setUpConfig() {
-                ReflectionTestUtils.setField(config, "clientId", "2000000000000001");
+                ReflectionTestUtils.setField(config, "clientId", "2113860459101101");
                 ReflectionTestUtils.setField(config, "redirectUri", "https://app.check-it-out.pl/instagram/callback");
             }
 
@@ -212,7 +212,7 @@ class InstagramSocialAuthUnitTest {
                 String url = config.getAuthorizationUrl(null);
 
                 assertThat(url).startsWith("https://www.instagram.com/oauth/authorize");
-                assertThat(url).contains("client_id=2000000000000001");
+                assertThat(url).contains("client_id=2113860459101101");
                 assertThat(url).contains("redirect_uri=");
                 assertThat(url).contains("scope=instagram_business_basic");
                 assertThat(url).contains("response_type=code");
@@ -437,7 +437,7 @@ class InstagramSocialAuthUnitTest {
         class ClientIdRecognitionTests {
 
             @ParameterizedTest
-            @ValueSource(strings = {"2000000000000001", "2000000000000002", "1234567890123456"})
+            @ValueSource(strings = {"2113860459101101", "2658917770964963", "1234567890123456"})
             @DisplayName("should accept various valid client IDs")
             void shouldAcceptVariousClientIds(String clientId) {
                 ReflectionTestUtils.setField(config, "clientId", clientId);
@@ -1515,7 +1515,7 @@ class InstagramSocialAuthUnitTest {
             @Test
             @DisplayName("validateBasicConfiguration should succeed with valid config")
             void shouldSucceedWithValidConfig() throws Exception {
-                ReflectionTestUtils.setField(validator, "metaAppId", "1000000000000001");
+                ReflectionTestUtils.setField(validator, "metaAppId", "770277702827785");
                 ReflectionTestUtils.setField(validator, "metaAppSecret", "valid-secret");
 
                 Method validateMethod = InstagramStartupValidator.class.getDeclaredMethod("validateBasicConfiguration");
@@ -1658,7 +1658,7 @@ class InstagramSocialAuthUnitTest {
             @Test
             @DisplayName("should generate app access token in correct format")
             void shouldGenerateCorrectFormat() throws Exception {
-                ReflectionTestUtils.setField(validator, "metaAppId", "1000000000000001");
+                ReflectionTestUtils.setField(validator, "metaAppId", "770277702827785");
                 ReflectionTestUtils.setField(validator, "metaAppSecret", "abc123secret");
 
                 Method generateMethod = InstagramStartupValidator.class.getDeclaredMethod("generateAppAccessToken");
@@ -1666,7 +1666,7 @@ class InstagramSocialAuthUnitTest {
 
                 String token = (String) generateMethod.invoke(validator);
 
-                assertThat(token).isEqualTo("1000000000000001|abc123secret");
+                assertThat(token).isEqualTo("770277702827785|abc123secret");
             }
 
             @Test
@@ -1870,21 +1870,21 @@ class InstagramSocialAuthUnitTest {
             @Test
             @DisplayName("should detect TEST environment for test app ID")
             void shouldDetectTestEnvironment() {
-                ReflectionTestUtils.setField(validator, "metaAppId", "1000000000000001");
+                ReflectionTestUtils.setField(validator, "metaAppId", "770277702827785");
 
                 String metaAppId = (String) ReflectionTestUtils.getField(validator, "metaAppId");
 
-                assertThat(metaAppId).isEqualTo("1000000000000001");
+                assertThat(metaAppId).isEqualTo("770277702827785");
             }
 
             @Test
             @DisplayName("should detect PRODUCTION environment for prod app ID")
             void shouldDetectProductionEnvironment() {
-                ReflectionTestUtils.setField(validator, "metaAppId", "1000000000000002");
+                ReflectionTestUtils.setField(validator, "metaAppId", "1404020194302324");
 
                 String metaAppId = (String) ReflectionTestUtils.getField(validator, "metaAppId");
 
-                assertThat(metaAppId).isEqualTo("1000000000000002");
+                assertThat(metaAppId).isEqualTo("1404020194302324");
             }
         }
     }
@@ -1919,14 +1919,14 @@ class InstagramSocialAuthUnitTest {
         @DisplayName("Authorization URL from config should be valid for OAuth flow")
         void authUrlShouldBeValidForOAuth() {
             InstagramConfig config = new InstagramConfig();
-            ReflectionTestUtils.setField(config, "clientId", "2000000000000001");
+            ReflectionTestUtils.setField(config, "clientId", "2113860459101101");
             ReflectionTestUtils.setField(config, "redirectUri", "https://app.check-it-out.pl/instagram/callback");
 
             String authUrl = config.getAuthorizationUrl("state123");
 
             // Verify all required OAuth parameters are present
             assertThat(authUrl)
-                    .contains("client_id=2000000000000001")
+                    .contains("client_id=2113860459101101")
                     .contains("redirect_uri=")
                     .contains("scope=instagram_business_basic")
                     .contains("response_type=code")

@@ -116,12 +116,18 @@ public class LegalConsentService {
                 // Create consent_cookie_policy via the anonymous consent flow (creates DB record + cookie)
                 AnonymousConsentDtoIn dtoIn = new AnonymousConsentDtoIn();
                 String lang = "pl"; // default, overridden by Accept-Language header
-                dtoIn.setDocumentName("cookie_policy_v2_" + lang + ".pdf");
+                // Resolve the CURRENT cookie-policy version instead of hard-coding
+                // "v2": the constant 404s the moment the version bumps (or in any
+                // env seeded to a different version), which silently breaks the
+                // ESSENTIAL cookie → /auth/exchange-token then 451s and login
+                // fails. findLatest gives us whatever version actually exists.
+                LegalDocument cookieDoc = legalDocumentService.findLatest(LegalDocumentType.COOKIE_POLICY, lang);
+                dtoIn.setDocumentName("cookie_policy_v" + cookieDoc.getVersion() + "_" + lang + ".pdf");
                 dtoIn.setLanguage(lang);
                 dtoIn.setIsTrusted(isTrusted);
                 dtoIn.setUserAgent(request.getHeader("User-Agent"));
                 recordAnonymousConsent(dtoIn, request, response);
-                log.debug("Enabled essential cookie via anonymous consent");
+                log.debug("Enabled essential cookie via anonymous consent (cookie policy v{})", cookieDoc.getVersion());
             } else {
                 consentCookieService.clearConsentCookie(response, ConsentCookieService.COOKIE_CONSENT_COOKIE_POLICY);
                 log.debug("Disabled essential cookie");

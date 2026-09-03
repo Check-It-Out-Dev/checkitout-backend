@@ -131,11 +131,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         
         if (token != null && signature != null) {
+            // Session-failure policy (2026-06-10, FE-port-discovered production
+            // bug): on PUBLIC / optional-auth endpoints a BROKEN session must
+            // degrade to ANONYMOUS, never block. A visitor whose cookie is
+            // expired / superseded / banned could not even load the
+            // registration clickwrap (/legal/current 401) — registration was
+            // dead for every returning browser with a stale jar. Private
+            // endpoints keep their hard 401s. `break validation` skips
+            // context setup and falls through to the anonymous
+            // chain.doFilter at the end of this method.
+            validation:
             try {
                 // 1. Validate HMAC signature (prevents tampering)
                 if (!validateHmacSignature(token, signature)) {
                     // GDPR: Log security metric only
                     log.warn("SECURITY_METRIC: event_type=INVALID_SESSION_SIGNATURE");
+                    if (isPublic || isOptionalAuthEndpoint(requestURI)) {
+                        break validation;
+                    }
                     writeErrorResponse(response, request, HttpServletResponse.SC_UNAUTHORIZED, 
                         "error.auth.invalid_token");
                     return;
@@ -151,6 +164,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Check expiration
                 if (claims.getExpiration().before(new Date())) {
                     // GDPR: No user ID logging
+                    if (isPublic || isOptionalAuthEndpoint(requestURI)) {
+                        break validation;
+                    }
                     writeErrorResponse(response, request, HttpServletResponse.SC_UNAUTHORIZED, 
                         "error.auth.token_expired");
                     return;
@@ -163,6 +179,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     // GDPR: Log security metric only, no user ID
                     log.warn("SECURITY_METRIC: event_type=SESSION_VALIDATION_FAILED");
                     sessionSecurityService.terminateSession(response);
+                    if (isPublic || isOptionalAuthEndpoint(requestURI)) {
+                        break validation;
+                    }
                     writeErrorResponse(response, request, HttpServletResponse.SC_UNAUTHORIZED, 
                         "error.auth.invalid_token");
                     return;
@@ -176,16 +195,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Cache uses Firebase ID as key for consistency
                 if (!userCache.isUserActive(firebaseUid)) {
                     // GDPR: No user ID logging
+                    if (isPublic || isOptionalAuthEndpoint(requestURI)) {
+                        break validation;
+                    }
                     writeErrorResponse(response, request, HttpServletResponse.SC_UNAUTHORIZED,
                         "error.auth.account_disabled");
                     return;
                 }
 
                 // 5.5. Validate token version (for immediate session invalidation on status change)
-                // EXCEPTION: /refresh-session endpoint is allowed to receive stale tokens
-                // because its job is to issue fresh tokens with the current version
+                // EXCEPTION 1: /refresh-session is allowed to receive stale tokens
+                // because its job is to issue fresh tokens with the current version.
+                // EXCEPTION 2: PUBLIC endpoints never 419 on a stale cookie. The
+                // session-bootstrap endpoints (auth/firebase/login, auth/exchange-token,
+                // auth/sign-out) are public and exist to REPLACE or REMOVE the cookie —
+                // blocking them deadlocks the user: after a tokenVersion bump, if the
+                // silent refresh fails (e.g. Firebase unavailable, revoked token), the
+                // stale HttpOnly cookie 419s login AND sign-out, and the FE has no way
+                // to clear it server-side. Discovered 2026-06-10 driving the greenfield
+                // FE against a browser jar holding a superseded session.
                 Long tokenVersionFromJwt = claims.get("tokenVersion", Long.class);
-                if (tokenVersionFromJwt != null && !isRefreshSessionEndpoint(requestURI)) {
+                if (tokenVersionFromJwt != null && !isRefreshSessionEndpoint(requestURI) && !isPublic) {
                     Long currentTokenVersion = userCache.getTokenVersion(firebaseUid);
                     if (currentTokenVersion != null && !tokenVersionFromJwt.equals(currentTokenVersion)) {
                         // Token version mismatch - user's permissions have changed
@@ -242,9 +272,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             } catch (Exception e) {
                 // GDPR: Generic error logging only
                 log.warn("SECURITY_METRIC: event_type=AUTHENTICATION_FAILED");
-                writeErrorResponse(response, request, HttpServletResponse.SC_UNAUTHORIZED, 
-                    "error.auth.invalid_token");
-                return;
+                if (!(isPublic || isOptionalAuthEndpoint(requestURI))) {
+                    writeErrorResponse(response, request, HttpServletResponse.SC_UNAUTHORIZED, 
+                        "error.auth.invalid_token");
+                    return;
+                }
+                SecurityContextHolder.clearContext();
             }
         } else if (!isPublic && !isOptionalAuthEndpoint(requestURI)) {
             // No authentication found for required endpoint (not public, not optional)
@@ -475,6 +508,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return true;
         }
 
+        // Test email inbox endpoints (dev/e2e only — TestEmailController bean
+        // exists under @Profile({"e2e", "dev"}); see com.sm.instagram.platform.dev).
+        // FE integration tests query /test/email* to drive email-gated flows
+        // (step-up email-code, password-reset, verification-link).
+        if (uri.startsWith("/api/test/email/") || uri.startsWith("/test/email/")
+                || uri.equals("/api/test/email") || uri.equals("/test/email")) {
+            return true;
+        }
+
+        // dev-lite local storage transport (DevLiteUploadController — the bean
+        // exists only under `dev-lite & !prod & !test`, so everywhere else these
+        // paths 404 before anything here matters).
+        //
+        // These have to be public HERE and not only in the security config: the
+        // authorization rules run after this filter, so a permitAll path still
+        // arrives as 401 if the filter rejects it first. They stand in for
+        // Google Cloud Storage URLs, which no browser sends a session cookie to
+        // — the single-use token is the authorization on upload, and served
+        // files are the public URLs the seeded demo world points at. Without
+        // this, every seeded image is broken until you happen to be signed in.
+        if (uri.startsWith("/api/dev-lite/") || uri.startsWith("/dev-lite/")) {
+            return true;
+        }
+
         // Legal documents & consent - public endpoints
         if (uri.startsWith("/api/legal/current") || uri.startsWith("/legal/current")
                 || uri.startsWith("/api/legal/anonymous/") || uri.startsWith("/legal/anonymous/")
@@ -514,6 +571,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
             if ("GET".equals(method) && (uri.contains("/support/ticket/status") || uri.contains("/api/support/ticket/status"))) {
                 return true;  // Check status by reference (anonymous check with ref+email)
+            }
+            if ("GET".equals(method) && (uri.contains("/support/ticket/access") || uri.contains("/api/support/ticket/access"))) {
+                return true;  // Magic-link access — the signed token IS the authorization (pentest 3.2/3.3)
             }
             if ("POST".equals(method) && (uri.contains("/support/ticket/response") && !uri.contains("/attachments"))) {
                 return true;  // Customer response (anonymous with ref+email) - but NOT response attachments!

@@ -14,10 +14,10 @@ Feature: Magic Link Happy Path
   @verification
   Scenario: Email verification succeeds with valid oobCode
     # Setup: Real Firebase login with emailVerified=false
-    Given a company user with Firebase UID "E2ECOMPANYUID000000000000001" is synced from Firestore
-    And I login as company with email "e2e-company@example.test" and password "ExampleE2ePass1!"
+    Given a company user with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" is synced from Firestore
+    And I login as company with email "norbert.marchewka4444431@gmail.com" and password "Janekmapsa66!ppp"
     And I exchange the Firebase token for a backend session
-    And the current email is "e2e-company@example.test"
+    And the current email is "norbert.marchewka4444431@gmail.com"
     And the Firebase user has emailVerified set to false
     And the GreenMail inbox is cleared
 
@@ -40,10 +40,10 @@ Feature: Magic Link Happy Path
   @password-reset
   Scenario: Password reset succeeds with valid oobCode
     # Setup: Real Firebase login with verified email
-    Given a company user with Firebase UID "E2ECOMPANYUID000000000000001" is synced from Firestore
-    And I login as company with email "e2e-company@example.test" and password "ExampleE2ePass1!"
+    Given a company user with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" is synced from Firestore
+    And I login as company with email "norbert.marchewka4444431@gmail.com" and password "Janekmapsa66!ppp"
     And I exchange the Firebase token for a backend session
-    And the current email is "e2e-company@example.test"
+    And the current email is "norbert.marchewka4444431@gmail.com"
     And the Firebase user has emailVerified set to true
     And the password reset cooldown is cleared
     And the GreenMail inbox is cleared
@@ -65,4 +65,4 @@ Feature: Magic Link Happy Path
     Then I should be able to login with the new password "NewSecureE2ePass1"
 
     # Cleanup: restore original password
-    And the Firebase user has password "ExampleE2ePass1!"
+    And the Firebase user has password "Janekmapsa66!ppp"

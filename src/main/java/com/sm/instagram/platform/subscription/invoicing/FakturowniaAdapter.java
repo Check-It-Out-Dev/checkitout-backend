@@ -42,9 +42,18 @@ public class FakturowniaAdapter implements InvoicingPort {
 
     @Override
     public InvoiceResult createInvoice(InvoiceRequest request) {
-        if (!properties.isEnabled()) {
-            log.debug("Fakturownia adapter is disabled, returning failure");
+        if (!properties.isConfigured()) {
+            log.debug("Fakturownia adapter is disabled or unconfigured, returning failure");
             return InvoiceResult.failure("Fakturownia adapter is disabled");
+        }
+
+        // Invariant: never send an un-keyed invoice. oid_unique only dedups
+        // when oid is present — a null oid would let a retry after a
+        // success-with-lost-response create a duplicate real VAT invoice.
+        if (request.idempotencyKey() == null || request.idempotencyKey().isBlank()) {
+            log.error("Refusing Fakturownia invoice without idempotency key: buyer={}",
+                    maskNip(request.buyerTaxNo()));
+            return InvoiceResult.failure("Missing idempotency key (oid) — refusing to send");
         }
 
         String today = LocalDate.now().format(DATE_FORMAT);
@@ -71,7 +80,7 @@ public class FakturowniaAdapter implements InvoicingPort {
                         .exemptTaxKind(properties.getExemptTaxKind())
                         .currency("PLN")
                         .lang("pl")
-                        .oid(request.stripeInvoiceId())
+                        .oid(request.idempotencyKey())
                         .oidUnique("yes")
                         .positions(List.of(FakturowniaCreateRequest.Position.builder()
                                 .name("checkItOut " + request.planName() + " - subskrypcja miesięczna")

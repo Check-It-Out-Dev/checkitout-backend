@@ -14,6 +14,8 @@ import com.sm.instagram.platform.partnershipopportunities.PartnershipOpportunity
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  */
 @DisplayName("PartnershipOpportunityService - update")
 class PartnershipOpportunityService_Update_IntegrationTest extends PartnershipOpportunityServiceIntegrationTestBase {
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Test
     @DisplayName("Admin can update any opportunity")
@@ -208,7 +213,8 @@ class PartnershipOpportunityService_Update_IntegrationTest extends PartnershipOp
         PartnershipOpportunityDtoIn dto = createTestOpportunityDto(testCompany);
         List<PartnershipOpportunityPhotoDtoIn> newPhotos = new ArrayList<>();
         PartnershipOpportunityPhotoDtoIn newPhoto = new PartnershipOpportunityPhotoDtoIn();
-        newPhoto.setUrl("https://example.com/new-photo.jpg");
+        // New photo → tracked uploadId; the URL is BE-derived (stub in base).
+        newPhoto.setUploadId("upload-new");
         newPhoto.setOrderNumber(1);
         newPhoto.setIsCover(true);
         newPhotos.add(newPhoto);
@@ -217,7 +223,45 @@ class PartnershipOpportunityService_Update_IntegrationTest extends PartnershipOp
         PartnershipOpportunity result = partnershipOpportunityService.update(opportunityId, dto);
 
         assertThat(result.getPhotos()).hasSize(1);
-        assertThat(result.getPhotos().get(0).getUrl()).isEqualTo("https://example.com/new-photo.jpg");
+        // Old photo replaced; the new one carries the BE-resolved bucket URL.
+        assertThat(result.getPhotos().get(0).getUrl())
+                .isEqualTo("https://firebasestorage.googleapis.com/v0/b/check-it-out-47c50.firebasestorage.app/o/content%2Ftest%2Fupload-new");
+    }
+
+    @Test
+    @DisplayName("Photo DTO mapping never touches the parent opportunity's identifier")
+    void photoDtoMappingLeavesParentIdentifierIntact() {
+        // Mechanism guard for the keep-by-id PUT 500 caught live 2026-06-12:
+        // with no explicit type map, ModelMapper's implicit matching mapped
+        // photoDto.id onto photo.partnershipOpportunity.id (the source class
+        // name PartnershipOpportunity*Photo*DtoIn supplies the parent tokens),
+        // corrupting the attached parent's identifier — Hibernate failed the
+        // flush with "identifier of an instance of PartnershipOpportunity was
+        // altered from <photoId> to <entityId>". Exercises the REAL configured
+        // ModelMapper bean, exactly as updatePhotosFromDto used to call it.
+        PartnershipOpportunity parent = new PartnershipOpportunity();
+        parent.setId(190011L);
+        PartnershipOpportunityPhoto photo = new PartnershipOpportunityPhoto();
+        photo.setId(62501L);
+        photo.setPartnershipOpportunity(parent);
+        photo.setUrl("https://example.com/old.jpg");
+        photo.setOrderNumber(1);
+        photo.setIsCover(false);
+
+        PartnershipOpportunityPhotoDtoIn photoDto = new PartnershipOpportunityPhotoDtoIn();
+        photoDto.setId(62501L);
+        photoDto.setOrderNumber(0);
+        photoDto.setIsCover(true);
+
+        modelMapper.map(photoDto, photo);
+
+        assertThat(parent.getId()).isEqualTo(190011L);
+        assertThat(photo.getId()).isEqualTo(62501L);
+        // url is BE-owned: the mapper skips it, so the existing photo's URL is
+        // immutable through this surface (pentest 3.1 hardening).
+        assertThat(photo.getUrl()).isEqualTo("https://example.com/old.jpg");
+        assertThat(photo.getOrderNumber()).isZero();
+        assertThat(photo.getIsCover()).isTrue();
     }
 
     @Nested

@@ -6,6 +6,7 @@ import com.sm.instagram.platform.common.exceptions.ResourceNotFoundException;
 import com.sm.instagram.platform.common.exceptions.handlers.AuthenticationExceptionHandler;
 import com.sm.instagram.platform.common.exceptions.handlers.BusinessExceptionHandler;
 import com.sm.instagram.platform.common.translation.TranslationService;
+import com.sm.instagram.platform.currency.Currency;
 import com.sm.instagram.platform.partnershipopportunities.*;
 import com.sm.instagram.platform.user.CompanyPublicProfileDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -254,6 +255,45 @@ class PartnershipOpportunityControllerUnitTest {
                     .andExpect(jsonPath("$.content").isArray())
                     .andExpect(jsonPath("$.content", hasSize(0)))
                     .andExpect(jsonPath("$.totalElements").value(0));
+        }
+
+        @Test
+        @WithMockUser(authorities = "INFLUENCER")
+        @DisplayName("should include currency on list rows (FE contract gap)")
+        void shouldIncludeCurrencyOnListRows() throws Exception {
+            // Given — list DTO without currency, entity carrying one: the
+            // controller loop must patch it like it patches compensationType.
+            Page<PartnershipOpportunityDtoOut> page = new PageImpl<>(
+                    List.of(testOpportunityDto),
+                    PageRequest.of(0, 10),
+                    1
+            );
+            when(opportunitiesService.getDataPagedAndFilteredAsDtos(
+                    any(), anyMap(), any(Locale.class)))
+                    .thenReturn(page);
+
+            Currency pln = new Currency();
+            pln.setId(1L);
+            pln.setName("Polish zloty");
+            pln.setIsoCode("PLN");
+            pln.setSign("zl");
+            PartnershipOpportunity entity = new PartnershipOpportunity();
+            entity.setId(100L);
+            entity.setCurrency(pln);
+            when(opportunitiesService.getDataPagedAndFiltered(any(), anyMap()))
+                    .thenReturn(new PageImpl<>(List.of(entity)));
+            when(translationService.translateCurrency(eq("PLN"), any(Locale.class)))
+                    .thenReturn("zloty polski");
+
+            // When/Then
+            mockMvc.perform(get("/partnership-opportunity/paged")
+                            .param("page", "0")
+                            .param("size", "10")
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.content[0].currency.isoCode").value("PLN"))
+                    .andExpect(jsonPath("$.content[0].currency.name").value("zloty polski"))
+                    .andExpect(jsonPath("$.content[0].currency.sign").value("zl"));
         }
 
         // Note: Authentication tests (401) are handled in integration tests

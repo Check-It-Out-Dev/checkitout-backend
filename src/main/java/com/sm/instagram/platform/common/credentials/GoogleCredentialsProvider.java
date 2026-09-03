@@ -188,11 +188,45 @@ public class GoogleCredentialsProvider {
             log.info("✅ SUCCESS: Using Application Default Credentials");
             return credentials;
         } catch (IOException e) {
+            // Priority 4 (NON-PRODUCTION only): synthetic offline credentials.
+            // A fresh clone has no .env, no service-account.json and no ADC —
+            // without this fallback the whole test context dies on bean
+            // creation. Token signing works offline with any valid RSA key;
+            // every real network call fails loudly, which is exactly right
+            // for tests that mock Firebase. Production still fails hard.
+            if (!isProductionEnvironment()) {
+                log.warn("⚠️ No Google credentials found — using SYNTHETIC offline "
+                        + "credentials (non-production only). Firebase network calls "
+                        + "will fail; tests mock them.");
+                return buildSyntheticCredentials();
+            }
             throw new IOException(
                 "Could not load Google credentials. Please provide either:\n" +
                 "1. firebase.service.account.json.base64 property, or\n" +
                 "2. service-account.json file in src/main/resources/, or\n" +
                 "3. Application Default Credentials", e);
+        }
+    }
+
+    /**
+     * Build clearly-synthetic service-account credentials with a freshly
+     * generated in-memory RSA key. Never written to disk, never valid
+     * against any Google API — offline signing only.
+     */
+    private GoogleCredentials buildSyntheticCredentials() {
+        try {
+            java.security.KeyPairGenerator generator = java.security.KeyPairGenerator.getInstance("RSA");
+            generator.initialize(2048);
+            java.security.KeyPair keyPair = generator.generateKeyPair();
+            return ServiceAccountCredentials.newBuilder()
+                    .setClientId("synthetic-offline-client")
+                    .setClientEmail("synthetic-tests@check-it-out-47c50.iam.gserviceaccount.com")
+                    .setPrivateKey(keyPair.getPrivate())
+                    .setPrivateKeyId("synthetic-offline-key")
+                    .setProjectId("check-it-out-47c50")
+                    .build();
+        } catch (java.security.NoSuchAlgorithmException e) {
+            throw new IllegalStateException("RSA unavailable for synthetic credentials", e);
         }
     }
     

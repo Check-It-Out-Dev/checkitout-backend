@@ -7,7 +7,7 @@
 #### Problem: Cannot connect to VPS
 
 ```
-fatal: [vps-example01]: UNREACHABLE! => {"msg": "Failed to connect to the host via ssh"}
+fatal: [vps-69c5792e]: UNREACHABLE! => {"msg": "Failed to connect to the host via ssh"}
 ```
 
 **Solutions:**
@@ -65,7 +65,7 @@ chmod 600 ~/.ansible/vault-pass
 #### Problem: APT packages fail to install
 
 ```
-fatal: [vps-example01]: FAILED! => {"msg": "Failed to update apt cache"}
+fatal: [vps-69c5792e]: FAILED! => {"msg": "Failed to update apt cache"}
 ```
 
 **Solutions:**
@@ -124,7 +124,7 @@ docker network rm <network-name>
 #### Problem: Cannot write to directory
 
 ```
-fatal: [vps-example01]: FAILED! => {"msg": "Permission denied"}
+fatal: [vps-69c5792e]: FAILED! => {"msg": "Permission denied"}
 ```
 
 **Solutions:**
@@ -333,7 +333,7 @@ ssh ubuntu@192.0.2.10 'docker exec instagram-platform-test-app-1 psql -h postgre
 
 ```bash
 # Test external OVH connection
-ssh ubuntu@192.0.2.10 'psql -h your-postgres-host.example.com -p 20184 -U checkitout_prod_user -d checkitout_app_prod_database'
+ssh ubuntu@192.0.2.10 'psql -h postgresql-90bac3f8-o70f0602f.database.cloud.ovh.net -p 20184 -U checkitout_prod_user -d checkitout_app_prod_database'
 
 # Check if VPS IP is whitelisted in OVH
 # Go to OVH control panel → Database → Authorized IPs
@@ -401,7 +401,7 @@ ansible-playbook -i inventory/production.yml playbooks/site.yml --diff
 #### Problem: Undefined variable error
 
 ```
-fatal: [vps-example01]: FAILED! => {"msg": "The task includes an option with an undefined variable. The error was: 'vault_test_secret' is undefined"}
+fatal: [vps-69c5792e]: FAILED! => {"msg": "The task includes an option with an undefined variable. The error was: 'vault_test_secret' is undefined"}
 ```
 
 **Solutions:**

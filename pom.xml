@@ -449,12 +449,21 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- GreenMail - In-memory SMTP server for E2E email testing -->
+		<!--
+		  GreenMail — in-memory SMTP server. Used by the e2e profile for
+		  Cucumber email-flow tests AND by the dev profile so FE-integration
+		  tests can drive flows that emit emails (step-up email-code,
+		  password-reset, etc.) without standing up real SMTP.
+		  Bean wired in com.sm.instagram.platform.dev.GreenMailConfig
+		  under @Profile({"e2e", "dev"}). The greenmail-spring + greenmail
+		  jars total ~1.6 MB; in the prod artifact they are dead weight
+		  but never instantiated (no matching profile), so the price is
+		  packaging-only.
+		-->
 		<dependency>
 			<groupId>com.icegreen</groupId>
 			<artifactId>greenmail-spring</artifactId>
 			<version>2.1.2</version>
-			<scope>test</scope>
 		</dependency>
 
 		<!-- CHROMATIC FIX: dotenv-java dependency REMOVED -->

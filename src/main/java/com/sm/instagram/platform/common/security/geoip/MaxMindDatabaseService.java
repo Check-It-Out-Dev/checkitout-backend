@@ -86,8 +86,14 @@ public class MaxMindDatabaseService {
 
             log.info("MaxMind Database Service initialized successfully");
         } catch (Exception e) {
-            log.error("Failed to initialize MaxMind database", e);
-            throw new StorageTranslatableException("error.storage.upload_failed");
+            // Degraded mode instead of context death: lookupCity() already
+            // null-guards the reader (every lookup answers "unknown"), and a
+            // cred-less/offline clone (no .mmdb, no license key, synthetic
+            // Google credentials) must still boot — GeoIP is an enhancement,
+            // not a boot dependency. The scheduled update keeps retrying.
+            log.error("Failed to initialize MaxMind database — GeoIP runs in "
+                    + "degraded mode (all lookups return unknown) until a "
+                    + "database is available", e);
         }
     }
 

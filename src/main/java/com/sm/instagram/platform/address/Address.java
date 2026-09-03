@@ -105,7 +105,13 @@ public class Address implements UpdaterTracking {
     private LocalDateTime lastUpdateTime = LocalDateTime.now();
 
     @Size(max = 255, message = "{validation.updaterId.size}")
-    @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "{validation.updaterId.pattern}")
+    // Server-populated audit field (updateEntityUpdater stamps the caller's
+    // principal id) — the charset must accept whatever the trusted security
+    // context supplies. Aligned with User.updaterId, whose pattern already
+    // allows underscore/hyphen/dot; the previous alnum-only regexp rejected
+    // the e2e mock principals (E2E_COMPANY_*) and 400'd every address write
+    // under the test stack.
+    @Pattern(regexp = "^[a-zA-Z0-9_\\-\\.]+$", message = "{validation.updaterId.pattern}")
     private String updaterId;
 
     @Override

@@ -227,7 +227,7 @@ public class StepUpAuthSteps extends CucumberSpringConfig {
         // Re-login to get fresh session cookies (new tokenVersion in JWT)
         var newSession = multiUserAuthService.login(
                 actorName, oldSession.getFirebaseUid(), oldSession.getEmail(),
-                "ExampleE2ePass1!", oldSession.getRole());
+                "Janekmapsa66!ppp", oldSession.getRole());
 
         // Update session cookies on the existing actor (preserves stored resources like stepUpToken)
         oldSession.setSessionCookie(newSession.getSessionCookie());
