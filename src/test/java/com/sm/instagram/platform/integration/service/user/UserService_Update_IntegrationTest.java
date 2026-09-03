@@ -49,14 +49,36 @@ class UserService_Update_IntegrationTest extends UserServiceIntegrationTestBase 
             // Given
             authenticateAs(testAdmin);
             UserDtoIn updateDto = createUpdateDto(testInfluencer);
-            updateDto.setProfilePicture("https://cdn.example.com/new-avatar.jpg");
+            updateDto.setPhoneNumber("+48111222333");
 
             // When
             User result = userService.update(testInfluencer.getId(), updateDto);
 
             // Then
             assertThat(result).isNotNull();
-            assertThat(result.getProfilePicture()).isEqualTo("https://cdn.example.com/new-avatar.jpg");
+            assertThat(result.getPhoneNumber()).isEqualTo("+48111222333");
+        }
+
+        @Test
+        @DisplayName("SECURITY (pentest 3.1): update() never changes the avatar — attacker-host is ignored")
+        void updateCannotChangeAvatarViaFullDto() {
+            // The avatar is a stored URL rendered as <img src> to others, so
+            // it is settable ONLY through the gated PATCH field-router — a full
+            // PUT/update carrying a foreign profilePicture must be ignored (the
+            // existing avatar is preserved), never persisted.
+            authenticateAs(testAdmin);
+            String ownBucket =
+                "https://firebasestorage.googleapis.com/v0/b/check-it-out-47c50.firebasestorage.app/o/avatars%2Fkept.jpg";
+            testInfluencer.setProfilePicture(ownBucket);
+            userRepository.save(testInfluencer);
+
+            UserDtoIn updateDto = createUpdateDto(testInfluencer);
+            updateDto.setProfilePicture("https://attacker.example.com/evil.jpg");
+
+            User result = userService.update(testInfluencer.getId(), updateDto);
+
+            // Foreign URL ignored; the previously-stored avatar is untouched.
+            assertThat(result.getProfilePicture()).isEqualTo(ownBucket);
         }
 
         @Test
@@ -142,13 +164,15 @@ class UserService_Update_IntegrationTest extends UserServiceIntegrationTestBase 
 
             authenticateAs(testAdmin);
             UserDtoIn updateDto = createUpdateDto(testInfluencer);
-            updateDto.setProfilePicture("https://cdn.example.com/avatar.jpg");
+            // profilePicture is no longer updatable via a full update (avatar
+            // is PATCH-only, pentest 3.1); use another non-critical field.
+            updateDto.setPhoneNumber("+48444555666");
 
             // When
             User result = userService.update(testInfluencer.getId(), updateDto);
 
             // Then
-            assertThat(result.getProfilePicture()).isEqualTo("https://cdn.example.com/avatar.jpg");
+            assertThat(result.getPhoneNumber()).isEqualTo("+48444555666");
             assertThat(result.getAccountStatus()).isEqualTo(AccountStatus.ACTIVE);
         }
     }

@@ -628,8 +628,8 @@ class PartnershipOpportunityMoreUnitTest {
             @DisplayName("should cascade validation to nested photo DTOs")
             void shouldCascadeValidationToNestedPhotoDtos() {
                 PartnershipOpportunityPhotoDtoIn invalidPhoto = new PartnershipOpportunityPhotoDtoIn();
-                invalidPhoto.setUrl(null); // Required field
-                invalidPhoto.setOrderNumber(0);
+                invalidPhoto.setUploadId("upload-ok");
+                invalidPhoto.setOrderNumber(null); // Required field — triggers @Valid cascade
                 invalidPhoto.setIsCover(false);
 
                 dto.setPhotos(List.of(invalidPhoto));
@@ -644,7 +644,7 @@ class PartnershipOpportunityMoreUnitTest {
                 List<PartnershipOpportunityPhotoDtoIn> photos = new ArrayList<>();
                 for (int i = 0; i < 6; i++) {
                     PartnershipOpportunityPhotoDtoIn photo = new PartnershipOpportunityPhotoDtoIn();
-                    photo.setUrl("https://example.com/photo" + i + ".jpg");
+                    photo.setUploadId("upload-" + i);
                     photo.setOrderNumber(i);
                     photo.setIsCover(i == 0);
                     photos.add(photo);
@@ -664,7 +664,7 @@ class PartnershipOpportunityMoreUnitTest {
                 List<PartnershipOpportunityPhotoDtoIn> photos = new ArrayList<>();
                 for (int i = 0; i < 7; i++) {
                     PartnershipOpportunityPhotoDtoIn photo = new PartnershipOpportunityPhotoDtoIn();
-                    photo.setUrl("https://example.com/photo" + i + ".jpg");
+                    photo.setUploadId("upload-" + i);
                     photo.setOrderNumber(i);
                     photo.setIsCover(i == 0);
                     photos.add(photo);
@@ -833,7 +833,10 @@ class PartnershipOpportunityMoreUnitTest {
             PartnershipOpportunityPhotoDtoIn dto = new PartnershipOpportunityPhotoDtoIn();
 
             Set<ConstraintViolation<PartnershipOpportunityPhotoDtoIn>> violations = validator.validate(dto);
-            assertThat(violations).hasSize(3); // url, orderNumber, isCover
+            // orderNumber + isCover. url is gone (BE-derived from uploadId);
+            // uploadId is optional at the bean level (an existing photo uses
+            // id instead) — presence is enforced in the service.
+            assertThat(violations).hasSize(2);
         }
 
         @Test
@@ -841,7 +844,7 @@ class PartnershipOpportunityMoreUnitTest {
         void shouldAcceptValidPhotoDtoWithAllFields() {
             PartnershipOpportunityPhotoDtoIn dto = new PartnershipOpportunityPhotoDtoIn();
             dto.setId(1L);
-            dto.setUrl("https://example.com/photo.jpg");
+            dto.setUploadId("upload-abc");
             dto.setOrderNumber(0);
             dto.setIsCover(true);
 
@@ -854,7 +857,7 @@ class PartnershipOpportunityMoreUnitTest {
         @DisplayName("should accept various valid order numbers")
         void shouldAcceptVariousValidOrderNumbers(int orderNumber) {
             PartnershipOpportunityPhotoDtoIn dto = new PartnershipOpportunityPhotoDtoIn();
-            dto.setUrl("https://example.com/photo.jpg");
+            dto.setUploadId("upload-abc");
             dto.setOrderNumber(orderNumber);
             dto.setIsCover(false);
 
@@ -866,7 +869,7 @@ class PartnershipOpportunityMoreUnitTest {
         @DisplayName("should reject negative order number")
         void shouldRejectNegativeOrderNumber() {
             PartnershipOpportunityPhotoDtoIn dto = new PartnershipOpportunityPhotoDtoIn();
-            dto.setUrl("https://example.com/photo.jpg");
+            dto.setUploadId("upload-abc");
             dto.setOrderNumber(-1);
             dto.setIsCover(false);
 
@@ -1653,7 +1656,7 @@ class PartnershipOpportunityMoreUnitTest {
         @DisplayName("PhotoDtoIn should accept maximum order number")
         void photoDtoInShouldAcceptMaxOrderNumber() {
             PartnershipOpportunityPhotoDtoIn dto = new PartnershipOpportunityPhotoDtoIn();
-            dto.setUrl("https://example.com/photo.jpg");
+            dto.setUploadId("upload-abc");
             dto.setOrderNumber(Integer.MAX_VALUE);
             dto.setIsCover(false);
 
@@ -1665,7 +1668,7 @@ class PartnershipOpportunityMoreUnitTest {
         @DisplayName("PhotoDtoIn should require isCover field")
         void photoDtoInShouldRequireIsCoverField() {
             PartnershipOpportunityPhotoDtoIn dto = new PartnershipOpportunityPhotoDtoIn();
-            dto.setUrl("https://example.com/photo.jpg");
+            dto.setUploadId("upload-abc");
             dto.setOrderNumber(0);
             // isCover not set
 

@@ -89,14 +89,6 @@ dump.*
 /.qodana/log/
 /mcp-server-neo4j-gds.log
 
-# Local junk / scratch (pre-publish hardening — can't accidentally ship)
-/nul
-nul
-logs/
-temp_failing_tests/
-
-# Templates ARE committed — only real secret files stay ignored
-!.env.example
-!.envProd.example
-!.envTest.example
-!/src/main/resources/service-account.json.example
+# dev-lite wizard runtime state (logs, pids) and local upload sink
+/.dev-lite/
+/dev-lite-storage/

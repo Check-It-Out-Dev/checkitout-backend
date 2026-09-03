@@ -44,14 +44,16 @@ import java.util.Optional;
  * <p><b>WARNING:</b> This controller should NEVER be deployed to production.
  * It bypasses all security checks.
  *
- * <p><b>SECURITY:</b> This bean is guarded by {@code @Profile("e2e & !prod & !test")}.
- * It only exists when the {@code e2e} profile is explicitly active AND neither
- * {@code prod} nor {@code test} profiles are active. In production and standard
- * test profiles, this controller is not registered and its endpoints return 404.
+ * <p><b>SECURITY:</b> This bean is guarded by
+ * {@code @Profile("(e2e | dev-lite) & !prod & !test")}. It only exists when the
+ * {@code e2e} or {@code dev-lite} (credential-less simulator) profile is
+ * explicitly active AND neither {@code prod} nor {@code test} profiles are
+ * active. In production and standard test profiles, this controller is not
+ * registered and its endpoints return 404.
  */
 @Slf4j
 @RestController
-@Profile("e2e & !prod & !test")
+@Profile("(e2e | dev-lite) & !prod & !test")
 @RequestMapping("/test/auth")
 @RequiredArgsConstructor
 public class TestAuthController {
@@ -79,11 +81,20 @@ public class TestAuthController {
     /**
      * Request DTO for creating mock sessions.
      */
+    /**
+     * {@code setupCompleted} is EXPLICIT tri-state: true/false forces the
+     * flag; absent (null) leaves it untouched. The earlier implicit
+     * "double-seed flips it" contract was nondeterministic — seedSession
+     * retries transient 409s, and a retried FIRST seed silently landed in
+     * the existing-user branch and flipped actors that the
+     * incomplete-setup step-up specs required to stay unflipped.
+     */
     public record MockSessionRequest(
         String email,
         String role,
         boolean partial,
-        String firebaseUid
+        String firebaseUid,
+        Boolean setupCompleted
     ) {}
 
     /**
@@ -132,12 +143,66 @@ public class TestAuthController {
             firebaseUid = user.getFirebaseUserId();
             userId = user.getId();
             userType = user.getUserType();
+            // Existing E2E users (created in earlier mock-session calls before
+            // the emailVerified fix below) lack the flag — patch them
+            // idempotently so EmailVerificationEnforcementFilter doesn't block
+            // POST /partnership-opportunity or /applied-opportunity.
+            boolean needsRecache = false;
+            // Reconcile an explicitly requested firebaseUid onto the stored
+            // row. An email-keyed row minted earlier with a MOCK uid breaks
+            // every uid-keyed flow for the REAL account it shadows
+            // (uid-keyed /test hooks 400, real-token /auth/exchange-token
+            // 401) — hit on 2026-06-10 after the dev postgres volume was
+            // recreated. Idempotent: no-op when the uids already match.
+            if (request.firebaseUid() != null
+                    && !request.firebaseUid().equals(user.getFirebaseUserId())) {
+                userCacheService.evict(user.getFirebaseUserId());
+                log.info("[E2E] Reconciling firebaseUid {} -> {} for {}",
+                        user.getFirebaseUserId(), request.firebaseUid(), request.email());
+                user.setFirebaseUserId(request.firebaseUid());
+                firebaseUid = request.firebaseUid();
+                needsRecache = true;
+            }
+            if (!Boolean.TRUE.equals(user.getEmailVerified())) {
+                user.setEmailVerified(true);
+                user.setEmailVerifiedAt(LocalDateTime.now());
+                needsRecache = true;
+                log.info("[E2E] Backfilled emailVerified=true for {}", firebaseUid);
+            }
+            // Explicit tri-state only — see MockSessionRequest docs. Absent
+            // leaves the flag alone so retried seeds can't flip actors that
+            // the incomplete-setup step-up specs need unflipped.
+            if (request.setupCompleted() != null
+                    && !request.setupCompleted().equals(user.getInitialAccountSetupCompleted())) {
+                user.setInitialAccountSetupCompleted(request.setupCompleted());
+                needsRecache = true;
+                log.info("[E2E] Set initialAccountSetupCompleted={} (explicit) for {}",
+                        request.setupCompleted(), firebaseUid);
+            }
+            // Step-up email codes go to lastVerifiedEmail ("never to the new
+            // unverified address") — a verified production user always has
+            // one; mirror that or /step-up/request 400s "To address must not
+            // be null" for every mock actor.
+            if (user.getLastVerifiedEmail() == null) {
+                user.setLastVerifiedEmail(user.getEmail());
+                needsRecache = true;
+            }
+            if (needsRecache) {
+                user = userRepository.save(user);
+                // Enforcement + step-up filters read from UserCacheService
+                // (Redis), not the DB. Re-cache so the flags are visible.
+                userCacheService.cacheUser(firebaseUid, user);
+            }
             log.info("[E2E] Found existing user: {} (id={})", firebaseUid, userId);
         } else {
             // User doesn't exist - create them for E2E testing
+            // Alphanumeric only — production Firebase UIDs never carry
+            // underscores, and prod validation (e.g. Address.updaterId
+            // @Pattern ^[a-zA-Z0-9]+$) rightly rejects them; an underscored
+            // test UID made every authenticated address write 400.
             firebaseUid = request.firebaseUid() != null
                 ? request.firebaseUid()
-                : "E2E_" + request.role() + "_" + System.currentTimeMillis();
+                : "E2E" + request.role() + System.currentTimeMillis();
             userType = UserType.valueOf(request.role());
 
             // Create the user in the database so that subsequent requests work
@@ -146,6 +211,28 @@ public class TestAuthController {
             newUser.setEmail(request.email());
             newUser.setUserType(userType);
             newUser.setAccountStatus(AccountStatus.ACTIVE);
+            // EmailVerificationEnforcementFilter blocks POST /partnership-opportunity
+            // and /applied-opportunity for unverified users — and the production
+            // sign-up flow sets email_verified after the BE-side OTP click. For
+            // an auto-created E2E user we don't have that flow, so set the flag
+            // explicitly. Without this, mock-session test actors are unusable
+            // for any campaign-mutation flow.
+            newUser.setEmailVerified(true);
+            newUser.setEmailVerifiedAt(LocalDateTime.now());
+            // Verified production users always carry lastVerifiedEmail — the
+            // step-up email-code sender addresses it ("never to the new
+            // unverified address") and 400s when it's null.
+            newUser.setLastVerifiedEmail(request.email());
+            // Explicit tri-state; default (absent) = setup-incomplete, which
+            // the incomplete-setup step-up specs rely on for fresh actors.
+            // Default NEW rows to setup-complete: mock actors model
+            // ESTABLISHED accounts, and the step-up email-change gate is
+            // SKIPPED for incomplete setups — on a fresh DB an unset flag
+            // silently disarmed step-up for every oracle actor (profile
+            // edge-case expected 401, got validation 400; found
+            // 2026-06-10). Incomplete-setup specs pass false explicitly.
+            newUser.setInitialAccountSetupCompleted(
+                    request.setupCompleted() != null ? request.setupCompleted() : Boolean.TRUE);
             newUser.setCreatedTime(LocalDateTime.now());
             newUser.setLastUpdateTime(LocalDateTime.now());
             newUser = userRepository.save(newUser);
@@ -259,7 +346,7 @@ public class TestAuthController {
     public ResponseEntity<Map<String, Object>> ensureUser(@RequestBody Map<String, String> request) {
         String email = request.get("email");
         String role = request.get("role");
-        String firebaseUid = request.getOrDefault("firebaseUid", "E2E_" + role + "_" + System.currentTimeMillis());
+        String firebaseUid = request.getOrDefault("firebaseUid", "E2E" + role + System.currentTimeMillis());
 
         log.info("[E2E] Ensuring user exists: email={}, role={}", email, role);
 
@@ -1257,6 +1344,96 @@ public class TestAuthController {
                 "firebaseUid", firebaseUid,
                 "email", savedUser.getEmail(),
                 "userType", savedUser.getUserType().name()
+        ));
+    }
+
+    /**
+     * Seed an Instagram UserSocialConnection for a mock-session INFLUENCER.
+     *
+     * <p>The production INFLUENCER apply flow ({@code POST /applied-opportunity})
+     * requires the caller to have an active social connection — without one
+     * the SocialConnectionGuard rejects with 403 Insufficient Permissions.
+     * Mock-session targets don't have one by default, so notification +
+     * partnership-application integration tests self-skip at the apply step.
+     *
+     * <p>This endpoint short-circuits that blocker by creating (or refreshing)
+     * a CONNECTED Instagram connection with deterministic dummy data, scoped
+     * to the user identified by {@code email}. No Firestore / KMS / Firebase
+     * round-trip — pure PG mutation + Redis cache evict.
+     *
+     * <p>Profile-guarded to {@code (e2e | dev-lite) & !prod & !test} per the
+     * class annotation — never registered in production.
+     */
+    @PostMapping("/seed-instagram-connection")
+    @Transactional
+    public ResponseEntity<?> seedInstagramConnection(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        if (email == null || email.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Missing email"));
+        }
+
+        User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) {
+            return ResponseEntity.status(404).body(Map.of(
+                "error", "User not found",
+                "email", email,
+                "hint", "Call /test/auth/mock-session first to create the user"
+            ));
+        }
+
+        Platform instagramPlatform = platformRepository.findByName("Instagram")
+            .orElseGet(() -> platformRepository.findByName("instagram").orElse(null));
+        if (instagramPlatform == null) {
+            return ResponseEntity.internalServerError().body(Map.of(
+                "error", "Instagram platform not seeded",
+                "hint", "Liquibase platform seed must run before this endpoint is callable"
+            ));
+        }
+
+        final User finalUser = user;
+        final long now = System.currentTimeMillis();
+        final String dummyHandle = "e2e_" + email.split("@")[0];
+
+        UserSocialConnection conn = socialConnectionRepository
+            .findByUserIdAndPlatformId(user.getId(), instagramPlatform.getId())
+            .orElseGet(() -> UserSocialConnection.builder()
+                .user(finalUser)
+                .platform(instagramPlatform)
+                .socialUserId("E2E_INSTAGRAM_" + now)
+                .displayName(dummyHandle)
+                .followersCount(1500)
+                .isPrimary(true)
+                .connectionStatus(ConnectionStatus.CONNECTED)
+                .createdTime(LocalDateTime.now())
+                .lastUpdateTime(LocalDateTime.now())
+                .build());
+
+        // Update existing or freshen newly-built connection
+        conn.setConnectionStatus(ConnectionStatus.CONNECTED);
+        if (conn.getSocialUserId() == null || conn.getSocialUserId().isBlank()) {
+            conn.setSocialUserId("E2E_INSTAGRAM_" + now);
+        }
+        if (conn.getDisplayName() == null || conn.getDisplayName().isBlank()) {
+            conn.setDisplayName(dummyHandle);
+        }
+        if (conn.getFollowersCount() == null) {
+            conn.setFollowersCount(1500);
+        }
+        conn.setLastSyncTime(LocalDateTime.now());
+        conn.setLastUpdateTime(LocalDateTime.now());
+        conn = socialConnectionRepository.save(conn);
+
+        // Evict user cache so SocialConnectionGuard re-reads the fresh state
+        userCacheService.evict(user.getFirebaseUserId());
+
+        log.info("[E2E] Seeded Instagram connection: userId={}, connectionId={}, handle={}",
+                user.getId(), conn.getId(), conn.getDisplayName());
+
+        return ResponseEntity.ok(Map.of(
+            "userId", user.getId(),
+            "socialConnectionId", conn.getId(),
+            "instagramUsername", conn.getDisplayName(),
+            "followersCount", conn.getFollowersCount()
         ));
     }
 

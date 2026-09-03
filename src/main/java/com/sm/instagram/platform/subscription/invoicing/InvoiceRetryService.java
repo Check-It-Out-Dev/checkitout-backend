@@ -93,7 +93,12 @@ public class InvoiceRetryService {
                 "PL",
                 resolvePlanName(invoice),
                 invoice.getAmountPln(),
-                null // stripeInvoiceId — could be enriched later
+                // Deterministic per-record idempotency key: stable across the
+                // immediate AFTER_COMMIT send and every cron retry of the SAME
+                // InvoiceRecord. Closes the duplicate-invoice race where the
+                // remote create succeeds but the response/commit is lost and a
+                // retry re-sends (previously null, which defeats oid_unique).
+                "cio-" + invoice.getId()
         );
 
         var result = invoicingPort.createInvoice(request);

@@ -13,7 +13,7 @@ all:
     # Production VPS group
     instagram_platform:
       hosts:
-        vps-example01:
+        vps-69c5792e:
           # Connection details
           ansible_host: 192.0.2.10
           ansible_user: ubuntu
@@ -32,11 +32,11 @@ all:
           ansible_python_interpreter: /usr/bin/python3
 
           # Host-specific variables
-          vps_hostname: vps-example01
+          vps_hostname: vps-69c5792e
           vps_ipv4: 192.0.2.10
-          vps_ipv6: 2001:db8::10
-          vps_gateway_ipv4: 192.0.2.1
-          vps_gateway_ipv6: 2001:db8::1
+          vps_ipv6: 2001:41d0:601:1100::65cd
+          vps_gateway_ipv4: 51.38.135.1
+          vps_gateway_ipv6: 2001:41d0:601:1100::1
 
       # Group variables (apply to all hosts in instagram_platform group)
       vars:
@@ -59,18 +59,18 @@ all:
 # Optional: Define environment-specific groups
 test_environment:
   hosts:
-    vps-example01:
+    vps-69c5792e:
   vars:
     environment: test
 
 production_environment:
   hosts:
-    vps-example01:
+    vps-69c5792e:
   vars:
     environment: prod
 
 monitoring_environment:
   hosts:
-    vps-example01:
+    vps-69c5792e:
   vars:
     environment: monitoring

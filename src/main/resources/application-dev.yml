@@ -51,13 +51,41 @@ spring:
       mode: standalone
       host: localhost
       port: 6379
-      password: 
+      password:
       database: 0
       lettuce:
         pool:
           max-active: 8
           max-idle: 8
           min-idle: 2
+
+  # =============================================================================
+  # MAIL — GreenMail in-memory SMTP for FE integration tests
+  # =============================================================================
+  # GreenMail boots on localhost:3025 via com.sm.instagram.platform.dev.GreenMailConfig
+  # under @Profile({"e2e", "dev"}). FE Playwright integration tests can then
+  # query captured emails via /test/email* (TestEmailController) to drive
+  # email-gated flows end-to-end (step-up email-code, password-reset,
+  # verification-link). Local dev users (Norbert at the keyboard) get the
+  # same capture — outgoing emails never hit real SMTP in dev.
+  mail:
+    host: localhost
+    port: 3025
+    username: test
+    password: test
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: false
+            required: false
+          ssl:
+            enable: false
+            trust: localhost
+          connectiontimeout: 2000
+          timeout: 2000
+          writetimeout: 2000
 
 # =============================================================================
 # POSTGRES SUPERUSER - FOR INITIAL SETUP ONLY

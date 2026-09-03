@@ -15,6 +15,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 
 /**
  * Integration tests for PartnershipOpportunityService.saveFromDto() method.
@@ -120,13 +122,13 @@ class PartnershipOpportunityService_SaveFromDto_IntegrationTest extends Partners
 
         List<PartnershipOpportunityPhotoDtoIn> photos = new ArrayList<>();
         PartnershipOpportunityPhotoDtoIn photo1 = new PartnershipOpportunityPhotoDtoIn();
-        photo1.setUrl("https://example.com/photo1.jpg");
+        photo1.setUploadId("upload-1"); // URL is BE-derived (stub in base)
         photo1.setOrderNumber(1);
         photo1.setIsCover(true);
         photos.add(photo1);
 
         PartnershipOpportunityPhotoDtoIn photo2 = new PartnershipOpportunityPhotoDtoIn();
-        photo2.setUrl("https://example.com/photo2.jpg");
+        photo2.setUploadId("upload-2");
         photo2.setOrderNumber(2);
         photo2.setIsCover(false);
         photos.add(photo2);
@@ -137,6 +139,12 @@ class PartnershipOpportunityService_SaveFromDto_IntegrationTest extends Partners
 
         assertThat(result.getId()).isNotNull();
         assertThat(result.getPhotos()).hasSize(2);
+        // SECURITY (audit G1): the resolver must be called with the
+        // AUTHENTICATED caller's uid (not the campaign's company id) — this
+        // locks the ownership contract so a regression that passed the wrong
+        // id (weakening the owner check) fails here.
+        verify(signedUrlService).resolveOwnedUpload(eq(testCompany.getFirebaseUserId()), eq("upload-1"));
+        verify(signedUrlService).resolveOwnedUpload(eq(testCompany.getFirebaseUserId()), eq("upload-2"));
     }
 
     @Test

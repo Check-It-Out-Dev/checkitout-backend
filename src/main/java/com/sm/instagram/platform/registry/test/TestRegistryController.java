@@ -25,13 +25,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * Test-only controller for configuring registry port stubs and manipulating
  * user/DB state in E2E tests. Follows the TestAuthController/TestLegalController pattern.
  *
- * <p><b>SECURITY:</b> This bean is guarded by {@code @Profile("e2e & !prod & !test")}.
+ * <p><b>SECURITY:</b> This bean is guarded by {@code @Profile("(e2e | dev-lite) & !prod & !test")}.
  * In production and standard test profiles, this controller is not registered
  * and its endpoints return 404.
  */
 @Slf4j
 @RestController
-@Profile("e2e & !prod & !test")
+@Profile("(e2e | dev-lite) & !prod & !test")
 @RequestMapping("/test/registry")
 @RequiredArgsConstructor
 public class TestRegistryController {

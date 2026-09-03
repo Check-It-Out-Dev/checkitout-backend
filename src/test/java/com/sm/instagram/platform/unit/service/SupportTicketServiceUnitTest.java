@@ -10,6 +10,8 @@ import com.sm.instagram.platform.support.ticket.models.*;
 import com.sm.instagram.platform.support.ticket.repositories.*;
 import com.sm.instagram.platform.support.ticket.services.SupportTicketService;
 import com.sm.instagram.platform.support.ticket.services.TicketReferenceService;
+import com.sm.instagram.platform.support.ticket.services.TicketAccessTokenService;
+import com.sm.instagram.platform.storage.service.SignedUrlService;
 import com.sm.instagram.platform.user.User;
 import com.sm.instagram.platform.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,6 +67,12 @@ class SupportTicketServiceUnitTest {
 
     @Mock
     private PermissionUtils permissionUtils;
+
+    @Mock
+    private SignedUrlService signedUrlService;
+
+    @Mock
+    private TicketAccessTokenService accessTokenService;
 
     @InjectMocks
     private SupportTicketService service;
@@ -582,6 +590,7 @@ class SupportTicketServiceUnitTest {
             when(ticketRepository.findById(1L)).thenReturn(Optional.of(testTicket));
             when(ticketRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
             when(responseRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+            when(accessTokenService.mint(anyLong())).thenReturn("magic-tok");
 
             AdminTicketResponseDtoIn dto = new AdminTicketResponseDtoIn();
             dto.setContent("Admin reply");
@@ -591,14 +600,15 @@ class SupportTicketServiceUnitTest {
             // When
             service.addAdminResponse(1L, dto);
 
-            // Then
+            // Then — the minted magic-link token is threaded into the email
             verify(emailService).sendAdminResponseNotification(
                     eq("test@example.com"),
                     eq("TKT-12345"),
                     eq("Test Subject"),
                     eq("Admin reply"),
                     eq("Admin User"),
-                    anyString()
+                    anyString(),
+                    eq("magic-tok")
             );
         }
 

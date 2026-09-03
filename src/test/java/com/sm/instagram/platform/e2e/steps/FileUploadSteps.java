@@ -432,11 +432,15 @@ public class FileUploadSteps extends CucumberSpringConfig {
     @When("{string} updates their profilePicture to the uploaded URL")
     public void updateProfilePictureToUploaded(String actorName) {
         Actor actor = actorRegistry.get(actorName);
-        String publicUrl = actor.requireResource("publicUrl");
+        // Avatar is uploadId-only (pentest 3.1): send the tracked uploadId,
+        // the BE derives the stored URL from its own file_uploads row. A raw
+        // URL — even an own-bucket one — is rejected, so the client can't
+        // point the avatar at another file in the bucket.
+        String uploadId = actor.requireResource("uploadId");
         Long userId = actor.getSession().getUserId();
 
         Map<String, Object> update = new HashMap<>();
-        update.put("profilePicture", publicUrl);
+        update.put("profilePicture", uploadId);
 
         actor.patch(restTemplate, url("/users/" + userId), update);
     }

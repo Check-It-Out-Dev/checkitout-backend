@@ -99,4 +99,13 @@ public class SupportTicketDtoOut {
      * Whether this ticket is resolved or closed.
      */
     private boolean resolved;
+
+    /**
+     * Technical error dump captured by the FE error-report autofill flow
+     * (browser info + raw error JSON, up to 100k chars). Admin eyes only:
+     * populated exclusively when the caller of getTicketById holds the
+     * ADMIN role; null on every other path, including the owner's own
+     * ticket views and the public reference+email lookup.
+     */
+    private String technicalDescription;
 }

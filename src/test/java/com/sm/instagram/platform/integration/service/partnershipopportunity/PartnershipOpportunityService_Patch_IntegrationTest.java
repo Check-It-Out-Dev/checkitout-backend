@@ -135,7 +135,9 @@ class PartnershipOpportunityService_Patch_IntegrationTest extends PartnershipOpp
 
         List<Map<String, Object>> photos = new ArrayList<>();
         Map<String, Object> photo1 = new HashMap<>();
-        photo1.put("url", "https://example.com/patched-photo.jpg");
+        // New photo via PATCH → tracked uploadId; the BE derives the URL
+        // (the base stubs SignedUrlService.resolveOwnedUpload).
+        photo1.put("uploadId", "upload-patch-1");
         photo1.put("orderNumber", 1);
         photo1.put("isCover", true);
         photos.add(photo1);
@@ -146,7 +148,8 @@ class PartnershipOpportunityService_Patch_IntegrationTest extends PartnershipOpp
         PartnershipOpportunity result = partnershipOpportunityService.patch(opportunityId, updates);
 
         assertThat(result.getPhotos()).hasSize(1);
-        assertThat(result.getPhotos().get(0).getUrl()).isEqualTo("https://example.com/patched-photo.jpg");
+        assertThat(result.getPhotos().get(0).getUrl())
+                .isEqualTo("https://firebasestorage.googleapis.com/v0/b/check-it-out-47c50.firebasestorage.app/o/content%2Ftest%2Fupload-patch-1");
     }
 
     @Test
@@ -218,7 +221,7 @@ class PartnershipOpportunityService_Patch_IntegrationTest extends PartnershipOpp
         List<Map<String, Object>> photos = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             Map<String, Object> photo = new HashMap<>();
-            photo.put("url", "https://example.com/photo" + i + ".jpg");
+            photo.put("uploadId", "upload-" + i);
             photo.put("orderNumber", i);
             photo.put("isCover", i == 0);
             photos.add(photo);

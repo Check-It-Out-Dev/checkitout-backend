@@ -27,8 +27,8 @@ Feature: Authorization Boundary Protection (CONSOLIDATED)
   @company @admin-access @consolidated
   Scenario: Company user cannot access admin-only endpoints (consolidated)
     # Single COMPANY login to test admin endpoint restrictions
-    Given a company user with Firebase UID "E2ECOMPANYUID000000000000001" is synced from Firestore
-    When I login as company with email "e2e-company@example.test" and password "ExampleE2ePass1!"
+    Given a company user with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" is synced from Firestore
+    When I login as company with email "norbert.marchewka4444431@gmail.com" and password "Janekmapsa66!ppp"
     And I exchange the Firebase token for a backend session
     Then a valid session cookie "session" should be set
 

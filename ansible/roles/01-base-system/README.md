@@ -24,8 +24,8 @@ See `defaults/main.yml` for all configurable variables. Key variables:
 ```yaml
 # Network configuration
 vps_ipv4: "192.0.2.10"
-vps_ipv6: "2001:db8::10"
-vps_gateway_ipv4: "192.0.2.1"
+vps_ipv6: "2001:41d0:601:1100::65cd"
+vps_gateway_ipv4: "51.38.135.1"
 vps_interface_name: "ens3"
 
 # Firewall

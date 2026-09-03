@@ -3,19 +3,31 @@ package com.sm.instagram.platform.integration.service.user;
 import com.sm.instagram.platform.address.Address;
 import com.sm.instagram.platform.address.AddressRepository;
 import com.sm.instagram.platform.integration.base.BaseServiceIntegrationTest;
+import com.sm.instagram.platform.storage.service.SignedUrlService;
 import com.sm.instagram.platform.user.*;
 import com.sm.instagram.platform.userpreferences.UserPreferences;
 import com.sm.instagram.platform.userpreferences.UserPreferencesRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 
 /**
  * Base class for UserService integration tests.
  * Provides common fixtures and helper methods for testing user-related functionality.
  */
 public abstract class UserServiceIntegrationTestBase extends BaseServiceIntegrationTest {
+
+    /** A tracked-upload id the avatar tests send; the stub resolves it. */
+    protected static final String AVATAR_UPLOAD_ID = "avatar-upload-1";
+    /** The own-bucket URL the stubbed resolver derives for {@link #AVATAR_UPLOAD_ID}. */
+    protected static final String AVATAR_RESOLVED_URL =
+            "https://firebasestorage.googleapis.com/v0/b/check-it-out-47c50.firebasestorage.app/o/content%2Ftest%2Favatar-upload-1";
 
     @Autowired
     protected UserService userService;
@@ -28,6 +40,27 @@ public abstract class UserServiceIntegrationTestBase extends BaseServiceIntegrat
 
     @Autowired
     protected UserPreferencesRepository userPreferencesRepository;
+
+    /**
+     * The avatar path is uploadId-only (pentest 3.1): the ownership + in-bucket
+     * security is unit-tested in {@code SignedUrlServiceResolveUploadUnitTest};
+     * here we stub the resolver so the profile tests stay focused on the
+     * service wiring. Any uploadId resolves to a canned own-bucket URL derived
+     * from that id.
+     */
+    @MockBean
+    protected SignedUrlService signedUrlService;
+
+    @BeforeEach
+    void stubAvatarResolver() {
+        lenient().when(signedUrlService.resolveOwnedUpload(any(), any())).thenAnswer(inv -> {
+            String uploadId = inv.getArgument(1);
+            return new SignedUrlService.ResolvedUpload(
+                    "content/test/" + uploadId,
+                    "https://firebasestorage.googleapis.com/v0/b/check-it-out-47c50.firebasestorage.app/o/content%2Ftest%2F" + uploadId,
+                    "avatar.jpg", "image/jpeg", 2048L);
+        });
+    }
 
     /**
      * Creates a user with a specific account status.

@@ -100,9 +100,9 @@ public class InstagramConfig {
             log.info("   ✅ Instagram Client ID: {}", clientId);
             
             // Check which app this is
-            if (clientId.equals("2000000000000001")) {
+            if (clientId.equals("2113860459101101")) {
                 log.info("      📌 Using TEST Instagram App (checkitout-Test)");
-            } else if (clientId.equals("2000000000000002")) {
+            } else if (clientId.equals("2658917770964963")) {
                 log.info("      📌 Using PROD Instagram App (check-it-out-IG)");
             } else {
                 log.warn("      ⚠️  Unknown Instagram App ID");

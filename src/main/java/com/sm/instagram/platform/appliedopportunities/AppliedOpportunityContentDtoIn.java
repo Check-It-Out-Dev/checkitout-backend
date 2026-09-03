@@ -1,5 +1,7 @@
 package com.sm.instagram.platform.appliedopportunities;
 
+import com.sm.instagram.platform.common.validation.SocialPostUrl;
+import com.sm.instagram.platform.common.validation.VimeoUrls;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
@@ -22,6 +24,7 @@ public class AppliedOpportunityContentDtoIn {
     @Positive(message = "{validation.appliedContent.contentCount.positive}")
     private Integer contentCount;
 
+    @VimeoUrls
     private List<String> urls;
 
     @Size(max = 1000, message = "{validation.appliedContent.description.size}")
@@ -31,6 +34,7 @@ public class AppliedOpportunityContentDtoIn {
     private String tags;
 
     @Size(max = 1000, message = "{validation.appliedContent.socialMediaLink.size}")
+    @SocialPostUrl
     private String socialMediaLink;
 
     private LocalDateTime contentCreationDate;

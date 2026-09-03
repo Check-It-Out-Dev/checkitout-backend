@@ -172,12 +172,9 @@ class SupportTicketControllerFullUnitTest {
         testAdminResponseDtoIn.setNewStatus(TicketStatus.IN_PROGRESS);
         testAdminResponseDtoIn.setSendEmail(true);
 
-        // Setup test TicketAttachmentDtoIn
+        // Setup test TicketAttachmentDtoIn (uploadId-only; server derives the rest)
         testAttachmentDtoIn = new TicketAttachmentDtoIn();
-        testAttachmentDtoIn.setFileName("test-file.pdf");
-        testAttachmentDtoIn.setContentType("application/pdf");
-        testAttachmentDtoIn.setFileUrl("https://storage.example.com/files/test-file.pdf");
-        testAttachmentDtoIn.setFileSize(1024L);
+        testAttachmentDtoIn.setUploadId("upload-abc-123");
 
         // Setup test TicketAttachmentDtoOut
         testAttachmentDtoOut = new TicketAttachmentDtoOut();
@@ -189,12 +186,9 @@ class SupportTicketControllerFullUnitTest {
         testAttachmentDtoOut.setUploadTime(LocalDateTime.now());
         testAttachmentDtoOut.setDownloadUrl("https://storage.example.com/files/test-file.pdf");
 
-        // Setup test ResponseAttachmentDtoIn
+        // Setup test ResponseAttachmentDtoIn (uploadId-only)
         testResponseAttachmentDtoIn = new ResponseAttachmentDtoIn();
-        testResponseAttachmentDtoIn.setFileName("response-file.png");
-        testResponseAttachmentDtoIn.setContentType("image/png");
-        testResponseAttachmentDtoIn.setFileUrl("https://storage.example.com/files/response-file.png");
-        testResponseAttachmentDtoIn.setFileSize(2048L);
+        testResponseAttachmentDtoIn.setUploadId("upload-def-456");
 
         // Setup test ResponseAttachmentDtoOut
         testResponseAttachmentDtoOut = new ResponseAttachmentDtoOut();
@@ -299,10 +293,7 @@ class SupportTicketControllerFullUnitTest {
         @DisplayName("should handle multiple attachments")
         void shouldHandleMultipleAttachments() {
             TicketAttachmentDtoIn attachment2 = new TicketAttachmentDtoIn();
-            attachment2.setFileName("file2.jpg");
-            attachment2.setContentType("image/jpeg");
-            attachment2.setFileUrl("https://storage.example.com/file2.jpg");
-            attachment2.setFileSize(512L);
+            attachment2.setUploadId("upload-file2-jpg");
 
             List<TicketAttachmentDtoIn> attachments = Arrays.asList(testAttachmentDtoIn, attachment2);
             
@@ -441,10 +432,7 @@ class SupportTicketControllerFullUnitTest {
         @DisplayName("should handle multiple response attachments")
         void shouldHandleMultipleResponseAttachments() {
             ResponseAttachmentDtoIn attachment2 = new ResponseAttachmentDtoIn();
-            attachment2.setFileName("screenshot.png");
-            attachment2.setContentType("image/png");
-            attachment2.setFileUrl("https://storage.example.com/screenshot.png");
-            attachment2.setFileSize(4096L);
+            attachment2.setUploadId("upload-screenshot-png");
 
             List<ResponseAttachmentDtoIn> attachments = Arrays.asList(testResponseAttachmentDtoIn, attachment2);
             
@@ -1355,35 +1343,18 @@ class SupportTicketControllerFullUnitTest {
     class TicketAttachmentDtoInTests {
 
         @Test
-        @DisplayName("should set and get all dto properties")
-        void shouldSetAndGetAllDtoProperties() {
+        @DisplayName("should set and get the uploadId")
+        void shouldSetAndGetUploadId() {
             TicketAttachmentDtoIn dto = new TicketAttachmentDtoIn();
-            
-            dto.setFileName("document.pdf");
-            dto.setContentType("application/pdf");
-            dto.setFileUrl("https://storage.example.com/document.pdf");
-            dto.setFileSize(5000L);
-
-            assertThat(dto.getFileName()).isEqualTo("document.pdf");
-            assertThat(dto.getContentType()).isEqualTo("application/pdf");
-            assertThat(dto.getFileUrl()).isEqualTo("https://storage.example.com/document.pdf");
-            assertThat(dto.getFileSize()).isEqualTo(5000L);
+            dto.setUploadId("upload-document-pdf");
+            assertThat(dto.getUploadId()).isEqualTo("upload-document-pdf");
         }
 
         @Test
         @DisplayName("should create with all args constructor")
         void shouldCreateWithAllArgsConstructor() {
-            TicketAttachmentDtoIn dto = new TicketAttachmentDtoIn(
-                    "file.jpg",
-                    "image/jpeg",
-                    "https://storage.example.com/file.jpg",
-                    1024L
-            );
-
-            assertThat(dto.getFileName()).isEqualTo("file.jpg");
-            assertThat(dto.getContentType()).isEqualTo("image/jpeg");
-            assertThat(dto.getFileUrl()).isEqualTo("https://storage.example.com/file.jpg");
-            assertThat(dto.getFileSize()).isEqualTo(1024L);
+            TicketAttachmentDtoIn dto = new TicketAttachmentDtoIn("upload-file-jpg");
+            assertThat(dto.getUploadId()).isEqualTo("upload-file-jpg");
         }
     }
 
@@ -1420,35 +1391,18 @@ class SupportTicketControllerFullUnitTest {
     class ResponseAttachmentDtoInTests {
 
         @Test
-        @DisplayName("should set and get all dto properties")
-        void shouldSetAndGetAllDtoProperties() {
+        @DisplayName("should set and get the uploadId")
+        void shouldSetAndGetUploadId() {
             ResponseAttachmentDtoIn dto = new ResponseAttachmentDtoIn();
-            
-            dto.setFileName("screenshot.png");
-            dto.setContentType("image/png");
-            dto.setFileUrl("https://storage.example.com/screenshot.png");
-            dto.setFileSize(2048L);
-
-            assertThat(dto.getFileName()).isEqualTo("screenshot.png");
-            assertThat(dto.getContentType()).isEqualTo("image/png");
-            assertThat(dto.getFileUrl()).isEqualTo("https://storage.example.com/screenshot.png");
-            assertThat(dto.getFileSize()).isEqualTo(2048L);
+            dto.setUploadId("upload-screenshot-png");
+            assertThat(dto.getUploadId()).isEqualTo("upload-screenshot-png");
         }
 
         @Test
         @DisplayName("should create with all args constructor")
         void shouldCreateWithAllArgsConstructor() {
-            ResponseAttachmentDtoIn dto = new ResponseAttachmentDtoIn(
-                    "image.gif",
-                    "image/gif",
-                    "https://storage.example.com/image.gif",
-                    512L
-            );
-
-            assertThat(dto.getFileName()).isEqualTo("image.gif");
-            assertThat(dto.getContentType()).isEqualTo("image/gif");
-            assertThat(dto.getFileUrl()).isEqualTo("https://storage.example.com/image.gif");
-            assertThat(dto.getFileSize()).isEqualTo(512L);
+            ResponseAttachmentDtoIn dto = new ResponseAttachmentDtoIn("upload-image-gif");
+            assertThat(dto.getUploadId()).isEqualTo("upload-image-gif");
         }
     }
 
@@ -1487,10 +1441,13 @@ class SupportTicketControllerFullUnitTest {
     class TicketReferenceServiceTests {
 
         private TicketReferenceService referenceService;
+        private com.sm.instagram.platform.support.ticket.repositories.SupportTicketRepository ticketReferenceRepo;
 
         @BeforeEach
         void setUp() {
-            referenceService = new TicketReferenceService();
+            ticketReferenceRepo = mock(com.sm.instagram.platform.support.ticket.repositories.SupportTicketRepository.class);
+            when(ticketReferenceRepo.existsByTicketReference(anyString())).thenReturn(false);
+            referenceService = new TicketReferenceService(ticketReferenceRepo);
         }
 
         @Test
@@ -1501,11 +1458,11 @@ class SupportTicketControllerFullUnitTest {
         }
 
         @Test
-        @DisplayName("should generate reference with date part")
-        void shouldGenerateReferenceWithDatePart() {
+        @DisplayName("pentest 3.3: reference has an 8-char high-entropy suffix (SecureRandom)")
+        void shouldGenerateReferenceWithHighEntropySuffix() {
             String reference = referenceService.generateTicketReference();
-            // Reference format: CIO-YYYYMMDD-XXXX
-            assertThat(reference).matches("CIO-\\d{8}-\\d{4}");
+            // Format: CIO-YYYYMMDD-XXXXXXXX, Crockford base32 suffix (no I/L/O/U).
+            assertThat(reference).matches("CIO-\\d{8}-[0-9A-HJKMNP-TV-Z]{8}");
         }
 
         @Test
@@ -1515,7 +1472,7 @@ class SupportTicketControllerFullUnitTest {
             for (int i = 0; i < 100; i++) {
                 references.add(referenceService.generateTicketReference());
             }
-            // While not guaranteed to be unique, statistically should be mostly unique
+            // ~40 bits/day of entropy — 100 draws are unique with overwhelming probability.
             assertThat(references.size()).isGreaterThan(90);
         }
 
@@ -1524,18 +1481,33 @@ class SupportTicketControllerFullUnitTest {
         void shouldGenerateReferenceWithCorrectFormat() {
             String reference = referenceService.generateTicketReference();
             String[] parts = reference.split("-");
-            
+
             assertThat(parts).hasSize(3);
             assertThat(parts[0]).isEqualTo("CIO");
             assertThat(parts[1]).hasSize(8); // YYYYMMDD
-            assertThat(parts[2]).hasSize(4); // XXXX
+            assertThat(parts[2]).hasSize(8); // 8-char random suffix
         }
 
         @Test
-        @DisplayName("should generate reference not exceeding max length")
-        void shouldGenerateReferenceNotExceedingMaxLength() {
+        @DisplayName("suffix uses no ambiguous characters (I/L/O/U excluded)")
+        void suffixHasNoAmbiguousCharacters() {
+            for (int i = 0; i < 50; i++) {
+                String suffix = referenceService.generateTicketReference().split("-")[2];
+                assertThat(suffix).doesNotContainAnyWhitespaces();
+                assertThat(suffix).matches("[0-9A-HJKMNP-TV-Z]{8}");
+            }
+        }
+
+        @Test
+        @DisplayName("pentest 3.3: re-rolls on a DB collision")
+        void shouldRetryOnCollision() {
+            // First candidate collides, second is free.
+            when(ticketReferenceRepo.existsByTicketReference(anyString()))
+                    .thenReturn(true)
+                    .thenReturn(false);
             String reference = referenceService.generateTicketReference();
-            assertThat(reference.length()).isLessThanOrEqualTo(20);
+            assertThat(reference).matches("CIO-\\d{8}-[0-9A-HJKMNP-TV-Z]{8}");
+            verify(ticketReferenceRepo, atLeast(2)).existsByTicketReference(anyString());
         }
     }
 
@@ -1618,24 +1590,12 @@ class SupportTicketControllerFullUnitTest {
         }
 
         @Test
-        @DisplayName("should handle zero file size in attachment")
-        void shouldHandleZeroFileSizeInAttachment() {
-            testAttachmentDtoIn.setFileSize(0L);
-            List<TicketAttachmentDtoIn> attachments = Collections.singletonList(testAttachmentDtoIn);
-            
-            when(ticketService.addTicketAttachments(eq(TEST_TICKET_ID), eq(attachments))).thenReturn(Collections.emptyList());
-
-            ResponseEntity<List<TicketAttachmentDtoOut>> response = controller.addTicketAttachments(TEST_TICKET_ID, attachments);
-
-            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        }
-
-        @Test
-        @DisplayName("should handle large file size in attachment")
+        @DisplayName("should pass the uploaded attachment through to the service")
         void shouldHandleLargeFileSizeInAttachment() {
-            testAttachmentDtoIn.setFileSize(Long.MAX_VALUE);
+            // (File size is server-derived from the tracking row now; the DTO
+            // is uploadId-only. This just checks the controller forwards it.)
             List<TicketAttachmentDtoIn> attachments = Collections.singletonList(testAttachmentDtoIn);
-            
+
             when(ticketService.addTicketAttachments(eq(TEST_TICKET_ID), eq(attachments)))
                     .thenReturn(Collections.singletonList(testAttachmentDtoOut));
 

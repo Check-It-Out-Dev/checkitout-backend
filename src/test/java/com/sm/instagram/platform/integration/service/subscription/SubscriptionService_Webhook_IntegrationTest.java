@@ -1,5 +1,6 @@
 package com.sm.instagram.platform.integration.service.subscription;
 
+import org.junit.jupiter.api.condition.EnabledIf;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
 import com.stripe.model.PaymentMethod;
@@ -23,6 +24,7 @@ import static org.assertj.core.api.Assertions.*;
  * handleCheckoutCompleted calls stripeService.retrieveSubscription() so it needs
  * a real Stripe subscription created in the sandbox.
  */
+@EnabledIf(value = "com.sm.instagram.platform.integration.ExternalCredentialsAvailable#stripe", disabledReason = "Requires real stripe test credentials (.env / classpath)")
 class SubscriptionService_Webhook_IntegrationTest extends SubscriptionServiceIntegrationTestBase {
 
     // ========================================================================

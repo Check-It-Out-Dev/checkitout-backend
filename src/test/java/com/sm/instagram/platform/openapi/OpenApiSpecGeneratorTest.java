@@ -59,9 +59,15 @@ class OpenApiSpecGeneratorTest {
         assertTrue(spec.contains("\"AccountStatus\""),
                 "Should contain AccountStatus as a named schema");
 
-        // Pretty-print the JSON before writing
+        // Pretty-print the JSON before writing. ORDER_MAP_ENTRIES_BY_KEYS
+        // makes the artifact canonical: springdoc's runtime map ordering
+        // varies between boots (Pageable schema properties shuffled every
+        // run), which kept re-dirtying the committed spec with 88+/88-
+        // no-op diffs. Key order is semantically irrelevant to OpenAPI and
+        // to the FE codegen.
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
         Object json = mapper.readValue(spec, Object.class);
         String prettySpec = mapper.writeValueAsString(json);
 

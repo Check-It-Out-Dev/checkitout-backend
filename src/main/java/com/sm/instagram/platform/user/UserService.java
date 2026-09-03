@@ -68,6 +68,7 @@ public class UserService extends BaseService<User, Long, UserDtoIn> {
     private final EmailVerificationService emailVerificationService;
     private final com.sm.instagram.platform.legal.LegalConsentService legalConsentService;
     private final ApplicationEventPublisher eventPublisher;
+    private final com.sm.instagram.platform.storage.service.SignedUrlService signedUrlService;
 
     public UserService(ApplicationContext applicationContext,
                        SpecificationBuilder<User> specificationBuilder,
@@ -87,7 +88,8 @@ public class UserService extends BaseService<User, Long, UserDtoIn> {
                        EmailChangeService emailChangeService,
                        EmailVerificationService emailVerificationService,
                        com.sm.instagram.platform.legal.LegalConsentService legalConsentService,
-                       ApplicationEventPublisher eventPublisher) {
+                       ApplicationEventPublisher eventPublisher,
+                       com.sm.instagram.platform.storage.service.SignedUrlService signedUrlService) {
         super(applicationContext, specificationBuilder, repository, modelMapper, repositoryResolver);
         this.addressRepository = addressRepository;
         this.objectMapper = objectMapper;
@@ -104,6 +106,7 @@ public class UserService extends BaseService<User, Long, UserDtoIn> {
         this.emailVerificationService = emailVerificationService;
         this.legalConsentService = legalConsentService;
         this.eventPublisher = eventPublisher;
+        this.signedUrlService = signedUrlService;
     }
 
     @Override
@@ -213,7 +216,14 @@ public class UserService extends BaseService<User, Long, UserDtoIn> {
         ModelMapper updateMapper = new ModelMapper();
         updateMapper.getConfiguration().setSkipNullEnabled(true);
         updateMapper.typeMap(UserDtoIn.class, User.class)
-                .addMappings(mapper -> mapper.skip(User::setAddresses));
+                .addMappings(mapper -> {
+                    mapper.skip(User::setAddresses);
+                    // SECURITY (pentest 3.1): avatar is never set via a full
+                    // update — only the gated PATCH field-router. Preserves the
+                    // existing (possibly OAuth) avatar; blocks attacker-host
+                    // substitution through PUT /users/{id}. See UserMapping.
+                    mapper.skip(User::setProfilePicture);
+                });
         updateMapper.map(dtoIn, user);
 
         user.setFirebaseUserId(firebaseUserId);
@@ -483,11 +493,43 @@ public class UserService extends BaseService<User, Long, UserDtoIn> {
         return addresses;
     }
 
+    /**
+     * True when {@code incoming} would ACTUALLY change the stored email of
+     * {@code userId}, under the same normalization {@link EmailChangeService}
+     * applies (trim + lowercase). The controller's step-up gate calls this so
+     * that full-DTO updates carrying the caller's own unchanged email — the
+     * FE ships the schema-required {@code email} field on every profile
+     * PATCH, including the avatar/uploadId flow — are not challenged for a
+     * step-up token. Step-up protects the email CHANGE, not the request
+     * shape.
+     *
+     * <p>Null/blank input and unknown users return {@code false}: those
+     * requests are not change attempts, and the downstream validation /
+     * not-found paths own their error semantics (400/404, not 401).
+     */
+    @Transactional(readOnly = true)
+    public boolean wouldChangeEmail(Long userId, Object incoming) {
+        if (userId == null || incoming == null) {
+            return false;
+        }
+        String candidate = incoming.toString().trim().toLowerCase(Locale.ROOT);
+        if (candidate.isEmpty()) {
+            return false;
+        }
+        return userRepository.findById(userId)
+                .map(existing -> {
+                    String current = existing.getEmail();
+                    return current == null
+                            || !candidate.equals(current.trim().toLowerCase(Locale.ROOT));
+                })
+                .orElse(false);
+    }
+
     private void processUserUpdateField(User user, String key, Object value, Map<String, Object> allUpdates, List<Runnable> deferredFirebaseActions) {
         switch (key) {
             case "accountStatus" -> handleAccountStatusUpdate(user, value, deferredFirebaseActions);
             case "email" -> emailChangeService.changeEmail(user, (String) value);
-            case "profilePicture" -> user.setProfilePicture((String) value);
+            case "profilePicture" -> handleProfilePictureUpdate(user, value);
             case "addresses" -> handleAddressesUpdate(user, allUpdates.get("addresses"));
             case "addressesIds", "addressIds" -> handleAddressIdsUpdate(user, value);
             case "phoneNumber" -> user.setPhoneNumber((String) value);
@@ -500,6 +542,40 @@ public class UserService extends BaseService<User, Long, UserDtoIn> {
             case "userType" -> handleUserTypeUpdate(user, value, deferredFirebaseActions);
             default -> throw new ValidationTranslatableException("error.validation.invalid_argument", key);
         }
+    }
+
+    /**
+     * SECURITY (pentest 3.1, same class as ticket attachments): the avatar
+     * URL is stored verbatim and rendered as {@code <img src>} to other
+     * users, so the client never chooses it freely. Two accepted shapes:
+     * <ul>
+     *   <li><b>uploadId</b> (preferred) — the tracked id from
+     *       {@code POST /upload/signed-url}. The BE resolves the stored URL
+     *       from its own {@code file_uploads} row after verifying the upload
+     *       belongs to the caller and the blob exists in our bucket.</li>
+     * </ul>
+     *
+     * <p><b>Why uploadId-only (owner directive 2026-06-13):</b> an own-bucket
+     * URL is <em>not</em> sufficient — host-pinning stops attacker-host
+     * substitution but not in-bucket cross-reference: a user could set their
+     * avatar to any path in our bucket, including another user's photo. The
+     * {@code file_uploads} table is the ownership state: only a tracked upload
+     * the caller made is accepted, and the client never supplies a URL, so it
+     * cannot point the avatar anywhere else. A raw URL (own-bucket or not)
+     * won't resolve to a tracked upload and is rejected.
+     *
+     * <p>Null / blank clears the avatar (legitimate "remove photo" path).
+     * OAuth/registration avatar writes call {@code setProfilePicture}
+     * directly with a trusted provider URL and never pass through here.
+     */
+    private void handleProfilePictureUpdate(User user, Object value) {
+        String uploadId = (String) value;
+        if (uploadId == null || uploadId.isBlank()) {
+            user.setProfilePicture(null); // remove-photo
+            return;
+        }
+        user.setProfilePicture(
+                signedUrlService.resolveOwnedUpload(permissionUtils.getUserId(), uploadId.trim()).publicUrl());
     }
 
     private void handleAccountStatusUpdate(User user, Object value, List<Runnable> deferredFirebaseActions) {

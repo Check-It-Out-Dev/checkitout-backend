@@ -56,6 +56,13 @@ public class WebSecurityConfiguration {
                         .requestMatchers("/api/health/**").permitAll()
                         .requestMatchers("/api/system/**").permitAll()
                         .requestMatchers("/api/test/ping", "/api/test/health", "/test/ping", "/test/health").permitAll()
+                        // dev-lite local upload transport: the single-use token IS the
+                        // authorization (mirrors signed-URL semantics). The controller
+                        // only exists under the dev-lite profile — everywhere else
+                        // these patterns dead-end in a 404.
+                        .requestMatchers("/dev-lite/upload/*", "/dev-lite/files/**", "/dev-lite/placeholder/*",
+                                "/api/dev-lite/upload/*", "/api/dev-lite/files/**",
+                                "/api/dev-lite/placeholder/*").permitAll()
                         
                         // Error handling endpoints - MUST be public to prevent logout loops
                         .requestMatchers("/error").permitAll()
@@ -74,16 +81,23 @@ public class WebSecurityConfiguration {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
 
-                        // Test authentication endpoints — used by E2E/integration tests for session bootstrap.
-                        // SECURITY: TestAuthController bean only exists in @Profile("e2e").
-                        // In prod/test profiles the controller is not registered → these paths return 404.
+                        // Test/simulator endpoints — E2E session bootstrap, and the same
+                        // affordances under the dev-lite simulator profile.
+                        // SECURITY: permitAll here is safe only because each controller is
+                        // profile-gated and therefore ABSENT in prod → 404, not 200.
+                        //   /test/auth, /test/legal, /test/registry → (e2e | dev-lite) & !prod & !test
+                        //   /test/email                            → (e2e | dev)      & !prod & !test
+                        // The mail reader is deliberately wider: the plain `dev` profile has
+                        // used it since before dev-lite existed. It still cannot exist in prod.
                         .requestMatchers("/api/test/auth/**", "/test/auth/**").permitAll()
                         .requestMatchers("/api/test/legal/**", "/test/legal/**").permitAll()
                         .requestMatchers("/api/test/registry/**", "/test/registry/**").permitAll()
+                        .requestMatchers("/api/test/email/**", "/test/email/**").permitAll()
 
                         // Support - Public endpoints (ticket creation, status check, FAQs)
                         .requestMatchers(HttpMethod.POST, "/api/support/ticket", "/support/ticket").permitAll()  // Create ticket
                         .requestMatchers(HttpMethod.GET, "/api/support/ticket/status", "/support/ticket/status").permitAll()  // Status check by reference
+                        .requestMatchers(HttpMethod.GET, "/api/support/ticket/access", "/support/ticket/access").permitAll()  // Access by signed magic-link token
                         .requestMatchers(HttpMethod.POST, "/api/support/ticket/response", "/support/ticket/response").permitAll()  // Customer response
                         .requestMatchers(HttpMethod.POST, "/api/support/ticket/*/attachments", "/support/ticket/*/attachments").permitAll()  // Ticket attachments (anonymous)
                         // Note: Response attachments require authentication (admin or ticket owner validation)
@@ -192,6 +206,13 @@ public class WebSecurityConfiguration {
         // ALLOWED ORIGINS - Configured via cors.allowed-origins in application YAML
         // =============================================================
         corsConfig.setAllowedOrigins(corsProperties.getAllowedOrigins());
+
+        // Patterns are additive and empty outside the dev-lite simulator, where
+        // the frontend port is not fixed (the wizard remaps on a clash). Spring
+        // checks the exact list first, then these.
+        if (!corsProperties.getAllowedOriginPatterns().isEmpty()) {
+            corsConfig.setAllowedOriginPatterns(corsProperties.getAllowedOriginPatterns());
+        }
 
         // =============================================================
         // ALLOWED HTTP METHODS - Configured via cors.allowed-methods in application YAML

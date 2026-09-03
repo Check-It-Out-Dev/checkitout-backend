@@ -17,9 +17,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OpportunityStatusDtoOut {
-    @Schema(allowableValues = {"APPLIED", "ACCEPTED_BY_COMPANY", "REJECTED_BY_COMPANY", "ACCEPTED_BY_INFLUENCER",
-            "REJECTED_BY_INFLUENCER", "CONTENT_SEND_TO_ACCEPT", "CONTENT_APPROVED", "CONTENT_REJECTED",
-            "CONTENT_POSTED", "CONTENT_POSTED_REJECTED", "TO_BE_PAID", "DONE"}, description = "OpportunityStatus enum name")
+    // implementation = OpportunityStatus.class makes the spec REFERENCE the
+    // shared enum component instead of inlining a per-DTO copy — the FE
+    // generator then reuses the single OpportunityStatus TS enum rather than
+    // minting an incompatible OpportunityStatusDtoOutValueEnum (docs-only;
+    // the runtime type stays String).
+    @Schema(implementation = OpportunityStatus.class, description = "OpportunityStatus enum name")
     private String value;        // Original enum value: "APPLIED", "CONTENT_APPROVED", etc.
     private String label;        // Translated label: "Applied", "Content Approved", etc.
     private String description;  // Translated description
@@ -27,9 +30,7 @@ public class OpportunityStatusDtoOut {
     private String colorTheme;   // UI color theme
     private String icon;         // UI icon
     private List<String> aliases; // Alternative names
-    @ArraySchema(schema = @Schema(allowableValues = {"APPLIED", "ACCEPTED_BY_COMPANY", "REJECTED_BY_COMPANY",
-            "ACCEPTED_BY_INFLUENCER", "REJECTED_BY_INFLUENCER", "CONTENT_SEND_TO_ACCEPT", "CONTENT_APPROVED",
-            "CONTENT_REJECTED", "CONTENT_POSTED", "CONTENT_POSTED_REJECTED", "TO_BE_PAID", "DONE"},
+    @ArraySchema(schema = @Schema(implementation = OpportunityStatus.class,
             description = "OpportunityStatus enum name"))
     private List<String> possibleTransitions; // Possible next states
     private boolean isTerminal;  // Is terminal state

@@ -23,6 +23,16 @@ public class UserMapping implements MappingConfigurer {
             mapper.skip(User::setLastUpdateTime);
             mapper.skip(User::setCreatedTime);
             mapper.skip(User::setFirebaseUserId);
+            // SECURITY (pentest 3.1): the avatar is a stored URL rendered as
+            // <img src> to other users, so it is NEVER set from a full-DTO
+            // create/update — only through the gated PATCH field-router
+            // (UserService.handleProfilePictureUpdate, which accepts an
+            // uploadId of a tracked upload owned by the caller), or by
+            // OAuth/registration which set the entity directly with a trusted
+            // provider URL. Skipping it here closes the "PUT /users/{id} with
+            // profilePicture=attacker-host" hole without dropping an existing
+            // (possibly OAuth) avatar.
+            mapper.skip(User::setProfilePicture);
         });
 
         modelMapper.typeMap(User.class, UserDtoOut.class).addMappings(mapper ->

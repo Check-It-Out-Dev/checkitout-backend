@@ -221,12 +221,12 @@ springdoc:
 # =============================================================================
 # Meta App Configuration (Facebook App for Instagram Business Login) - TEST
 meta:
-  app-id: ${META_APP_ID:1000000000000001}  # TEST Meta App ID (hardcoded for local)
+  app-id: ${META_APP_ID:770277702827785}  # TEST Meta App ID (hardcoded for local)
   app-secret: ${META_APP_SECRET:}  # TEST Meta Secret (hardcoded for local)
 
 instagram:
   test-token: ${INSTAGRAM_TEST_TOKEN:}
-  client-id: ${INSTAGRAM_CLIENT_ID:2000000000000001}  # TEST Instagram App ID
+  client-id: ${INSTAGRAM_CLIENT_ID:2113860459101101}  # TEST Instagram App ID
   client:
     secret: ${INSTAGRAM_CLIENT_SECRET:}  # TEST Instagram Secret
   redirect-uri: https://localhost:8080/api/auth/social/callback/instagram  # Backend handles OAuth (needs SSL)

@@ -479,7 +479,7 @@ class InstagramConfigUnitTest {
         }
 
         @ParameterizedTest
-        @ValueSource(strings = {"2000000000000001", "2000000000000002", "1234567890123456"})
+        @ValueSource(strings = {"2113860459101101", "2658917770964963", "1234567890123456"})
         @DisplayName("should accept various client IDs")
         void shouldAcceptVariousClientIds(String clientId) {
             // Given

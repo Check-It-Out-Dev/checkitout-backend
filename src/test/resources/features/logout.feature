@@ -27,7 +27,7 @@ Feature: User Logout
 
     Examples:
       | email                              | password           | firebaseUid                      |
-      | e2e-company@example.test | ExampleE2ePass1!   | E2ECOMPANYUID000000000000001     |
+      | norbert.marchewka4444431@gmail.com | Janekmapsa66!ppp   | WWXA9DehxZghyLq849TpyE4vYzZ2     |
 
   @admin @full-auth @2fa @kms
   Scenario Outline: Admin user logs out after full 2FA authentication
@@ -51,7 +51,7 @@ Feature: User Logout
 
     Examples:
       | email                         | password           | firebaseUid                      |
-      | e2e-admin@example.test | ExampleE2ePass1!   | E2EADMINUID00000000000000001     |
+      | norbert.marchewka44@gmail.com | Janekmapsa66!ppp   | 85VJgS6shAWTqby4rHypN355RWv2     |
 
   @influencer @oauth @kms
   Scenario Outline: Influencer logs out after OAuth authentication
@@ -68,4 +68,4 @@ Feature: User Logout
 
     Examples:
       | firebaseUid                      |
-      | E2EINFLUENCERUID000000000001     |
+      | SEWgduxUjRh4KDqxVWFs6zgThIa2     |

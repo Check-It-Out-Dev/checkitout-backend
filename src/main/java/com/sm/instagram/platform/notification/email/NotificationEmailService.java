@@ -37,7 +37,7 @@ public class NotificationEmailService {
     private final TemplateEngine emailTemplateEngine;
     private final MessageSource messageSource;
 
-    @Value("${spring.mail.from:support@example.com}")
+    @Value("${spring.mail.from:norbert_marchewka@checkitout.app}")
     private String fromAddress;
 
     @Value("${app.base-url:https://checkitout.com}")

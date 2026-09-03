@@ -43,6 +43,9 @@
     <include file="dev-test/002-data/005-demo-influencer-data.sql" relativeToChangelogFile="true" context="dev,test,local"/>
     <include file="dev-test/002-data/006-demo-extended-data.sql" relativeToChangelogFile="true" context="dev,test,local"/>
 
+    <!-- DEV-LITE ONLY: repoint demo images at the local placeholder endpoint (no egress) -->
+    <include file="dev-test/002-data/007-dev-lite-offline-images.sql" relativeToChangelogFile="true" context="dev-lite"/>
+
     <!-- ===================================================================== -->
     <!-- PRODUCTION MIGRATIONS: Run only in production environment           -->
     <!-- ===================================================================== -->
@@ -177,5 +180,8 @@
 
     <!-- April 2026: Bump content_hash for all legal documents after rebuilding PDFs with "Version 2.0" / "Wersja 2.0" label -->
     <include file="2026/04/25-04-2026-bump-legal-document-content-hashes.sql" relativeToChangelogFile="true"/>
+
+    <!-- June 2026: Widen ticket_reference to VARCHAR(32) — pentest 3.3 SecureRandom format is 21 chars -->
+    <include file="2026/09/02-09-2026-widen-ticket-reference-column.sql" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

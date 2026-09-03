@@ -14,12 +14,17 @@ import com.sm.instagram.platform.integration.base.BaseServiceIntegrationTest;
 import com.sm.instagram.platform.partnershipopportunities.*;
 import com.sm.instagram.platform.servicetype.ServiceType;
 import com.sm.instagram.platform.servicetype.ServiceTypeRepository;
+import com.sm.instagram.platform.storage.service.SignedUrlService;
 import com.sm.instagram.platform.user.User;
 import com.sm.instagram.platform.user.UserType;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.UUID;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 
 /**
  * Base class for PartnershipOpportunityService integration tests.
@@ -48,6 +53,16 @@ public abstract class PartnershipOpportunityServiceIntegrationTestBase extends B
     @Autowired
     protected ServiceTypeRepository serviceTypeRepository;
 
+    /**
+     * The URL-resolution security (ownership + in-bucket check) is unit-tested
+     * in {@code SignedUrlServiceResolveUploadUnitTest}; here we stub it so the
+     * photo-persistence tests stay focused on persistence and don't need a
+     * live GCS bucket. A photo's {@code uploadId} resolves to a canned
+     * own-bucket URL derived from that id.
+     */
+    @MockBean
+    protected SignedUrlService signedUrlService;
+
     protected City testCity;
     protected Address testAddress;
     protected User secondCompany;
@@ -56,6 +71,17 @@ public abstract class PartnershipOpportunityServiceIntegrationTestBase extends B
 
     @BeforeEach
     void setUpTestData() {
+        // Stub the BE-minted-URL resolver: any uploadId → a canned own-bucket
+        // URL. lenient() because the non-photo tests never call it.
+        lenient().when(signedUrlService.resolveOwnedUpload(any(), any()))
+                .thenAnswer(inv -> {
+                    String uploadId = inv.getArgument(1);
+                    return new SignedUrlService.ResolvedUpload(
+                            "content/test/" + uploadId,
+                            "https://firebasestorage.googleapis.com/v0/b/check-it-out-47c50.firebasestorage.app/o/content%2Ftest%2F" + uploadId,
+                            "photo.jpg", "image/jpeg", 1024L);
+                });
+
         // Find or create a test city
         testCity = cityRepository.findAll().stream().findFirst()
                 .orElseGet(() -> {

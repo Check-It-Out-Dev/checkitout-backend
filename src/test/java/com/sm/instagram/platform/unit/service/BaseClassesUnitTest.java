@@ -74,6 +74,8 @@ class BaseClassesUnitTest {
         private Integer count;
         private Double price;
         private Boolean active;
+        private Long externalRef;
+        private LocalDateTime scheduledAt;
         private LocalDateTime createdTime;
         private LocalDateTime lastUpdateTime;
         private String updaterId;
@@ -93,6 +95,10 @@ class BaseClassesUnitTest {
         public void setPrice(Double price) { this.price = price; }
         public Boolean getActive() { return active; }
         public void setActive(Boolean active) { this.active = active; }
+        public Long getExternalRef() { return externalRef; }
+        public void setExternalRef(Long externalRef) { this.externalRef = externalRef; }
+        public LocalDateTime getScheduledAt() { return scheduledAt; }
+        public void setScheduledAt(LocalDateTime scheduledAt) { this.scheduledAt = scheduledAt; }
         public LocalDateTime getCreatedTime() { return createdTime; }
         public void setCreatedTime(LocalDateTime createdTime) { this.createdTime = createdTime; }
         public LocalDateTime getLastUpdateTime() { return lastUpdateTime; }
@@ -708,9 +714,9 @@ class BaseClassesUnitTest {
                 existingEntity.setId(1L);
 
                 Map<String, Object> updates = new HashMap<>();
-                updates.put("createdTime", "2024-01-15T10:30:00");
+                updates.put("scheduledAt", "2024-01-15T10:30:00");
 
-                // Use custom ignored fields that do NOT include createdTime
+                // A business LocalDateTime field — createdTime is now always protected
                 Set<String> ignoredFields = Set.of("id", "lastUpdateTime");
 
                 when(testRepository.findById(1L)).thenReturn(Optional.of(existingEntity));
@@ -721,7 +727,7 @@ class BaseClassesUnitTest {
 
                 // Then
                 assertThat(result).isNotNull();
-                assertThat(result.getCreatedTime()).isEqualTo(LocalDateTime.of(2024, 1, 15, 10, 30, 0));
+                assertThat(result.getScheduledAt()).isEqualTo(LocalDateTime.of(2024, 1, 15, 10, 30, 0));
             }
 
             @Test
@@ -820,7 +826,7 @@ class BaseClassesUnitTest {
                 existingEntity.setId(1L);
 
                 Map<String, Object> updates = new HashMap<>();
-                updates.put("createdTime", "invalid-date-format");
+                updates.put("scheduledAt", "invalid-date-format");
 
                 Set<String> noIgnore = Set.of();
 
@@ -1543,9 +1549,9 @@ class BaseClassesUnitTest {
             existingEntity.setId(1L);
 
             Map<String, Object> updates = new HashMap<>();
-            updates.put("id", "12345678901234");
+            updates.put("externalRef", "12345678901234");
 
-            // ID is in ignored fields by default, so let's test with custom ignored fields
+            // externalRef is a business Long field — id is now always protected
             Set<String> noIgnoredFields = Set.of();
 
             when(testRepository.findById(1L)).thenReturn(Optional.of(existingEntity));
@@ -1555,7 +1561,7 @@ class BaseClassesUnitTest {
             TestEntity result = testService.patch(1L, updates, noIgnoredFields);
 
             // Then
-            assertThat(result.getId()).isEqualTo(12345678901234L);
+            assertThat(result.getExternalRef()).isEqualTo(12345678901234L);
         }
 
         @Test
@@ -1566,7 +1572,7 @@ class BaseClassesUnitTest {
             existingEntity.setId(1L);
 
             Map<String, Object> updates = new HashMap<>();
-            updates.put("createdTime", "2024-01-15T10:30:00+02:00");
+            updates.put("scheduledAt", "2024-01-15T10:30:00+02:00");
 
             Set<String> ignoredFields = Set.of("id", "lastUpdateTime");
 
@@ -1577,8 +1583,8 @@ class BaseClassesUnitTest {
             TestEntity result = testService.patch(1L, updates, ignoredFields);
 
             // Then
-            assertThat(result.getCreatedTime()).isNotNull();
-            assertThat(result.getCreatedTime().getHour()).isEqualTo(10);
+            assertThat(result.getScheduledAt()).isNotNull();
+            assertThat(result.getScheduledAt().getHour()).isEqualTo(10);
         }
 
         @Test

@@ -14,10 +14,10 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * <p>Unconfigured NIPs default to "not found" responses.
  *
- * <p><b>SECURITY:</b> Only active in {@code e2e} profile.
+ * <p><b>SECURITY:</b> Only active in the {@code e2e} and {@code dev-lite} profiles.
  */
 @Component
-@Profile("e2e & !prod & !test")
+@Profile("(e2e | dev-lite) & !prod & !test")
 public class RegistryStubState {
 
     private final ConcurrentHashMap<String, CompanyRegistryData> gusResponses = new ConcurrentHashMap<>();

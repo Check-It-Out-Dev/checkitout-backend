@@ -1,5 +1,9 @@
 package com.sm.instagram.platform.subscription;
 
+import com.sm.instagram.platform.city.City;
+import com.sm.instagram.platform.partnershipopportunities.CompensationType;
+import com.sm.instagram.platform.partnershipopportunities.PartnershipOpportunity;
+import com.sm.instagram.platform.partnershipopportunities.PartnershipOpportunityRepository;
 import com.sm.instagram.platform.subscription.entity.*;
 import com.sm.instagram.platform.subscription.invoicing.InvoiceRetryService;
 import com.sm.instagram.platform.subscription.invoicing.InvoicingPort;
@@ -21,13 +25,17 @@ import java.util.Map;
 /**
  * Test-only endpoints for E2E subscription testing.
  * Manipulates subscription state directly, bypasses Stripe, triggers crons.
- * NEVER available in production.
+ *
+ * <p><b>SECURITY:</b> Active in {@code e2e} and {@code dev} profiles only —
+ * never in {@code prod} or {@code test}. Dev availability lets FE
+ * integration tests exercise Stripe-bypassed subscription state in the dev
+ * BE profile.
  */
 @Slf4j
 @RestController
 @RequestMapping("/test/subscription")
 @RequiredArgsConstructor
-@Profile("e2e & !prod & !test")
+@Profile("(e2e | dev) & !prod & !test")
 public class TestSubscriptionController {
 
     private final SubscriptionService subscriptionService;
@@ -40,6 +48,7 @@ public class TestSubscriptionController {
     private final InvoicingPort invoicingPort;
     private final UserRepository userRepo;
     private final CampaignLimitService campaignLimitService;
+    private final PartnershipOpportunityRepository partnershipOpportunityRepo;
 
     @jakarta.persistence.PersistenceContext
     private transient jakarta.persistence.EntityManager entityManager;
@@ -88,7 +97,21 @@ public class TestSubscriptionController {
             if (request.containsKey("previousPlanName")) {
                 var prevPlan = subscriptionPlanRepo.findByName((String) request.get("previousPlanName")).orElse(null);
                 sub.setPreviousPlan(prevPlan);
-                sub.setPreviousState(status == SubscriptionStatus.TERMS_PENDING ? SubscriptionStatus.valueOf(statusStr) : null);
+            }
+            // Allow callers to seed previousState directly (e.g. when staging
+            // a TERMS_PENDING subscription for accept-terms restoration tests).
+            // The previous behavior derived previousState from statusStr,
+            // which round-tripped to the new status — making it impossible
+            // to test accept-terms-restores-previous-state without falling
+            // back on global enterTermsPending().
+            if (request.containsKey("previousStatus")) {
+                sub.setPreviousState(
+                        SubscriptionStatus.valueOf((String) request.get("previousStatus")));
+            } else if (status != SubscriptionStatus.TERMS_PENDING) {
+                // Non-TERMS_PENDING transitions clear previousState by
+                // default (preserves the prior null-on-other-transitions
+                // semantics).
+                sub.setPreviousState(null);
             }
             if (request.containsKey("targetPlanName")) {
                 sub.setTargetPlan(subscriptionPlanRepo.findByName((String) request.get("targetPlanName")).orElse(null));
@@ -367,8 +390,7 @@ public class TestSubscriptionController {
 
     @PostMapping("/create-campaign")
     @Transactional
-    public ResponseEntity<Map<String, Object>> createCampaign(@RequestBody Map<String, String> request,
-                                                               jakarta.servlet.http.HttpServletRequest httpRequest) {
+    public ResponseEntity<Map<String, Object>> createCampaign(@RequestBody Map<String, String> request) {
         try {
             String campaignName = request.getOrDefault("campaignName", "E2E Test Campaign");
 
@@ -378,31 +400,57 @@ public class TestSubscriptionController {
             User user = userRepo.findByFirebaseUserId(firebaseUid)
                     .orElseThrow(() -> new RuntimeException("[E2E] User not found for UID: " + firebaseUid));
 
-            // Enforce campaign limit (the whole point of this endpoint)
-            campaignLimitService.enforceLimit(user.getId());
-
-            // Create minimal campaign via native SQL (avoids complex PO validation)
-            var period = billingPeriodRepo.findActiveByUserId(user.getId())
+            // Resolve subscription + limit + period for the user.
+            var subscription = subscriptionService.getOrCreateSubscription(user.getId());
+            int limit = subscriptionService.resolveEffectiveCampaignLimit(subscription);
+            var period = billingPeriodRepo.findActiveByUserIdForUpdate(user.getId())
                     .orElseThrow(() -> new RuntimeException("[E2E] No active billing period"));
 
-            // Use EntityManager for native insert
-            entityManager.createNativeQuery(
-                    "INSERT INTO partnership_opportunity (id, company_id, name, title, details, compensation_type, " +
-                    "compensation_amount_min, followers_min, followers_max, start_date, end_date, active, version, created_time, last_update_time) " +
-                    "VALUES (nextval('partnership_opportunity_seq'), :companyId, :name, :title, 'E2E test', 'CASH', " +
-                    "100, 1, 1000000, :startDate, :endDate, true, 0, NOW(), NOW())")
+            // Atomic count-and-insert: a single SQL statement that performs the
+            // INSERT only if the running count is below the limit. INSERT...SELECT
+            // with a WHERE on COUNT() runs the count and the insert in the same
+            // statement / same lock, so the next request always sees prior commits
+            // (no Hibernate auto-flush quirks, no race between separate count + insert
+            // statements). executeUpdate() returns 1 on insert, 0 when blocked.
+            //
+            // Note: PartnershipOpportunity.city_id and address_id are NULL-able in
+            // the actual schema (see common/001-schema/002-tables.sql); the JPA-level
+            // @JoinColumn(nullable = false) annotations are advisory only here —
+            // intentionally bypassed for this minimal E2E fixture.
+            LocalDateTime now = LocalDateTime.now();
+            int rowsInserted = entityManager.createNativeQuery(
+                    "INSERT INTO partnership_opportunity (id, company_id, name, title, details, " +
+                    "compensation_type, compensation_amount_min, followers_min, followers_max, " +
+                    "start_date, end_date, active, version, created_time, last_update_time) " +
+                    "SELECT nextval('partnership_opportunity_seq'), :companyId, :name, :title, " +
+                    "       'E2E test', 'CASH', 100, 1, 1000000, :startDate, :endDate, true, 0, " +
+                    "       :createdTime, :lastUpdateTime " +
+                    "WHERE (SELECT COUNT(*) FROM partnership_opportunity " +
+                    "       WHERE company_id = :companyId AND created_time BETWEEN :periodStart AND :periodEnd) < :limit")
                     .setParameter("companyId", user.getId())
                     .setParameter("name", campaignName)
                     .setParameter("title", campaignName)
-                    .setParameter("startDate", java.time.LocalDateTime.now().plusDays(1))
-                    .setParameter("endDate", java.time.LocalDateTime.now().plusDays(30))
+                    .setParameter("startDate", now.plusDays(1))
+                    .setParameter("endDate", now.plusDays(30))
+                    .setParameter("createdTime", now)
+                    .setParameter("lastUpdateTime", now)
+                    .setParameter("periodStart", period.getStartDate())
+                    .setParameter("periodEnd", period.getEndDate())
+                    .setParameter("limit", limit)
                     .executeUpdate();
 
+            if (rowsInserted == 0) {
+                log.info("[E2E] Campaign blocked by limit: userId={}, limit={}, plan={}",
+                        user.getId(), limit, subscription.getCurrentPlan().getName());
+                return ResponseEntity.status(409).body(Map.of(
+                        "success", false, "error", "CAMPAIGN_LIMIT",
+                        "limit", limit));
+            }
+
             log.info("[E2E] Campaign created: userId={}, name={}", user.getId(), campaignName);
-            return ResponseEntity.ok(Map.of("success", true, "campaignName", campaignName));
-        } catch (CampaignLimitExceededException e) {
-            log.info("[E2E] Campaign blocked by limit: {}", e.getMessage());
-            return ResponseEntity.status(409).body(Map.of("success", false, "error", "CAMPAIGN_LIMIT", "limit", e.getLimit()));
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "campaignName", campaignName));
         } catch (Exception e) {
             log.error("[E2E] create-campaign failed", e);
             return ResponseEntity.internalServerError().body(Map.of("success", false, "error", e.getMessage()));

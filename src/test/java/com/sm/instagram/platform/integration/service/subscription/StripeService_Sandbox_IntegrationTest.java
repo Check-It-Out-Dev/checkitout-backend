@@ -1,5 +1,6 @@
 package com.sm.instagram.platform.integration.service.subscription;
 
+import org.junit.jupiter.api.condition.EnabledIf;
 import com.stripe.exception.InvalidRequestException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
@@ -24,6 +25,7 @@ import static org.assertj.core.api.Assertions.*;
  * <p>No browser needed — all operations are API-direct using test card tokens.
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@EnabledIf(value = "com.sm.instagram.platform.integration.ExternalCredentialsAvailable#stripe", disabledReason = "Requires real stripe test credentials (.env / classpath)")
 class StripeService_Sandbox_IntegrationTest extends SubscriptionServiceIntegrationTestBase {
 
     private static String testCustomerId;

@@ -11,11 +11,11 @@ Feature: Influencer email verification with password setup
     And the GreenMail SMTP server is running
 
     # Admin sets up the real influencer user
-    Given "Admin" logs in as ADMIN with Firebase UID "E2EADMINUID00000000000000001" email "e2e-admin@example.test" password "ExampleE2ePass1!" and completes 2FA
-    And the target user "E2EINFLUENCERUID000000000001" is synced and has status "ACTIVE" and role "INFLUENCER"
+    Given "Admin" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
+    And the target user "SEWgduxUjRh4KDqxVWFs6zgThIa2" is synced and has status "ACTIVE" and role "INFLUENCER"
 
     # Influencer logs in via OAuth (real Firebase user)
-    Given "StyleGuru" logs in as INFLUENCER via OAuth with Firebase UID "E2EINFLUENCERUID000000000001"
+    Given "StyleGuru" logs in as INFLUENCER via OAuth with Firebase UID "SEWgduxUjRh4KDqxVWFs6zgThIa2"
     Then "StyleGuru" should be authenticated
 
   # ========================================================================
@@ -76,7 +76,7 @@ Feature: Influencer email verification with password setup
   @happy-path @influencer @account-activation
   Scenario: Influencer receives ACCOUNT_ACTIVATED notification after verification
     # Enable notification preferences for influencer
-    When "Admin" enables all notification preferences for user "E2EINFLUENCERUID000000000001"
+    When "Admin" enables all notification preferences for user "SEWgduxUjRh4KDqxVWFs6zgThIa2"
     Then the response status should be 200
 
     # Reset, verify, activate

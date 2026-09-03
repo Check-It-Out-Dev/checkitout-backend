@@ -56,6 +56,8 @@ public class SignedUrlService {
     private final FileTrackingService trackingService;
     private final UploadMetricsService metricsService;
     private final ServiceAccountCredentials signingCredentials;
+    /** dev-lite only: local byte transport replacing GCS (null in every other profile). */
+    private final LocalUploadSink localSink;
 
     @Value("${file-upload.signed-url-expiration-minutes:5}")
     private int signedUrlExpirationMinutes;
@@ -68,12 +70,17 @@ public class SignedUrlService {
                             StorageRateLimitService rateLimiter,
                             @Autowired(required = false) FileTrackingService trackingService,
                             @Autowired(required = false) UploadMetricsService metricsService,
-                            @Autowired(required = false) GoogleCredentialsProvider credentialsProvider) {
+                            @Autowired(required = false) GoogleCredentialsProvider credentialsProvider,
+                            @Autowired(required = false) LocalUploadSink localSink) {
         this.storage = storage;
         this.bucketName = bucketName;
         this.rateLimiter = rateLimiter;
         this.trackingService = trackingService;
         this.metricsService = metricsService;
+        this.localSink = localSink;
+        if (localSink != null) {
+            log.info("dev-lite: SignedUrlService routes uploads to the local sink instead of GCS");
+        }
 
         // Extract ServiceAccountCredentials for URL signing
         if (credentialsProvider != null && credentialsProvider.getCachedCredentials() instanceof ServiceAccountCredentials) {
@@ -143,8 +150,8 @@ public class SignedUrlService {
             metricsService.recordUploadRequest();
         }
 
-        // Check if storage is available
-        if (storage == null) {
+        // Check if a byte transport is available (GCS, or the dev-lite sink)
+        if (storage == null && localSink == null) {
             log.error("GDPR: Operation=generateSignedUrl_failed, FirebaseUID={}, Error=storage_not_configured, Purpose=file_upload_preparation", userId);
             if (metricsService != null) {
                 metricsService.recordUploadFailure("STORAGE_NOT_CONFIGURED");
@@ -180,53 +187,66 @@ public class SignedUrlService {
         String filePath = generateFilePath(userId, request);
         log.debug("Generated file path: {}", filePath);
 
-        // Step 4: Create blob info
-        BlobInfo blobInfo = BlobInfo.newBuilder(bucketName, filePath)
-                .setContentType(request.getContentType())
-                .setMetadata(createMetadata(userId, request))
-                .build();
-
-        // Step 5: Generate signed URL
+        // Steps 4-6: mint the upload target + public URL. dev-lite swaps the
+        // byte transport (local sink instead of a GCS V4 signature); every
+        // rule around it — validation, limits, quota, tracking — is shared.
         try {
-            // Use V4 signature for better compatibility and explicit headers
-            // This matches what the validation service uses successfully
-            Map<String, String> headers = new HashMap<>();
-            headers.put("Content-Type", request.getContentType());
-
-            URL signedUrl;
-            if (signingCredentials != null) {
-                // Use service account credentials for signing (required for Firebase Storage)
-                signedUrl = storage.signUrl(
-                        blobInfo,
-                        signedUrlExpirationMinutes,
-                        TimeUnit.MINUTES,
-                        Storage.SignUrlOption.httpMethod(HttpMethod.PUT),
-                        Storage.SignUrlOption.withExtHeaders(headers),
-                        Storage.SignUrlOption.withV4Signature(),
-                        Storage.SignUrlOption.signWith(signingCredentials)
-                );
+            String uploadTargetUrl;
+            String publicUrl;
+            if (localSink != null) {
+                String token = localSink.prepareUpload(
+                        filePath, request.getContentType(), signedUrlExpirationMinutes);
+                uploadTargetUrl = localSink.uploadUrlFor(token);
+                publicUrl = localSink.publicUrl(filePath);
             } else {
-                // Fallback without explicit signing credentials (may not work with Firebase)
-                log.warn("Generating signed URL without service account credentials - this may fail");
-                signedUrl = storage.signUrl(
-                        blobInfo,
-                        signedUrlExpirationMinutes,
-                        TimeUnit.MINUTES,
-                        Storage.SignUrlOption.httpMethod(HttpMethod.PUT),
-                        Storage.SignUrlOption.withExtHeaders(headers),
-                        Storage.SignUrlOption.withV4Signature()
-                );
-            }
+                // Step 4: Create blob info
+                BlobInfo blobInfo = BlobInfo.newBuilder(bucketName, filePath)
+                        .setContentType(request.getContentType())
+                        .setMetadata(createMetadata(userId, request))
+                        .build();
 
-            // Step 6: Generate public URL (for viewing after upload)
-            String publicUrl = generatePublicUrl(filePath);
+                // Step 5: Generate signed URL — V4 signature for better
+                // compatibility and explicit headers, matching the validation
+                // service's successful usage.
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", request.getContentType());
+
+                URL signedUrl;
+                if (signingCredentials != null) {
+                    // Use service account credentials for signing (required for Firebase Storage)
+                    signedUrl = storage.signUrl(
+                            blobInfo,
+                            signedUrlExpirationMinutes,
+                            TimeUnit.MINUTES,
+                            Storage.SignUrlOption.httpMethod(HttpMethod.PUT),
+                            Storage.SignUrlOption.withExtHeaders(headers),
+                            Storage.SignUrlOption.withV4Signature(),
+                            Storage.SignUrlOption.signWith(signingCredentials)
+                    );
+                } else {
+                    // Fallback without explicit signing credentials (may not work with Firebase)
+                    log.warn("Generating signed URL without service account credentials - this may fail");
+                    signedUrl = storage.signUrl(
+                            blobInfo,
+                            signedUrlExpirationMinutes,
+                            TimeUnit.MINUTES,
+                            Storage.SignUrlOption.httpMethod(HttpMethod.PUT),
+                            Storage.SignUrlOption.withExtHeaders(headers),
+                            Storage.SignUrlOption.withV4Signature()
+                    );
+                }
+                uploadTargetUrl = signedUrl.toString();
+
+                // Step 6: Generate public URL (for viewing after upload)
+                publicUrl = generatePublicUrl(filePath);
+            }
 
             // Step 7: Create response
             String uploadId = UUID.randomUUID().toString();
             Instant expiresAt = Instant.now().plus(signedUrlExpirationMinutes, ChronoUnit.MINUTES);
 
             FileUploadResponse response = new FileUploadResponse(
-                    signedUrl.toString(),
+                    uploadTargetUrl,
                     publicUrl,
                     filePath,
                     expiresAt,
@@ -365,9 +385,65 @@ public class SignedUrlService {
      * Since our files are publicly readable, this is a simple URL construction.
      */
     private String generatePublicUrl(String filePath) {
+        if (localSink != null) {
+            return localSink.publicUrl(filePath);
+        }
         return String.format("https://firebasestorage.googleapis.com/v0/b/%s/o/%s?alt=media",
                 bucketName,
                 filePath.replace("/", "%2F"));  // URL encode the path
+    }
+
+    /**
+     * A tracked upload resolved to BE-derived values. Everything here comes
+     * from the PostgreSQL tracking row + the bucket — never from the client.
+     */
+    public record ResolvedUpload(String filePath, String publicUrl,
+                                 String filename, String contentType, Long fileSize) {}
+
+    /**
+     * Resolves a client-supplied {@code uploadId} to the BE-minted file
+     * reference — the ONLY way an uploaded file becomes a persistable
+     * URL (pentest 3.1 hardening, owner directive 2026-06-13: never trust
+     * a client URL; the server derives it from its own tracking).
+     *
+     * <p>Checks, in order:
+     * <ol>
+     *   <li>the uploadId exists in the {@code file_uploads} tracking table,</li>
+     *   <li>the upload belongs to the calling user (ownership — an attacker
+     *       cannot attach someone else's file; rejected with the SAME error
+     *       key as unknown ids so existence never leaks),</li>
+     *   <li>the blob actually exists in OUR bucket
+     *       ({@link #validateUploadSuccess}).</li>
+     * </ol>
+     * The public URL, filename, content type and size are all derived from
+     * the tracked row — client-supplied copies of any of them are ignored
+     * by callers of this method.
+     */
+    public ResolvedUpload resolveOwnedUpload(String userId, String uploadId) {
+        if (userId == null || userId.isBlank()) {
+            throw new ValidationTranslatableException("error.attachment.unknown_upload");
+        }
+        if (trackingService == null) {
+            log.error("File tracking unavailable — cannot resolve uploadId");
+            throw new StorageTranslatableException("error.storage.service_unavailable");
+        }
+        FileUpload upload = trackingService.getUpload(uploadId)
+                .orElseThrow(() -> new ValidationTranslatableException("error.attachment.unknown_upload"));
+        if (!userId.equals(upload.getUserId())) {
+            // Do NOT use a distinct error key — that would leak which ids exist.
+            log.warn("SECURITY: user {} attempted to use upload {} owned by another user",
+                    userId, uploadId);
+            throw new ValidationTranslatableException("error.attachment.unknown_upload");
+        }
+        if (!validateUploadSuccess(upload.getFilePath())) {
+            throw new ValidationTranslatableException("error.attachment.upload_incomplete");
+        }
+        return new ResolvedUpload(
+                upload.getFilePath(),
+                generatePublicUrl(upload.getFilePath()),
+                upload.getFilename(),
+                upload.getContentType(),
+                upload.getFileSize());
     }
 
     /**
@@ -379,6 +455,10 @@ public class SignedUrlService {
 
         if (filePath == null || filePath.trim().isEmpty()) {
             throw new ValidationTranslatableException("error.validation.required_field", "filePath");
+        }
+
+        if (localSink != null) {
+            return localSink.exists(filePath);
         }
 
         if (storage == null) {
@@ -409,6 +489,22 @@ public class SignedUrlService {
 
         if (filePath == null || filePath.trim().isEmpty()) {
             throw new ValidationTranslatableException("error.validation.required_field", "filePath");
+        }
+
+        if (localSink != null) {
+            Long size = localSink.size(filePath);
+            if (size != null) {
+                rateLimiter.recordUpload(userId, size);
+                if (trackingService != null) {
+                    trackingService.confirmUploadViaApi(filePath, size);
+                }
+                if (metricsService != null) {
+                    metricsService.recordUploadSuccess(userId, size);
+                }
+                log.info("GDPR: Operation=confirmUpload_success, FirebaseUID={}, FilePath={}, FileSize={}, DataModified=user_storage_quota, Purpose=storage_accounting",
+                        userId, filePath, size);
+            }
+            return;
         }
 
         if (storage == null) {

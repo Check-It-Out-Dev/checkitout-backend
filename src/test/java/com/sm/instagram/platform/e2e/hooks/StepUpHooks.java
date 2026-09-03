@@ -42,11 +42,11 @@ public class StepUpHooks extends CucumberSpringConfig {
     private RestTemplate restTemplate;
 
     // Firebase UIDs are constant — the only stable identifier across environments
-    private static final String COMPANY_FIREBASE_UID = "E2ECOMPANYUID000000000000001";
-    private static final String COMPANY_EMAIL = "e2e-company@example.test";
+    private static final String COMPANY_FIREBASE_UID = "WWXA9DehxZghyLq849TpyE4vYzZ2";
+    private static final String COMPANY_EMAIL = "norbert.marchewka4444431@gmail.com";
 
-    private static final String INFLUENCER_FIREBASE_UID = "E2EINFLUENCERUID000000000001";
-    private static final String INFLUENCER_EMAIL = "e2e-influencer@example.test";
+    private static final String INFLUENCER_FIREBASE_UID = "SEWgduxUjRh4KDqxVWFs6zgThIa2";
+    private static final String INFLUENCER_EMAIL = "norbert.marchewka97999@wp.pl";
 
     /**
      * Restores users to login-ready state before each scenario.

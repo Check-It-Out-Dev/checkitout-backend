@@ -822,31 +822,33 @@ class CredentialsServiceUnitTest {
     class InitErrorHandlingTests {
 
         @Test
-        @DisplayName("should throw IllegalStateException when credentials cannot be loaded")
-        void shouldThrowIllegalStateExceptionWhenCredentialsCannotBeLoaded() {
-            // Given - No credentials configured
+        @DisplayName("non-production init falls back to synthetic credentials when none can be loaded")
+        void nonProductionFallsBackToSyntheticWhenCredentialsCannotBeLoaded() {
+            // Given - No credentials configured. Contract change (contributor
+            // boot): outside production the provider degrades to synthetic
+            // offline credentials instead of killing the context.
             ReflectionTestUtils.setField(provider, "serviceAccountJsonBase64", "");
             ReflectionTestUtils.setField(provider, "serviceAccountFile", null);
             ReflectionTestUtils.setField(provider, "appEnvironment", "TEST");
 
             // When/Then
-            assertThatThrownBy(() -> provider.init())
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("Could not initialize Google credentials provider");
+            assertThatCode(() -> provider.init()).doesNotThrowAnyException();
+            assertThat(provider.getCachedCredentials()).isNotNull();
+            assertThat(provider.isUsingProductionCredentials()).isFalse();
         }
 
         @Test
-        @DisplayName("should throw IllegalStateException for invalid base64 without file fallback")
-        void shouldThrowIllegalStateExceptionForInvalidBase64() {
-            // Given - Invalid base64 and no file fallback
+        @DisplayName("non-production init survives invalid base64 via the synthetic fallback")
+        void nonProductionSurvivesInvalidBase64() {
+            // Given - Invalid base64 and no file fallback; same degraded-boot
+            // contract as above.
             ReflectionTestUtils.setField(provider, "serviceAccountJsonBase64", "invalid-base64-content!@#$");
             ReflectionTestUtils.setField(provider, "serviceAccountFile", null);
             ReflectionTestUtils.setField(provider, "appEnvironment", "TEST");
 
             // When/Then
-            assertThatThrownBy(() -> provider.init())
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("Could not initialize Google credentials provider");
+            assertThatCode(() -> provider.init()).doesNotThrowAnyException();
+            assertThat(provider.getCachedCredentials()).isNotNull();
         }
     }
 

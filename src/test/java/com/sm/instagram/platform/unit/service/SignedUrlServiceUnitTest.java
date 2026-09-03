@@ -75,7 +75,8 @@ class SignedUrlServiceUnitTest {
             rateLimiter,
             trackingService,
             metricsService,
-            null  // GoogleCredentialsProvider - null for unit tests
+            null,  // GoogleCredentialsProvider - null for unit tests
+            null   // LocalUploadSink - null outside dev-lite
         );
         ReflectionTestUtils.setField(service, "signedUrlExpirationMinutes", 5);
         ReflectionTestUtils.setField(service, "storagePathPattern", "content/{userId}/{timestamp}_{filename}");
@@ -254,7 +255,7 @@ class SignedUrlServiceUnitTest {
         @DisplayName("should throw StorageException when storage is null")
         void shouldThrowWhenStorageIsNull() {
             // Given
-            service = new SignedUrlService(null, BUCKET_NAME, rateLimiter, trackingService, metricsService, null);
+            service = new SignedUrlService(null, BUCKET_NAME, rateLimiter, trackingService, metricsService, null, null);
             ReflectionTestUtils.setField(service, "signedUrlExpirationMinutes", 5);
             ReflectionTestUtils.setField(service, "storagePathPattern", "content/{userId}/{timestamp}_{filename}");
             FileUploadRequest request = createValidRequest();
@@ -415,7 +416,7 @@ class SignedUrlServiceUnitTest {
         @DisplayName("should throw StorageException when storage is null")
         void shouldThrowWhenStorageIsNullForValidation() {
             // Given
-            service = new SignedUrlService(null, BUCKET_NAME, rateLimiter, trackingService, metricsService, null);
+            service = new SignedUrlService(null, BUCKET_NAME, rateLimiter, trackingService, metricsService, null, null);
             ReflectionTestUtils.setField(service, "signedUrlExpirationMinutes", 5);
             ReflectionTestUtils.setField(service, "storagePathPattern", "content/{userId}/{timestamp}_{filename}");
 
@@ -490,7 +491,7 @@ class SignedUrlServiceUnitTest {
         @DisplayName("should throw StorageException when storage is null")
         void shouldThrowWhenStorageIsNullForConfirm() {
             // Given
-            service = new SignedUrlService(null, BUCKET_NAME, rateLimiter, trackingService, metricsService, null);
+            service = new SignedUrlService(null, BUCKET_NAME, rateLimiter, trackingService, metricsService, null, null);
             ReflectionTestUtils.setField(service, "signedUrlExpirationMinutes", 5);
             ReflectionTestUtils.setField(service, "storagePathPattern", "content/{userId}/{timestamp}_{filename}");
 
@@ -561,7 +562,7 @@ class SignedUrlServiceUnitTest {
         @DisplayName("should work without tracking service (null)")
         void shouldWorkWithoutTrackingService() {
             // Given
-            service = new SignedUrlService(storage, BUCKET_NAME, rateLimiter, null, metricsService, null);
+            service = new SignedUrlService(storage, BUCKET_NAME, rateLimiter, null, metricsService, null, null);
             ReflectionTestUtils.setField(service, "signedUrlExpirationMinutes", 5);
             ReflectionTestUtils.setField(service, "storagePathPattern", "content/{userId}/{timestamp}_{filename}");
             Blob blob = mock(Blob.class);
@@ -580,7 +581,7 @@ class SignedUrlServiceUnitTest {
         @DisplayName("should work without metrics service (null)")
         void shouldWorkWithoutMetricsService() {
             // Given
-            service = new SignedUrlService(storage, BUCKET_NAME, rateLimiter, trackingService, null, null);
+            service = new SignedUrlService(storage, BUCKET_NAME, rateLimiter, trackingService, null, null, null);
             ReflectionTestUtils.setField(service, "signedUrlExpirationMinutes", 5);
             ReflectionTestUtils.setField(service, "storagePathPattern", "content/{userId}/{timestamp}_{filename}");
             Blob blob = mock(Blob.class);
@@ -853,7 +854,7 @@ class SignedUrlServiceUnitTest {
         @DisplayName("should work without tracking service")
         void shouldWorkWithoutTrackingService() throws Exception {
             // Given
-            service = new SignedUrlService(storage, BUCKET_NAME, rateLimiter, null, metricsService, null);
+            service = new SignedUrlService(storage, BUCKET_NAME, rateLimiter, null, metricsService, null, null);
             ReflectionTestUtils.setField(service, "signedUrlExpirationMinutes", 5);
             ReflectionTestUtils.setField(service, "storagePathPattern", "content/{userId}/{timestamp}_{filename}");
             setupDefaultMocks();
@@ -876,7 +877,7 @@ class SignedUrlServiceUnitTest {
         @DisplayName("should work without metrics service")
         void shouldWorkWithoutMetricsService() throws Exception {
             // Given
-            service = new SignedUrlService(storage, BUCKET_NAME, rateLimiter, trackingService, null, null);
+            service = new SignedUrlService(storage, BUCKET_NAME, rateLimiter, trackingService, null, null, null);
             ReflectionTestUtils.setField(service, "signedUrlExpirationMinutes", 5);
             ReflectionTestUtils.setField(service, "storagePathPattern", "content/{userId}/{timestamp}_{filename}");
 

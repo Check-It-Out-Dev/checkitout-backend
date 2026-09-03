@@ -834,7 +834,7 @@ class PartnershipOpportunityUnitTest {
                 List<PartnershipOpportunityPhotoDtoIn> photos = new ArrayList<>();
                 for (int i = 0; i < 7; i++) {
                     PartnershipOpportunityPhotoDtoIn photo = new PartnershipOpportunityPhotoDtoIn();
-                    photo.setUrl("https://example.com/photo" + i + ".jpg");
+                    photo.setUploadId("upload-" + i);
                     photo.setOrderNumber(i);
                     photo.setIsCover(i == 0);
                     photos.add(photo);
@@ -850,7 +850,7 @@ class PartnershipOpportunityUnitTest {
                 List<PartnershipOpportunityPhotoDtoIn> photos = new ArrayList<>();
                 for (int i = 0; i < 6; i++) {
                     PartnershipOpportunityPhotoDtoIn photo = new PartnershipOpportunityPhotoDtoIn();
-                    photo.setUrl("https://example.com/photo" + i + ".jpg");
+                    photo.setUploadId("upload-" + i);
                     photo.setOrderNumber(i);
                     photo.setIsCover(i == 0);
                     photos.add(photo);
@@ -885,8 +885,10 @@ class PartnershipOpportunityUnitTest {
 
         @BeforeEach
         void setUp() {
+            // New photo shape: uploadId identifies the tracked upload; the URL
+            // is BE-derived (pentest 3.1). No url field on the DTO anymore.
             dto = new PartnershipOpportunityPhotoDtoIn();
-            dto.setUrl("https://example.com/photo.jpg");
+            dto.setUploadId("upload-abc");
             dto.setOrderNumber(0);
             dto.setIsCover(false);
         }
@@ -896,34 +898,27 @@ class PartnershipOpportunityUnitTest {
         class ValidationTests {
 
             @Test
-            @DisplayName("should pass validation for valid DTO")
+            @DisplayName("should pass validation for a valid new-photo DTO")
             void shouldPassValidationForValidDto() {
                 Set<ConstraintViolation<PartnershipOpportunityPhotoDtoIn>> violations = validator.validate(dto);
                 assertThat(violations).isEmpty();
             }
 
             @Test
-            @DisplayName("should fail validation for null URL")
-            void shouldFailValidationForNullUrl() {
-                dto.setUrl(null);
+            @DisplayName("should pass validation for an existing-photo DTO (id, no uploadId)")
+            void shouldPassValidationForExistingPhoto() {
+                dto.setUploadId(null);
+                dto.setId(42L);
                 Set<ConstraintViolation<PartnershipOpportunityPhotoDtoIn>> violations = validator.validate(dto);
-                assertThat(violations).isNotEmpty();
+                assertThat(violations).isEmpty();
             }
 
             @Test
-            @DisplayName("should fail validation for invalid URL pattern")
-            void shouldFailValidationForInvalidUrlPattern() {
-                dto.setUrl("not-a-valid-url");
+            @DisplayName("should fail validation for an over-long uploadId")
+            void shouldFailValidationForOverLongUploadId() {
+                dto.setUploadId("A".repeat(37));
                 Set<ConstraintViolation<PartnershipOpportunityPhotoDtoIn>> violations = validator.validate(dto);
-                assertThat(violations).isNotEmpty();
-            }
-
-            @Test
-            @DisplayName("should fail validation for HTTP URL")
-            void shouldFailValidationForHttpUrl() {
-                dto.setUrl("http://example.com/photo.jpg");
-                Set<ConstraintViolation<PartnershipOpportunityPhotoDtoIn>> violations = validator.validate(dto);
-                assertThat(violations).isNotEmpty();
+                assertThat(violations).anyMatch(v -> v.getPropertyPath().toString().equals("uploadId"));
             }
 
             @Test
@@ -959,12 +954,12 @@ class PartnershipOpportunityUnitTest {
             @DisplayName("should set and get all fields")
             void shouldSetAndGetAllFields() {
                 dto.setId(1L);
-                dto.setUrl("https://cdn.example.com/image.png");
+                dto.setUploadId("upload-xyz");
                 dto.setOrderNumber(5);
                 dto.setIsCover(true);
 
                 assertThat(dto.getId()).isEqualTo(1L);
-                assertThat(dto.getUrl()).isEqualTo("https://cdn.example.com/image.png");
+                assertThat(dto.getUploadId()).isEqualTo("upload-xyz");
                 assertThat(dto.getOrderNumber()).isEqualTo(5);
                 assertThat(dto.getIsCover()).isTrue();
             }

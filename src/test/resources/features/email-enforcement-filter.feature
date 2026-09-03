@@ -11,11 +11,11 @@ Feature: EmailVerificationEnforcementFilter blocks unverified users from creatin
     Given the application is running with real Redis
 
     # Admin sets up the real influencer
-    Given "Admin" logs in as ADMIN with Firebase UID "E2EADMINUID00000000000000001" email "e2e-admin@example.test" password "ExampleE2ePass1!" and completes 2FA
-    And the target user "E2EINFLUENCERUID000000000001" is synced and has status "ACTIVE" and role "INFLUENCER"
+    Given "Admin" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
+    And the target user "SEWgduxUjRh4KDqxVWFs6zgThIa2" is synced and has status "ACTIVE" and role "INFLUENCER"
 
     # Influencer logs in via real Firebase OAuth
-    Given "StyleGuru" logs in as INFLUENCER via OAuth with Firebase UID "E2EINFLUENCERUID000000000001"
+    Given "StyleGuru" logs in as INFLUENCER via OAuth with Firebase UID "SEWgduxUjRh4KDqxVWFs6zgThIa2"
     Then "StyleGuru" should be authenticated
 
   @enforcement-filter @bug-6

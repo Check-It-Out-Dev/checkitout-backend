@@ -528,7 +528,10 @@ public class AppliedOpportunityContentService extends BaseService<AppliedOpportu
         log.info("GDPR: Operation=getContentById, FirebaseUID={}, ContentID={}, Purpose=single_content_retrieval",
                 currentUserId, contentId);
 
-        AppliedOpportunityContent content = contentRepository.findById(contentId)
+        // Fetch-join contentType + the permission chain: the controller maps this
+        // entity to a DTO OUTSIDE any tx and reads contentType.getName(), so a plain
+        // findById returned a lazy proxy and this endpoint 500ed with LazyInit.
+        AppliedOpportunityContent content = contentRepository.findByIdWithRelationships(contentId)
                 .orElseThrow(() -> new ResourceNotFoundException("error.business.item_not_found", contentId));
 
         // Validate view access

@@ -4,8 +4,10 @@ import static com.sm.instagram.platform.common.util.PiiMaskingUtils.maskEmail;
 
 import com.sm.instagram.platform.auth.stepup.StepUpActionType;
 import com.sm.instagram.platform.auth.stepup.StepUpAuthService;
+import com.sm.instagram.platform.common.authorization.PermissionUtils;
 import com.sm.instagram.platform.common.base.BaseController;
 import com.sm.instagram.platform.common.base.BaseService;
+import com.sm.instagram.platform.common.exceptions.InsufficientPermissionsException;
 import com.sm.instagram.platform.common.exceptions.ResourceNotFoundException;
 import com.sm.instagram.platform.common.exceptions.ValidationTranslatableException;
 import com.sm.instagram.platform.common.ratelimit.RateLimit;
@@ -43,13 +45,15 @@ public class UserController extends BaseController<User, Long, UserDtoIn, UserDt
     private final DefaultNoteService defaultNoteService;  // CIO-341: Language-aware default notes
     private final HttpServletRequest request;
     private final StepUpAuthService stepUpAuthService;
+    private final PermissionUtils permissionUtils;
 
     protected UserController(UserService userService,
                              UserSocialConnectionService userSocialConnectionService,
                              TranslationService translationService,
                              DefaultNoteService defaultNoteService,
                              HttpServletRequest request,
-                             StepUpAuthService stepUpAuthService) {
+                             StepUpAuthService stepUpAuthService,
+                             PermissionUtils permissionUtils) {
         super(User.class);
         this.userService = userService;
         this.userSocialConnectionService = userSocialConnectionService;
@@ -57,6 +61,7 @@ public class UserController extends BaseController<User, Long, UserDtoIn, UserDt
         this.defaultNoteService = defaultNoteService;
         this.request = request;
         this.stepUpAuthService = stepUpAuthService;
+        this.permissionUtils = permissionUtils;
     }
 
     /**
@@ -251,6 +256,14 @@ public class UserController extends BaseController<User, Long, UserDtoIn, UserDt
     }
 
     @Override
+    // Authorization is owner-or-admin. Any authenticated caller may INVOKE this,
+    // but the target row is gated inside UserService.patch ->
+    // validateUserUpdatePermission (isAdmin || isUserOwner), which loads the
+    // entity and throws InsufficientPermissionsException otherwise. Ownership is
+    // enforced at the service layer — where the entity is already loaded — rather
+    // than via a SpEL @PreAuthorize, to avoid a duplicate lookup and a second
+    // source of truth. Locked by UserService_Patch_IntegrationTest
+    // #nonOwnerCannotPatchOther and UserServiceUnitTest#shouldThrowWhenNonOwnerNonAdminChecks.
     @PreAuthorize("isAuthenticated()")
     @PatchMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
     public ResponseEntity<UserDtoOut> patch(@PathVariable Long id, @RequestBody @Valid Map<String, Object> updates) {
@@ -261,8 +274,13 @@ public class UserController extends BaseController<User, Long, UserDtoIn, UserDt
         // GDPR: Log profile modification
         log.warn("GDPR: Operation=patchUser, FirebaseUID={}, TargetUserID={}, DataModified={}, Purpose=profile_update", firebaseUid, id, updates.keySet());
 
-        // Step-up authentication: validate token before allowing email change (skipped if setup incomplete)
-        if (updates.containsKey("email")) {
+        // Step-up authentication: only an ACTUAL email change is the protected
+        // action. The FE PATCHes the full DTO (email is schema-required), so a
+        // presence-based gate would 401 every avatar/profile update carrying
+        // the caller's own unchanged email. Unchanged email is a no-op in
+        // EmailChangeService anyway — no privileged action, no challenge.
+        if (updates.containsKey("email")
+                && userService.wouldChangeEmail(id, updates.get("email"))) {
             String stepUpToken = request.getHeader("X-Step-Up-Token");
             stepUpAuthService.validateTokenIfRequired(firebaseUid, StepUpActionType.EMAIL_CHANGE, stepUpToken);
         }
@@ -290,8 +308,10 @@ public class UserController extends BaseController<User, Long, UserDtoIn, UserDt
         // GDPR: Log full profile update
         log.warn("GDPR: Operation=updateUser, FirebaseUID={}, TargetUserID={}, DataModified=full_profile, Purpose=profile_replacement", firebaseUid, id);
 
-        // Step-up authentication: validate token before allowing email change (skipped if setup incomplete)
-        if (dtoIn.getEmail() != null) {
+        // Step-up authentication: same actual-change gate as PATCH — a full
+        // PUT always carries email, and an unchanged value is not the
+        // protected action.
+        if (dtoIn.getEmail() != null && userService.wouldChangeEmail(id, dtoIn.getEmail())) {
             String stepUpToken = request.getHeader("X-Step-Up-Token");
             stepUpAuthService.validateTokenIfRequired(firebaseUid, StepUpActionType.EMAIL_CHANGE, stepUpToken);
         }
@@ -389,6 +409,16 @@ public class UserController extends BaseController<User, Long, UserDtoIn, UserDt
         // Extract requesting user's Firebase UID
         String requestingFirebaseUid = org.springframework.security.core.context.SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal().toString();
+
+        // SECURITY (pentest 3.7 IDOR): this endpoint returns the full account
+        // record (email, phone, addresses, admin notes). Knowing another user's
+        // Firebase UID must NOT grant access to their data — only the owner or
+        // an admin may read it. Non-owner non-admins get 403.
+        if (!permissionUtils.isAdmin() && !requestingFirebaseUid.equals(userId)) {
+            log.warn("SECURITY: Blocked cross-account user lookup RequestingFirebaseUID={}, TargetFirebaseUID={}",
+                    requestingFirebaseUid, userId);
+            throw new InsufficientPermissionsException("error.auth.insufficient_permissions");
+        }
 
         // GDPR: Log user lookup by Firebase ID
         log.info("GDPR: Operation=getUserByUserId, RequestingFirebaseUID={}, TargetFirebaseUID={}, DataAccessed=user_profile, Purpose=user_lookup", requestingFirebaseUid, userId);

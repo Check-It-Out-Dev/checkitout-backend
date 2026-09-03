@@ -12,7 +12,12 @@ public interface InvoicingPort {
     /**
      * Creates an invoice in the external invoicing system.
      *
-     * @param request invoice creation data (buyer, amount, plan name)
+     * @param request invoice creation data (buyer, amount, plan name). The
+     *                {@code idempotencyKey} MUST be non-blank and stable across
+     *                retries of the same logical invoice — it becomes the
+     *                provider-side dedup key (Fakturownia {@code oid} +
+     *                {@code oid_unique}), the only thing standing between a
+     *                retried send and a duplicate real VAT invoice.
      * @return result with external invoice ID, or failure info
      */
     InvoiceResult createInvoice(InvoiceRequest request);
@@ -26,7 +31,7 @@ public interface InvoicingPort {
             String buyerCountry,
             String planName,
             BigDecimal amountPln,
-            String stripeInvoiceId
+            String idempotencyKey
     ) {}
 
     record InvoiceResult(

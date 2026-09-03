@@ -1,6 +1,7 @@
 package com.sm.instagram.platform.legal;
 
 import com.sm.instagram.platform.auth.cache.UserCacheService;
+import com.sm.instagram.platform.user.AccountStatus;
 import com.sm.instagram.platform.user.User;
 import com.sm.instagram.platform.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,13 +23,14 @@ import java.util.Optional;
  * Provides endpoints to manipulate legal documents and trigger enforcement
  * without waiting for cron schedules or ShedLock.
  *
- * <p><b>SECURITY:</b> This bean is guarded by {@code @Profile("e2e & !prod & !test")}.
- * In production and standard test profiles, this controller is not registered
- * and its endpoints return 404.
+ * <p><b>SECURITY:</b> This bean is guarded by
+ * {@code @Profile("(e2e | dev-lite) & !prod & !test")}. In production and
+ * standard test profiles, this controller is not registered and its endpoints
+ * return 404.
  */
 @Slf4j
 @RestController
-@Profile("e2e & !prod & !test")
+@Profile("(e2e | dev-lite) & !prod & !test")
 @RequestMapping("/test/legal")
 @RequiredArgsConstructor
 public class TestLegalController {
@@ -203,9 +205,49 @@ public class TestLegalController {
         List<LegalDocument> toDelete = legalDocumentRepository.findAll().stream()
                 .filter(d -> d.getVersion() > maxVersion)
                 .toList();
+        // Consent records reference documents by FK — remove dependents
+        // first or deleteAll throws a constraint violation for any doc a
+        // test actor accepted during the scenario.
+        List<Long> docIds = toDelete.stream().map(LegalDocument::getId).toList();
+        int consentsDeleted = 0;
+        if (!docIds.isEmpty()) {
+            List<ConsentRecord> dependents = consentRecordRepository.findAll().stream()
+                    .filter(cr -> cr.getDocument() != null && docIds.contains(cr.getDocument().getId()))
+                    .toList();
+            consentRecordRepository.deleteAll(dependents);
+            consentsDeleted = dependents.size();
+        }
         legalDocumentRepository.deleteAll(toDelete);
-        log.info("[E2E] Deleted {} documents with version > {}", toDelete.size(), maxVersion);
-        return ResponseEntity.ok(Map.of("deleted", toDelete.size(), "maxVersion", maxVersion));
+        log.info("[E2E] Deleted {} documents with version > {} (+{} dependent consents)",
+                toDelete.size(), maxVersion, consentsDeleted);
+        return ResponseEntity.ok(Map.of(
+                "deleted", toDelete.size(),
+                "consentsDeleted", consentsDeleted,
+                "maxVersion", maxVersion));
+    }
+
+    /**
+     * Restore every user the enforcement cron blocked back to ACTIVE.
+     * Enforcement is global — a single triggered run blocks EVERY user
+     * without current consents (thousands in a long-lived dev DB), which
+     * poisons all later suites: their mock-sessions die 419/401. Consent
+     * scenarios call this in afterAll to hand the next suite a clean pool.
+     * Token versions are bumped so any cookie issued while blocked cannot
+     * be replayed, mirroring the production unblock side-effect.
+     */
+    @PostMapping("/restore-enforcement-blocked")
+    @Transactional
+    public ResponseEntity<Map<String, Object>> restoreEnforcementBlocked() {
+        List<User> blocked = userRepository.findAll().stream()
+                .filter(u -> u.getAccountStatus() == AccountStatus.BLOCKED_DUE_TO_NOT_ACCEPTING_TERMS)
+                .toList();
+        for (User user : blocked) {
+            user.setAccountStatus(AccountStatus.ACTIVE);
+            user.incrementTokenVersion();
+            userCacheService.cacheUser(user.getFirebaseUserId(), userRepository.save(user));
+        }
+        log.info("[E2E] Restored {} enforcement-blocked users to ACTIVE", blocked.size());
+        return ResponseEntity.ok(Map.of("restored", blocked.size()));
     }
 
     /**

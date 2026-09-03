@@ -151,7 +151,8 @@ class AppliedOpportunityDtosUnitTest {
             dto.setAppliedOpportunityId(1L);
             dto.setContentTypeId(2L);
             dto.setContentCount(5);
-            dto.setUrls(Arrays.asList("https://instagram.com/p/1", "https://instagram.com/p/2"));
+            // Pentest 3.5: content urls are Vimeo-only (@VimeoUrls).
+            dto.setUrls(Arrays.asList("https://vimeo.com/100000001", "https://vimeo.com/100000002"));
             dto.setDescription("Content description");
             dto.setTags("#fashion #style");
             dto.setSocialMediaLink("https://instagram.com/user/post");
@@ -276,10 +277,37 @@ class AppliedOpportunityDtosUnitTest {
             AppliedOpportunityContentDtoIn dto = new AppliedOpportunityContentDtoIn();
             dto.setAppliedOpportunityId(1L);
             dto.setContentTypeId(1L);
-            dto.setSocialMediaLink("A".repeat(1000));
+            // Must also satisfy @SocialPostUrl — a valid Instagram link padded
+            // to exactly 1000 chars ("https://instagram.com/p/" is 24).
+            dto.setSocialMediaLink("https://instagram.com/p/" + "a".repeat(976));
 
             Set<ConstraintViolation<AppliedOpportunityContentDtoIn>> violations = validator.validate(dto);
             assertThat(violations).isEmpty();
+        }
+
+        @Test
+        @DisplayName("should accept Instagram and TikTok publication links")
+        void shouldAcceptSocialHosts() {
+            AppliedOpportunityContentDtoIn dto = new AppliedOpportunityContentDtoIn();
+            dto.setAppliedOpportunityId(1L);
+            dto.setContentTypeId(1L);
+            dto.setSocialMediaLink("https://instagram.com/p/abc123");
+            assertThat(validator.validate(dto)).isEmpty();
+
+            dto.setSocialMediaLink("https://www.tiktok.com/@user/video/123");
+            assertThat(validator.validate(dto)).isEmpty();
+        }
+
+        @Test
+        @DisplayName("should reject socialMediaLink on non-social hosts (pentest 3.5 follow-up)")
+        void shouldRejectForeignSocialMediaLink() {
+            AppliedOpportunityContentDtoIn dto = new AppliedOpportunityContentDtoIn();
+            dto.setAppliedOpportunityId(1L);
+            dto.setContentTypeId(1L);
+            dto.setSocialMediaLink("http://localhost:8000/malicious_file.html");
+
+            Set<ConstraintViolation<AppliedOpportunityContentDtoIn>> violations = validator.validate(dto);
+            assertThat(violations).anyMatch(v -> v.getPropertyPath().toString().equals("socialMediaLink"));
         }
 
         @Test
@@ -300,10 +328,11 @@ class AppliedOpportunityDtosUnitTest {
             AppliedOpportunityContentDtoIn dto = new AppliedOpportunityContentDtoIn();
             dto.setAppliedOpportunityId(1L);
             dto.setContentTypeId(1L);
+            // Pentest 3.5: content urls are Vimeo-only (@VimeoUrls).
             dto.setUrls(Arrays.asList(
-                    "https://example.com/1",
-                    "https://example.com/2",
-                    "https://example.com/3"
+                    "https://vimeo.com/1",
+                    "https://player.vimeo.com/video/2",
+                    "https://www.vimeo.com/3"
             ));
 
             assertThat(dto.getUrls()).hasSize(3);

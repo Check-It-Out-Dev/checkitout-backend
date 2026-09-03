@@ -141,6 +141,7 @@ public class AppliedOpportunityStatusHistoryService {
     /**
      * Get status history for a specific applied opportunity
      */
+    @Transactional(readOnly = true)
     public List<AppliedOpportunityStatusHistory> getStatusHistory(Long appliedOpportunityId) {
         String currentUserFirebaseId = permissionUtils.getUserId();
         log.info("GDPR: Operation=getStatusHistory, FirebaseUID={}, AppliedOpportunityID={}, Purpose=audit_review",
@@ -169,6 +170,7 @@ public class AppliedOpportunityStatusHistoryService {
     /**
      * Get status history for a specific applied opportunity with pagination
      */
+    @Transactional(readOnly = true)
     public Page<AppliedOpportunityStatusHistory> getStatusHistory(Long appliedOpportunityId, Pageable pageable) {
         String currentUserFirebaseId = permissionUtils.getUserId();
         log.info("GDPR: Operation=getStatusHistoryPaged, FirebaseUID={}, AppliedOpportunityID={}, Purpose=paginated_audit_review",
@@ -246,6 +248,7 @@ public class AppliedOpportunityStatusHistoryService {
     /**
      * Get the most recent status change for an applied opportunity
      */
+    @Transactional(readOnly = true)
     public Optional<AppliedOpportunityStatusHistory> getLastStatusChange(Long appliedOpportunityId) {
         String currentUserFirebaseId = permissionUtils.getUserId();
         log.info("GDPR: Operation=getLastStatusChange, FirebaseUID={}, AppliedOpportunityID={}, Purpose=latest_status_check",
@@ -275,6 +278,7 @@ public class AppliedOpportunityStatusHistoryService {
     /**
      * Count total status changes for an applied opportunity
      */
+    @Transactional(readOnly = true)
     public long countStatusChanges(Long appliedOpportunityId) {
         String currentUserFirebaseId = permissionUtils.getUserId();
         log.info("GDPR: Operation=countStatusChanges, FirebaseUID={}, AppliedOpportunityID={}, Purpose=statistics_query",

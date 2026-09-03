@@ -293,12 +293,22 @@ public class BusinessExceptionHandler {
 
         String traceId = baseHandler.generateTraceId();
 
-        // Check if the underlying cause is an ItemNotFoundException
+        // Check if the underlying cause is an ItemNotFoundException.
+        // ModelMapper aggregates converter failures, so getCause() may be
+        // null (errors live in getErrorMessages() instead) — an unguarded
+        // cause.getCause() here used to NPE inside the handler itself,
+        // turning every unmapped MappingException into a raw 500.
         Throwable cause = ex.getCause();
-        if (cause instanceof TranslatableException || cause.getCause() instanceof TranslatableException) {
+        TranslatableException translatable = null;
+        if (cause instanceof TranslatableException te) {
+            translatable = te;
+        } else if (cause != null && cause.getCause() instanceof TranslatableException te) {
+            translatable = te;
+        }
+        if (translatable != null) {
             baseHandler.logException(ex, HttpStatus.NOT_FOUND, request, traceId);
 
-            String localizedMessage = baseHandler.getLocalizedMessage(((TranslatableException) cause).getMessageKey(), ((TranslatableException) cause).getArgs(), request);
+            String localizedMessage = baseHandler.getLocalizedMessage(translatable.getMessageKey(), translatable.getArgs(), request);
 
             BaseExceptionHandler.ErrorResponse errorResponse = new BaseExceptionHandler.ErrorResponse(
                     HttpStatus.NOT_FOUND.value(),
@@ -312,7 +322,10 @@ public class BusinessExceptionHandler {
         }
 
         // Check if the underlying cause is an IllegalArgumentException
-        if (cause instanceof IllegalArgumentException) {
+        // (directly or nested — converters throw inside ModelMapper's own
+        // wrapper, e.g. "Currency not found: 99").
+        if (cause instanceof IllegalArgumentException
+                || (cause != null && cause.getCause() instanceof IllegalArgumentException)) {
             baseHandler.logException(ex, HttpStatus.BAD_REQUEST, request, traceId);
 
             String messageKey = "error.business.invalid_argument";

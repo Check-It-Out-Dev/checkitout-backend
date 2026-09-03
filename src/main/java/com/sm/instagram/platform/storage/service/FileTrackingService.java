@@ -48,6 +48,19 @@ public class FileTrackingService {
     }
 
     /**
+     * Looks up a tracked upload by its id (the {@code uploadId} handed to the
+     * client by {@code POST /upload/signed-url}). Read-only accessor for the
+     * BE-minted-URL round trip — see {@code SignedUrlService.resolveOwnedUpload}.
+     */
+    @Transactional(readOnly = true)
+    public Optional<FileUpload> getUpload(String uploadId) {
+        if (uploadId == null || uploadId.isBlank()) {
+            return Optional.empty();
+        }
+        return uploadRepository.findById(uploadId.trim());
+    }
+
+    /**
      * Confirms upload via direct API call from frontend.
      */
     public void confirmUploadViaApi(String filePath, Long actualSize) {

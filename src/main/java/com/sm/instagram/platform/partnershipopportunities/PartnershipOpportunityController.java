@@ -6,6 +6,7 @@ import com.sm.instagram.platform.common.ratelimit.RateLimit;
 import com.sm.instagram.platform.common.ratelimit.RateLimitKeyType;
 import com.sm.instagram.platform.common.ratelimit.RateLimitProfile;
 import com.sm.instagram.platform.common.translation.TranslationService;
+import com.sm.instagram.platform.currency.CurrencyDtoOut;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -196,7 +197,22 @@ public class PartnershipOpportunityController extends BaseController<Partnership
                 CompensationTypeDtoOut translatedCompensationType = translateCompensationType(entity.getCompensationType(), locale);
                 dto.setCompensationType(translatedCompensationType);
             }
-            
+
+            // Contract gap found by the FE rewrite: the list DTOs shipped
+            // without currency (the detail path maps it), so clients could
+            // not label CASH amounts. Patch it here exactly like the detail
+            // path does - the entity is already in hand.
+            if (entity != null && entity.getCurrency() != null && dto.getCurrency() == null) {
+                dto.setCurrency(CurrencyDtoOut.builder()
+                        .id(entity.getCurrency().getId())
+                        .originalName(entity.getCurrency().getName())
+                        .name(translationService.translateCurrency(entity.getCurrency().getIsoCode(), locale))
+                        .isoCode(entity.getCurrency().getIsoCode())
+                        .sign(entity.getCurrency().getSign())
+                        .countryCode(entity.getCurrency().getCountryCode())
+                        .build());
+            }
+
             return dto;
         });
 

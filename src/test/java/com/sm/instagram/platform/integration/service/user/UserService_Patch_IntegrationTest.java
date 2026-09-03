@@ -12,10 +12,19 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Integration tests for UserService.patch() method.
  * Tests partial updates with various fields, permissions, and restricted field handling.
+ *
+ * <p>The avatar is uploadId-only (pentest 3.1): {@code profilePicture} takes a
+ * tracked upload id the caller owns, resolved to an own-bucket URL by the
+ * (stubbed) {@code SignedUrlService} in {@link UserServiceIntegrationTestBase}
+ * — {@link #AVATAR_UPLOAD_ID} → {@link #AVATAR_RESOLVED_URL}.
  *
  * Note: Tests involving owner patches that trigger Firebase claim updates via status changes
  * are tested through admin-only scenarios. Owner-triggered re-validation requires
@@ -120,14 +129,14 @@ class UserService_Patch_IntegrationTest extends UserServiceIntegrationTestBase {
             authenticateAs(testInfluencer);
             Map<String, Object> updates = new HashMap<>();
             updates.put("noteFromAdmin", "Should be ignored");
-            updates.put("profilePicture", "https://cdn.example.com/pic.jpg"); // Add valid update
+            updates.put("profilePicture", AVATAR_UPLOAD_ID); // valid upload → BE-derived URL
 
             // When
             User result = userService.patch(testInfluencer.getId(), updates);
 
             // Then - noteFromAdmin unchanged, other field updated
             assertThat(result.getNoteFromAdmin()).isEqualTo("Original note");
-            assertThat(result.getProfilePicture()).isEqualTo("https://cdn.example.com/pic.jpg");
+            assertThat(result.getProfilePicture()).isEqualTo(AVATAR_RESOLVED_URL);
         }
     }
 
@@ -136,18 +145,55 @@ class UserService_Patch_IntegrationTest extends UserServiceIntegrationTestBase {
     class PatchRegularFieldsViaAdmin {
 
         @Test
-        @DisplayName("Admin patches profilePicture")
+        @DisplayName("Admin patches profilePicture — uploadId resolved with the caller's uid")
         void adminPatchesProfilePicture() {
             // Given
             authenticateAs(testAdmin);
             Map<String, Object> updates = new HashMap<>();
-            updates.put("profilePicture", "https://cdn.example.com/avatar.jpg");
+            updates.put("profilePicture", AVATAR_UPLOAD_ID);
+
+            // When
+            User result = userService.patch(testInfluencer.getId(), updates);
+
+            // Then — the stored URL is the BE-derived one, and the resolver
+            // was called with the AUTHENTICATED caller's uid (audit G1).
+            assertThat(result.getProfilePicture()).isEqualTo(AVATAR_RESOLVED_URL);
+            verify(signedUrlService).resolveOwnedUpload(eq(testAdmin.getFirebaseUserId()), eq(AVATAR_UPLOAD_ID));
+        }
+
+        @Test
+        @DisplayName("A non-owned / unknown uploadId is rejected — avatar unchanged (pentest 3.1)")
+        void profilePictureUnknownUploadRejected() {
+            // The resolver rejects an upload the caller doesn't own; the reject
+            // surfaces as a failed patch, so the avatar can never point at
+            // another user's file or an arbitrary in-bucket path.
+            authenticateAs(testAdmin);
+            when(signedUrlService.resolveOwnedUpload(any(), eq("not-my-upload")))
+                    .thenThrow(new ValidationTranslatableException("error.attachment.unknown_upload"));
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("profilePicture", "not-my-upload");
+
+            // When / Then
+            assertThatThrownBy(() -> userService.patch(testInfluencer.getId(), updates))
+                    .isInstanceOf(ValidationTranslatableException.class);
+        }
+
+        @Test
+        @DisplayName("Blank profilePicture clears the avatar")
+        void blankProfilePictureClearsAvatar() {
+            // Given — a pre-existing avatar (set directly on the entity).
+            testInfluencer.setProfilePicture(AVATAR_RESOLVED_URL);
+            userRepository.save(testInfluencer);
+
+            authenticateAs(testAdmin);
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("profilePicture", "");
 
             // When
             User result = userService.patch(testInfluencer.getId(), updates);
 
             // Then
-            assertThat(result.getProfilePicture()).isEqualTo("https://cdn.example.com/avatar.jpg");
+            assertThat(result.getProfilePicture()).isNull();
         }
 
         @Test
@@ -244,7 +290,7 @@ class UserService_Patch_IntegrationTest extends UserServiceIntegrationTestBase {
             Map<String, Object> updates = new HashMap<>();
             updates.put("firstName", "Multi");
             updates.put("lastName", "Patch");
-            updates.put("profilePicture", "https://cdn.example.com/multi.jpg");
+            updates.put("profilePicture", AVATAR_UPLOAD_ID);
 
             // When
             User result = userService.patch(testInfluencer.getId(), updates);
@@ -252,7 +298,7 @@ class UserService_Patch_IntegrationTest extends UserServiceIntegrationTestBase {
             // Then
             assertThat(result.getFirstName()).isEqualTo("Multi");
             assertThat(result.getLastName()).isEqualTo("Patch");
-            assertThat(result.getProfilePicture()).isEqualTo("https://cdn.example.com/multi.jpg");
+            assertThat(result.getProfilePicture()).isEqualTo(AVATAR_RESOLVED_URL);
         }
     }
 
@@ -284,13 +330,13 @@ class UserService_Patch_IntegrationTest extends UserServiceIntegrationTestBase {
             // Given
             authenticateAs(testAdmin);
             Map<String, Object> updates = new HashMap<>();
-            updates.put("profilePicture", "https://cdn.example.com/admin-patched.jpg");
+            updates.put("profilePicture", AVATAR_UPLOAD_ID);
 
             // When
             User result = userService.patch(testCompany.getId(), updates);
 
             // Then
-            assertThat(result.getProfilePicture()).isEqualTo("https://cdn.example.com/admin-patched.jpg");
+            assertThat(result.getProfilePicture()).isEqualTo(AVATAR_RESOLVED_URL);
         }
 
         @Test

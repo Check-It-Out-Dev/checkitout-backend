@@ -33,7 +33,25 @@ public class WebhookController {
 
     /**
      * Receives notifications from Firebase about storage events.
-     * Think of this as our delivery notification system.
+     *
+     * <p>SECURITY — fails CLOSED. Every call must carry a valid HMAC-SHA256
+     * signature computed with a non-blank shared secret
+     * ({@code webhooks.firebase.secret}); a missing/blank secret or a
+     * missing/invalid signature is rejected before any state change.
+     * Previously the check was SKIPPED entirely when the secret was unset,
+     * and — because an empty key still produces a valid HMAC — an attacker
+     * who knew the payload could forge a signature. That fail-open footgun is
+     * closed here; the endpoint is additionally NOT in the security
+     * permit-list, so it is authenticated on top.
+     *
+     * <p>NOTE for whoever wires this to a live source: real Google Cloud
+     * Storage / Firebase push notifications authenticate with an OIDC JWT
+     * ({@code Authorization: Bearer}), not this {@code X-Firebase-Signature}
+     * HMAC, and the HMAC here signs the parsed-then-stringified body, which is
+     * not canonical across senders (it interoperates only with a sender that
+     * signs the identical derived string). Turning this on for real means
+     * adding an OIDC verifier and a permit-list entry — not just flipping a
+     * flag.
      */
     @PostMapping("/firebase/storage")
     public ResponseEntity<?> handleFirebaseStorageWebhook(
@@ -44,8 +62,9 @@ public class WebhookController {
         log.debug("Received Firebase storage webhook: {}", payload);
 
         try {
-            // Step 1: Verify webhook signature (security check)
-            if (webhookSecret != null && !webhookSecret.isEmpty() && !verifyWebhookSignature(signature, payload)) {
+            // Step 1: verify the signature — FAIL CLOSED. No secret, no
+            // signature, or a mismatch all reject before any mutation.
+            if (!verifyWebhookSignature(signature, payload)) {
                 log.warn("GDPR: Operation=rejectInvalidWebhook, FirebaseUID=UNKNOWN, DataAccessed=none, Purpose=security_validation");
                 throw new BusinessRuleTranslatableException("error.business.insufficient_permissions");
             }
@@ -181,7 +200,10 @@ public class WebhookController {
      * This prevents unauthorized webhook calls.
      */
     private boolean verifyWebhookSignature(String signature, Map<String, Object> payload) {
-        if (signature == null || webhookSecret == null) {
+        // Fail closed: a null/blank secret must NOT validate. HMAC with an
+        // empty key is forgeable by anyone who can reproduce the payload, so
+        // an unconfigured secret has to mean "reject", never "skip".
+        if (signature == null || webhookSecret == null || webhookSecret.isBlank()) {
             return false;
         }
 

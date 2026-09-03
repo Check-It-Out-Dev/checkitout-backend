@@ -1,0 +1,77 @@
+# =============================================================================
+# DEV-LITE — the credential-less simulator profile
+# =============================================================================
+# `dev-lite` also activates `dev` (spring.profiles.group in application.yml),
+# inheriting: local Postgres+Redis defaults, LocalDatabaseInitializer (creates
+# DB, app user and extensions via the compose superuser), GreenMail in-memory
+# SMTP with the /test/email reader, and the seeded demo world (Liquibase
+# contexts dev,local — ~26 campaigns on company@checkitout.app & friends).
+#
+# On top of dev, this profile:
+#   - exposes the test-session endpoints (POST /api/test/auth/mock-session —
+#     locally-verified HMAC session cookies, no Firebase round-trip) and the
+#     legal/test helpers (profile re-gates on the controllers),
+#   - stubs the company registries (GUS BIR1, CEIDG, VAT white-list) via
+#     RegistryPortStubConfig, configurable per-NIP over /test/registry,
+#   - disables the boot-time admin existence check below (it requires a real
+#     Firebase project and throws on a credential-less clone),
+#   - routes file uploads to a local sink instead of GCS signed URLs
+#     (file-upload.mode, wired in the storage slice).
+#
+# TESTING PHILOSOPHY (owner directive): the e2e and integration suites
+# intentionally run against REAL integrations — Testcontainers, GreenMail,
+# live vendors where credentials exist — because real integrations catch what
+# mocks cannot, and that discipline is what made this rewrite tractable.
+# dev-lite is a SIMULATOR so anyone can run the product without accounts;
+# it is not, and must never become, the test story.
+
+admin:
+  check:
+    # AdminCheckRunner is a CommandLineRunner that verifies the admin account
+    # against Firebase at boot — impossible without real credentials.
+    enabled: false
+
+# NOTE ON PRECEDENCE: `dev-lite` activates `dev` through spring.profiles.group,
+# and Spring places a group's members AFTER the profile that pulled them in —
+# so application-dev.yml WINS on any key both files set. Anything here that must
+# override dev is passed as an environment variable by tools/dev-lite.mjs
+# (SPRING_LIQUIBASE_CONTEXTS is the one that matters today); keys dev does not
+# define — the ones below — apply as written.
+spring:
+  liquibase:
+    # dev contexts + dev-lite's own: the extra changeset repoints the demo
+    # images at the local placeholder endpoint so the seeded world renders
+    # with no internet access. (Also injected by the wizard — see above.)
+    contexts: dev,local,dev-lite
+
+cors:
+  # Loopback only, but on whatever port this machine ended up using. The wizard
+  # moves the frontend to a spare port when 4201 is taken and lets you pin your
+  # own with DEV_LITE_FE_PORT, so enumerating ports turns a routine port change
+  # into a 403 "Invalid CORS request" at sign-in — with nothing in the UI to
+  # explain it. A pattern describes the actual boundary: this developer's own
+  # machine. Only the simulator sets these; production keeps exact origins.
+  allowed-origin-patterns:
+    - http://localhost:*
+    - https://localhost:*
+    - http://127.0.0.1:*
+    - https://127.0.0.1:*
+  # Kept as well: the exact list is what every other profile uses, and leaving
+  # it in place means the common ports work even if patterns are ever cleared.
+  allowed-origins:
+    - http://localhost:4200
+    - https://localhost:4200
+    - http://localhost:4201
+    - https://localhost:4201
+    - http://localhost:4211
+    - https://localhost:4211
+    - http://localhost:4300
+    - http://127.0.0.1:4201
+    - https://127.0.0.1:4201
+    - http://127.0.0.1:4300
+
+file-upload:
+  local-sink:
+    # Where LocalUploadSink stores bytes. Relative to the process working
+    # directory (the backend repo root when started by the wizard).
+    dir: ./dev-lite-storage

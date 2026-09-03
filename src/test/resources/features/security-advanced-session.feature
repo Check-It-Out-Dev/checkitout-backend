@@ -39,7 +39,7 @@ Feature: Advanced Session Security Tests (CONSOLIDATED)
     # NOTE: Cross-user cookie injection is NOT blocked by HMAC alone.
     # Security relies on preventing cookie theft, not detecting stolen valid cookies.
     Given "company1" logs in as COMPANY with valid session
-    And "influencer1" logs in as INFLUENCER via OAuth with Firebase UID "E2EINFLUENCERUID000000000001"
+    And "influencer1" logs in as INFLUENCER via OAuth with Firebase UID "SEWgduxUjRh4KDqxVWFs6zgThIa2"
     When "company1" uses "influencer1"'s session cookies
     # The request succeeds because the cookies are valid (expected behavior)
     Then the response status should be 200
@@ -99,11 +99,11 @@ Feature: Advanced Session Security Tests (CONSOLIDATED)
   @user-ban @403 @multi-actor @consolidated
   Scenario: Admin bans both COMPANY and INFLUENCER users (consolidated)
     # Setup: All users log in - single admin login for all tests
-    Given "company1" logs in as COMPANY with Firebase UID "E2ECOMPANYUID000000000000001" email "e2e-company@example.test" password "ExampleE2ePass1!"
+    Given "company1" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
     And "company1" can access "/users/me" successfully
-    And "influencer1" logs in as INFLUENCER via OAuth with Firebase UID "E2EINFLUENCERUID000000000001"
+    And "influencer1" logs in as INFLUENCER via OAuth with Firebase UID "SEWgduxUjRh4KDqxVWFs6zgThIa2"
     And "influencer1" can access "/users/me" successfully
-    And "admin1" logs in as ADMIN with Firebase UID "E2EADMINUID00000000000000001" email "e2e-admin@example.test" password "ExampleE2ePass1!" and completes 2FA
+    And "admin1" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
 
     # ----- BAN COMPANY USER -----
     When "admin1" bans user "company1" with reason "E2E test - temporary ban"
@@ -133,9 +133,9 @@ Feature: Advanced Session Security Tests (CONSOLIDATED)
   @token-version @419 @multi-actor @requires-token-version-validation @consolidated
   Scenario: Token version validation - 419 after status change (consolidated)
     # Initial login
-    Given "company1" logs in as COMPANY with Firebase UID "E2ECOMPANYUID000000000000001" email "e2e-company@example.test" password "ExampleE2ePass1!"
+    Given "company1" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
     And "company1" can access "/users/me" successfully
-    And "admin1" logs in as ADMIN with Firebase UID "E2EADMINUID00000000000000001" email "e2e-admin@example.test" password "ExampleE2ePass1!" and completes 2FA
+    And "admin1" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
 
     # Admin bans user - this increments tokenVersion in DB
     When "admin1" bans user "company1" with reason "Token version test"
@@ -154,9 +154,9 @@ Feature: Advanced Session Security Tests (CONSOLIDATED)
 
   @session-lifecycle @multi-actor @consolidated
   Scenario: Complete session lifecycle - ban, refresh, unban, refresh (consolidated)
-    Given "company1" logs in as COMPANY with Firebase UID "E2ECOMPANYUID000000000000001" email "e2e-company@example.test" password "ExampleE2ePass1!"
+    Given "company1" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
     And "company1" has a valid session
-    And "admin1" logs in as ADMIN with Firebase UID "E2EADMINUID00000000000000001" email "e2e-admin@example.test" password "ExampleE2ePass1!" and completes 2FA
+    And "admin1" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
 
     # Phase 1: Ban
     When "admin1" bans user "company1" with reason "Lifecycle test"
@@ -179,10 +179,10 @@ Feature: Advanced Session Security Tests (CONSOLIDATED)
   @token-version @access-denial @multi-actor @consolidated
   Scenario: Token version access denial - all patterns (consolidated)
     # User logs in and stores their initial token
-    Given "company1" logs in as COMPANY with Firebase UID "E2ECOMPANYUID000000000000001" email "e2e-company@example.test" password "ExampleE2ePass1!"
+    Given "company1" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
     And "company1" stores their current token as "original_token"
     And "company1" can access "/partnership-opportunity/paged" successfully
-    And "admin1" logs in as ADMIN with Firebase UID "E2EADMINUID00000000000000001" email "e2e-admin@example.test" password "ExampleE2ePass1!" and completes 2FA
+    And "admin1" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
 
     # ----- TEST 1: OLD TOKEN BLOCKED AFTER BAN -----
     When "admin1" bans user "company1" with reason "Token version test"
@@ -225,9 +225,9 @@ Feature: Advanced Session Security Tests (CONSOLIDATED)
     # - IN_VALIDATION allows authentication (user can still login)
     # - Status change increments tokenVersion -> old token gets 419
     # - INACTIVE removes Firebase role entirely -> causes 401 (different behavior)
-    Given "company1" logs in as COMPANY with Firebase UID "E2ECOMPANYUID000000000000001" email "e2e-company@example.test" password "ExampleE2ePass1!"
+    Given "company1" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
     And "company1" stores their current token as "active_token"
-    And "admin1" logs in as ADMIN with Firebase UID "E2EADMINUID00000000000000001" email "e2e-admin@example.test" password "ExampleE2ePass1!" and completes 2FA
+    And "admin1" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
 
     # Admin sets user to IN_VALIDATION (pending re-verification)
     When "admin1" sets user "company1" status to "IN_VALIDATION"

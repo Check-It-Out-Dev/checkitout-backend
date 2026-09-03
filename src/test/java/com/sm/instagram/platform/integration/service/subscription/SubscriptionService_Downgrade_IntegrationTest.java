@@ -1,5 +1,6 @@
 package com.sm.instagram.platform.integration.service.subscription;
 
+import org.junit.jupiter.api.condition.EnabledIf;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
 import com.stripe.model.PaymentMethod;
@@ -19,6 +20,7 @@ import static org.assertj.core.api.Assertions.*;
  * Integration tests for downgrade, cancel-downgrade, and payment recovery.
  * Real PostgreSQL (TestContainers) + Real Stripe sandbox.
  */
+@EnabledIf(value = "com.sm.instagram.platform.integration.ExternalCredentialsAvailable#stripe", disabledReason = "Requires real stripe test credentials (.env / classpath)")
 class SubscriptionService_Downgrade_IntegrationTest extends SubscriptionServiceIntegrationTestBase {
 
     // ========================================================================

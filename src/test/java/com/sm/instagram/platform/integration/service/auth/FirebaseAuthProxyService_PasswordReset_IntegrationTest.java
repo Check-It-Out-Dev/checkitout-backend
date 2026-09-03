@@ -1,5 +1,6 @@
 package com.sm.instagram.platform.integration.service.auth;
 
+import org.junit.jupiter.api.condition.EnabledIf;
 import com.sm.instagram.platform.auth.dto.AuthOperationResponse;
 import com.sm.instagram.platform.common.exceptions.NetworkTranslatableException;
 import com.sm.instagram.platform.common.exceptions.ValidationTranslatableException;
@@ -13,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("FirebaseAuthProxyService Password Reset Integration Tests")
+@EnabledIf(value = "com.sm.instagram.platform.integration.ExternalCredentialsAvailable#firebase", disabledReason = "Requires real firebase test credentials (.env / classpath)")
 class FirebaseAuthProxyService_PasswordReset_IntegrationTest extends FirebaseAuthProxyServiceIntegrationTestBase {
 
     @Nested

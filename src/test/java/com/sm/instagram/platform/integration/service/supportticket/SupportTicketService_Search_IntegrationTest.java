@@ -355,5 +355,35 @@ class SupportTicketService_Search_IntegrationTest extends SupportTicketServiceIn
             assertThatThrownBy(() -> supportTicketService.getTicketById(ticket.getId(), false))
                     .isInstanceOf(InsufficientPermissionsException.class);
         }
+
+        @Test
+        @DisplayName("admin receives the stored technical description")
+        void adminReceivesTechnicalDescription() {
+            authenticateAs(testAdmin);
+            String email = generateTestEmail();
+            SupportTicket ticket = createTicket(email, "Subject", "Description");
+            ticket.setTechnicalDescription("=== ERROR DETAILS ===\nstatus: 500");
+            supportTicketRepository.save(ticket);
+            flushAndClear();
+
+            SupportTicketDtoOut result = supportTicketService.getTicketById(ticket.getId(), true);
+
+            assertThat(result.getTechnicalDescription()).contains("status: 500");
+        }
+
+        @Test
+        @DisplayName("ticket owner never receives the technical description")
+        void ownerDoesNotReceiveTechnicalDescription() {
+            authenticateAs(testInfluencer);
+            String email = generateTestEmail();
+            SupportTicket ticket = createTicket(email, "Subject", "Description", TicketCategory.GENERAL_INQUIRY, testInfluencer);
+            ticket.setTechnicalDescription("=== ERROR DETAILS ===\nstatus: 500");
+            supportTicketRepository.save(ticket);
+            flushAndClear();
+
+            SupportTicketDtoOut result = supportTicketService.getTicketById(ticket.getId(), false);
+
+            assertThat(result.getTechnicalDescription()).isNull();
+        }
     }
 }

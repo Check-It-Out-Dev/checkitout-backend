@@ -23,7 +23,7 @@ Feature: Profile Validation Edge Cases (Consolidated)
 
   @company @soft-assertions
   Scenario: Company profile validation - all edge cases (consolidated - 20+ assertions)
-    Given "company1" logs in as COMPANY with Firebase UID "E2ECOMPANYUID000000000000001" email "e2e-company@example.test" password "ExampleE2ePass1!"
+    Given "company1" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
 
     # ===== FIRSTNAME VALIDATION =====
     # ----- Too short (< 2 chars) -----
@@ -84,17 +84,25 @@ Feature: Profile Validation Edge Cases (Consolidated)
     Then soft assert response status is 200
     When "company1" refreshes their session token
 
-    # ===== PROFILE PICTURE URL VALIDATION =====
-    # ----- HTTP (not HTTPS) -----
+    # ===== PROFILE PICTURE — uploadId-only (pentest 3.1) =====
+    # The avatar is set ONLY from a tracked upload the caller made (uploadId
+    # resolved against the file_uploads ownership table). A raw URL — foreign
+    # OR own-bucket — is not a valid uploadId and is rejected, so the client
+    # cannot point the avatar at any other file in the bucket. The happy path
+    # (real upload → uploadId → 200) is covered by the file-upload feature.
+    # ----- foreign http URL -----
     When "company1" attempts to update profilePicture with value "http://example.com/photo.jpg"
     Then soft assert response status is 400
 
-    # ----- Valid HTTPS -----
+    # ----- foreign https URL -----
     When "company1" attempts to update profilePicture with value "https://example.com/photo.jpg"
-    Then soft assert response status is 200
-    # profilePicture is non-critical, no refresh needed
+    Then soft assert response status is 400
 
-    # ----- URL too long (> 2048 chars) -----
+    # ----- an own-bucket URL is STILL rejected (not a tracked owned upload) -----
+    When "company1" attempts to update profilePicture with value "https://firebasestorage.googleapis.com/v0/b/check-it-out-47c50.firebasestorage.app/o/content%2Fsomeone-else%2Fphoto.jpg"
+    Then soft assert response status is 400
+
+    # ----- oversized value -----
     When "company1" attempts to update profilePicture with URL of 2049 characters
     Then soft assert response status is 400
 
@@ -147,7 +155,7 @@ Feature: Profile Validation Edge Cases (Consolidated)
 
   @company @preferences @soft-assertions
   Scenario: Preferences validation - all edge cases (consolidated - 10+ assertions)
-    Given "company1" logs in as COMPANY with Firebase UID "E2ECOMPANYUID000000000000001" email "e2e-company@example.test" password "ExampleE2ePass1!"
+    Given "company1" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
 
     # ===== LANGUAGE VALIDATION =====
     # ----- Valid value -----

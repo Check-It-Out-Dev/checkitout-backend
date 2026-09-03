@@ -16,9 +16,9 @@ INSERT INTO public."user" (
     account_status,
     note_from_admin
 ) VALUES (
-    'E2EADMINUID00000000000000001',
+    '85VJgS6shAWTqby4rHypN355RWv2',
     'ADMIN',
-    'e2e-admin@example.test',
+    'norbert.marchewka44@gmail.com',
     'Norbert',
     'Marchewka',
     'Norbert Marchewka (Test)',
@@ -42,9 +42,9 @@ INSERT INTO public."user" (
     account_status,
     note_from_admin
 ) VALUES (
-    'SEEDADMINUID0000000000000003',
+    'ifDF62o1FANsEs6milwNtwIcF8J2',
     'ADMIN',
-    'admin2@example.com',
+    'piotr_zmudzki@checkitout.app',
     'Piotr',
     'Zmudzki',
     'Piotr Zmudzki (Test)',
@@ -68,9 +68,9 @@ INSERT INTO public."user" (
     account_status,
     note_from_admin
 ) VALUES (
-    'SEEDADMINUID0000000000000005',
+    'v3xNWljzWHVO8P93BbWR3DhdUDm1',
     'ADMIN',
-    'admin3@example.com',
+    'kuba_sadowski@checkitout.app',
     'Kuba',
     'Sadowski',
     'Kuba Sadowski (Test)',
@@ -83,4 +83,4 @@ ON CONFLICT (email) DO UPDATE SET
     account_status = EXCLUDED.account_status,
     note_from_admin = EXCLUDED.note_from_admin;
 
--- rollback DELETE FROM public."user" WHERE email IN ('e2e-admin@example.test', 'admin2@example.com', 'admin3@example.com');
+-- rollback DELETE FROM public."user" WHERE email IN ('norbert.marchewka44@gmail.com', 'piotr_zmudzki@checkitout.app', 'kuba_sadowski@checkitout.app');

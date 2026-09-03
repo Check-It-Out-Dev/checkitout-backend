@@ -5,7 +5,7 @@ Since we can't create binary PNG files directly, you need to add a logo manually
 ### Option 1: Use Your Existing Logo
 If you have a logo/favicon for CheckItOut, copy it to:
 ```
-checkItOut-be/src/main/resources/static/favicon.png
+checkitout-backend/src/main/resources/static/favicon.png
 ```
 
 ### Option 2: Create a Simple Logo

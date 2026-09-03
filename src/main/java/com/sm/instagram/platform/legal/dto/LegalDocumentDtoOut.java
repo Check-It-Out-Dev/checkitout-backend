@@ -15,8 +15,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LegalDocumentDtoOut {
-    @Schema(allowableValues = {"COOKIE_POLICY", "TERMS_OF_SERVICE", "PRIVACY_POLICY",
-            "SUBSCRIPTION_ACTIVATION_CONSENT", "DATA_RETENTION_POLICY"}, description = "LegalDocumentType enum name")
+    // Reference the shared LegalDocumentType enum component so the FE
+    // generator reuses one TS enum across DTOs (docs-only; runtime String).
+    @Schema(implementation = com.sm.instagram.platform.legal.LegalDocumentType.class,
+            description = "LegalDocumentType enum name")
     private String type;
     private Integer version;
     private String contentHash;

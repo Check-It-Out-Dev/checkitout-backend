@@ -284,9 +284,10 @@ class SupportTicketEntityUnitTest {
         }
 
         @Test
-        @DisplayName("should fail validation for ticketReference exceeding 20 characters - @Size(max=20)")
-        void shouldFailValidationForTicketReferenceExceeding20Characters() {
-            ticket.setTicketReference("A".repeat(21));
+        @DisplayName("should fail validation for ticketReference exceeding 32 characters - @Size(max=32)")
+        void shouldFailValidationForTicketReferenceExceeding32Characters() {
+            // Widened from 20 for the pentest 3.3 format CIO-yyyyMMdd-XXXXXXXX (21 chars).
+            ticket.setTicketReference("A".repeat(33));
             Set<ConstraintViolation<SupportTicket>> violations = validator.validate(ticket);
             assertThat(violations).isNotEmpty();
             assertThat(violations.stream()
@@ -294,9 +295,9 @@ class SupportTicketEntityUnitTest {
         }
 
         @Test
-        @DisplayName("should pass validation for ticketReference with exactly 20 characters")
-        void shouldPassValidationForTicketReferenceWithExactly20Characters() {
-            ticket.setTicketReference("A".repeat(20));
+        @DisplayName("should pass validation for ticketReference with exactly 32 characters")
+        void shouldPassValidationForTicketReferenceWithExactly32Characters() {
+            ticket.setTicketReference("A".repeat(32));
             Set<ConstraintViolation<SupportTicket>> violations = validator.validate(ticket);
             assertThat(violations).isEmpty();
         }

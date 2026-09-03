@@ -48,6 +48,20 @@ class SupportTicketService_Create_IntegrationTest extends SupportTicketServiceIn
         }
 
         @Test
+        @DisplayName("persists the error-report technical description")
+        void persistsTechnicalDescription() {
+            String email = generateTestEmail();
+            SupportTicketDtoIn dto = createTicketDtoIn(email, "Application Error", "Auto-filled");
+            dto.setTechnicalDescription("=== ERROR DETAILS ===\nstatus: 500\ntrace: req-42");
+
+            SupportTicket result = supportTicketService.createTicket(dto, TEST_IP_ADDRESS);
+            flushAndClear();
+
+            SupportTicket persisted = supportTicketRepository.findById(result.getId()).orElseThrow();
+            assertThat(persisted.getTechnicalDescription()).contains("trace: req-42");
+        }
+
+        @Test
         @DisplayName("generates unique ticket reference")
         void generatesUniqueTicketReference() {
             String email = generateTestEmail();
@@ -84,6 +98,7 @@ class SupportTicketService_Create_IntegrationTest extends SupportTicketServiceIn
             SupportTicket result = supportTicketService.createTicket(dto, TEST_IP_ADDRESS);
 
             verify(emailService).sendTicketCreationConfirmation(
+                    anyString(),
                     anyString(),
                     anyString(),
                     anyString(),
