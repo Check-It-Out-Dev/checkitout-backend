@@ -1,5 +1,7 @@
 # Code Coverage Report
 
+> **Snapshot from 2026-01-23.** The current, measured figures are in the [README's numbers table](../README.md#testing) (test methods, classes, Cucumber files and scenarios, measured 2026-09-08). This document keeps its own numbers as they were when it was written.
+
 **Generated:** 2026-01-23
 **Source:** JaCoCo Merged Report (Unit Tests + Integration Tests + E2E Tests)
 **Total Classes Analyzed:** 380
