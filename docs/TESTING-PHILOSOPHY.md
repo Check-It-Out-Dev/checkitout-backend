@@ -12,7 +12,7 @@ when that thing breaks. It fails when you change your mind about the mock.
 
 ## Unit — mock freely, and run in seconds
 
-Roughly 11,000 tests, no external services, the whole tier in about a minute.
+Thousands of tests (8,908 test methods across the three tiers as of 2026-09-08 — the README keeps the measured table), no external services, the whole tier in about a minute.
 
 Here mocking is correct. A unit test asks whether one piece of logic is right
 given its inputs; the database, the clock and the vendor are noise. Speed is the
