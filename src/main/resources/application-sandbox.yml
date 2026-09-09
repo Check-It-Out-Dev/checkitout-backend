@@ -20,6 +20,19 @@ checkitout:
       - email: test.influencer@test.com
         role: INFLUENCER
 
+# The browser's origin, which dev-lite never had to think about. dev-lite allows loopback patterns because
+# it is a simulator on a developer's laptop; on a public host that list matches nothing a visitor sends, so
+# every POST from a real browser came back 403 "Invalid CORS request" while curl — which sends no Origin at
+# all — sailed through the smoke checks. The sandbox is served from https://checkitout.app/sandbox/ (the old
+# hostname redirects there and is kept for links already in the wild). The loopback patterns are cleared:
+# on a public host a page at http://localhost:anything is not a boundary worth honouring.
+cors:
+  allowed-origin-patterns: []
+  allowed-origins:
+    - https://checkitout.app
+    - https://www.checkitout.app
+    - https://sandbox.checkitout.app
+
 management:
   endpoints:
     web:
