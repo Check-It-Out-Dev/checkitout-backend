@@ -76,13 +76,18 @@ class ProfileGateUnitTest {
     }
 
     @Test
-    @DisplayName("the simulator beans exist exactly where dev-lite runs")
-    void devLiteBeansActivateOnlyUnderDevLite() {
+    @DisplayName("the simulator upload beans exist under dev-lite and e2e, and nowhere else")
+    void devLiteUploadBeansActivateUnderDevLiteAndE2e() {
+        // e2e joined dev-lite here on 2026-09-11: the end-to-end tier runs on a public runner with no
+        // Google credential, and a signed URL against a real bucket answers 403 with 507 on the confirm.
+        // The pair is asserted together on purpose - the sink mints the token and the controller accepts
+        // the bytes, so one without the other is a 404 on every upload.
         for (Class<?> type : new Class<?>[] {DevLiteUploadController.class, LocalUploadSink.class}) {
             assertThat(active(type, "dev-lite")).as("%s under dev-lite", type.getSimpleName()).isTrue();
+            assertThat(active(type, "e2e")).as("%s under e2e", type.getSimpleName()).isTrue();
             assertThat(active(type, "dev")).as("%s under plain dev", type.getSimpleName()).isFalse();
-            assertThat(active(type, "e2e")).as("%s under e2e", type.getSimpleName()).isFalse();
             assertThat(active(type, "test")).as("%s under test", type.getSimpleName()).isFalse();
+            assertThat(active(type, "e2e", "prod")).as("%s never under prod", type.getSimpleName()).isFalse();
         }
     }
 

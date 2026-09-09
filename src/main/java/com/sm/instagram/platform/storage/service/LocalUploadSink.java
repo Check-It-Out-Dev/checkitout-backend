@@ -29,7 +29,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Slf4j
 @Component
-@Profile("dev-lite & !prod & !test")
+// e2e as well as dev-lite: the end-to-end tier runs on a public runner with no Google credential, so a
+// signed URL against a real bucket answers 403 and the confirm step 507. Production is excluded by
+// !prod either way, and SignedUrlService prefers this sink only when the bean exists at all.
+@Profile("(dev-lite | e2e) & !prod & !test")
 public class LocalUploadSink {
 
     /**

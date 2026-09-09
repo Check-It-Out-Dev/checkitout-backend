@@ -1391,7 +1391,7 @@ public class AdminPlatformManagementSteps extends CucumberSpringConfig {
     public void actorRequestsDelete(String actorAlias, String endpoint) {
         // Handle {targetUserId} placeholder
         if (endpoint.contains("{targetUserId}")) {
-            Long targetUserId = getTargetUserIdLocal("WWXA9DehxZghyLq849TpyE4vYzZ2");
+            Long targetUserId = getTargetUserIdLocal("E2E_COMPANY_001");
             endpoint = endpoint.replace("{targetUserId}", String.valueOf(targetUserId));
         }
 
@@ -2383,10 +2383,10 @@ public class AdminPlatformManagementSteps extends CucumberSpringConfig {
      * Resolves role from target alias or Firebase UID.
      */
     private String resolveRole(String targetAlias) {
-        if ("WWXA9DehxZghyLq849TpyE4vYzZ2".equals(targetAlias) || targetAlias.contains("COMPANY")) {
+        if ("E2E_COMPANY_001".equals(targetAlias) || targetAlias.contains("COMPANY")) {
             return "COMPANY";
         }
-        if ("SEWgduxUjRh4KDqxVWFs6zgThIa2".equals(targetAlias) || targetAlias.contains("INFLUENCER")) {
+        if ("E2E_INFLUENCER_001".equals(targetAlias) || targetAlias.contains("INFLUENCER")) {
             return "INFLUENCER";
         }
         return "COMPANY"; // Default

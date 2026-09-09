@@ -8,6 +8,7 @@ import com.sm.instagram.platform.common.exceptions.ValidationTranslatableExcepti
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,13 +28,21 @@ public class TotpEncryptionService {
     private final ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     private KMSValidationService kmsService;
+    // Cloud KMS is the cipher in production. A run without a Google credential - the e2e tier on a public
+    // runner - sets gcp.kms.enabled=false and encrypts with a configured key instead. KMSValidationService
+    // throws when disabled rather than weakening anything silently, which is why the branch is here.
+    @Autowired
+    private LocalTotpCipher localCipher;
+    @Value("${gcp.kms.enabled:true}")
+    private boolean kmsEnabled;
     private BCryptPasswordEncoder passwordEncoder;
 
     @PostConstruct
     public void init() {
         this.passwordEncoder = new BCryptPasswordEncoder(12);
         log.info("GDPR: Operation=initializeTotpEncryption, Purpose=system_startup, DataAccessed=none");
-        log.info("TotpEncryptionService initialized with BCrypt strength 12");
+        log.info("TotpEncryptionService initialized with BCrypt strength 12, cipher={}",
+                kmsEnabled ? "Cloud KMS" : "local key (gcp.kms.enabled=false)");
     }
 
     /**
@@ -52,8 +61,7 @@ public class TotpEncryptionService {
         }
 
         try {
-            // Direct KMS encryption for TOTP secrets
-            String encrypted = kmsService.encryptTotpSecret(plainSecret);
+            String encrypted = seal(plainSecret);
             log.info("GDPR: Operation=encryptTotpSecret_success, FirebaseUID={}, Purpose=2fa_setup", firebaseUid);
             return encrypted;
         } catch (Exception e) {
@@ -78,7 +86,7 @@ public class TotpEncryptionService {
         }
 
         try {
-            String decrypted = kmsService.decryptTotpSecret(encrypted);
+            String decrypted = open(encrypted);
             log.info("GDPR: Operation=decryptTotpSecret_success, FirebaseUID={}, Purpose=2fa_verification", firebaseUid);
             return decrypted;
         } catch (Exception e) {
@@ -115,7 +123,7 @@ public class TotpEncryptionService {
             String json = objectMapper.writeValueAsString(hashedCodes);
 
             // Then KMS encrypt the hashed codes
-            String encrypted = kmsService.encryptTotpSecret(json);
+            String encrypted = seal(json);
             log.info("GDPR: Operation=encryptBackupCodes_success, FirebaseUID={}, CodesCount={}, Purpose=2fa_backup_setup",
                     firebaseUid, hashedCodes.size());
 
@@ -149,7 +157,7 @@ public class TotpEncryptionService {
 
         try {
             // Decrypt from KMS
-            String json = kmsService.decryptTotpSecret(encryptedCodes);
+            String json = open(encryptedCodes);
 
             // Parse the hashed codes
             List<String> hashedCodes = objectMapper.readValue(json,
@@ -192,7 +200,7 @@ public class TotpEncryptionService {
 
         try {
             // Decrypt from KMS
-            String json = kmsService.decryptTotpSecret(encryptedCodes);
+            String json = open(encryptedCodes);
 
             // Parse the hashed codes
             List<String> hashedCodes = objectMapper.readValue(json,
@@ -206,7 +214,7 @@ public class TotpEncryptionService {
 
             // Re-encrypt the remaining codes
             String newJson = objectMapper.writeValueAsString(remainingCodes);
-            String newEncrypted = kmsService.encryptTotpSecret(newJson);
+            String newEncrypted = seal(newJson);
 
             log.info("GDPR: Operation=removeUsedBackupCode_success, FirebaseUID={}, RemainingCodes={}, Purpose=2fa_backup_consumption",
                     firebaseUid, remainingCodes.size());
@@ -224,6 +232,24 @@ public class TotpEncryptionService {
      *
      * @return Firebase UID or "system" if not available
      */
+    /**
+     * Encrypt with whichever cipher this run is configured for.
+     *
+     * <p>Cloud KMS in production. A run with no Google credential - the e2e tier on a public runner -
+     * sets {@code gcp.kms.enabled=false} and uses a key from configuration instead;
+     * {@link KMSValidationService} throws when disabled rather than weakening anything silently, so the
+     * choice has to be made here. Every TOTP value, secret and backup codes alike, goes through this pair,
+     * because a document half-written by one cipher and half by the other cannot be read back by either.
+     */
+    private String seal(String plaintext) {
+        return kmsEnabled ? kmsService.encryptTotpSecret(plaintext) : localCipher.encrypt(plaintext);
+    }
+
+    /** The other half of {@link #seal}. */
+    private String open(String ciphertext) {
+        return kmsEnabled ? kmsService.decryptTotpSecret(ciphertext) : localCipher.decrypt(ciphertext);
+    }
+
     private String extractFirebaseUid() {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();

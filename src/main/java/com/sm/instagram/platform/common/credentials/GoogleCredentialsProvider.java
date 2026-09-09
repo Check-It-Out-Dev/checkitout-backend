@@ -218,12 +218,17 @@ public class GoogleCredentialsProvider {
             java.security.KeyPairGenerator generator = java.security.KeyPairGenerator.getInstance("RSA");
             generator.initialize(2048);
             java.security.KeyPair keyPair = generator.generateKeyPair();
+            // The project id follows configuration rather than being fixed here. extractProjectId() reads
+            // it back off these credentials, so a hard-coded value silently overrode gcp.project-id for
+            // every run without a real key - which is exactly the run that talks to the Firebase emulator,
+            // where the project id decides which store the accounts land in.
+            String syntheticProjectId = StringUtils.hasText(gcpProjectId) ? gcpProjectId : "check-it-out-47c50";
             return ServiceAccountCredentials.newBuilder()
                     .setClientId("synthetic-offline-client")
-                    .setClientEmail("synthetic-tests@check-it-out-47c50.iam.gserviceaccount.com")
+                    .setClientEmail("synthetic-tests@" + syntheticProjectId + ".iam.gserviceaccount.com")
                     .setPrivateKey(keyPair.getPrivate())
                     .setPrivateKeyId("synthetic-offline-key")
-                    .setProjectId("check-it-out-47c50")
+                    .setProjectId(syntheticProjectId)
                     .build();
         } catch (java.security.NoSuchAlgorithmException e) {
             throw new IllegalStateException("RSA unavailable for synthetic credentials", e);

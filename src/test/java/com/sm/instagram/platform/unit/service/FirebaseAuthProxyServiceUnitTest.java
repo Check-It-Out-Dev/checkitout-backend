@@ -70,6 +70,11 @@ class FirebaseAuthProxyServiceUnitTest {
         ReflectionTestUtils.setField(service, "userRepository", userRepository);
         ReflectionTestUtils.setField(service, "credentialsProvider", credentialsProvider);
         ReflectionTestUtils.setField(service, "emailVerificationService", emailVerificationService);
+        // A real FirebaseEmulator with no host configured, which is what production is: it hands back the
+        // Google endpoints and an empty token, so the service mints a real one through the credentials
+        // provider mocked below. The emulator path has its own coverage in the e2e tier.
+        ReflectionTestUtils.setField(service, "firebaseEmulator",
+                new com.sm.instagram.platform.common.firebase.FirebaseEmulator(""));
 
         // Mock credentials provider to return a fake access token
         GoogleCredentials mockCredentials = mock(GoogleCredentials.class);

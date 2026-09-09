@@ -11,9 +11,9 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
   # Each scenario uses SOFT ASSERTIONS for maximum coverage per session.
   #
   # Test Users:
-  #   - Admin: 85VJgS6shAWTqby4rHypN355RWv2 (norbert.marchewka44@gmail.com)
-  #   - Company: WWXA9DehxZghyLq849TpyE4vYzZ2 (norbert.marchewka4444431@gmail.com)
-  #   - Influencer: SEWgduxUjRh4KDqxVWFs6zgThIa2 (norbertmarchewka - Instagram OAuth)
+  #   - Admin: E2E_ADMIN_001 (e2e.admin@test.com)
+  #   - Company: E2E_COMPANY_001 (e2e.company@test.com)
+  #   - Influencer: E2E_INFLUENCER_001 (norbertmarchewka - Instagram OAuth)
   #
   # Run with: mvn verify -Pe2e -Dcucumber.filter.tags="@admin-platform"
   # =============================================================================
@@ -30,7 +30,7 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
   @consolidated @support-tickets @ticket-lifecycle
   Scenario: Admin manages full ticket lifecycle from creation to resolution
     # ===== PHASE 1: ADMIN LOGIN =====
-    Given "Admin" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
+    Given "Admin" logs in as ADMIN with Firebase UID "E2E_ADMIN_001" email "e2e.admin@test.com" password "e2e-emulator-password" and completes 2FA
     Then "Admin" should be authenticated
     And "Admin" should have 2FA verified
 
@@ -122,7 +122,7 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
   @consolidated @faq-management
   Scenario: Admin performs FAQ CRUD operations
     # ===== ADMIN LOGIN =====
-    Given "Admin" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
+    Given "Admin" logs in as ADMIN with Firebase UID "E2E_ADMIN_001" email "e2e.admin@test.com" password "e2e-emulator-password" and completes 2FA
     Then "Admin" should be authenticated
     And "Admin" should have 2FA verified
 
@@ -157,9 +157,9 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
   @consolidated @multi-actor @ban-impact
   Scenario: Admin ban affects user sessions in real-time
     # ===== MULTI-ACTOR LOGIN =====
-    Given "Admin" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
-    And "Company1" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
-    And "Influencer1" logs in as INFLUENCER via OAuth with Firebase UID "SEWgduxUjRh4KDqxVWFs6zgThIa2"
+    Given "Admin" logs in as ADMIN with Firebase UID "E2E_ADMIN_001" email "e2e.admin@test.com" password "e2e-emulator-password" and completes 2FA
+    And "Company1" logs in as COMPANY with Firebase UID "E2E_COMPANY_001" email "e2e.company@test.com" password "e2e-emulator-password"
+    And "Influencer1" logs in as INFLUENCER via OAuth with Firebase UID "E2E_INFLUENCER_001"
     Then "Admin" should be authenticated
     And "Company1" should be authenticated
     And "Influencer1" should be authenticated
@@ -171,10 +171,10 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
     Then the response status should be 200
 
     # ===== ADMIN BANS COMPANY1 =====
-    Given the target user "WWXA9DehxZghyLq849TpyE4vYzZ2" is synced from Firestore
-    When the admin bans user "WWXA9DehxZghyLq849TpyE4vYzZ2" with reason "Multi-actor E2E test ban"
+    Given the target user "E2E_COMPANY_001" is synced from Firestore
+    When the admin bans user "E2E_COMPANY_001" with reason "Multi-actor E2E test ban"
     Then the response status should be 200
-    And the user "WWXA9DehxZghyLq849TpyE4vYzZ2" should have status "BANNED"
+    And the user "E2E_COMPANY_001" should have status "BANNED"
 
     # ===== VERIFY BAN IMPACT ON COMPANY1 =====
     # After ban, token becomes stale (token version mismatch) - returns 419 (Session Expired)
@@ -187,9 +187,9 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
     Then the response status should be 200
 
     # ===== ADMIN UNBANS COMPANY1 =====
-    When the admin unbans user "WWXA9DehxZghyLq849TpyE4vYzZ2"
+    When the admin unbans user "E2E_COMPANY_001"
     Then the response status should be 200
-    And the user "WWXA9DehxZghyLq849TpyE4vYzZ2" should have status "ACTIVE"
+    And the user "E2E_COMPANY_001" should have status "ACTIVE"
 
     # ===== COMPANY1 REFRESHES SESSION AFTER UNBAN =====
     # After unban, user can refresh their session to get new token with updated tokenVersion
@@ -202,7 +202,7 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
     Then the response status should be 200
 
     # ===== CLEANUP: ENSURE USERS ARE ACTIVE =====
-    When the admin sets user "WWXA9DehxZghyLq849TpyE4vYzZ2" status to "ACTIVE"
+    When the admin sets user "E2E_COMPANY_001" status to "ACTIVE"
     Then the response status should be 200
 
   # ===========================================================================
@@ -218,12 +218,12 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
   @consolidated @system-monitoring @upload-stats @gdpr
   Scenario: Admin performs comprehensive system monitoring and statistics review
     # ===== ADMIN LOGIN (single login for ~25+ operations) =====
-    Given "Admin" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
+    Given "Admin" logs in as ADMIN with Firebase UID "E2E_ADMIN_001" email "e2e.admin@test.com" password "e2e-emulator-password" and completes 2FA
     Then "Admin" should be authenticated
     And "Admin" should have 2FA verified
 
     # ===== SYNC TARGET USER FOR USER-SPECIFIC QUERIES =====
-    Given the target user "WWXA9DehxZghyLq849TpyE4vYzZ2" is synced from Firestore
+    Given the target user "E2E_COMPANY_001" is synced from Firestore
 
     # ========== SECTION 1: UPLOAD STATISTICS ==========
 
@@ -232,7 +232,7 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
     Then the response should be successful or not found
 
     # ----- User Upload Statistics -----
-    When "Admin" views uploads for target user "WWXA9DehxZghyLq849TpyE4vYzZ2"
+    When "Admin" views uploads for target user "E2E_COMPANY_001"
     Then the response should be successful or not found
 
     # ----- Uploads by Status -----
@@ -250,7 +250,7 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
     Then the response status should be 200
 
     # ----- View User Consent Info -----
-    When "Admin" views consent info for user "WWXA9DehxZghyLq849TpyE4vYzZ2"
+    When "Admin" views consent info for user "E2E_COMPANY_001"
     Then the response status should be 200
 
     # ========== SECTION 3: GDPR COMPLIANCE ==========
@@ -260,11 +260,11 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
     Then the response should be successful or not found
 
     # ----- User Location Retention Info -----
-    When "Admin" views GDPR retention for target user "WWXA9DehxZghyLq849TpyE4vYzZ2"
+    When "Admin" views GDPR retention for target user "E2E_COMPANY_001"
     Then the response should be successful or not found
 
     # ----- User Location Export (Read-Only Check) -----
-    When "Admin" requests location export for target user "WWXA9DehxZghyLq849TpyE4vYzZ2"
+    When "Admin" requests location export for target user "E2E_COMPANY_001"
     Then the response should be successful or not found
 
     # ========== SECTION 4: GEOIP ADMIN OPERATIONS ==========
@@ -322,24 +322,24 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
   @consolidated @user-data-management @user-preferences @address @premium
   Scenario: Admin performs comprehensive user data management operations
     # ===== ADMIN LOGIN (single login for ~20+ operations) =====
-    Given "Admin" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
+    Given "Admin" logs in as ADMIN with Firebase UID "E2E_ADMIN_001" email "e2e.admin@test.com" password "e2e-emulator-password" and completes 2FA
     Then "Admin" should be authenticated
     And "Admin" should have 2FA verified
 
     # ===== SYNC TARGET USERS =====
-    Given the target user "WWXA9DehxZghyLq849TpyE4vYzZ2" is synced from Firestore
-    And the target user "SEWgduxUjRh4KDqxVWFs6zgThIa2" is synced from Firestore
+    Given the target user "E2E_COMPANY_001" is synced from Firestore
+    And the target user "E2E_INFLUENCER_001" is synced from Firestore
 
     # ========== SECTION 1: USER PROFILE VIEWING ==========
 
     # ----- View Company User Profile -----
-    When the admin views user "WWXA9DehxZghyLq849TpyE4vYzZ2" profile
+    When the admin views user "E2E_COMPANY_001" profile
     Then the response status should be 200
     And the response should contain the user's email
     And the response should contain the user's account status
 
     # ----- View Influencer User Profile -----
-    When the admin views user "SEWgduxUjRh4KDqxVWFs6zgThIa2" profile
+    When the admin views user "E2E_INFLUENCER_001" profile
     Then the response status should be 200
     And the response should contain the user's email
 
@@ -352,51 +352,51 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
     # ========== SECTION 2: USER PREFERENCES MANAGEMENT ==========
 
     # ----- View User Preferences -----
-    When "Admin" views preferences for target user "WWXA9DehxZghyLq849TpyE4vYzZ2"
+    When "Admin" views preferences for target user "E2E_COMPANY_001"
     Then the response should be successful or not found
 
     # ----- Patch User Preferences (dark mode) -----
-    When "Admin" patches preferences for target user "WWXA9DehxZghyLq849TpyE4vYzZ2" with:
+    When "Admin" patches preferences for target user "E2E_COMPANY_001" with:
       | darkModeEnabled | true |
     Then the response should be successful or not found
 
     # ----- Restore User Preferences -----
-    When "Admin" patches preferences for target user "WWXA9DehxZghyLq849TpyE4vYzZ2" with:
+    When "Admin" patches preferences for target user "E2E_COMPANY_001" with:
       | darkModeEnabled | false |
     Then the response should be successful or not found
 
     # ========== SECTION 3: USER DELETION ELIGIBILITY ==========
 
     # ----- Check Deletion Eligibility for Company User -----
-    When "Admin" checks deletion eligibility for target user "WWXA9DehxZghyLq849TpyE4vYzZ2"
+    When "Admin" checks deletion eligibility for target user "E2E_COMPANY_001"
     Then the response should be successful or not found
 
     # ----- Check Deletion Eligibility for Influencer User -----
-    When "Admin" checks deletion eligibility for target user "SEWgduxUjRh4KDqxVWFs6zgThIa2"
+    When "Admin" checks deletion eligibility for target user "E2E_INFLUENCER_001"
     Then the response should be successful or not found
 
     # ========== SECTION 4: PREMIUM STATUS MANAGEMENT ==========
 
     # ----- Set Premium Status ON -----
-    When "Admin" sets premium status to true for target user "WWXA9DehxZghyLq849TpyE4vYzZ2"
+    When "Admin" sets premium status to true for target user "E2E_COMPANY_001"
     Then the response should be successful or not found
 
     # ----- Set Premium Status OFF (restore) -----
-    When "Admin" sets premium status to false for target user "WWXA9DehxZghyLq849TpyE4vYzZ2"
+    When "Admin" sets premium status to false for target user "E2E_COMPANY_001"
     Then the response should be successful or not found
 
     # ========== SECTION 5: ADDRESS MANAGEMENT ==========
 
     # ----- View User Addresses -----
-    When "Admin" views addresses for target user "WWXA9DehxZghyLq849TpyE4vYzZ2"
+    When "Admin" views addresses for target user "E2E_COMPANY_001"
     Then the response should be successful or not found
 
     # ----- View User Primary Address -----
-    When "Admin" views primary address for target user "WWXA9DehxZghyLq849TpyE4vYzZ2"
+    When "Admin" views primary address for target user "E2E_COMPANY_001"
     Then the response should be successful or not found
 
     # ----- Create Address for User -----
-    When "Admin" creates address for target user "WWXA9DehxZghyLq849TpyE4vYzZ2" with:
+    When "Admin" creates address for target user "E2E_COMPANY_001" with:
       | street      | 123 E2E Test Street |
       | city        | Warsaw              |
       | postalCode  | 00-001              |
@@ -419,18 +419,18 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
     # ========== SECTION 6: USER STATUS MANAGEMENT ==========
 
     # ----- Status Cycle: ACTIVE -> INACTIVE -> IN_VALIDATION -> ACTIVE -----
-    When the admin sets user "WWXA9DehxZghyLq849TpyE4vYzZ2" status to "INACTIVE"
+    When the admin sets user "E2E_COMPANY_001" status to "INACTIVE"
     Then the response status should be 200
-    And the user "WWXA9DehxZghyLq849TpyE4vYzZ2" should have status "INACTIVE"
+    And the user "E2E_COMPANY_001" should have status "INACTIVE"
 
-    When the admin sets user "WWXA9DehxZghyLq849TpyE4vYzZ2" status to "IN_VALIDATION"
+    When the admin sets user "E2E_COMPANY_001" status to "IN_VALIDATION"
     Then the response status should be 200
-    And the user "WWXA9DehxZghyLq849TpyE4vYzZ2" should have status "IN_VALIDATION"
+    And the user "E2E_COMPANY_001" should have status "IN_VALIDATION"
 
     # ----- CLEANUP: Restore to ACTIVE -----
-    When the admin sets user "WWXA9DehxZghyLq849TpyE4vYzZ2" status to "ACTIVE"
+    When the admin sets user "E2E_COMPANY_001" status to "ACTIVE"
     Then the response status should be 200
-    And the user "WWXA9DehxZghyLq849TpyE4vYzZ2" should have status "ACTIVE"
+    And the user "E2E_COMPANY_001" should have status "ACTIVE"
 
   # ===========================================================================
   # SCENARIO 6: ADMIN REFERENCE DATA MANAGEMENT (SUPER CONSOLIDATED)
@@ -446,7 +446,7 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
   @consolidated @reference-data @city @currency @platform
   Scenario: Admin performs comprehensive reference data management
     # ===== ADMIN LOGIN (single login for ~20+ operations) =====
-    Given "Admin" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
+    Given "Admin" logs in as ADMIN with Firebase UID "E2E_ADMIN_001" email "e2e.admin@test.com" password "e2e-emulator-password" and completes 2FA
     Then "Admin" should be authenticated
     And "Admin" should have 2FA verified
 
@@ -552,7 +552,7 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
   @consolidated @content-moderation @applied-opportunities
   Scenario: Admin reviews content and applied opportunities
     # ===== ADMIN LOGIN =====
-    Given "Admin" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
+    Given "Admin" logs in as ADMIN with Firebase UID "E2E_ADMIN_001" email "e2e.admin@test.com" password "e2e-emulator-password" and completes 2FA
     Then "Admin" should be authenticated
     And "Admin" should have 2FA verified
 
@@ -598,7 +598,7 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
   @consolidated @security @2fa
   Scenario: Admin reviews security settings and 2FA status
     # ===== ADMIN LOGIN =====
-    Given "Admin" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
+    Given "Admin" logs in as ADMIN with Firebase UID "E2E_ADMIN_001" email "e2e.admin@test.com" password "e2e-emulator-password" and completes 2FA
     Then "Admin" should be authenticated
     And "Admin" should have 2FA verified
 
@@ -648,11 +648,11 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
   Scenario: Admin validation edge cases - Company creates ticket, Admin manipulates
     # ===== MULTI-USER LOGIN: Company creates data, Admin manipulates =====
     # This pattern avoids 403 issues on admin-only endpoints while still testing validation
-    Given "Admin" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
+    Given "Admin" logs in as ADMIN with Firebase UID "E2E_ADMIN_001" email "e2e.admin@test.com" password "e2e-emulator-password" and completes 2FA
     Then "Admin" should be authenticated
     And "Admin" should have 2FA verified
 
-    And "Company1" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
+    And "Company1" logs in as COMPANY with Firebase UID "E2E_COMPANY_001" email "e2e.company@test.com" password "e2e-emulator-password"
     Then "Company1" should be authenticated
 
     # ========== SECTION 1: TICKET VALIDATION (Company creates, Admin manipulates) ==========
@@ -726,10 +726,10 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
     # ========== SECTION 5: ADDRESS VALIDATION EDGE CASES ==========
 
     # Sync target user for address tests
-    Given the target user "WWXA9DehxZghyLq849TpyE4vYzZ2" is synced from Firestore
+    Given the target user "E2E_COMPANY_001" is synced from Firestore
 
     # ----- INVALID: Street blank -----
-    When "Admin" creates address for target user "WWXA9DehxZghyLq849TpyE4vYzZ2" with:
+    When "Admin" creates address for target user "E2E_COMPANY_001" with:
       | street      |            |
       | city        | Warsaw     |
       | postalCode  | 00-001     |
@@ -739,7 +739,7 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
     Then the response status should be 400
 
     # ----- INVALID: City blank -----
-    When "Admin" creates address for target user "WWXA9DehxZghyLq849TpyE4vYzZ2" with:
+    When "Admin" creates address for target user "E2E_COMPANY_001" with:
       | street      | Test Street |
       | city        |             |
       | postalCode  | 00-001      |
@@ -749,7 +749,7 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
     Then the response status should be 400
 
     # ----- INVALID: PostalCode blank -----
-    When "Admin" creates address for target user "WWXA9DehxZghyLq849TpyE4vYzZ2" with:
+    When "Admin" creates address for target user "E2E_COMPANY_001" with:
       | street      | Test Street |
       | city        | Warsaw      |
       | postalCode  |             |
@@ -761,7 +761,7 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
     # ----- INVALID: Blank required field (street) -----
     # Note: addressType is stored as String, not enum - no enum validation exists
     # Using blank street to trigger @NotBlank validation instead
-    When "Admin" creates address for target user "WWXA9DehxZghyLq849TpyE4vYzZ2" with:
+    When "Admin" creates address for target user "E2E_COMPANY_001" with:
       | street      |                  |
       | city        | Warsaw           |
       | postalCode  | 00-001           |
@@ -771,7 +771,7 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
     Then the response status should be 400
 
     # ----- VALID: All valid AddressType values -----
-    When "Admin" creates address for target user "WWXA9DehxZghyLq849TpyE4vYzZ2" with:
+    When "Admin" creates address for target user "E2E_COMPANY_001" with:
       | street      | Test Street MAIN |
       | city        | Warsaw           |
       | postalCode  | 00-001           |
@@ -783,7 +783,7 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
     When "Admin" deletes the stored address
     Then the response should be successful or not found
 
-    When "Admin" creates address for target user "WWXA9DehxZghyLq849TpyE4vYzZ2" with:
+    When "Admin" creates address for target user "E2E_COMPANY_001" with:
       | street      | Test Street BILLING |
       | city        | Warsaw              |
       | postalCode  | 00-002              |
@@ -798,41 +798,41 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
     # ========== SECTION 6: USER PREFERENCES VALIDATION EDGE CASES ==========
 
     # ----- INVALID: Language too long (>10 chars) -----
-    When "Admin" patches preferences for target user "WWXA9DehxZghyLq849TpyE4vYzZ2" with:
+    When "Admin" patches preferences for target user "E2E_COMPANY_001" with:
       | language | this_is_way_too_long_for_language |
     Then the response status should be 400
 
     # ----- INVALID: Timezone too long (>50 chars) -----
-    When "Admin" patches preferences for target user "WWXA9DehxZghyLq849TpyE4vYzZ2" with:
+    When "Admin" patches preferences for target user "E2E_COMPANY_001" with:
       | timezone | This_is_a_very_long_timezone_string_that_exceeds_the_fifty_character_limit |
     Then the response status should be 400
 
     # ----- INVALID: Invalid communicationFrequency enum -----
-    When "Admin" patches preferences for target user "WWXA9DehxZghyLq849TpyE4vYzZ2" with:
+    When "Admin" patches preferences for target user "E2E_COMPANY_001" with:
       | communicationFrequency | INVALID_FREQUENCY |
     Then the response status should be 400
 
     # ----- INVALID: Unknown field in PATCH -----
-    When "Admin" patches preferences for target user "WWXA9DehxZghyLq849TpyE4vYzZ2" with:
+    When "Admin" patches preferences for target user "E2E_COMPANY_001" with:
       | unknownField | someValue |
     Then the response status should be 400
 
     # ----- VALID: All valid communicationFrequency values -----
-    When "Admin" patches preferences for target user "WWXA9DehxZghyLq849TpyE4vYzZ2" with:
+    When "Admin" patches preferences for target user "E2E_COMPANY_001" with:
       | communicationFrequency | DAILY |
     Then the response should be successful or not found
-    When "Admin" patches preferences for target user "WWXA9DehxZghyLq849TpyE4vYzZ2" with:
+    When "Admin" patches preferences for target user "E2E_COMPANY_001" with:
       | communicationFrequency | WEEKLY |
     Then the response should be successful or not found
-    When "Admin" patches preferences for target user "WWXA9DehxZghyLq849TpyE4vYzZ2" with:
+    When "Admin" patches preferences for target user "E2E_COMPANY_001" with:
       | communicationFrequency | MONTHLY |
     Then the response should be successful or not found
-    When "Admin" patches preferences for target user "WWXA9DehxZghyLq849TpyE4vYzZ2" with:
+    When "Admin" patches preferences for target user "E2E_COMPANY_001" with:
       | communicationFrequency | NEVER |
     Then the response should be successful or not found
 
     # ----- Restore to default -----
-    When "Admin" patches preferences for target user "WWXA9DehxZghyLq849TpyE4vYzZ2" with:
+    When "Admin" patches preferences for target user "E2E_COMPANY_001" with:
       | communicationFrequency | WEEKLY |
     Then the response should be successful or not found
 
@@ -874,12 +874,12 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
   @consolidated @gdpr @consent @lifecycle
   Scenario: Admin GDPR and Consent management operations
     # ===== ADMIN LOGIN (single login for all GDPR + Consent operations) =====
-    Given "Admin" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
+    Given "Admin" logs in as ADMIN with Firebase UID "E2E_ADMIN_001" email "e2e.admin@test.com" password "e2e-emulator-password" and completes 2FA
     Then "Admin" should be authenticated
     And "Admin" should have 2FA verified
 
     # ===== SYNC TARGET USER =====
-    Given the target user "WWXA9DehxZghyLq849TpyE4vYzZ2" is synced from Firestore
+    Given the target user "E2E_COMPANY_001" is synced from Firestore
 
     # ========== SECTION 1: GDPR COMPLIANCE (Read operations) ==========
 
@@ -985,17 +985,17 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
     # ========== SECTION 8: CONSENT USER INFO ==========
 
     # ----- View User Consent Info - Happy Path -----
-    When "Admin" views consent info for target user "WWXA9DehxZghyLq849TpyE4vYzZ2"
+    When "Admin" views consent info for target user "E2E_COMPANY_001"
     Then the response should be successful or not found
 
     # ========== SECTION 9: CONSENT HISTORY ==========
 
     # ----- View Consent History - Happy Path -----
-    When "Admin" views consent history for target user "WWXA9DehxZghyLq849TpyE4vYzZ2" type "TERMS_SERVICE"
+    When "Admin" views consent history for target user "E2E_COMPANY_001" type "TERMS_SERVICE"
     Then the response should be successful or not found
 
     # ----- View Consent History - Non-existent type -----
-    When "Admin" views consent history for target user "WWXA9DehxZghyLq849TpyE4vYzZ2" type "NON_EXISTENT_TYPE"
+    When "Admin" views consent history for target user "E2E_COMPANY_001" type "NON_EXISTENT_TYPE"
     Then the response should be successful or not found
 
     # ----- View Consent History - Non-existent user -----
@@ -1017,7 +1017,7 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
   @consolidated @reference-data-crud @display-order
   Scenario: Admin reference data CRUD and FAQ display order operations
     # ===== ADMIN LOGIN (single login for all reference data CRUD) =====
-    Given "Admin" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
+    Given "Admin" logs in as ADMIN with Firebase UID "E2E_ADMIN_001" email "e2e.admin@test.com" password "e2e-emulator-password" and completes 2FA
     Then "Admin" should be authenticated
     And "Admin" should have 2FA verified
 

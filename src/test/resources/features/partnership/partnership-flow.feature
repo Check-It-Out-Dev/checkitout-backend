@@ -13,8 +13,8 @@ Feature: Partnership Opportunity Lifecycle
   # Valid cities (from cities table): Warszawa, Kraków, Wroclaw, etc.
   #
   # Users:
-  #   - Admin: 85VJgS6shAWTqby4rHypN355RWv2 (norbert.marchewka44@gmail.com)
-  #   - Company: WWXA9DehxZghyLq849TpyE4vYzZ2 (norbert.marchewka4444431@gmail.com)
+  #   - Admin: E2E_ADMIN_001 (e2e.admin@test.com)
+  #   - Company: E2E_COMPANY_001 (e2e.company@test.com)
   #
   # Run with: mvn verify -Pe2e -Dit.test=RunPartnershipFlowIT
   # =============================================================================
@@ -29,11 +29,11 @@ Feature: Partnership Opportunity Lifecycle
   @happy-path @create-opportunity
   Scenario: Company creates partnership opportunity successfully
     # Admin ensures company user is in correct state (ACTIVE with COMPANY role)
-    Given "Admin" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
-    And the target user "WWXA9DehxZghyLq849TpyE4vYzZ2" is synced and has status "ACTIVE" and role "COMPANY"
+    Given "Admin" logs in as ADMIN with Firebase UID "E2E_ADMIN_001" email "e2e.admin@test.com" password "e2e-emulator-password" and completes 2FA
+    And the target user "E2E_COMPANY_001" is synced and has status "ACTIVE" and role "COMPANY"
 
     # Company logs in and creates partnership opportunity
-    Given "FashionCo" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
+    Given "FashionCo" logs in as COMPANY with Firebase UID "E2E_COMPANY_001" email "e2e.company@test.com" password "e2e-emulator-password"
     Then "FashionCo" should be authenticated
     And "FashionCo" should have role "COMPANY"
 
@@ -84,7 +84,7 @@ Feature: Partnership Opportunity Lifecycle
   #   CONTENT_APPROVED ? CONTENT_POSTED ? CONTENT_POSTED_REJECTED ?
   #   CONTENT_POSTED ? TO_BE_PAID ? DONE
   #
-  # Influencer: SEWgduxUjRh4KDqxVWFs6zgThIa2 (OAuth via Instagram)
+  # Influencer: E2E_INFLUENCER_001 (OAuth via Instagram)
   # ===========================================================================
 
   @happy-path @full-lifecycle @state-machine
@@ -92,14 +92,14 @@ Feature: Partnership Opportunity Lifecycle
     # -------------------------------------------------------------------------
     # SETUP: Admin ensures both company and influencer are in correct state
     # -------------------------------------------------------------------------
-    Given "Admin" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
-    And the target user "WWXA9DehxZghyLq849TpyE4vYzZ2" is synced and has status "ACTIVE" and role "COMPANY"
-    And the target user "SEWgduxUjRh4KDqxVWFs6zgThIa2" is synced and has status "ACTIVE" and role "INFLUENCER"
+    Given "Admin" logs in as ADMIN with Firebase UID "E2E_ADMIN_001" email "e2e.admin@test.com" password "e2e-emulator-password" and completes 2FA
+    And the target user "E2E_COMPANY_001" is synced and has status "ACTIVE" and role "COMPANY"
+    And the target user "E2E_INFLUENCER_001" is synced and has status "ACTIVE" and role "INFLUENCER"
 
     # -------------------------------------------------------------------------
     # STEP 1: Company creates partnership opportunity
     # -------------------------------------------------------------------------
-    Given "BrandX" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
+    Given "BrandX" logs in as COMPANY with Firebase UID "E2E_COMPANY_001" email "e2e.company@test.com" password "e2e-emulator-password"
     When "BrandX" creates partnership opportunity "LifecycleCampaign":
       | name             | Complete Lifecycle Campaign   |
       | city             | Kraków                        |
@@ -120,7 +120,7 @@ Feature: Partnership Opportunity Lifecycle
     # -------------------------------------------------------------------------
     # STEP 2: Influencer logs in and applies (APPLIED)
     # -------------------------------------------------------------------------
-    Given "StyleGuru" logs in as INFLUENCER via OAuth with Firebase UID "SEWgduxUjRh4KDqxVWFs6zgThIa2"
+    Given "StyleGuru" logs in as INFLUENCER via OAuth with Firebase UID "E2E_INFLUENCER_001"
     Then "StyleGuru" should be authenticated
 
     When "StyleGuru" applies to opportunity "lifecycleCampaign" with note "Excited to test the full lifecycle!"
@@ -268,12 +268,12 @@ Feature: Partnership Opportunity Lifecycle
     # -------------------------------------------------------------------------
     # SETUP
     # -------------------------------------------------------------------------
-    Given "Admin" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
-    And the target user "WWXA9DehxZghyLq849TpyE4vYzZ2" is synced and has status "ACTIVE" and role "COMPANY"
-    And the target user "SEWgduxUjRh4KDqxVWFs6zgThIa2" is synced and has status "ACTIVE" and role "INFLUENCER"
+    Given "Admin" logs in as ADMIN with Firebase UID "E2E_ADMIN_001" email "e2e.admin@test.com" password "e2e-emulator-password" and completes 2FA
+    And the target user "E2E_COMPANY_001" is synced and has status "ACTIVE" and role "COMPANY"
+    And the target user "E2E_INFLUENCER_001" is synced and has status "ACTIVE" and role "INFLUENCER"
 
-    Given "BrandX" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
-    Given "StyleGuru" logs in as INFLUENCER via OAuth with Firebase UID "SEWgduxUjRh4KDqxVWFs6zgThIa2"
+    Given "BrandX" logs in as COMPANY with Firebase UID "E2E_COMPANY_001" email "e2e.company@test.com" password "e2e-emulator-password"
+    Given "StyleGuru" logs in as INFLUENCER via OAuth with Firebase UID "E2E_INFLUENCER_001"
 
     # Create opportunity and progress to content submission phase
     When "BrandX" creates partnership opportunity "MultiRejectCampaign":

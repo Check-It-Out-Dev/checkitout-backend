@@ -6,7 +6,7 @@ Feature: INFLUENCER Role Access Restrictions
 
   Background:
     Given the application is running with real Redis
-    And "influencer1" logs in as INFLUENCER via OAuth with Firebase UID "SEWgduxUjRh4KDqxVWFs6zgThIa2"
+    And "influencer1" logs in as INFLUENCER via OAuth with Firebase UID "E2E_INFLUENCER_001"
 
   # =============================================================================
   # CONSOLIDATED SCENARIO 1: ALL ADMIN-ONLY GET ENDPOINTS

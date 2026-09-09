@@ -31,7 +31,9 @@ import java.nio.charset.StandardCharsets;
  */
 @Slf4j
 @RestController
-@Profile("dev-lite & !prod & !test")
+// e2e as well as dev-lite: it is the byte transport for LocalUploadSink, and the sink is pointless
+// without it. The pair is gated together so neither can be active on its own.
+@Profile("(dev-lite | e2e) & !prod & !test")
 @RequestMapping("/dev-lite")
 @RequiredArgsConstructor
 public class DevLiteUploadController {

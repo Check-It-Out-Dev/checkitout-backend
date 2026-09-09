@@ -5,9 +5,9 @@ Feature: Step-Up Authentication for Email Change
   So that a stolen session cannot hijack my account
 
   Background:
-    Given "company1" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
-    And "admin1" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
-    And "influencer1" logs in as INFLUENCER via OAuth with Firebase UID "SEWgduxUjRh4KDqxVWFs6zgThIa2"
+    Given "company1" logs in as COMPANY with Firebase UID "E2E_COMPANY_001" email "e2e.company@test.com" password "e2e-emulator-password"
+    And "admin1" logs in as ADMIN with Firebase UID "E2E_ADMIN_001" email "e2e.admin@test.com" password "e2e-emulator-password" and completes 2FA
+    And "influencer1" logs in as INFLUENCER via OAuth with Firebase UID "E2E_INFLUENCER_001"
 
   # ============================================================================
   # HAPPY PATH: Company user full email change with step-up code
@@ -58,7 +58,7 @@ Feature: Step-Up Authentication for Email Change
   # protected action, and must pass without a token.
   Scenario: Unchanged email does not demand a step-up token
     Given "company1" has initialAccountSetupCompleted set to true
-    When "company1" updates their email to "norbert.marchewka4444431@gmail.com" without step-up token
+    When "company1" updates their email to "e2e.company@test.com" without step-up token
     Then soft assert update status is 200
     And all soft assertions should pass
     And all soft assertions should pass

@@ -13,10 +13,10 @@ Feature: Profile Field Changes Without Status Penalty (Consolidated)
 
   @company @multi-actor @soft-assertions
   Scenario: Company critical field changes with token invalidation (consolidated - 12+ assertions)
-    Given "company1" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
+    Given "company1" logs in as COMPANY with Firebase UID "E2E_COMPANY_001" email "e2e.company@test.com" password "e2e-emulator-password"
     And "company1" stores their current token as "original_token"
     And "company1" stores their original profile values
-    And "admin1" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
+    And "admin1" logs in as ADMIN with Firebase UID "E2E_ADMIN_001" email "e2e.admin@test.com" password "e2e-emulator-password" and completes 2FA
 
     # ----- TEST 1: FIRSTNAME CHANGE → STAYS ACTIVE (no token invalidation) -----
     When "company1" updates their firstName to "E2EUpdatedFirst"
@@ -54,10 +54,10 @@ Feature: Profile Field Changes Without Status Penalty (Consolidated)
 
   @influencer @multi-actor @soft-assertions
   Scenario: Influencer critical field changes with token invalidation (consolidated - 8+ assertions)
-    Given "influencer1" logs in as INFLUENCER via OAuth with Firebase UID "SEWgduxUjRh4KDqxVWFs6zgThIa2"
+    Given "influencer1" logs in as INFLUENCER via OAuth with Firebase UID "E2E_INFLUENCER_001"
     And "influencer1" stores their current token as "original_token"
     And "influencer1" stores their original profile values
-    And "admin1" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
+    And "admin1" logs in as ADMIN with Firebase UID "E2E_ADMIN_001" email "e2e.admin@test.com" password "e2e-emulator-password" and completes 2FA
 
     # ----- TEST 1: FIRSTNAME CHANGE → STAYS ACTIVE (no token invalidation) -----
     When "influencer1" updates their firstName to "InfluencerUpdated"

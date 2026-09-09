@@ -556,9 +556,9 @@ public class AdvancedSessionSecuritySteps extends CucumberSpringConfig {
     @Given("{string} logs in as COMPANY with Firefox User-Agent")
     public void loginCompanyWithFirefoxUA(String alias) {
         loginWithCustomUserAgent(alias, "COMPANY", FIREFOX_UA,
-            "WWXA9DehxZghyLq849TpyE4vYzZ2",
-            "norbert.marchewka4444431@gmail.com",
-            "Janekmapsa66!ppp");
+            "E2E_COMPANY_001",
+            "e2e.company@test.com",
+            "e2e-emulator-password");
     }
 
     /**
@@ -568,9 +568,9 @@ public class AdvancedSessionSecuritySteps extends CucumberSpringConfig {
     public void loginCompanyWithValidSession(String alias) {
         authService.setBaseUrl(baseUrl());
         UserSession session = authService.login(alias,
-            "WWXA9DehxZghyLq849TpyE4vYzZ2",
-            "norbert.marchewka4444431@gmail.com",
-            "Janekmapsa66!ppp",
+            "E2E_COMPANY_001",
+            "e2e.company@test.com",
+            "e2e-emulator-password",
             "COMPANY");
         actorRegistry.register(alias, session);
         log.info("[E2E] '{}' logged in as COMPANY with valid session", alias);
@@ -597,7 +597,7 @@ public class AdvancedSessionSecuritySteps extends CucumberSpringConfig {
         headers.set("User-Agent", MOBILE_SAFARI_UA);
 
         Map<String, Object> body = Map.of(
-            "firebaseUid", "SEWgduxUjRh4KDqxVWFs6zgThIa2",
+            "firebaseUid", "E2E_INFLUENCER_001",
             "email", "test-influencer@e2e.test",
             "validateInstagramToken", false
         );
@@ -615,7 +615,7 @@ public class AdvancedSessionSecuritySteps extends CucumberSpringConfig {
             session.setRole("INFLUENCER");
             session.setOauth(true);
             session.setProvider("instagram");
-            session.setFirebaseUid("SEWgduxUjRh4KDqxVWFs6zgThIa2");
+            session.setFirebaseUid("E2E_INFLUENCER_001");
             session.put("customUserAgent", MOBILE_SAFARI_UA);
 
             if (response.getBody() != null) {
@@ -727,9 +727,9 @@ public class AdvancedSessionSecuritySteps extends CucumberSpringConfig {
         headers.set("X-Forwarded-For", ip);
 
         Map<String, Object> body = Map.of(
-            "email", "norbert.marchewka4444431@gmail.com",
+            "email", "e2e.company@test.com",
             "role", "COMPANY",
-            "firebaseUid", "WWXA9DehxZghyLq849TpyE4vYzZ2"
+            "firebaseUid", "E2E_COMPANY_001"
         );
 
         try {
@@ -742,8 +742,8 @@ public class AdvancedSessionSecuritySteps extends CucumberSpringConfig {
 
             UserSession session = extractSessionFromResponse(response, alias);
             session.setRole("COMPANY");
-            session.setFirebaseUid("WWXA9DehxZghyLq849TpyE4vYzZ2");
-            session.setEmail("norbert.marchewka4444431@gmail.com");
+            session.setFirebaseUid("E2E_COMPANY_001");
+            session.setEmail("e2e.company@test.com");
             session.put("sessionIP", ip);
             session.put("sessionCountry", country);
 

@@ -1,0 +1,80 @@
+# Static security analysis on every push and pull request, plus a weekly sweep so a rule added upstream
+# reaches this code without waiting for someone to touch it.
+#
+# Why this file exists: on 2026-09-09 a real credential was found sitting in this repository's own Cucumber
+# corpus, in 54 files, because nothing was looking for it. Secret scanning and push protection are an
+# organisation setting and are enabled there; this workflow is the part that lives in the repository —
+# CodeQL over the application code and a dependency review on incoming pull requests.
+name: code-scanning
+
+on:
+  push:
+    branches: [main, greenfield]
+  pull_request:
+  schedule:
+    # Monday 04:10 UTC, well clear of the nightly at 02:00 and the k8s tier.
+    - cron: "10 4 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: code-scanning-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  codeql:
+    name: CodeQL (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        # The Angular application and every tool under tools/ and e2e-tests/ are one JS/TS database;
+        # `actions` covers the workflow files themselves (injection through untrusted run inputs).
+        language: [java-kotlin, actions]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        if: matrix.language == 'java-kotlin'
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+      - uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+          # security-extended adds the rules that are precise but slower; this repository is small enough.
+          queries: security-extended
+      # Java is a compiled language: CodeQL traces the compiler to build its database, so the sources have
+      # to be compiled once. Tests are not compiled - the analysis is about what ships.
+      - name: Compile
+        if: matrix.language == 'java-kotlin'
+        run: |
+          chmod +x mvnw
+          ./mvnw -B -ntp -DskipTests -DskipPmd=true -Dcheckstyle.skip=true compile
+      - uses: github/codeql-action/analyze@v4
+        with:
+          category: /language:${{ matrix.language }}
+
+  dependency-review:
+    name: Dependency review
+    # Only pull requests have a base and a head to compare; on a push there is nothing to review.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/dependency-review-action@v5
+        with:
+          # A pull request may not introduce a dependency with a known high severity advisory.
+          fail-on-severity: high
+          comment-summary-in-pr: on-failure

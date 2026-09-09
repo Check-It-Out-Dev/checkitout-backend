@@ -4,16 +4,16 @@ Feature: Subscription Module E2E Tests
   So that I can create campaigns within my plan limits
 
   # =========================================================================
-  # Uses: Admin (85VJgS6shAWTqby4rHypN355RWv2) + Company (WWXA9DehxZghyLq849TpyE4vYzZ2)
+  # Uses: Admin (E2E_ADMIN_001) + Company (E2E_COMPANY_001)
   # Admin sets up state via /test/subscription/* endpoints
   # Company tests production endpoints via authenticated session
   # =========================================================================
 
   Background:
-    Given "Admin" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
-    And the target user "WWXA9DehxZghyLq849TpyE4vYzZ2" is synced and has status "ACTIVE" and role "COMPANY"
-    And "Admin" resets subscription for user "norbert.marchewka4444431@gmail.com"
-    And "SubCo" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
+    Given "Admin" logs in as ADMIN with Firebase UID "E2E_ADMIN_001" email "e2e.admin@test.com" password "e2e-emulator-password" and completes 2FA
+    And the target user "E2E_COMPANY_001" is synced and has status "ACTIVE" and role "COMPANY"
+    And "Admin" resets subscription for user "e2e.company@test.com"
+    And "SubCo" logs in as COMPANY with Firebase UID "E2E_COMPANY_001" email "e2e.company@test.com" password "e2e-emulator-password"
 
   # =========================================================================
   # SCENARIO 1: Trial lifecycle
@@ -71,7 +71,7 @@ Feature: Subscription Module E2E Tests
     When "SubCo" checks subscription status
     Then the subscription status should be "FREE_ACTIVE"
 
-    When "Admin" simulates webhook "checkout.session.completed" for user "norbert.marchewka4444431@gmail.com" with plan "BUSINESS"
+    When "Admin" simulates webhook "checkout.session.completed" for user "e2e.company@test.com" with plan "BUSINESS"
 
     When "SubCo" checks subscription status
     Then the subscription status should be "BUSINESS_ACTIVE"
@@ -84,7 +84,7 @@ Feature: Subscription Module E2E Tests
 
   @subscription @downgrade-flow
   Scenario: Company downgrades from ENTERPRISE to FREE then cancels
-    Given "Admin" sets subscription for user "norbert.marchewka4444431@gmail.com" to plan "ENTERPRISE" with status "ENTERPRISE_ACTIVE"
+    Given "Admin" sets subscription for user "e2e.company@test.com" to plan "ENTERPRISE" with status "ENTERPRISE_ACTIVE"
 
     When "SubCo" checks subscription status
     Then the subscription status should be "ENTERPRISE_ACTIVE"
@@ -107,14 +107,14 @@ Feature: Subscription Module E2E Tests
 
   @subscription @payment-failure
   Scenario: Payment fails then recovers
-    Given "Admin" sets subscription for user "norbert.marchewka4444431@gmail.com" to plan "BUSINESS" with status "BUSINESS_ACTIVE"
+    Given "Admin" sets subscription for user "e2e.company@test.com" to plan "BUSINESS" with status "BUSINESS_ACTIVE"
 
-    When "Admin" simulates webhook "invoice.payment_failed" for user "norbert.marchewka4444431@gmail.com"
+    When "Admin" simulates webhook "invoice.payment_failed" for user "e2e.company@test.com"
 
     When "SubCo" checks subscription status
     Then the subscription status should be "PAYMENT_FAILED"
 
-    When "Admin" simulates webhook "invoice.paid" for user "norbert.marchewka4444431@gmail.com" with amount 2900
+    When "Admin" simulates webhook "invoice.paid" for user "e2e.company@test.com" with amount 2900
 
     When "SubCo" checks subscription status
     Then the subscription status should be "BUSINESS_ACTIVE"
@@ -134,16 +134,16 @@ Feature: Subscription Module E2E Tests
   #   -Dcucumber.filter.tags="@subscription and @fakturownia-live"
   @subscription @invoicing @fakturownia-live
   Scenario: Invoice created on payment and sent to Fakturownia
-    Given "Admin" sets subscription for user "norbert.marchewka4444431@gmail.com" to plan "BUSINESS" with status "BUSINESS_ACTIVE"
+    Given "Admin" sets subscription for user "e2e.company@test.com" to plan "BUSINESS" with status "BUSINESS_ACTIVE"
 
     # Verify company NIP via real registries (GUS/CEIDG/BialaLista) to populate CompanyData
     Given "SubCo" verifies company NIP "8943264018"
 
-    When "Admin" simulates webhook "invoice.paid" for user "norbert.marchewka4444431@gmail.com" with amount 2900
+    When "Admin" simulates webhook "invoice.paid" for user "e2e.company@test.com" with amount 2900
 
     # InvoiceCreatedEvent fires AFTER_COMMIT → immediate Fakturownia send
     # Invoice may be SENT immediately or PENDING if Fakturownia was slow
-    Then user "norbert.marchewka4444431@gmail.com" should have an invoice with status "SENT"
+    Then user "e2e.company@test.com" should have an invoice with status "SENT"
 
   # =========================================================================
   # SCENARIO 7: Terms versioning lifecycle
@@ -151,14 +151,14 @@ Feature: Subscription Module E2E Tests
 
   @subscription @terms-versioning
   Scenario: Terms change moves company to TERMS_PENDING then restores on accept
-    Given "Admin" sets subscription for user "norbert.marchewka4444431@gmail.com" to plan "BUSINESS" with status "BUSINESS_ACTIVE"
+    Given "Admin" sets subscription for user "e2e.company@test.com" to plan "BUSINESS" with status "BUSINESS_ACTIVE"
 
     When "Admin" triggers enter-terms-pending
 
     When "SubCo" checks subscription status
     Then the subscription status should be "TERMS_PENDING"
 
-    When "Admin" accepts terms for user "norbert.marchewka4444431@gmail.com"
+    When "Admin" accepts terms for user "e2e.company@test.com"
 
     When "SubCo" checks subscription status
     Then the subscription status should be "BUSINESS_ACTIVE"

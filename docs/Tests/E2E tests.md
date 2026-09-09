@@ -263,13 +263,13 @@ mvn verify -Pe2e "-Dcucumber.filter.tags=@authentication"
 │                                                                              │
 │  COMPANY USER                                                                │
 │  ├── Firebase UID: OhhdU5ffXweJRlnN5AzQxSnjIvw1                             │
-│  ├── Email: norbert.marchewka4444431@gmail.com                              │
+│  ├── Email: e2e.company@test.com                              │
 │  ├── Role: COMPANY                                                          │
 │  └── Pre-existing in: Firebase Auth + Firestore + PostgreSQL                │
 │                                                                              │
 │  ADMIN USER (with 2FA)                                                       │
-│  ├── Firebase UID: 85VJgS6shAWTqby4rHypN355RWv2                             │
-│  ├── Email: norbert.marchewka44@gmail.com                                   │
+│  ├── Firebase UID: E2E_ADMIN_001                             │
+│  ├── Email: e2e.admin@test.com                                   │
 │  ├── Role: ADMIN                                                            │
 │  ├── TOTP Secret: Encrypted in Firestore totpSecrets/{uid}                  │
 │  └── KMS Key: totp-secrets-key (symmetric decryption)                       │
