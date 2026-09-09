@@ -430,6 +430,9 @@ class EncryptionServicesUnitTest {
         @Mock
         private KMSValidationService kmsService;
 
+        @Mock
+        private com.sm.instagram.platform.common.security.LocalTotpCipher localCipher;
+
         private TotpEncryptionService totpEncryptionService;
         private ObjectMapper objectMapper;
         private BCryptPasswordEncoder passwordEncoder;
@@ -438,6 +441,11 @@ class EncryptionServicesUnitTest {
         void setUp() {
             totpEncryptionService = new TotpEncryptionService();
             ReflectionTestUtils.setField(totpEncryptionService, "kmsService", kmsService);
+            ReflectionTestUtils.setField(totpEncryptionService, "localCipher", localCipher);
+            // The service picks its cipher from gcp.kms.enabled, and @Value does not run in a plain unit
+            // test, so the primitive would default to false and every call would land on the local cipher.
+            // These tests are about the KMS path; the local one has its own test.
+            ReflectionTestUtils.setField(totpEncryptionService, "kmsEnabled", true);
 
             // Initialize password encoder like the service does
             passwordEncoder = new BCryptPasswordEncoder(12);
@@ -1463,6 +1471,9 @@ class EncryptionServicesUnitTest {
 
             totpEncryptionService = new TotpEncryptionService();
             ReflectionTestUtils.setField(totpEncryptionService, "kmsService", kmsService);
+            // Same reason as the TOTP suite above: @Value does not run here, so the cipher choice has to
+            // be set by hand or the primitive defaults to false and KMS is never called.
+            ReflectionTestUtils.setField(totpEncryptionService, "kmsEnabled", true);
             ReflectionTestUtils.setField(totpEncryptionService, "passwordEncoder", new BCryptPasswordEncoder(12));
         }
 
@@ -1523,6 +1534,9 @@ class EncryptionServicesUnitTest {
 
             totpEncryptionService = new TotpEncryptionService();
             ReflectionTestUtils.setField(totpEncryptionService, "kmsService", kmsService);
+            // Same reason as the TOTP suite above: @Value does not run here, so the cipher choice has to
+            // be set by hand or the primitive defaults to false and KMS is never called.
+            ReflectionTestUtils.setField(totpEncryptionService, "kmsEnabled", true);
             ReflectionTestUtils.setField(totpEncryptionService, "passwordEncoder", new BCryptPasswordEncoder(12));
         }
 
@@ -1720,6 +1734,9 @@ class EncryptionServicesUnitTest {
 
             totpEncryptionService = new TotpEncryptionService();
             ReflectionTestUtils.setField(totpEncryptionService, "kmsService", kmsService);
+            // Same reason as the TOTP suite above: @Value does not run here, so the cipher choice has to
+            // be set by hand or the primitive defaults to false and KMS is never called.
+            ReflectionTestUtils.setField(totpEncryptionService, "kmsEnabled", true);
             ReflectionTestUtils.setField(totpEncryptionService, "passwordEncoder", new BCryptPasswordEncoder(12));
         }
 
