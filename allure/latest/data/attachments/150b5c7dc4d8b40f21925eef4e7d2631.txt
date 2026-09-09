@@ -1,0 +1,18 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.5)
+
+18:29:35.437 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.c.AuthControllerUnitTest&amp#27;[0;39m - Starting AuthControllerUnitTest using Java 21.0.12.1 with PID 2232 (started by runner in /home/runner/work/checkitout-backend/checkitout-backend)
+18:29:35.438 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.c.AuthControllerUnitTest&amp#27;[0;39m - The following 1 profile is active: "test"
+18:29:37.711 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.b.t.m.w.SpringBootMockServletContext&amp#27;[0;39m - Initializing Spring TestDispatcherServlet ''
+18:29:37.711 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.t.w.s.TestDispatcherServlet&amp#27;[0;39m - Initializing Servlet ''
+18:29:37.712 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.t.w.s.TestDispatcherServlet&amp#27;[0;39m - Completed initialization in 1 ms
+18:29:37.818 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.c.AuthControllerUnitTest&amp#27;[0;39m - Started AuthControllerUnitTest in 2.998 seconds (process running for 16.629)
+18:29:38.045 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.e.h.BaseExceptionHandler&amp#27;[0;39m - CLIENT_ERROR - AuthorizationDeniedException [trace=ERR-8d17016f, path=/twofactor/verify-setup, method=POST, user=test-firebase-uid-123, ip=127.0.0.1]: Access Denied
+18:29:38.045 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.e.h.AuthenticationExceptionHandler&amp#27;[0;39m - GDPR: Operation=access_denied, FirebaseUID=test-firebase-uid-123, Resource=/twofactor/verify-setup, Purpose=access_control
