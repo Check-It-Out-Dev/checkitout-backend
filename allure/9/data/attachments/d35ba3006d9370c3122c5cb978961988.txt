@@ -1,0 +1,7 @@
+19:45:08.287 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.service.LocalUploadSink&amp#27;[0;39m - dev-lite: local upload sink at /tmp/junit-10850707754434175230
+19:45:08.287 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.service.SignedUrlService&amp#27;[0;39m - dev-lite: SignedUrlService routes uploads to the local sink instead of GCS
+19:45:08.287 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.service.SignedUrlService&amp#27;[0;39m - Service account credentials not available - signed URLs may not work properly
+19:45:08.287 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.service.SignedUrlService&amp#27;[0;39m - Google Cloud Storage is not available. Signed URL generation will not work.
+19:45:08.290 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.service.SignedUrlService&amp#27;[0;39m - GDPR: Operation=generateSignedUrl, FirebaseUID=firebase-uid-dev-lite, FileName=pic.jpg, FileSize=1024, ContentType=image/jpeg, Purpose=file_upload_preparation
+19:45:08.291 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mc.s.i.p.s.service.SignedUrlService&amp#27;[0;39m - Generated file path: content/firebase-uid-dev-lite/1788983108291_pic.jpg
+19:45:08.292 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.service.SignedUrlService&amp#27;[0;39m - GDPR: Operation=generateSignedUrl_success, FirebaseUID=firebase-uid-dev-lite, UploadID=upload-dev-lite-1, FilePath=content/firebase-uid-dev-lite/1788983108291_pic.jpg, DataAccessed=user_storage_quota, Purpose=file_upload_url_generation
