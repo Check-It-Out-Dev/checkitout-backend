@@ -48,7 +48,7 @@ jobs:
           distribution: temurin
           java-version: 21
           cache: maven
-      - run: ./mvnw $MAVEN_ARGS test -Ptest -DskipITs
+      - run: chmod +x mvnw && ./mvnw $MAVEN_ARGS test -Ptest -DskipITs
       - uses: mikepenz/action-junit-report@v5
         if: always()
         with:
@@ -79,7 +79,7 @@ jobs:
           cache: maven
       - name: Testcontainers on Linux
         run: sed -i '/ClientProviderStrategy/d' src/test/resources/testcontainers.properties
-      - run: ./mvnw $MAVEN_ARGS verify -Pintegration
+      - run: chmod +x mvnw && ./mvnw $MAVEN_ARGS verify -Pintegration
       - uses: mikepenz/action-junit-report@v5
         if: always()
         with:
@@ -111,7 +111,7 @@ jobs:
       - name: Testcontainers on Linux
         run: sed -i '/ClientProviderStrategy/d' src/test/resources/testcontainers.properties
       # Scenarios that need Firebase credentials skip themselves (assumeTrue) when none are present.
-      - run: ./mvnw $MAVEN_ARGS verify -Pe2e
+      - run: chmod +x mvnw && ./mvnw $MAVEN_ARGS verify -Pe2e
       - uses: mikepenz/action-junit-report@v5
         if: always()
         with:
