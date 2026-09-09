@@ -1,0 +1,4 @@
+22:04:28.976 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.c.WebhookController&amp#27;[0;39m - GDPR: Operation=receiveStorageWebhook, FirebaseUID=WEBHOOK, DataAccessed=storage_event, Purpose=file_tracking
+22:04:28.976 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mc.s.i.p.s.c.WebhookController&amp#27;[0;39m - Received Firebase storage webhook: {eventType=google.storage.object.delete, data={name=content/42/1700000000_pic.jpg}}
+22:04:28.976 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.c.WebhookController&amp#27;[0;39m - GDPR: DELETION Operation=handleFileDeleted, FirebaseUID=42, DataAccessed=file_path, Purpose=storage_cleanup
+22:04:28.976 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.c.WebhookController&amp#27;[0;39m - File deleted: content/42/1700000000_pic.jpg
