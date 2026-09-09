@@ -1,5 +1,0 @@
-20:41:18.350 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.TwoFactorAuthService&amp#27;[0;39m - Setting up 2FA for user: firebase-uid-123
-20:41:18.350 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.TwoFactorAuthService&amp#27;[0;39m - GDPR: Operation=setupTwoFactor_entry, FirebaseUID=firebase-uid-123, DataAccessed=user.profile,user.type, Purpose=2fa_enrollment
-20:41:18.351 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.TwoFactorAuthService&amp#27;[0;39m - GDPR: Operation=storeTotpSecret, FirebaseUID=firebase-uid-123, DataStored=encrypted_totp_secret,backup_codes, Purpose=2fa_security, LegalBasis=consent, ThirdParty=firebase_firestore
-20:41:18.353 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.TwoFactorAuthService&amp#27;[0;39m - GDPR: Operation=setupTwoFactor_failed, FirebaseUID=firebase-uid-123, Error=QR generation failed, Purpose=error_logging
-20:41:18.353 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.TwoFactorAuthService&amp#27;[0;39m - Failed to setup 2FA for user firebase-uid-123: QR generation failed
