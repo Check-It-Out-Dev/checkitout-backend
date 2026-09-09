@@ -157,14 +157,27 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - name: Allure 3 (JUnit XML from every tier, history from the previous report)
+      # Every Cucumber runner boots the whole feature corpus and reports EVERY scenario - the ones its
+      # tags select as executed, the rest as skipped - so fifteen suites emit fifteen results per scenario
+      # and only the <testsuite name> tells them apart. Allure keys on classname + name, so it folded a
+      # 277-scenario corpus into 165 tests with 165 "retries", and the dashboard counted 2,804 e2e tests.
+      # Dropping the tag-filtered duplicates leaves one result per scenario. A scenario skipped in every
+      # suite is a real skip and is kept.
+      - name: Collapse the Cucumber tag-filter duplicates
+        run: node frontend/tools/ci/junit-collapse-tag-skips.mjs results/e2e-results | tee -a "$GITHUB_STEP_SUMMARY"
+        continue-on-error: true
+      - name: Allure 3 (JUnit XML from every tier, history from the Pages site)
         run: |
           mkdir -p allure-results
           find results -name 'TEST-*.xml' -exec cp {} allure-results/ \;
-          [ -d site/allure/latest/history ] && cp -r site/allure/latest/history allure-results/history || true
+          # Allure 3 dropped the history/ directory Allure 2 wrote inside the report, so copying one back
+          # in was a no-op and this report has never had a trend. History is now a single JSON-lines file
+          # named by allurerc.mjs, read and appended by `allure generate`, and carried on the Pages site.
+          cp site/allure/history-ci-tests.jsonl history.jsonl 2>/dev/null || true
           # Allure 3's CLI takes the results directory from its config or the default ./allure-results,
           # and knows --output and --config only.
-          npx --yes allure generate --output allure-report
+          npx --yes allure generate --config .github/allurerc.mjs --output allure-report
+          mkdir -p site/allure && cp history.jsonl site/allure/history-ci-tests.jsonl
       # upload-artifact roots an artifact at the longest common prefix of its paths, so `target/**` uploads
       # arrive as `surefire-reports/` and `site/jacoco/`, not flattened. Six runs published "0 tests,
       # pass rate 100 %" because these globs stopped one directory short; the tool now refuses to publish
