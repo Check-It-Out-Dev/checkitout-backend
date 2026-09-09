@@ -1,0 +1,4 @@
+20:04:39.423 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.TwoFactorStatusController&amp#27;[0;39m - GDPR: Operation=verify2FALogin, FirebaseUID=test-firebase-uid-123, DataAccessed=2fa_secret,user_role, Purpose=authentication
+20:04:39.424 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.TwoFactorStatusController&amp#27;[0;39m - Failed to update Firebase during 2FA verification for user: test-firebase-uid-123
+com.google.firebase.auth.FirebaseAuthException: null
+20:04:39.425 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.e.h.BaseExceptionHandler&amp#27;[0;39m - CLIENT_ERROR - AuthenticationTranslatableException [trace=ERR-5258796c, path=/twofactor/verify, method=POST, user=test-firebase-uid-123, ip=127.0.0.1]: error.auth.firebase_account_not_found
