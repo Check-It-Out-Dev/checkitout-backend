@@ -1,0 +1,418 @@
+23:13:16.309 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.t.c.s.AnnotationConfigContextLoaderUtils&amp#27;[0;39m - Could not detect default configuration classes for test class [com.sm.instagram.platform.e2e.config.CucumberSpringConfig]: CucumberSpringConfig does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+23:13:16.310 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.b.t.c.SpringBootTestContextBootstrapper&amp#27;[0;39m - Found @SpringBootConfiguration com.sm.instagram.platform.InstagramPlatformApplication for test class com.sm.instagram.platform.e2e.config.CucumberSpringConfig
+
+@consent-lifecycle @consent-lifecycle @reconsent-restore
+Scenario: Blocked COMPANY re-consents and regains access                                  &amp#27;[90m# features/consent/consent-lifecycle.feature:110&amp#27;[0m
+23:13:16.329 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mc.s.i.p.e2e.hooks.SoftAssertionHooks&amp#27;[0;39m - [SOFT ASSERTIONS] Reset for scenario: Blocked COMPANY re-consents and regains access
+23:13:16.331 [http-nio-auto-1-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EarlyRequestLoggingFilter: Processing request DELETE /api/test/legal/delete-documents-above-version from origin: null
+23:13:16.331 [http-nio-auto-1-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EARLY_REQUEST_START: {method=DELETE, originAuthorized=true, requestId=REQ-1788995596331-59, origin=null, correlationId=REQ-00e5c686, userAgent=ReactorNetty/1.2.5, type=EARLY_REQUEST, uri=/api/test/legal/delete-documents-above-version, timestamp=2026-09-09 23:13:16.331, remoteAddr=127.0.0.1}
+23:13:16.332 [http-nio-auto-1-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - INCOMING_REQUEST: {method=DELETE, requestId=REQ-1788995596332-59, correlationId=REQ-00e5c686, contentLength=-1, uri=/api/test/legal/delete-documents-above-version, contentType=null, timestamp=2026-09-09 23:13:16.332, remoteAddr=127.0.0.xxx}
+23:13:16.339 [http-nio-auto-1-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.legal.TestLegalController&amp#27;[0;39m - [E2E] Deleted 0 documents with version > 2 (+0 dependent consents)
+23:13:16.340 [http-nio-auto-1-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_SUCCESS: {duration=8ms, method=DELETE, requestId=REQ-1788995596332-59, requestCompleted=true, correlationId=REQ-00e5c686, uri=/api/test/legal/delete-documents-above-version, timestamp=2026-09-09 23:13:16.332, status=200}
+23:13:16.340 [http-nio-auto-1-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_COMPLETE request_id="REQ-1788995596332-59" correlation_id="REQ-00e5c686" method="DELETE" path="/api/test/legal/delete-documents-above-version" status=200 execution_time_ms=8 client_ip="127.0.0.xxx" user_agent="Other"
+23:13:16.345 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.e2e.steps.ConsentSteps&amp#27;[0;39m - [E2E] Cleaned up documents above v2 before consent scenario
+23:13:16.349 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.e2e.steps.LoginSteps&amp#27;[0;39m - [E2E] Redis container is running
+23:13:16.351 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.e2e.steps.LoginSteps&amp#27;[0;39m - [E2E] PostgreSQL container is running
+23:13:16.351 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.e2e.steps.LoginSteps&amp#27;[0;39m - [E2E] Trying health endpoint: http://localhost:34153/api/test/health
+23:13:16.353 [http-nio-auto-1-exec-2] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EarlyRequestLoggingFilter: Processing request GET /api/test/health from origin: null
+23:13:16.353 [http-nio-auto-1-exec-2] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EARLY_REQUEST_START: {method=GET, originAuthorized=true, requestId=REQ-1788995596353-60, origin=null, correlationId=REQ-46b58493, userAgent=ReactorNetty/1.2.5, type=EARLY_REQUEST, uri=/api/test/health, timestamp=2026-09-09 23:13:16.353, remoteAddr=127.0.0.1}
+23:13:16.354 [http-nio-auto-1-exec-2] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.a.JwtAuthenticationFilter&amp#27;[0;39m - SECURITY_METRIC: event_type=NO_AUTHENTICATION_FOR_REQUIRED_ENDPOINT
+23:13:16.355 [http-nio-auto-1-exec-2] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EARLY_REQUEST_ERROR: {duration=2ms, method=GET, originAuthorized=true, requestId=REQ-1788995596353-60, origin=null, correlationId=REQ-46b58493, completed=true, type=EARLY_REQUEST_COMPLETE, uri=/api/test/health, status=401}
+23:13:16.356 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.e2e.steps.LoginSteps&amp#27;[0;39m - [E2E] Health response: status=401 UNAUTHORIZED
+23:13:16.356 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.e2e.steps.LoginSteps&amp#27;[0;39m - [E2E] Application is responding at http://localhost:34153/api/test/health
+23:13:16.356 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.e2e.steps.LoginSteps&amp#27;[0;39m - [E2E] Application and Redis are running
+  &amp#27;[32mGiven &amp#27;[0m&amp#27;[32mthe application is running with real Redis&amp#27;[0m                                        &amp#27;[90m# com.sm.instagram.platform.e2e.steps.LoginSteps.applicationRunningWithRedis()&amp#27;[0m
+23:13:16.359 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EarlyRequestLoggingFilter: Processing request POST /api/test/auth/ensure-user from origin: null
+23:13:16.359 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EARLY_REQUEST_START: {method=POST, originAuthorized=true, requestId=REQ-1788995596359-61, origin=null, correlationId=REQ-63b4470d, userAgent=ReactorNetty/1.2.5, type=EARLY_REQUEST, uri=/api/test/auth/ensure-user, timestamp=2026-09-09 23:13:16.359, remoteAddr=127.0.0.1}
+23:13:16.360 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - INCOMING_REQUEST: {method=POST, requestId=REQ-1788995596360-61, correlationId=REQ-63b4470d, contentLength=-1, uri=/api/test/auth/ensure-user, contentType=application/json, timestamp=2026-09-09 23:13:16.360, remoteAddr=127.0.0.xxx}
+23:13:16.360 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.TestAuthController&amp#27;[0;39m - [E2E] Ensuring user exists: email=reconsent-company@lifecycle.test, role=COMPANY
+23:13:16.367 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.TestAuthController&amp#27;[0;39m - [E2E] Created new user: id=2515, email=reconsent-company@lifecycle.test
+23:13:16.368 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_SUCCESS: {duration=8ms, method=POST, requestId=REQ-1788995596360-61, requestCompleted=true, correlationId=REQ-63b4470d, uri=/api/test/auth/ensure-user, timestamp=2026-09-09 23:13:16.360, status=200}
+23:13:16.368 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_COMPLETE request_id="REQ-1788995596360-61" correlation_id="REQ-63b4470d" method="POST" path="/api/test/auth/ensure-user" status=200 execution_time_ms=8 client_ip="127.0.0.xxx" user_agent="Other"
+23:13:16.371 [http-nio-auto-1-exec-4] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EarlyRequestLoggingFilter: Processing request POST /api/test/legal/reset-consents from origin: null
+23:13:16.371 [http-nio-auto-1-exec-4] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EARLY_REQUEST_START: {method=POST, originAuthorized=true, requestId=REQ-1788995596371-62, origin=null, correlationId=REQ-7e526690, userAgent=ReactorNetty/1.2.5, type=EARLY_REQUEST, uri=/api/test/legal/reset-consents, timestamp=2026-09-09 23:13:16.371, remoteAddr=127.0.0.1}
+23:13:16.372 [http-nio-auto-1-exec-4] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - INCOMING_REQUEST: {method=POST, requestId=REQ-1788995596372-62, correlationId=REQ-7e526690, contentLength=-1, uri=/api/test/legal/reset-consents, contentType=application/json, timestamp=2026-09-09 23:13:16.372, remoteAddr=127.0.0.xxx}
+23:13:16.379 [http-nio-auto-1-exec-4] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=evictUser, DataDeleted=cached_user_data, Purpose=cache_management
+23:13:16.379 [http-nio-auto-1-exec-4] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.380 [http-nio-auto-1-exec-4] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.381 [http-nio-auto-1-exec-4] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.legal.TestLegalController&amp#27;[0;39m - [E2E] Reset consents for user: reconsent-company@lifecycle.test (deleted 0 consent records)
+23:13:16.383 [http-nio-auto-1-exec-4] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_SUCCESS: {duration=11ms, method=POST, requestId=REQ-1788995596372-62, requestCompleted=true, correlationId=REQ-7e526690, uri=/api/test/legal/reset-consents, timestamp=2026-09-09 23:13:16.372, status=200}
+23:13:16.383 [http-nio-auto-1-exec-4] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_COMPLETE request_id="REQ-1788995596372-62" correlation_id="REQ-7e526690" method="POST" path="/api/test/legal/reset-consents" status=200 execution_time_ms=11 client_ip="127.0.0.xxx" user_agent="Other"
+23:13:16.386 [http-nio-auto-1-exec-5] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EarlyRequestLoggingFilter: Processing request POST /api/test/auth/set-account-status from origin: null
+23:13:16.386 [http-nio-auto-1-exec-5] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EARLY_REQUEST_START: {method=POST, originAuthorized=true, requestId=REQ-1788995596386-63, origin=null, correlationId=REQ-fbc40c70, userAgent=ReactorNetty/1.2.5, type=EARLY_REQUEST, uri=/api/test/auth/set-account-status, timestamp=2026-09-09 23:13:16.386, remoteAddr=127.0.0.1}
+23:13:16.387 [http-nio-auto-1-exec-5] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - INCOMING_REQUEST: {method=POST, requestId=REQ-1788995596387-63, correlationId=REQ-fbc40c70, contentLength=-1, uri=/api/test/auth/set-account-status, contentType=application/json, timestamp=2026-09-09 23:13:16.387, remoteAddr=127.0.0.xxx}
+23:13:16.388 [http-nio-auto-1-exec-5] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.TestAuthController&amp#27;[0;39m - [E2E] Setting account status: email=reconsent-company@lifecycle.test, status=ACTIVE
+23:13:16.390 [http-nio-auto-1-exec-5] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=evictUser, DataDeleted=cached_user_data, Purpose=cache_management
+23:13:16.391 [http-nio-auto-1-exec-5] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.391 [http-nio-auto-1-exec-5] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.392 [http-nio-auto-1-exec-5] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_SUCCESS: {duration=5ms, method=POST, requestId=REQ-1788995596387-63, requestCompleted=true, correlationId=REQ-fbc40c70, uri=/api/test/auth/set-account-status, timestamp=2026-09-09 23:13:16.387, status=200}
+23:13:16.392 [http-nio-auto-1-exec-5] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_COMPLETE request_id="REQ-1788995596387-63" correlation_id="REQ-fbc40c70" method="POST" path="/api/test/auth/set-account-status" status=200 execution_time_ms=5 client_ip="127.0.0.xxx" user_agent="Other"
+23:13:16.393 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.e.s.ConsentLifecycleSteps&amp#27;[0;39m - [E2E-Lifecycle] Set account status for reconsent-company@lifecycle.test: ACTIVE (response: 200 OK)
+23:13:16.393 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.e.s.ConsentLifecycleSteps&amp#27;[0;39m - [E2E-Lifecycle] Created COMPANY user reconsent-company@lifecycle.test with consents not accepted
+  &amp#27;[32mGiven &amp#27;[0m&amp#27;[32ma &amp#27;[0m&amp#27;[32m&amp#27;[1mCOMPANY&amp#27;[0m&amp#27;[32m user &amp#27;[0m&amp#27;[32m&amp#27;[1m"reconsent-company@lifecycle.test"&amp#27;[0m&amp#27;[32m with consents not accepted&amp#27;[0m      &amp#27;[90m# com.sm.instagram.platform.e2e.steps.ConsentLifecycleSteps.userWithConsentsNotAccepted(java.lang.String,java.lang.String)&amp#27;[0m
+23:13:16.396 [http-nio-auto-1-exec-6] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EarlyRequestLoggingFilter: Processing request POST /api/test/auth/mock-session from origin: null
+23:13:16.396 [http-nio-auto-1-exec-6] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EARLY_REQUEST_START: {method=POST, originAuthorized=true, requestId=REQ-1788995596396-64, origin=null, correlationId=REQ-4c761e72, userAgent=ReactorNetty/1.2.5, type=EARLY_REQUEST, uri=/api/test/auth/mock-session, timestamp=2026-09-09 23:13:16.396, remoteAddr=127.0.0.1}
+23:13:16.397 [http-nio-auto-1-exec-6] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - INCOMING_REQUEST: {method=POST, requestId=REQ-1788995596396-64, correlationId=REQ-4c761e72, contentLength=-1, uri=/api/test/auth/mock-session, contentType=application/json, timestamp=2026-09-09 23:13:16.397, remoteAddr=127.0.0.xxx}
+23:13:16.397 [http-nio-auto-1-exec-6] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.TestAuthController&amp#27;[0;39m - [E2E] Creating mock session for email: reconsent-company@lifecycle.test, role: COMPANY, partial: false
+23:13:16.398 [http-nio-auto-1-exec-6] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.TestAuthController&amp#27;[0;39m - [E2E] Using User-Agent for session: ReactorNetty/1.2.5
+23:13:16.405 [http-nio-auto-1-exec-6] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.TestAuthController&amp#27;[0;39m - [E2E] Backfilled emailVerified=true for E2ECOMPANY1788995596360
+23:13:16.405 [http-nio-auto-1-exec-6] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=cacheUser, DataCached=user.status,user.role, Purpose=performance_optimization, ThirdParty=redis
+23:13:16.405 [http-nio-auto-1-exec-6] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.406 [http-nio-auto-1-exec-6] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.406 [http-nio-auto-1-exec-6] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=cacheUser_success, CacheDuration=5minutes, Purpose=authentication_cache
+23:13:16.407 [http-nio-auto-1-exec-6] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.TestAuthController&amp#27;[0;39m - [E2E] Found existing user: E2ECOMPANY1788995596360 (id=2515)
+23:13:16.408 [http-nio-auto-1-exec-6] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.TestAuthController&amp#27;[0;39m - [E2E] Created full session token
+23:13:16.408 [http-nio-auto-1-exec-6] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.TestAuthController&amp#27;[0;39m - [E2E] Set cookies: session and session_sig
+23:13:16.413 [http-nio-auto-1-exec-6] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_SUCCESS: {duration=16ms, method=POST, requestId=REQ-1788995596396-64, requestCompleted=true, correlationId=REQ-4c761e72, uri=/api/test/auth/mock-session, timestamp=2026-09-09 23:13:16.397, status=200}
+23:13:16.413 [http-nio-auto-1-exec-6] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_COMPLETE request_id="REQ-1788995596396-64" correlation_id="REQ-4c761e72" method="POST" path="/api/test/auth/mock-session" status=200 execution_time_ms=16 client_ip="127.0.0.xxx" user_agent="Other"
+23:13:16.416 [http-nio-auto-1-exec-7] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EarlyRequestLoggingFilter: Processing request POST /api/auth/refresh-session from origin: null
+23:13:16.416 [http-nio-auto-1-exec-7] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EARLY_REQUEST_START: {method=POST, originAuthorized=true, requestId=REQ-1788995596416-65, origin=null, correlationId=REQ-33120053, userAgent=ReactorNetty/1.2.5, type=EARLY_REQUEST, uri=/api/auth/refresh-session, timestamp=2026-09-09 23:13:16.416, remoteAddr=127.0.0.1}
+23:13:16.418 [http-nio-auto-1-exec-7] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.SessionSecurityService&amp#27;[0;39m - GDPR: Operation=session_validation_started, FirebaseUID=E2ECOMPANY1788995596360, Purpose=security_validation
+23:13:16.418 [http-nio-auto-1-exec-7] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.SessionSecurityService&amp#27;[0;39m - GDPR: Operation=session_validated, FirebaseUID=E2ECOMPANY1788995596360, Purpose=security_validation_success
+23:13:16.418 [http-nio-auto-1-exec-7] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=isUserActive_check, DataAccessed=user.status, Purpose=authorization
+23:13:16.418 [http-nio-auto-1-exec-7] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.418 [http-nio-auto-1-exec-7] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.418 [http-nio-auto-1-exec-7] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=isUserActive_cacheHit, DataSource=redis_cache, Purpose=authorization
+23:13:16.419 [http-nio-auto-1-exec-7] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.419 [http-nio-auto-1-exec-7] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.419 [http-nio-auto-1-exec-7] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.419 [http-nio-auto-1-exec-7] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.420 [http-nio-auto-1-exec-7] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.420 [http-nio-auto-1-exec-7] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.420 [http-nio-auto-1-exec-7] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - INCOMING_REQUEST: {method=POST, requestId=REQ-1788995596416-65, correlationId=REQ-33120053, contentLength=0, uri=/api/auth/refresh-session, contentType=null, timestamp=2026-09-09 23:13:16.420, remoteAddr=127.0.0.xxx}
+23:13:16.421 [http-nio-auto-1-exec-7] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.421 [http-nio-auto-1-exec-7] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.422 [http-nio-auto-1-exec-7] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.auth.AuthController&amp#27;[0;39m - GDPR: Operation=refreshSession, FirebaseUID=E2ECOMPANY1788995596360, Purpose=session_refresh_on_permission_change
+23:13:16.422 [http-nio-auto-1-exec-7] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.TokenExchangeService&amp#27;[0;39m - GDPR: Operation=createRefreshedSession, FirebaseUID=E2ECOMPANY1788995596360, Purpose=permission_update
+23:13:16.424 [http-nio-auto-1-exec-7] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=isUserActive_check, DataAccessed=user.status, Purpose=authorization
+23:13:16.424 [http-nio-auto-1-exec-7] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.425 [http-nio-auto-1-exec-7] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.425 [http-nio-auto-1-exec-7] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=isUserActive_cacheHit, DataSource=redis_cache, Purpose=authorization
+23:13:16.429 [http-nio-auto-1-exec-7] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.TokenExchangeService&amp#27;[0;39m - Failed to validate role via Firebase Admin SDK for user E2ECOMPANY1788995596360: No user record found for the provided user ID: E2ECOMPANY1788995596360
+23:13:16.430 [http-nio-auto-1-exec-7] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.c.e.h.BaseExceptionHandler&amp#27;[0;39m - SERVER_ERROR - ExternalServiceException [trace=REQ-33120053, path=/api/auth/refresh-session, method=POST, user=E2ECOMPANY1788995596360, ip=127.0.0.1, requestDetails={path=/api/auth/refresh-session, headers={content-length=0, cookie=***MASKED***, host=localhost:34153, accept-encoding=gzip, user-agent=ReactorNetty/1.2.5, accept=text/plain, application/json, application/yaml, application/*+json, */*}, method=POST, bodySize=35, contentLength=0, queryString=null, body=No request body (content-length: 0), contentType=null}]: error.network.external_service_unavailable
+com.sm.instagram.platform.common.exceptions.ExternalServiceException: error.network.external_service_unavailable
+	at com.sm.instagram.platform.auth.service.TokenExchangeService.validateFirebaseRole(TokenExchangeService.java:997)
+	at com.sm.instagram.platform.auth.service.TokenExchangeService.createRefreshedSession(TokenExchangeService.java:1781)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:380)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728)
+	at com.sm.instagram.platform.auth.service.TokenExchangeService$$SpringCGLIB$$0.createRefreshedSession(<generated>)
+	at com.sm.instagram.platform.auth.AuthController.refreshSession(AuthController.java:523)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:258)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:191)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:986)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:891)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:110)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:110)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:110)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:110)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.servlet.resource.ResourceUrlEncodingFilter.doFilter(ResourceUrlEncodingFilter.java:66)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at com.sm.instagram.platform.common.logging.RequestLoggingFilter.doFilterInternal(RequestLoggingFilter.java:71)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at com.sm.instagram.platform.common.logging.RequestCorrelationFilter.doFilterInternal(RequestCorrelationFilter.java:65)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108)
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231)
+	at org.springframework.security.web.ObservationFilterChainDecorator$FilterObservation$SimpleFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:479)
+	at org.springframework.security.web.ObservationFilterChainDecorator$AroundFilterObservation$SimpleAroundFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:340)
+	at org.springframework.security.web.ObservationFilterChainDecorator.lambda$wrapSecured$0(ObservationFilterChainDecorator.java:82)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:128)
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:101)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at com.sm.instagram.platform.common.authorization.EmailVerificationEnforcementFilter.doFilterInternal(EmailVerificationEnforcementFilter.java:85)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at com.sm.instagram.platform.common.authorization.ConsentEnforcementFilter.doFilterInternal(ConsentEnforcementFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at com.sm.instagram.platform.common.authorization.BannedUserAuthorizationFilter.doFilterInternal(BannedUserAuthorizationFilter.java:125)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at com.sm.instagram.platform.common.authorization.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:292)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$AroundFilterObservation$SimpleAroundFilterObservation.lambda$wrap$0(ObservationFilterChainDecorator.java:323)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:224)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:243)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:238)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:362)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:278)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at com.sm.instagram.platform.common.translation.AppLanguageFilter.doFilterInternal(AppLanguageFilter.java:49)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:114)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at com.sm.instagram.platform.common.logging.EarlyRequestLoggingFilter.doFilterInternal(EarlyRequestLoggingFilter.java:78)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:116)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:398)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:903)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1740)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1189)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:658)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+23:13:16.431 [http-nio-auto-1-exec-7] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.c.e.h.NetworkExceptionHandler&amp#27;[0;39m - External service failure details [trace=REQ-33120053, service=Firebase, operation=validateFirebaseRole, statusCode=-1]
+23:13:16.431 [http-nio-auto-1-exec-7] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_ERROR: {duration=11ms, method=POST, requestId=REQ-1788995596416-65, requestCompleted=true, correlationId=REQ-33120053, uri=/api/auth/refresh-session, timestamp=2026-09-09 23:13:16.420, status=502}
+23:13:16.431 [http-nio-auto-1-exec-7] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_COMPLETE request_id="REQ-1788995596416-65" correlation_id="REQ-33120053" method="POST" path="/api/auth/refresh-session" status=502 execution_time_ms=11 client_ip="127.0.0.xxx" user_agent="Other"
+23:13:16.432 [http-nio-auto-1-exec-7] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EARLY_REQUEST_ERROR: {duration=16ms, method=POST, originAuthorized=true, requestId=REQ-1788995596416-65, origin=null, correlationId=REQ-33120053, completed=true, type=EARLY_REQUEST_COMPLETE, uri=/api/auth/refresh-session, status=502}
+23:13:16.433 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.e.s.ConsentLifecycleSteps&amp#27;[0;39m - [E2E-Lifecycle] Session refresh returned 502 BAD_GATEWAY
+23:13:16.435 [http-nio-auto-1-exec-8] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EarlyRequestLoggingFilter: Processing request GET /api/test/legal/user-consent-status from origin: null
+23:13:16.435 [http-nio-auto-1-exec-8] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EARLY_REQUEST_START: {method=GET, originAuthorized=true, requestId=REQ-1788995596435-66, origin=null, correlationId=REQ-b4f00d3f, userAgent=ReactorNetty/1.2.5, type=EARLY_REQUEST, uri=/api/test/legal/user-consent-status, timestamp=2026-09-09 23:13:16.435, remoteAddr=127.0.0.1}
+23:13:16.436 [http-nio-auto-1-exec-8] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - INCOMING_REQUEST: {method=GET, requestId=REQ-1788995596436-66, correlationId=REQ-b4f00d3f, contentLength=-1, uri=/api/test/legal/user-consent-status, contentType=null, timestamp=2026-09-09 23:13:16.436, remoteAddr=127.0.0.xxx}
+23:13:16.440 [http-nio-auto-1-exec-8] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_SUCCESS: {duration=4ms, method=GET, requestId=REQ-1788995596436-66, requestCompleted=true, correlationId=REQ-b4f00d3f, uri=/api/test/legal/user-consent-status, timestamp=2026-09-09 23:13:16.436, status=200}
+23:13:16.440 [http-nio-auto-1-exec-8] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_COMPLETE request_id="REQ-1788995596436-66" correlation_id="REQ-b4f00d3f" method="GET" path="/api/test/legal/user-consent-status" status=200 execution_time_ms=4 client_ip="127.0.0.xxx" user_agent="Other"
+23:13:16.441 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.e.s.ConsentLifecycleSteps&amp#27;[0;39m - [E2E-Lifecycle] user-consent-status for reconsent-company@lifecycle.test: httpStatus=200 OK, body={userId=2515, accountStatus=ACTIVE, newestConsentsAccepted=false, email=reconsent-company@lifecycle.test}
+23:13:16.441 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.e.s.ConsentLifecycleSteps&amp#27;[0;39m - [E2E-Lifecycle] reconsent-company@lifecycle.test -> newestConsentsAccepted=false, accountStatus=ACTIVE
+23:13:16.443 [http-nio-auto-1-exec-9] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EarlyRequestLoggingFilter: Processing request POST /api/test/auth/set-account-status from origin: null
+23:13:16.443 [http-nio-auto-1-exec-9] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EARLY_REQUEST_START: {method=POST, originAuthorized=true, requestId=REQ-1788995596443-67, origin=null, correlationId=REQ-3960b4f6, userAgent=ReactorNetty/1.2.5, type=EARLY_REQUEST, uri=/api/test/auth/set-account-status, timestamp=2026-09-09 23:13:16.443, remoteAddr=127.0.0.1}
+23:13:16.444 [http-nio-auto-1-exec-9] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - INCOMING_REQUEST: {method=POST, requestId=REQ-1788995596444-67, correlationId=REQ-3960b4f6, contentLength=-1, uri=/api/test/auth/set-account-status, contentType=application/json, timestamp=2026-09-09 23:13:16.444, remoteAddr=127.0.0.xxx}
+23:13:16.445 [http-nio-auto-1-exec-9] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.TestAuthController&amp#27;[0;39m - [E2E] Setting account status: email=reconsent-company@lifecycle.test, status=BLOCKED_DUE_TO_NOT_ACCEPTING_TERMS
+23:13:16.447 [http-nio-auto-1-exec-9] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=evictUser, DataDeleted=cached_user_data, Purpose=cache_management
+23:13:16.447 [http-nio-auto-1-exec-9] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.447 [http-nio-auto-1-exec-9] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.450 [http-nio-auto-1-exec-9] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_SUCCESS: {duration=6ms, method=POST, requestId=REQ-1788995596444-67, requestCompleted=true, correlationId=REQ-3960b4f6, uri=/api/test/auth/set-account-status, timestamp=2026-09-09 23:13:16.444, status=200}
+23:13:16.450 [http-nio-auto-1-exec-9] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_COMPLETE request_id="REQ-1788995596444-67" correlation_id="REQ-3960b4f6" method="POST" path="/api/test/auth/set-account-status" status=200 execution_time_ms=6 client_ip="127.0.0.xxx" user_agent="Other"
+23:13:16.451 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.e.s.ConsentLifecycleSteps&amp#27;[0;39m - [E2E-Lifecycle] Set account status for reconsent-company@lifecycle.test: BLOCKED_DUE_TO_NOT_ACCEPTING_TERMS (response: 200 OK)
+23:13:16.451 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.e.s.ConsentLifecycleSteps&amp#27;[0;39m - [E2E-Lifecycle] Set reconsent-company@lifecycle.test to BLOCKED_DUE_TO_NOT_ACCEPTING_TERMS after session creation
+23:13:16.451 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.e.s.ConsentLifecycleSteps&amp#27;[0;39m - [E2E-Lifecycle] Session created for reconsent-company@lifecycle.test
+  &amp#27;[32mAnd &amp#27;[0m&amp#27;[32ma session exists for &amp#27;[0m&amp#27;[32m&amp#27;[1m"reconsent-company@lifecycle.test"&amp#27;[0m&amp#27;[32m as &amp#27;[0m&amp#27;[32m&amp#27;[1mCOMPANY&amp#27;[0m                  &amp#27;[90m# com.sm.instagram.platform.e2e.steps.ConsentLifecycleSteps.sessionExistsForUser(java.lang.String,java.lang.String)&amp#27;[0m
+23:13:16.453 [http-nio-auto-1-exec-10] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EarlyRequestLoggingFilter: Processing request POST /api/partnership-opportunity from origin: null
+23:13:16.453 [http-nio-auto-1-exec-10] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EARLY_REQUEST_START: {method=POST, originAuthorized=true, requestId=REQ-1788995596453-68, origin=null, correlationId=REQ-7133b6cf, userAgent=ReactorNetty/1.2.5, type=EARLY_REQUEST, uri=/api/partnership-opportunity, timestamp=2026-09-09 23:13:16.453, remoteAddr=127.0.0.1}
+23:13:16.455 [http-nio-auto-1-exec-10] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.SessionSecurityService&amp#27;[0;39m - GDPR: Operation=session_validation_started, FirebaseUID=E2ECOMPANY1788995596360, Purpose=security_validation
+23:13:16.455 [http-nio-auto-1-exec-10] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.SessionSecurityService&amp#27;[0;39m - GDPR: Operation=session_validated, FirebaseUID=E2ECOMPANY1788995596360, Purpose=security_validation_success
+23:13:16.455 [http-nio-auto-1-exec-10] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=isUserActive_check, DataAccessed=user.status, Purpose=authorization
+23:13:16.455 [http-nio-auto-1-exec-10] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.456 [http-nio-auto-1-exec-10] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.456 [http-nio-auto-1-exec-10] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: DatabaseQuery=findByFirebaseUserId, Table=users, DataAccessed=user.accountStatus, Purpose=authorization
+23:13:16.458 [http-nio-auto-1-exec-10] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=cacheUser, DataCached=user.status,user.role, Purpose=performance_optimization, ThirdParty=redis
+23:13:16.458 [http-nio-auto-1-exec-10] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.459 [http-nio-auto-1-exec-10] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.459 [http-nio-auto-1-exec-10] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=cacheUser_success, CacheDuration=5minutes, Purpose=authentication_cache
+23:13:16.459 [http-nio-auto-1-exec-10] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.460 [http-nio-auto-1-exec-10] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.460 [http-nio-auto-1-exec-10] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.460 [http-nio-auto-1-exec-10] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.460 [http-nio-auto-1-exec-10] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.461 [http-nio-auto-1-exec-10] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.461 [http-nio-auto-1-exec-10] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.a.ConsentEnforcementFilter&amp#27;[0;39m - SECURITY_METRIC: event_type=CONSENT_BLOCKED_NEW_COMMITMENT, method=POST, endpoint=/api/partnership-opportunity
+23:13:16.463 [http-nio-auto-1-exec-10] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EARLY_REQUEST_ERROR: {duration=10ms, method=POST, originAuthorized=true, requestId=REQ-1788995596453-68, origin=null, correlationId=REQ-7133b6cf, completed=true, type=EARLY_REQUEST_COMPLETE, uri=/api/partnership-opportunity, status=403}
+  &amp#27;[32mWhen &amp#27;[0m&amp#27;[32mthe user sends POST to &amp#27;[0m&amp#27;[32m&amp#27;[1m"/api/partnership-opportunity"&amp#27;[0m&amp#27;[32m with empty body&amp#27;[0m              &amp#27;[90m# com.sm.instagram.platform.e2e.steps.ConsentLifecycleSteps.sendPostWithEmptyBody(java.lang.String)&amp#27;[0m
+  &amp#27;[32mThen &amp#27;[0m&amp#27;[32mthe response status should be &amp#27;[0m&amp#27;[32m&amp#27;[1m403&amp#27;[0m                                                  &amp#27;[90m# com.sm.instagram.platform.e2e.steps.LoginSteps.verifyResponseStatus(int)&amp#27;[0m
+  &amp#27;[32mAnd &amp#27;[0m&amp#27;[32mthe response should have header &amp#27;[0m&amp#27;[32m&amp#27;[1m"X-Consent-Required"&amp#27;[0m                                &amp#27;[90m# com.sm.instagram.platform.e2e.steps.ConsentSteps.responseShouldHaveHeader(java.lang.String)&amp#27;[0m
+23:13:16.466 [http-nio-auto-1-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EarlyRequestLoggingFilter: Processing request POST /api/legal/consent/record-batch from origin: null
+23:13:16.466 [http-nio-auto-1-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EARLY_REQUEST_START: {method=POST, originAuthorized=true, requestId=REQ-1788995596466-59, origin=null, correlationId=REQ-d4613bb8, userAgent=ReactorNetty/1.2.5, type=EARLY_REQUEST, uri=/api/legal/consent/record-batch, timestamp=2026-09-09 23:13:16.466, remoteAddr=127.0.0.1}
+23:13:16.468 [http-nio-auto-1-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.SessionSecurityService&amp#27;[0;39m - GDPR: Operation=session_validation_started, FirebaseUID=E2ECOMPANY1788995596360, Purpose=security_validation
+23:13:16.468 [http-nio-auto-1-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.SessionSecurityService&amp#27;[0;39m - GDPR: Operation=session_validated, FirebaseUID=E2ECOMPANY1788995596360, Purpose=security_validation_success
+23:13:16.468 [http-nio-auto-1-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=isUserActive_check, DataAccessed=user.status, Purpose=authorization
+23:13:16.468 [http-nio-auto-1-exec-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.468 [http-nio-auto-1-exec-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.468 [http-nio-auto-1-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=isUserActive_cacheHit, DataSource=redis_cache, Purpose=authorization
+23:13:16.468 [http-nio-auto-1-exec-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.469 [http-nio-auto-1-exec-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.469 [http-nio-auto-1-exec-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.469 [http-nio-auto-1-exec-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.469 [http-nio-auto-1-exec-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.470 [http-nio-auto-1-exec-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.470 [http-nio-auto-1-exec-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.470 [http-nio-auto-1-exec-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.471 [http-nio-auto-1-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - INCOMING_REQUEST: {method=POST, requestId=REQ-1788995596470-59, correlationId=REQ-d4613bb8, contentLength=-1, uri=/api/legal/consent/record-batch, contentType=application/json, timestamp=2026-09-09 23:13:16.471, remoteAddr=127.0.0.xxx}
+23:13:16.504 [http-nio-auto-1-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.legal.LegalConsentService&amp#27;[0;39m - Batch re-consent: recorded COOKIE_POLICY v2 for userId=2515
+23:13:16.506 [http-nio-auto-1-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.legal.LegalConsentService&amp#27;[0;39m - Batch re-consent: recorded TERMS_OF_SERVICE v2 for userId=2515
+23:13:16.508 [http-nio-auto-1-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.legal.LegalConsentService&amp#27;[0;39m - Batch re-consent: recorded PRIVACY_POLICY v2 for userId=2515
+23:13:16.508 [http-nio-auto-1-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.legal.LegalConsentService&amp#27;[0;39m - Unblocked user 2515 after batch re-consent — status reverted to ACTIVE
+23:13:16.508 [http-nio-auto-1-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=evictUser, DataDeleted=cached_user_data, Purpose=cache_management
+23:13:16.508 [http-nio-auto-1-exec-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.509 [http-nio-auto-1-exec-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.514 [http-nio-auto-1-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_SUCCESS: {duration=43ms, method=POST, requestId=REQ-1788995596470-59, requestCompleted=true, correlationId=REQ-d4613bb8, uri=/api/legal/consent/record-batch, timestamp=2026-09-09 23:13:16.471, status=200}
+23:13:16.514 [http-nio-auto-1-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_COMPLETE request_id="REQ-1788995596470-59" correlation_id="REQ-d4613bb8" method="POST" path="/api/legal/consent/record-batch" status=200 execution_time_ms=43 client_ip="127.0.0.xxx" user_agent="Other"
+23:13:16.516 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.e2e.steps.ConsentSteps&amp#27;[0;39m - [E2E] Recorded batch consent: status=200 OK
+  &amp#27;[32mWhen &amp#27;[0m&amp#27;[32mthe user records consent for all required documents&amp#27;[0m                                &amp#27;[90m# com.sm.instagram.platform.e2e.steps.ConsentSteps.userRecordsConsentForAllRequiredDocuments()&amp#27;[0m
+23:13:16.518 [http-nio-auto-1-exec-2] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EarlyRequestLoggingFilter: Processing request POST /api/test/auth/mock-session from origin: null
+23:13:16.518 [http-nio-auto-1-exec-2] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EARLY_REQUEST_START: {method=POST, originAuthorized=true, requestId=REQ-1788995596518-60, origin=null, correlationId=REQ-1e73af12, userAgent=ReactorNetty/1.2.5, type=EARLY_REQUEST, uri=/api/test/auth/mock-session, timestamp=2026-09-09 23:13:16.518, remoteAddr=127.0.0.1}
+23:13:16.519 [http-nio-auto-1-exec-2] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - INCOMING_REQUEST: {method=POST, requestId=REQ-1788995596519-60, correlationId=REQ-1e73af12, contentLength=-1, uri=/api/test/auth/mock-session, contentType=application/json, timestamp=2026-09-09 23:13:16.519, remoteAddr=127.0.0.xxx}
+23:13:16.520 [http-nio-auto-1-exec-2] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.TestAuthController&amp#27;[0;39m - [E2E] Creating mock session for email: reconsent-company@lifecycle.test, role: COMPANY, partial: false
+23:13:16.520 [http-nio-auto-1-exec-2] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.TestAuthController&amp#27;[0;39m - [E2E] Using User-Agent for session: ReactorNetty/1.2.5
+23:13:16.522 [http-nio-auto-1-exec-2] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.TestAuthController&amp#27;[0;39m - [E2E] Found existing user: E2ECOMPANY1788995596360 (id=2515)
+23:13:16.523 [http-nio-auto-1-exec-2] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.TestAuthController&amp#27;[0;39m - [E2E] Created full session token
+23:13:16.523 [http-nio-auto-1-exec-2] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.TestAuthController&amp#27;[0;39m - [E2E] Set cookies: session and session_sig
+23:13:16.524 [http-nio-auto-1-exec-2] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_SUCCESS: {duration=5ms, method=POST, requestId=REQ-1788995596519-60, requestCompleted=true, correlationId=REQ-1e73af12, uri=/api/test/auth/mock-session, timestamp=2026-09-09 23:13:16.519, status=200}
+23:13:16.524 [http-nio-auto-1-exec-2] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_COMPLETE request_id="REQ-1788995596519-60" correlation_id="REQ-1e73af12" method="POST" path="/api/test/auth/mock-session" status=200 execution_time_ms=5 client_ip="127.0.0.xxx" user_agent="Other"
+23:13:16.526 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.e2e.steps.ConsentSteps&amp#27;[0;39m - [E2E] Mock session refreshed for user: reconsent-company@lifecycle.test
+  &amp#27;[32mAnd &amp#27;[0m&amp#27;[32mthe user &amp#27;[0m&amp#27;[32m&amp#27;[1m"reconsent-company@lifecycle.test"&amp#27;[0m&amp#27;[32m refreshes their mock session as &amp#27;[0m&amp#27;[32m&amp#27;[1mCOMPANY&amp#27;[0m &amp#27;[90m# com.sm.instagram.platform.e2e.steps.ConsentSteps.namedUserRefreshesMockSession(java.lang.String,java.lang.String)&amp#27;[0m
+23:13:16.529 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EarlyRequestLoggingFilter: Processing request GET /api/users/me from origin: null
+23:13:16.529 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EARLY_REQUEST_START: {method=GET, originAuthorized=true, requestId=REQ-1788995596529-61, origin=null, correlationId=REQ-7674df2d, userAgent=ReactorNetty/1.2.5, type=EARLY_REQUEST, uri=/api/users/me, timestamp=2026-09-09 23:13:16.529, remoteAddr=127.0.0.1}
+23:13:16.531 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.SessionSecurityService&amp#27;[0;39m - GDPR: Operation=session_validation_started, FirebaseUID=E2ECOMPANY1788995596360, Purpose=security_validation
+23:13:16.531 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.SessionSecurityService&amp#27;[0;39m - GDPR: Operation=session_validated, FirebaseUID=E2ECOMPANY1788995596360, Purpose=security_validation_success
+23:13:16.531 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=isUserActive_check, DataAccessed=user.status, Purpose=authorization
+23:13:16.531 [http-nio-auto-1-exec-3] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.531 [http-nio-auto-1-exec-3] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.532 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: DatabaseQuery=findByFirebaseUserId, Table=users, DataAccessed=user.accountStatus, Purpose=authorization
+23:13:16.535 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=cacheUser, DataCached=user.status,user.role, Purpose=performance_optimization, ThirdParty=redis
+23:13:16.535 [http-nio-auto-1-exec-3] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.535 [http-nio-auto-1-exec-3] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.536 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=cacheUser_success, CacheDuration=5minutes, Purpose=authentication_cache
+23:13:16.536 [http-nio-auto-1-exec-3] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.536 [http-nio-auto-1-exec-3] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.536 [http-nio-auto-1-exec-3] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.539 [http-nio-auto-1-exec-3] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.539 [http-nio-auto-1-exec-3] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.540 [http-nio-auto-1-exec-3] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.540 [http-nio-auto-1-exec-3] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.540 [http-nio-auto-1-exec-3] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.541 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - INCOMING_REQUEST: {method=GET, requestId=REQ-1788995596541-61, correlationId=REQ-7674df2d, contentLength=0, uri=/api/users/me, contentType=null, timestamp=2026-09-09 23:13:16.541, remoteAddr=127.0.0.xxx}
+23:13:16.541 [http-nio-auto-1-exec-3] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+23:13:16.545 [http-nio-auto-1-exec-3] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+23:13:16.545 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserController&amp#27;[0;39m - Retrieving current authenticated user
+23:13:16.545 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserController&amp#27;[0;39m - GDPR: Operation=getCurrentUser, FirebaseUID=E2ECOMPANY1788995596360, DataAccessed=user.profile,user.email,user.type, Purpose=profile_display
+23:13:16.561 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: Service Operation=getTranslation, FirebaseUID=E2ECOMPANY1788995596360, Key=ACCOUNT_STATUS_ACTIVE, Language=pl, Purpose=translation_lookup
+23:13:16.563 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: DataAccessed=translation_value, FirebaseUID=E2ECOMPANY1788995596360, Key=ACCOUNT_STATUS_ACTIVE, Purpose=translation_service
+23:13:16.563 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: Service Operation=getTranslation, FirebaseUID=E2ECOMPANY1788995596360, Key=ACCOUNT_STATUS_ACTIVE_DESC, Language=pl, Purpose=translation_lookup
+23:13:16.565 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: DataAccessed=translation_value, FirebaseUID=E2ECOMPANY1788995596360, Key=ACCOUNT_STATUS_ACTIVE_DESC, Purpose=translation_service
+23:13:16.565 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: Service Operation=getTranslation, FirebaseUID=E2ECOMPANY1788995596360, Key=USER_TYPE_COMPANY, Language=pl, Purpose=translation_lookup
+23:13:16.566 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: DataAccessed=translation_value, FirebaseUID=E2ECOMPANY1788995596360, Key=USER_TYPE_COMPANY, Purpose=translation_service
+23:13:16.568 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserController&amp#27;[0;39m - Successfully retrieved current user (DB ID: 2515, Firebase ID: E2ECOMPANY1788995596360) in 23ms
+23:13:16.568 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserController&amp#27;[0;39m - GDPR: Operation=getCurrentUser_success, FirebaseUID=E2ECOMPANY1788995596360, DataRetrieved=user.profile, Purpose=profile_display_complete
+23:13:16.569 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_SUCCESS: {duration=28ms, method=GET, requestId=REQ-1788995596541-61, requestCompleted=true, correlationId=REQ-7674df2d, uri=/api/users/me, timestamp=2026-09-09 23:13:16.541, status=200}
+23:13:16.569 [http-nio-auto-1-exec-3] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_COMPLETE request_id="REQ-1788995596541-61" correlation_id="REQ-7674df2d" method="GET" path="/api/users/me" status=200 execution_time_ms=28 client_ip="127.0.0.xxx" user_agent="Other"
+  &amp#27;[32mAnd &amp#27;[0m&amp#27;[32mthe user requests &amp#27;[0m&amp#27;[32m&amp#27;[1m"/api/users/me"&amp#27;[0m                                                   &amp#27;[90m# com.sm.instagram.platform.e2e.steps.ConsentSteps.userRequestsEndpoint(java.lang.String)&amp#27;[0m
+  &amp#27;[32mThen &amp#27;[0m&amp#27;[32mthe response status should be &amp#27;[0m&amp#27;[32m&amp#27;[1m200&amp#27;[0m                                                  &amp#27;[90m# com.sm.instagram.platform.e2e.steps.LoginSteps.verifyResponseStatus(int)&amp#27;[0m
+  &amp#27;[32mAnd &amp#27;[0m&amp#27;[32mthe response body field &amp#27;[0m&amp#27;[32m&amp#27;[1m"accountStatus"&amp#27;[0m&amp#27;[32m should be &amp#27;[0m&amp#27;[32m&amp#27;[1m"ACTIVE"&amp#27;[0m                          &amp#27;[90m# com.sm.instagram.platform.e2e.steps.ConsentLifecycleSteps.responseBodyFieldShouldBe(java.lang.String,java.lang.String)&amp#27;[0m
+23:13:16.575 [http-nio-auto-1-exec-4] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EarlyRequestLoggingFilter: Processing request POST /api/test/legal/set-published-at from origin: null
+23:13:16.575 [http-nio-auto-1-exec-4] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EARLY_REQUEST_START: {method=POST, originAuthorized=true, requestId=REQ-1788995596575-62, origin=null, correlationId=REQ-ae441a53, userAgent=ReactorNetty/1.2.5, type=EARLY_REQUEST, uri=/api/test/legal/set-published-at, timestamp=2026-09-09 23:13:16.575, remoteAddr=127.0.0.1}
+23:13:16.576 [http-nio-auto-1-exec-4] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - INCOMING_REQUEST: {method=POST, requestId=REQ-1788995596576-62, correlationId=REQ-ae441a53, contentLength=-1, uri=/api/test/legal/set-published-at, contentType=application/json, timestamp=2026-09-09 23:13:16.576, remoteAddr=127.0.0.xxx}
+23:13:16.581 [http-nio-auto-1-exec-4] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.legal.TestLegalController&amp#27;[0;39m - [E2E] Updated published_at for 16 documents to 2026-09-09T23:13:16.573805433
+23:13:16.589 [http-nio-auto-1-exec-4] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_SUCCESS: {duration=13ms, method=POST, requestId=REQ-1788995596576-62, requestCompleted=true, correlationId=REQ-ae441a53, uri=/api/test/legal/set-published-at, timestamp=2026-09-09 23:13:16.576, status=200}
+23:13:16.589 [http-nio-auto-1-exec-4] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_COMPLETE request_id="REQ-1788995596576-62" correlation_id="REQ-ae441a53" method="POST" path="/api/test/legal/set-published-at" status=200 execution_time_ms=13 client_ip="127.0.0.xxx" user_agent="Other"
+23:13:16.591 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.e.s.ConsentLifecycleSteps&amp#27;[0;39m - [E2E-Lifecycle] Reset published_at to now (cleanup)
