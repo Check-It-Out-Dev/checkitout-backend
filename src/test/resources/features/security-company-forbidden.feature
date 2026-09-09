@@ -6,7 +6,7 @@ Feature: COMPANY Role Access Restrictions
 
   Background:
     Given the application is running with real Redis
-    And "company1" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
+    And "company1" logs in as COMPANY with Firebase UID "E2E_COMPANY_001" email "e2e.company@test.com" password "e2e-emulator-password"
 
   # ===========================================================================
   # CONSOLIDATED SCENARIO 1: ALL ADMIN-ONLY GET ENDPOINTS

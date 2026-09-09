@@ -13,9 +13,9 @@ import static io.cucumber.junit.platform.engine.Constants.*;
  *
  * <p>Test Configuration:
  * <pre>
- * - Uses real admin: 85VJgS6shAWTqby4rHypN355RWv2 (with 2FA)
- * - Target Company: WWXA9DehxZghyLq849TpyE4vYzZ2
- * - Target Influencer: SEWgduxUjRh4KDqxVWFs6zgThIa2 (norbertmarchewka)
+ * - Uses real admin: E2E_ADMIN_001 (with 2FA)
+ * - Target Company: E2E_COMPANY_001
+ * - Target Influencer: E2E_INFLUENCER_001 (norbertmarchewka)
  * </pre>
  *
  * <p>Run with Maven:

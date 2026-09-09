@@ -29,12 +29,13 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class FirebaseService {
 
-    private static final String IDENTITY_TOOLKIT_BASE = "https://identitytoolkit.googleapis.com/v1";
     private static final String IDENTITY_TOOLKIT_SCOPE = "https://www.googleapis.com/auth/identitytoolkit";
 
     private final FirebaseAuth firebaseAuth;
     private final RestTemplate restTemplate;
     private final GoogleCredentialsProvider credentialsProvider;
+    // Resolves the Identity Toolkit base and the bearer token: production, or the emulator in a test run.
+    private final com.sm.instagram.platform.common.firebase.FirebaseEmulator firebaseEmulator;
 
     /**
      * Checks if a Firebase user exists by ID
@@ -464,7 +465,7 @@ public class FirebaseService {
      * @param oldEmail    Old email address (for logging)
      */
     public void updateFirebaseUserEmail(String firebaseUid, String newEmail, String oldEmail) {
-        String url = IDENTITY_TOOLKIT_BASE + "/accounts:update";
+        String url = firebaseEmulator.identityToolkitBase() + "/accounts:update";
 
         Map<String, Object> body = new HashMap<>();
         body.put("localId", firebaseUid);
@@ -534,6 +535,11 @@ public class FirebaseService {
     }
 
     private String getIdentityToolkitAccessToken() {
+        // See FirebaseAuthProxyService.getAccessToken: the emulator takes one fixed owner token.
+        String emulatorToken = firebaseEmulator.bearerTokenOrEmpty();
+        if (!emulatorToken.isEmpty()) {
+            return emulatorToken;
+        }
         try {
             GoogleCredentials credentials = credentialsProvider.getCredentialsWithScopes(IDENTITY_TOOLKIT_SCOPE);
             credentials.refreshIfExpired();

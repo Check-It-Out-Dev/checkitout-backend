@@ -110,8 +110,46 @@ jobs:
           cache: maven
       - name: Testcontainers on Linux
         run: sed -i '/ClientProviderStrategy/d' src/test/resources/testcontainers.properties
-      # Scenarios that need Firebase credentials skip themselves (assumeTrue) when none are present.
-      - run: chmod +x mvnw && ./mvnw $MAVEN_ARGS verify -Pe2e
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      # The suite signs in for real - password sign-in, an ID token, TOTP - against the Firebase emulator
+      # suite rather than the live project, so it needs no credential and cannot touch anything real. The
+      # Admin SDK finds the emulators through these two variables on its own; FirebaseEmulator redirects
+      # the Identity Toolkit calls the application makes by hand, and FirebaseEmulatorSeeder creates the
+      # three fixed actors at context start. See docs/Tests/E2E tests.md.
+      - name: Firebase emulators
+        run: |
+          npm install -g firebase-tools@15
+          cat > /tmp/firebase.json <<'JSON'
+          {
+            "emulators": {
+              "auth":      { "host": "127.0.0.1", "port": 9099 },
+              "firestore": { "host": "127.0.0.1", "port": 8085 },
+              "ui":        { "enabled": false }
+            }
+          }
+          JSON
+          firebase emulators:start --only auth,firestore --project demo-checkitout \
+            --config /tmp/firebase.json > /tmp/emulators.log 2>&1 &
+          # The emulator hub answers as soon as both emulators are listening.
+          for i in $(seq 1 60); do
+            if curl -sf http://127.0.0.1:4400/emulators >/dev/null 2>&1; then
+              echo "emulators ready after ${i}s"; exit 0
+            fi
+            sleep 1
+          done
+          echo "the emulators did not come up in 60s" >&2
+          cat /tmp/emulators.log >&2
+          exit 1
+      - name: End to end
+        env:
+          FIREBASE_AUTH_EMULATOR_HOST: 127.0.0.1:9099
+          FIRESTORE_EMULATOR_HOST: 127.0.0.1:8085
+        run: chmod +x mvnw && ./mvnw $MAVEN_ARGS verify -Pe2e
+      - name: Emulator log on failure
+        if: failure()
+        run: tail -100 /tmp/emulators.log || true
       - uses: mikepenz/action-junit-report@v6
         if: always()
         with:

@@ -19,7 +19,7 @@ Feature: File Upload via Signed URLs (Consolidated)
 
   @company @soft-assertions
   Scenario: Company file upload - all scenarios via signed URL (consolidated - 15+ assertions)
-    Given "company1" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
+    Given "company1" logs in as COMPANY with Firebase UID "E2E_COMPANY_001" email "e2e.company@test.com" password "e2e-emulator-password"
 
     # ----- TEST 1: SUCCESSFUL PROFILE PHOTO UPLOAD -----
     When "company1" requests signed URL for file:
@@ -110,7 +110,7 @@ Feature: File Upload via Signed URLs (Consolidated)
 
   @influencer @soft-assertions
   Scenario: Influencer file upload - profile photo with rate limit info (consolidated)
-    Given "influencer1" logs in as INFLUENCER via OAuth with Firebase UID "SEWgduxUjRh4KDqxVWFs6zgThIa2"
+    Given "influencer1" logs in as INFLUENCER via OAuth with Firebase UID "E2E_INFLUENCER_001"
 
     # ----- TEST 1: PROFILE PHOTO WITH RATE LIMIT INFO -----
     When "influencer1" requests signed URL for file:

@@ -23,7 +23,7 @@ Feature: Profile Validation Edge Cases (Consolidated)
 
   @company @soft-assertions
   Scenario: Company profile validation - all edge cases (consolidated - 20+ assertions)
-    Given "company1" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
+    Given "company1" logs in as COMPANY with Firebase UID "E2E_COMPANY_001" email "e2e.company@test.com" password "e2e-emulator-password"
 
     # ===== FIRSTNAME VALIDATION =====
     # ----- Too short (< 2 chars) -----
@@ -155,7 +155,7 @@ Feature: Profile Validation Edge Cases (Consolidated)
 
   @company @preferences @soft-assertions
   Scenario: Preferences validation - all edge cases (consolidated - 10+ assertions)
-    Given "company1" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
+    Given "company1" logs in as COMPANY with Firebase UID "E2E_COMPANY_001" email "e2e.company@test.com" password "e2e-emulator-password"
 
     # ===== LANGUAGE VALIDATION =====
     # ----- Valid value -----

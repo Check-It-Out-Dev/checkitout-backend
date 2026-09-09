@@ -16,7 +16,7 @@ Feature: Profile Non-Critical Field Changes (Consolidated)
 
   @company @soft-assertions
   Scenario: Company profile - all non-critical field changes (consolidated - 10+ assertions)
-    Given "company1" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
+    Given "company1" logs in as COMPANY with Firebase UID "E2E_COMPANY_001" email "e2e.company@test.com" password "e2e-emulator-password"
 
     # ----- TEST 1: PROFILE PICTURE VIA SIGNED URL -----
     When "company1" requests signed URL for file "test-photo.jpg" type "image/jpeg" size 500000
@@ -64,7 +64,7 @@ Feature: Profile Non-Critical Field Changes (Consolidated)
 
   @influencer @soft-assertions
   Scenario: Influencer profile - all non-critical field changes (consolidated - 8+ assertions)
-    Given "influencer1" logs in as INFLUENCER via OAuth with Firebase UID "SEWgduxUjRh4KDqxVWFs6zgThIa2"
+    Given "influencer1" logs in as INFLUENCER via OAuth with Firebase UID "E2E_INFLUENCER_001"
 
     # ----- TEST 1: PROFILE PICTURE VIA SIGNED URL -----
     When "influencer1" requests signed URL for file "influencer-photo.png" type "image/png" size 300000

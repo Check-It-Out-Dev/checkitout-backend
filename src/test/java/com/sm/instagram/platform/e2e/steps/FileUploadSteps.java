@@ -167,13 +167,35 @@ public class FileUploadSteps extends CucumberSpringConfig {
         softAssert.softAssertNotNull(uploadId, "Response should contain uploadId");
     }
 
+    /** Where LocalUploadSink serves its PUT endpoint; see SignedUrlService. */
+    private static final String LOCAL_SINK_PATH = "/api/dev-lite/upload/";
+
+    /**
+     * A URL HttpURLConnection can open, whichever substrate minted it: Cloud Storage hands back an
+     * absolute https URL, the local sink a path on this server.
+     */
+    private String absoluteUploadUrl(String uploadUrl) {
+        if (uploadUrl == null || uploadUrl.startsWith("http://") || uploadUrl.startsWith("https://")) {
+            return uploadUrl;
+        }
+        // baseUrl() already ends in /api and the sink path starts with it, so build from the server root.
+        return "http://localhost:" + port + (uploadUrl.startsWith("/") ? uploadUrl : "/" + uploadUrl);
+    }
+
     @Then("soft assert uploadUrl starts with {string}")
     public void softAssertUploadUrlStartsWith(String prefix) {
         Actor actor = actorRegistry.current();
         String uploadUrl = actor.getResource("uploadUrl");
+        // The feature names the Cloud Storage host, because that is where an upload goes when the
+        // application has a Google credential. Without one - the tier's normal state on a public runner -
+        // SignedUrlService routes to LocalUploadSink, which mints the same single-use expiring token
+        // behind a path on this server. Both are a valid upload URL; what the scenario is really asserting
+        // is that one came back and points at the upload endpoint, so accept either shape.
+        boolean cloud = uploadUrl != null && uploadUrl.startsWith(prefix);
+        boolean localSink = uploadUrl != null && uploadUrl.startsWith(LOCAL_SINK_PATH);
         softAssert.softAssertTrue(
-            uploadUrl != null && uploadUrl.startsWith(prefix),
-            "uploadUrl should start with " + prefix
+            cloud || localSink,
+            "uploadUrl should start with " + prefix + " or " + LOCAL_SINK_PATH + ", was: " + uploadUrl
         );
     }
 
@@ -265,7 +287,10 @@ public class FileUploadSteps extends CucumberSpringConfig {
 
         try {
             // === USE HttpURLConnection (like FE's XMLHttpRequest) ===
-            URL url = new URL(uploadUrl);
+            // The local sink returns a path on this server rather than an absolute Cloud Storage URL,
+            // and new URL() throws "no protocol" on it. Resolve it against the test server the same way
+            // a browser resolves a relative action.
+            URL url = new URL(absoluteUploadUrl(uploadUrl));
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
             conn.setRequestMethod("PUT");

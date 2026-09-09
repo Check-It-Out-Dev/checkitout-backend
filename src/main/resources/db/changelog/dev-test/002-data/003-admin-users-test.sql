@@ -16,9 +16,9 @@ INSERT INTO public."user" (
     account_status,
     note_from_admin
 ) VALUES (
-    '85VJgS6shAWTqby4rHypN355RWv2',
+    'E2E_ADMIN_001',
     'ADMIN',
-    'norbert.marchewka44@gmail.com',
+    'e2e.admin@test.com',
     'Norbert',
     'Marchewka',
     'Norbert Marchewka (Test)',
@@ -83,4 +83,4 @@ ON CONFLICT (email) DO UPDATE SET
     account_status = EXCLUDED.account_status,
     note_from_admin = EXCLUDED.note_from_admin;
 
--- rollback DELETE FROM public."user" WHERE email IN ('norbert.marchewka44@gmail.com', 'piotr_zmudzki@checkitout.app', 'kuba_sadowski@checkitout.app');
+-- rollback DELETE FROM public."user" WHERE email IN ('e2e.admin@test.com', 'piotr_zmudzki@checkitout.app', 'kuba_sadowski@checkitout.app');

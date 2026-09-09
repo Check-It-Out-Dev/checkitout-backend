@@ -465,8 +465,8 @@ public class AdminUserManagementSteps extends CucumberSpringConfig {
     // ==================== Helper Methods ====================
 
     // Known Firebase UIDs for role resolution
-    private static final String COMPANY_FIREBASE_UID = "WWXA9DehxZghyLq849TpyE4vYzZ2";
-    private static final String INFLUENCER_FIREBASE_UID = "SEWgduxUjRh4KDqxVWFs6zgThIa2";
+    private static final String COMPANY_FIREBASE_UID = "E2E_COMPANY_001";
+    private static final String INFLUENCER_FIREBASE_UID = "E2E_INFLUENCER_001";
 
     /**
      * Resolves target alias to Firebase UID.
@@ -497,7 +497,7 @@ public class AdminUserManagementSteps extends CucumberSpringConfig {
      */
     private String resolveEmail(String targetAlias) {
         // Check for known Firebase UIDs
-        if (COMPANY_FIREBASE_UID.equals(targetAlias)) return "norbert.marchewka4444431@gmail.com";
+        if (COMPANY_FIREBASE_UID.equals(targetAlias)) return "e2e.company@test.com";
         if (INFLUENCER_FIREBASE_UID.equals(targetAlias)) return "norbertmarchewka@instagram-e2e.test";
         // Check for alias patterns
         if (targetAlias.contains("COMPANY")) return "e2e.company@test.com";

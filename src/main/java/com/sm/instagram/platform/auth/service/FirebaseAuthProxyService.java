@@ -92,8 +92,10 @@ public class FirebaseAuthProxyService {
     @Autowired
     private org.springframework.context.ApplicationEventPublisher eventPublisher;
 
-    private static final String IDENTITY_TOOLKIT_BASE = "https://identitytoolkit.googleapis.com/v1";
-    private static final String SECURE_TOKEN_BASE = "https://securetoken.googleapis.com/v1";
+    // The two bases used to be constants pointing at Google. They are resolved per call now, because a
+    // test run points them at the Firebase Auth emulator, which serves the same API under a path prefix.
+    @Autowired
+    private com.sm.instagram.platform.common.firebase.FirebaseEmulator firebaseEmulator;
 
     /**
      * OAuth scope for Firebase Identity Toolkit API.
@@ -107,6 +109,12 @@ public class FirebaseAuthProxyService {
      * @return Fresh OAuth access token
      */
     private String getAccessToken() {
+        // The emulator has no notion of a service account: it accepts one fixed owner token, and asking
+        // Google for a real one would fail anyway, since a test run has no credential to sign the request.
+        String emulatorToken = firebaseEmulator.bearerTokenOrEmpty();
+        if (!emulatorToken.isEmpty()) {
+            return emulatorToken;
+        }
         try {
             GoogleCredentials credentials = credentialsProvider.getCredentialsWithScopes(IDENTITY_TOOLKIT_SCOPE);
             credentials.refreshIfExpired();
@@ -145,7 +153,7 @@ public class FirebaseAuthProxyService {
 
         long startTime = System.currentTimeMillis();
 
-        String url = IDENTITY_TOOLKIT_BASE + "/accounts:signInWithPassword";
+        String url = firebaseEmulator.identityToolkitBase() + "/accounts:signInWithPassword";
 
         Map<String, Object> firebaseRequest = new HashMap<>();
         firebaseRequest.put("email", request.getEmail());
@@ -331,7 +339,7 @@ public class FirebaseAuthProxyService {
 
         long startTime = System.currentTimeMillis();
 
-        String url = IDENTITY_TOOLKIT_BASE + "/accounts:signUp";
+        String url = firebaseEmulator.identityToolkitBase() + "/accounts:signUp";
 
         Map<String, Object> firebaseRequest = new HashMap<>();
         firebaseRequest.put("email", request.getEmail());
@@ -425,7 +433,7 @@ public class FirebaseAuthProxyService {
 
         long startTime = System.currentTimeMillis();
 
-        String url = SECURE_TOKEN_BASE + "/token";
+        String url = firebaseEmulator.secureTokenBase() + "/token";
 
         Map<String, Object> firebaseRequest = new HashMap<>();
         firebaseRequest.put("grant_type", "refresh_token");
@@ -716,7 +724,7 @@ public class FirebaseAuthProxyService {
             authRequest.setPassword(request.getCurrentPassword());
 
             // Attempt login to verify current password
-            String verifyUrl = IDENTITY_TOOLKIT_BASE + "/accounts:signInWithPassword";
+            String verifyUrl = firebaseEmulator.identityToolkitBase() + "/accounts:signInWithPassword";
 
             Map<String, Object> verifyRequest = new HashMap<>();
             verifyRequest.put("email", userEmail);
@@ -821,7 +829,7 @@ public class FirebaseAuthProxyService {
 
         try {
             // First verify password
-            String verifyUrl = IDENTITY_TOOLKIT_BASE + "/accounts:signInWithPassword";
+            String verifyUrl = firebaseEmulator.identityToolkitBase() + "/accounts:signInWithPassword";
 
             Map<String, Object> verifyRequest = new HashMap<>();
             verifyRequest.put("email", userEmail);
@@ -937,7 +945,7 @@ public class FirebaseAuthProxyService {
 
         try {
             // 1. Verify password via REST API (proxy-specific requirement)
-            String verifyUrl = IDENTITY_TOOLKIT_BASE + "/accounts:signInWithPassword";
+            String verifyUrl = firebaseEmulator.identityToolkitBase() + "/accounts:signInWithPassword";
 
             Map<String, Object> verifyRequest = new HashMap<>();
             verifyRequest.put("email", currentEmail);
@@ -1047,7 +1055,7 @@ public class FirebaseAuthProxyService {
      */
     @SuppressWarnings("unchecked")
     public AuthOperationResponse verifyResetCode(String oobCode) {
-        String url = IDENTITY_TOOLKIT_BASE + "/accounts:resetPassword";
+        String url = firebaseEmulator.identityToolkitBase() + "/accounts:resetPassword";
 
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("oobCode", oobCode);
@@ -1097,7 +1105,7 @@ public class FirebaseAuthProxyService {
      */
     @SuppressWarnings("unchecked")
     public AuthOperationResponse confirmPasswordReset(String oobCode, String newPassword) {
-        String url = IDENTITY_TOOLKIT_BASE + "/accounts:resetPassword";
+        String url = firebaseEmulator.identityToolkitBase() + "/accounts:resetPassword";
 
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("oobCode", oobCode);

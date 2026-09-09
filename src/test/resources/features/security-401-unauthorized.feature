@@ -28,8 +28,8 @@ Feature: Authentication Boundary Protection
   @session-expiry @slow
   Scenario: User with expired session cannot access protected endpoints
     # Uses real company user credentials (same as login.feature)
-    Given a company user with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" is synced from Firestore
-    When I login as company with email "norbert.marchewka4444431@gmail.com" and password "Janekmapsa66!ppp"
+    Given a company user with Firebase UID "E2E_COMPANY_001" is synced from Firestore
+    When I login as company with email "e2e.company@test.com" and password "e2e-emulator-password"
     And I exchange the Firebase token for a backend session
     Then a valid session cookie "session" should be set
     And the user should be able to access "/users/me"

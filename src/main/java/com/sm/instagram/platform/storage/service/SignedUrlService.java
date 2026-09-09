@@ -79,7 +79,7 @@ public class SignedUrlService {
         this.metricsService = metricsService;
         this.localSink = localSink;
         if (localSink != null) {
-            log.info("dev-lite: SignedUrlService routes uploads to the local sink instead of GCS");
+            log.info("SignedUrlService routes uploads to the local sink instead of GCS (dev-lite or e2e)");
         }
 
         // Extract ServiceAccountCredentials for URL signing

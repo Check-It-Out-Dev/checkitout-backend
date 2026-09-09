@@ -13,9 +13,9 @@ Feature: Notification System E2E with Real Email Delivery
   #   - Preference-driven notification gating
   #
   # Users:
-  #   - Admin: 85VJgS6shAWTqby4rHypN355RWv2 (norbert.marchewka44@gmail.com)
-  #   - Company: WWXA9DehxZghyLq849TpyE4vYzZ2 (norbert.marchewka4444431@gmail.com)
-  #   - Influencer: SEWgduxUjRh4KDqxVWFs6zgThIa2 (OAuth via Instagram)
+  #   - Admin: E2E_ADMIN_001 (e2e.admin@test.com)
+  #   - Company: E2E_COMPANY_001 (e2e.company@test.com)
+  #   - Influencer: E2E_INFLUENCER_001 (OAuth via Instagram)
   #
   # Run with: mvn verify -Pe2e -Dskip.normal.tests=true -Dskip.session-expiry.tests=true -Dskip.multi-user.tests=true -Dskip.rate-limiting.tests=true -Dskip.admin.tests=true -Dskip.security.tests=true -Dskip.consolidated.tests=true -Dskip.partnership.tests=true
   # =============================================================================
@@ -30,13 +30,13 @@ Feature: Notification System E2E with Real Email Delivery
   @notification-lifecycle
   Scenario: Full notification lifecycle with email delivery, archive, and cross-user isolation
     # --- SETUP: Admin ensures users are in correct state ---
-    Given "Admin" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
-    And the target user "WWXA9DehxZghyLq849TpyE4vYzZ2" is synced and has status "ACTIVE" and role "COMPANY"
-    And the target user "SEWgduxUjRh4KDqxVWFs6zgThIa2" is synced and has status "ACTIVE" and role "INFLUENCER"
-    And "Admin" enables all notification preferences for user "WWXA9DehxZghyLq849TpyE4vYzZ2"
+    Given "Admin" logs in as ADMIN with Firebase UID "E2E_ADMIN_001" email "e2e.admin@test.com" password "e2e-emulator-password" and completes 2FA
+    And the target user "E2E_COMPANY_001" is synced and has status "ACTIVE" and role "COMPANY"
+    And the target user "E2E_INFLUENCER_001" is synced and has status "ACTIVE" and role "INFLUENCER"
+    And "Admin" enables all notification preferences for user "E2E_COMPANY_001"
 
     # --- Company logs in and creates partnership opportunity ---
-    Given "NotifCompany" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
+    Given "NotifCompany" logs in as COMPANY with Firebase UID "E2E_COMPANY_001" email "e2e.company@test.com" password "e2e-emulator-password"
     Then "NotifCompany" should be authenticated
 
     # Check initial unread count
@@ -62,7 +62,7 @@ Feature: Notification System E2E with Real Email Delivery
     And "NotifCompany" stores the created opportunity as "notifCampaign"
 
     # --- Influencer applies (should trigger APPLICATION_RECEIVED notification) ---
-    Given "NotifInfluencer" logs in as INFLUENCER via OAuth with Firebase UID "SEWgduxUjRh4KDqxVWFs6zgThIa2"
+    Given "NotifInfluencer" logs in as INFLUENCER via OAuth with Firebase UID "E2E_INFLUENCER_001"
     Then "NotifInfluencer" should be authenticated
 
     When "NotifInfluencer" applies to opportunity "notifCampaign" with note "Testing notification delivery!"
@@ -119,13 +119,13 @@ Feature: Notification System E2E with Real Email Delivery
   @notification-preferences
   Scenario: Disabled preferences suppress notifications and email
     # --- SETUP: Sync users, then DISABLE partnership notification preferences ---
-    Given "Admin" logs in as ADMIN with Firebase UID "85VJgS6shAWTqby4rHypN355RWv2" email "norbert.marchewka44@gmail.com" password "Janekmapsa66!ppp" and completes 2FA
-    And the target user "WWXA9DehxZghyLq849TpyE4vYzZ2" is synced and has status "ACTIVE" and role "COMPANY"
-    And the target user "SEWgduxUjRh4KDqxVWFs6zgThIa2" is synced and has status "ACTIVE" and role "INFLUENCER"
-    And "Admin" disables partnership notification preferences for user "WWXA9DehxZghyLq849TpyE4vYzZ2"
+    Given "Admin" logs in as ADMIN with Firebase UID "E2E_ADMIN_001" email "e2e.admin@test.com" password "e2e-emulator-password" and completes 2FA
+    And the target user "E2E_COMPANY_001" is synced and has status "ACTIVE" and role "COMPANY"
+    And the target user "E2E_INFLUENCER_001" is synced and has status "ACTIVE" and role "INFLUENCER"
+    And "Admin" disables partnership notification preferences for user "E2E_COMPANY_001"
 
     # Company logs in
-    Given "PrefCompany" logs in as COMPANY with Firebase UID "WWXA9DehxZghyLq849TpyE4vYzZ2" email "norbert.marchewka4444431@gmail.com" password "Janekmapsa66!ppp"
+    Given "PrefCompany" logs in as COMPANY with Firebase UID "E2E_COMPANY_001" email "e2e.company@test.com" password "e2e-emulator-password"
 
     When "PrefCompany" checks unread notification count
     Then the unread count is stored as "beforeCount"
@@ -149,7 +149,7 @@ Feature: Notification System E2E with Real Email Delivery
     And "PrefCompany" stores the created opportunity as "prefCampaign"
 
     # Influencer applies (should NOT trigger notification because prefs are off)
-    Given "PrefInfluencer" logs in as INFLUENCER via OAuth with Firebase UID "SEWgduxUjRh4KDqxVWFs6zgThIa2"
+    Given "PrefInfluencer" logs in as INFLUENCER via OAuth with Firebase UID "E2E_INFLUENCER_001"
     When "PrefInfluencer" applies to opportunity "prefCampaign" with note "Should be suppressed"
     Then the response status should be 200
 
