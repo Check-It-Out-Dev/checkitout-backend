@@ -1,0 +1,204 @@
+# The backend test workflow, on GitHub-hosted runners only (never self-hosted on a public repository).
+#   unit         every pull request and push: `mvnw test -Ptest`               ≈ 2.5 min
+#   integration  every push: `mvnw verify -Pintegration` (Testcontainers)      ≈ 4 min
+#   e2e          nightly and on demand: `mvnw verify -Pe2e` (Cucumber, in-process) ≈ 10 min
+#   report       Allure 3 with history on GitHub Pages, one directory per run
+# The Windows named-pipe strategy in testcontainers.properties is removed on the runner until the
+# repository drops it (auto-detection is right on both platforms). Methodology: the frontend repository's
+# docs/ci/ARCHITECTURE.md §6.
+name: ci-tests
+
+on:
+  pull_request:
+    branches: [main, greenfield]
+  push:
+    branches: [main, greenfield]
+  schedule:
+    - cron: "30 1 * * *"
+  workflow_dispatch:
+    inputs:
+      tier:
+        description: Which tier to run
+        type: choice
+        options: [unit, integration, e2e, all]
+        default: all
+
+concurrency:
+  group: ci-tests-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+  checks: write
+
+env:
+  MAVEN_ARGS: -B -ntp -DskipPmd=true
+  TZ: UTC
+
+jobs:
+  unit:
+    name: Unit (surefire, -Ptest)
+    if: ${{ github.event_name != 'schedule' && (inputs.tier == '' || inputs.tier == 'unit' || inputs.tier == 'all') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+      - run: chmod +x mvnw && ./mvnw $MAVEN_ARGS test -Ptest -DskipITs
+      - uses: mikepenz/action-junit-report@v6
+        if: always()
+        with:
+          report_paths: target/surefire-reports/TEST-*.xml
+          check_name: unit tests
+          detailed_summary: true
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: unit-results
+          path: |
+            target/surefire-reports/*.xml
+            target/site/jacoco/jacoco.xml
+          if-no-files-found: warn
+          retention-days: 30
+
+  integration:
+    name: Integration (failsafe, -Pintegration, Testcontainers)
+    if: ${{ github.event_name == 'push' || inputs.tier == 'integration' || inputs.tier == 'all' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+      - name: Testcontainers on Linux
+        run: sed -i '/ClientProviderStrategy/d' src/test/resources/testcontainers.properties
+      - run: chmod +x mvnw && ./mvnw $MAVEN_ARGS verify -Pintegration
+      - uses: mikepenz/action-junit-report@v6
+        if: always()
+        with:
+          report_paths: target/failsafe-reports/TEST-*.xml
+          check_name: integration tests
+          detailed_summary: true
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: integration-results
+          path: |
+            target/failsafe-reports/*.xml
+            target/site/jacoco-integration/jacoco.xml
+          if-no-files-found: warn
+          retention-days: 30
+
+  e2e:
+    name: End to end (Cucumber, -Pe2e)
+    if: ${{ github.event_name == 'schedule' || inputs.tier == 'e2e' || inputs.tier == 'all' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+      - name: Testcontainers on Linux
+        run: sed -i '/ClientProviderStrategy/d' src/test/resources/testcontainers.properties
+      # Scenarios that need Firebase credentials skip themselves (assumeTrue) when none are present.
+      - run: chmod +x mvnw && ./mvnw $MAVEN_ARGS verify -Pe2e
+      - uses: mikepenz/action-junit-report@v6
+        if: always()
+        with:
+          report_paths: target/failsafe-reports/TEST-*.xml
+          check_name: e2e scenarios
+          detailed_summary: true
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: e2e-results
+          path: |
+            target/failsafe-reports/*.xml
+            target/cucumber-reports/**
+          if-no-files-found: warn
+          retention-days: 30
+
+  report:
+    name: Allure 3 with history, quality metrics, Pages
+    needs: [unit, integration, e2e]
+    if: ${{ always() && github.event_name != 'pull_request' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+      # The metrics tool and the dashboard live in the frontend repository (docs/ci/METRICS.md there);
+      # the backend runs the same tool on its JUnit XML.
+      - uses: actions/checkout@v5
+        with:
+          repository: Check-It-Out-Dev/checkitout-frontend
+          path: frontend
+          sparse-checkout: tools/ci
+      - uses: actions/download-artifact@v7
+        with:
+          path: results
+      - name: Pages site (previous state)
+        uses: actions/checkout@v5
+        with:
+          ref: gh-pages
+          path: site
+        continue-on-error: true
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      # Every Cucumber runner boots the whole feature corpus and reports EVERY scenario - the ones its
+      # tags select as executed, the rest as skipped - so fifteen suites emit fifteen results per scenario
+      # and only the <testsuite name> tells them apart. Allure keys on classname + name, so it folded a
+      # 277-scenario corpus into 165 tests with 165 "retries", and the dashboard counted 2,804 e2e tests.
+      # Dropping the tag-filtered duplicates leaves one result per scenario. A scenario skipped in every
+      # suite is a real skip and is kept.
+      - name: Collapse the Cucumber tag-filter duplicates
+        run: node frontend/tools/ci/junit-collapse-tag-skips.mjs results/e2e-results | tee -a "$GITHUB_STEP_SUMMARY"
+        continue-on-error: true
+      - name: Allure 3 (JUnit XML from every tier, history from the Pages site)
+        run: |
+          mkdir -p allure-results
+          find results -name 'TEST-*.xml' -exec cp {} allure-results/ \;
+          # Allure 3 dropped the history/ directory Allure 2 wrote inside the report, so copying one back
+          # in was a no-op and this report has never had a trend. History is now a single JSON-lines file
+          # named by allurerc.mjs, read and appended by `allure generate`, and carried on the Pages site.
+          cp site/allure/history-ci-tests.jsonl history.jsonl 2>/dev/null || true
+          # Allure 3's CLI takes the results directory from its config or the default ./allure-results,
+          # and knows --output and --config only.
+          npx --yes allure generate --config .github/allurerc.mjs --output allure-report
+          mkdir -p site/allure && cp history.jsonl site/allure/history-ci-tests.jsonl
+      # upload-artifact roots an artifact at the longest common prefix of its paths, so `target/**` uploads
+      # arrive as `surefire-reports/` and `site/jacoco/`, not flattened. Six runs published "0 tests,
+      # pass rate 100 %" because these globs stopped one directory short; the tool now refuses to publish
+      # a run it read no tests from, so the next such slip fails the job instead of the dashboard.
+      - name: Quality metrics into the site
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -o pipefail
+          mkdir -p site && rm -rf site/.git
+          STARTED_AT=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" --jq .run_started_at)
+          DURATION=$(( $(date +%s) - $(date -d "$STARTED_AT" +%s) ))
+          node frontend/tools/ci/quality-metrics.mjs --out site --workflow ci-tests --started-at "$STARTED_AT" --duration-sec "$DURATION" \
+            --junit 'results/unit-results/surefire-reports/TEST-*.xml:unit' \
+            --junit 'results/integration-results/failsafe-reports/TEST-*.xml:integration' \
+            --junit 'results/e2e-results/failsafe-reports/TEST-*.xml:e2e' \
+            --jacoco results/unit-results/site/jacoco/jacoco.xml --copy allure=allure-report | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Publish
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: site
+          keep_files: false
+          commit_message: "ci-tests run ${{ github.run_number }}"

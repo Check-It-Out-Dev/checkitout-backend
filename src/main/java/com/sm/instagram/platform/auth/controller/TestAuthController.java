@@ -4,6 +4,7 @@ import com.sm.instagram.platform.auth.cache.UserCacheService;
 import com.sm.instagram.platform.auth.dto.RegisterUserRequest;
 import com.sm.instagram.platform.auth.filter.HmacUtils;
 import com.sm.instagram.platform.auth.firebase.FirestoreService;
+import com.sm.instagram.platform.auth.sandbox.SandboxPersonaPolicy;
 import com.sm.instagram.platform.common.util.RequestContextUtils;
 import com.sm.instagram.platform.common.jwt.JwtTokenProvider;
 import com.sm.instagram.platform.legal.ConsentSource;
@@ -60,6 +61,7 @@ public class TestAuthController {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
+    private final SandboxPersonaPolicy sandboxPersonaPolicy;
     private final FirestoreService firestoreService;
     private final PlatformRepository platformRepository;
     private final UserSocialConnectionRepository socialConnectionRepository;
@@ -124,6 +126,8 @@ public class TestAuthController {
 
         log.info("[E2E] Creating mock session for email: {}, role: {}, partial: {}",
                 request.email(), request.role(), request.partial());
+        // The public sandbox admits its personas only (403 otherwise); a no-op everywhere else.
+        sandboxPersonaPolicy.requirePersona(request.email(), request.role());
 
         // Get the actual User-Agent from the request for session fingerprinting
         String userAgent = httpRequest.getHeader("User-Agent");
@@ -185,6 +189,14 @@ public class TestAuthController {
             // be null" for every mock actor.
             if (user.getLastVerifiedEmail() == null) {
                 user.setLastVerifiedEmail(user.getEmail());
+                needsRecache = true;
+            }
+            // The seed creates influencers IN_VALIDATION, and such an account may not apply; on the public
+            // sandbox the persona is activated at sign-in so a visitor can complete the journey.
+            if (sandboxPersonaPolicy.isEnabled()
+                    && (user.getAccountStatus() == null || !user.getAccountStatus().isActive())) {
+                log.info("[SANDBOX] Activating persona {} (was {})", request.email(), user.getAccountStatus());
+                user.setAccountStatus(AccountStatus.ACTIVE);
                 needsRecache = true;
             }
             if (needsRecache) {

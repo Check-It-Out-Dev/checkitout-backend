@@ -1,6 +1,7 @@
 package com.sm.instagram.platform.storage.health;
 
 import com.google.cloud.storage.Storage;
+import com.sm.instagram.platform.storage.service.LocalUploadSink;
 import com.sm.instagram.platform.storage.service.StorageRateLimitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -10,6 +11,8 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -21,27 +24,46 @@ public class UploadSystemHealthIndicator implements HealthIndicator {
     private final Storage storage;
     private final RedisTemplate<String, String> redisTemplate;
     private final StorageRateLimitService rateLimiterService;
+    private final LocalUploadSink localSink;
 
     @Value("${gcp.bucket-name:}")
     private String bucketName;
 
+    /** Cloud mode only, no local sink: the shape the existing tests and any non-dev-lite caller use. */
+    public UploadSystemHealthIndicator(Storage storage,
+                                       RedisTemplate<String, String> redisTemplate,
+                                       StorageRateLimitService rateLimiterService) {
+        this(storage, redisTemplate, rateLimiterService, null);
+    }
+
     @Autowired
     public UploadSystemHealthIndicator(@Autowired(required = false) @Qualifier("fileUploadStorage") Storage storage,
                                        @Autowired(required = false) RedisTemplate<String, String> redisTemplate,
-                                       @Autowired(required = false) StorageRateLimitService rateLimiterService) {
+                                       @Autowired(required = false) StorageRateLimitService rateLimiterService,
+                                       @Autowired(required = false) LocalUploadSink localSink) {
         this.storage = storage;
         this.redisTemplate = redisTemplate;
         this.rateLimiterService = rateLimiterService;
+        this.localSink = localSink;
     }
 
     @Override
     public Health health() {
         Map<String, Object> details = new HashMap<>();
 
-        // Check Firebase Storage connectivity
-        boolean storageHealthy = checkStorageHealth();
-        String storageStatus = storage != null ? (storageHealthy ? "UP" : "DOWN") : "NOT_CONFIGURED";
-        details.put("firebase_storage", storageStatus);
+        // The sink that serves uploads decides what "storage" means here. Under dev-lite that is the
+        // LocalUploadSink (SignedUrlService prefers it), and the GCS bean, when it exists at all, carries
+        // synthetic offline credentials: probing it would report a bucket the application never uses as
+        // DOWN and take the whole health with it (the first sandbox deploy, 2026-09-09).
+        boolean localSinkMode = localSink != null;
+        boolean storageHealthy = localSinkMode ? checkLocalSinkHealth() : checkStorageHealth();
+        if (localSinkMode) {
+            details.put("local_sink", storageHealthy ? "UP" : "DOWN");
+            details.put("local_sink_dir", localSink.baseDir().toString());
+        } else {
+            String storageStatus = storage != null ? (storageHealthy ? "UP" : "DOWN") : "NOT_CONFIGURED";
+            details.put("firebase_storage", storageStatus);
+        }
 
         // Check Redis connectivity
         boolean redisHealthy = checkRedisHealth();
@@ -61,9 +83,11 @@ public class UploadSystemHealthIndicator implements HealthIndicator {
         boolean hasFailure = false;
         StringBuilder statusNote = new StringBuilder();
         
-        if (storage != null && !storageHealthy) {
+        if (localSinkMode ? !storageHealthy : (storage != null && !storageHealthy)) {
             hasFailure = true;
-            statusNote.append("Storage is configured but not accessible. ");
+            statusNote.append(localSinkMode
+                    ? "Local upload sink is not a writable directory. "
+                    : "Storage is configured but not accessible. ");
         }
         
         if (redisTemplate != null && !redisHealthy) {
@@ -79,7 +103,7 @@ public class UploadSystemHealthIndicator implements HealthIndicator {
         // Determine overall health
         if (!hasFailure) {
             // Nothing is failing
-            if (storage == null && redisTemplate == null && rateLimiterService == null) {
+            if (!localSinkMode && storage == null && redisTemplate == null && rateLimiterService == null) {
                 details.put("status_note", "Upload system not configured - basic mode without rate limiting or cloud storage");
             } else {
                 details.put("status_note", "All configured upload system components are healthy");
@@ -89,6 +113,15 @@ public class UploadSystemHealthIndicator implements HealthIndicator {
             // Something that was configured is failing
             details.put("status_note", statusNote.toString().trim());
             return Health.down().withDetails(details).build();
+        }
+    }
+
+    private boolean checkLocalSinkHealth() {
+        try {
+            Path dir = localSink.baseDir();
+            return Files.isDirectory(dir) && Files.isWritable(dir);
+        } catch (Exception e) {
+            return false;
         }
     }
 

@@ -60,6 +60,11 @@ public class LocalUploadSink {
     }
 
     /** Mints the single-use upload token for a BE-generated file path. */
+    /** The directory every upload lands in; the health indicator checks it is a writable directory. */
+    public Path baseDir() {
+        return baseDir;
+    }
+
     public String prepareUpload(String filePath, String contentType, int expirationMinutes) {
         safeResolve(filePath); // fail fast on a hostile path before minting
         String token = UUID.randomUUID().toString();
