@@ -66,9 +66,9 @@ public class FirebaseEmulatorSeeder {
         }
         log.info("Seeding the Firebase Auth emulator at {}", emulatorHost);
 
-        upsert(adminUid, adminEmail, "Admin");
-        upsert(companyUid, companyEmail, "Company");
-        upsert(influencerUid, influencerEmail, "Influencer");
+        upsert(adminUid, adminEmail, "Admin", "ADMIN");
+        upsert(companyUid, companyEmail, "Company", "COMPANY");
+        upsert(influencerUid, influencerEmail, "Influencer", "INFLUENCER");
 
         if (!isBlank(adminUid) && !isBlank(adminTotpSecret)) {
             try {
@@ -123,7 +123,7 @@ public class FirebaseEmulatorSeeder {
         }
     }
 
-    private void upsert(String uid, String email, String label) {
+    private void upsert(String uid, String email, String label, String role) {
         if (isBlank(uid) || isBlank(email)) {
             log.warn("{} actor has no uid or email configured, skipped", label);
             return;
@@ -147,7 +147,24 @@ public class FirebaseEmulatorSeeder {
                 log.info("{} actor {} created in the emulator", label, uid);
             } catch (FirebaseAuthException e) {
                 log.error("Could not create the {} actor {}: {}", label, uid, e.getMessage(), e);
+                return;
             }
+        }
+        setRoleClaim(uid, label, role);
+    }
+
+    /**
+     * The role is a Firebase custom claim, and TokenExchangeService reads it from the Admin SDK on every
+     * exchange rather than trusting the token - so an account without it is a plain USER, whatever the
+     * database says. On a warm emulator the claim survives from an earlier run, which is why this was
+     * invisible locally and turned the admin into a USER on the first cold run of a CI job.
+     */
+    private void setRoleClaim(String uid, String label, String role) {
+        try {
+            firebaseAuth.setCustomUserClaims(uid, java.util.Map.of("role", role, "activated", true));
+            log.info("{} actor {} carries role claim {}", label, uid, role);
+        } catch (FirebaseAuthException e) {
+            log.error("Could not set the role claim on the {} actor {}: {}", label, uid, e.getMessage(), e);
         }
     }
 
