@@ -1,0 +1,43 @@
+# =============================================================================
+# SANDBOX — dev-lite on a public host, behind the persona guard
+# =============================================================================
+# Activated together with dev-lite (SPRING_PROFILES_ACTIVE=dev-lite,sandbox) on sandbox.checkitout.app.
+# dev-lite is a simulator made for a laptop; this profile is what makes it safe to expose:
+#   - POST /test/auth/mock-session admits only the personas below (SandboxPersonaPolicy, 403 otherwise)
+#     and activates the persona's account at sign-in (the seed creates influencers IN_VALIDATION);
+#   - every other /test/** helper answers 404 (SandboxGuardFilter);
+#   - the actuator exposes health, info and prometheus only; the frontend's nginx proxies health alone;
+#   - console logs are ECS JSON lines for Loki (logback-spring.xml, profile block "sandbox");
+#   - uploads go to the mounted sink with a size cap; the host mounts a 2 GB image there.
+# Rate limits stay as in application.yml: they are the sandbox's load ceiling by design.
+# Design of record: the frontend repository's docs/ci/SANDBOX.md.
+checkitout:
+  sandbox:
+    enabled: true
+    personas:
+      - email: company@checkitout.app
+        role: COMPANY
+      - email: test.influencer@test.com
+        role: INFLUENCER
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  # The registry is on the classpath but exported only where a profile asks (dev leaves it off): Alloy
+  # scrapes /actuator/prometheus on the internal network, so the sandbox asks.
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+file-upload:
+  local-sink:
+    dir: /data/uploads
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 12MB

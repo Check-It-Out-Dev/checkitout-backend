@@ -66,8 +66,26 @@
         </appender>
     </springProfile>
     
+    <!-- The public sandbox (dev-lite + sandbox): one JSON line per event on the console, ECS fields, MDC
+         (correlationId, REQUEST_ID) as fields, for Loki through Alloy. The dev block below steps aside. -->
+    <springProfile name="sandbox">
+        <appender name="CONSOLE_JSON" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="org.springframework.boot.logging.logback.StructuredLogEncoder">
+                <format>ecs</format>
+            </encoder>
+        </appender>
+        <logger name="com.sm.instagram.platform" level="INFO" additivity="false">
+            <appender-ref ref="CONSOLE_JSON"/>
+        </logger>
+        <logger name="org.hibernate" level="WARN" additivity="false">
+            <appender-ref ref="CONSOLE_JSON"/>
+        </logger>
+        <root level="INFO">
+            <appender-ref ref="CONSOLE_JSON"/>
+        </root>
+    </springProfile>
     <!-- Application-specific loggers for dev/local profile -->
-    <springProfile name="dev,local">
+    <springProfile name="(dev | local) &amp; !sandbox">
         <logger name="com.sm.instagram.platform" level="DEBUG" additivity="false">
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="UNIFIED_DEV_FILE"/>
