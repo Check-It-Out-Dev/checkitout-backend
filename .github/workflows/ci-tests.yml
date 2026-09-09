@@ -161,7 +161,7 @@ jobs:
         with:
           name: e2e-results
           path: |
-            target/failsafe-reports/*.xml
+            target/failsafe-reports/**/TEST-*.xml
             target/cucumber-reports/**
           if-no-files-found: warn
           retention-days: 30
@@ -183,9 +183,26 @@ jobs:
           repository: Check-It-Out-Dev/checkitout-frontend
           path: frontend
           sparse-checkout: tools/ci
+      # By name into an explicit directory, one step each. Downloading everything at once used to create a
+      # directory per artifact, but no longer does when the run produced exactly one - so a tier=e2e
+      # dispatch landed the files at results/ instead of results/e2e-results/, and on a full run the
+      # integration and e2e tiers would both claim results/failsafe-reports/. A tier that did not run has
+      # no artifact, hence continue-on-error.
       - uses: actions/download-artifact@v7
+        continue-on-error: true
         with:
-          path: results
+          name: unit-results
+          path: results/unit-results
+      - uses: actions/download-artifact@v7
+        continue-on-error: true
+        with:
+          name: integration-results
+          path: results/integration-results
+      - uses: actions/download-artifact@v7
+        continue-on-error: true
+        with:
+          name: e2e-results
+          path: results/e2e-results
       - name: Pages site (previous state)
         uses: actions/checkout@v5
         with:
@@ -231,7 +248,7 @@ jobs:
           node frontend/tools/ci/quality-metrics.mjs --out site --workflow ci-tests --started-at "$STARTED_AT" --duration-sec "$DURATION" \
             --junit 'results/unit-results/surefire-reports/TEST-*.xml:unit' \
             --junit 'results/integration-results/failsafe-reports/TEST-*.xml:integration' \
-            --junit 'results/e2e-results/failsafe-reports/TEST-*.xml:e2e' \
+            --junit 'results/e2e-results/failsafe-reports/**/TEST-*.xml:e2e' \
             --jacoco results/unit-results/site/jacoco/jacoco.xml --copy allure=allure-report | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Publish
         uses: peaceiris/actions-gh-pages@v4
