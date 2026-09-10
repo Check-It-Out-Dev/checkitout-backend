@@ -36,7 +36,8 @@ jobs:
     with:
       config-json: ${{ needs.config.outputs.config-json }}
       environment: prod
-    secrets: inherit
+    secrets:
+      TOKEN_FOR_DOCKER: ${{ secrets.TOKEN_FOR_DOCKER }}
 
   backup:
     name: Backup (Secure)
@@ -58,7 +59,10 @@ jobs:
       config-json: ${{ needs.config.outputs.config-json }}
       image-tag: ${{ needs.build.outputs.image-tag-sha }}
       gsm-init-image-tag: ${{ needs.build.outputs.gsm-init-image-tag-sha }}
-    secrets: inherit
+    secrets:
+      INSTAGRAM_SERVER_HOST: ${{ secrets.INSTAGRAM_SERVER_HOST }}
+      INSTAGRAM_SCRIPTS_ADMIN_USER: ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}
+      INSTAGRAM_SCRIPTS_ADMIN_SSH_KEY: ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_SSH_KEY }}
 
   reload-and-validate:
     name: Reload & Validate
@@ -66,7 +70,11 @@ jobs:
     uses: ./.github/workflows/reusable-reload-and-validate.yml
     with:
       config-json: ${{ needs.config.outputs.config-json }}
-    secrets: inherit
+    secrets:
+      INSTAGRAM_SERVER_HOST: ${{ secrets.INSTAGRAM_SERVER_HOST }}
+      INSTAGRAM_SCRIPTS_ADMIN_USER: ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}
+      INSTAGRAM_SCRIPTS_ADMIN_SSH_KEY: ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_SSH_KEY }}
+      TOKEN_FOR_DOCKER: ${{ secrets.TOKEN_FOR_DOCKER }}
 
   # ── Automatic rollback ────────────────────────────────────────────────────────────────────────
   # A deployment pipeline without one asks a human to notice, at whatever hour the deploy ran, that
@@ -100,7 +108,10 @@ jobs:
       # either way, but a reason that names a job is also more use at three in the morning.
       failure-reason: >-
         ${{ needs.deploy.result == 'failure' && 'Deploy stage failed' || 'Health gate never cleared after reload' }}
-    secrets: inherit
+    secrets:
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
   summary:
     name: Summary

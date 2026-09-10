@@ -20,6 +20,10 @@ name: sonar
 # Called by pr.yml; still dispatchable on its own while you are working on it.
 on:
   workflow_call:
+    secrets:
+      SONAR_TOKEN:
+        description: SonarCloud analysis token. The only secret any called tier needs.
+        required: true
   workflow_dispatch:
 
 # The group is keyed by the CALLING pipeline as well as the ref. Without `github.workflow` --
