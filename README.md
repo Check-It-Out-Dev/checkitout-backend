@@ -13,6 +13,13 @@ production with real users; the frontend's mocked build is the open demo today.
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.4-6db33f.svg)](https://spring.io/projects/spring-boot)
 [![Test methods](https://img.shields.io/badge/test_methods-8908-15c213.svg)](#testing)
 [![OpenAPI](https://img.shields.io/badge/OpenAPI-3.1-85ea2d.svg)](docs/openapi/openapi.json)
+[![Tests](https://img.shields.io/endpoint?url=https://check-it-out-dev.github.io/checkitout-backend/badges/tests.json)](https://check-it-out-dev.github.io/checkitout-backend/)
+[![Flaky](https://img.shields.io/endpoint?url=https://check-it-out-dev.github.io/checkitout-backend/badges/flaky.json)](https://check-it-out-dev.github.io/checkitout-backend/)
+[![ci-tests](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/ci-tests.yml)
+[![image](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/build-image.yml/badge.svg)](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/build-image.yml)
+[![dependency review](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/dependency-review.yml)
+
+<sub>The test and flaky badges are read live from the <a href="https://check-it-out-dev.github.io/checkitout-backend/">quality dashboard</a>, which every run republishes.</sub>
 
 ▶ **[checkitout.app](https://checkitout.app)** — the live demo (the frontend's
 FE-only build, every `/api` call mocked in the browser) ·
@@ -204,20 +211,43 @@ the chain is in progress. Hosting is Docker Compose and systemd on that one VPS 
 right-sized for this product, and the reason the documents say no to Kubernetes
 *for hosting*.
 
-There is **no test pipeline in GitHub Actions today**: the 8,908 test methods run
-locally through `./mvnw` and the six build gates, and that is the gap the next
-section closes first.
+The **test pipeline** runs beside it, on GitHub-hosted runners on the free tier:
+
+| Workflow | Trigger | What runs |
+| :--- | :--- | :--- |
+| [`ci-tests.yml`](.github/workflows/ci-tests.yml) | push, pull request, nightly | The unit tier on every push and pull request; the integration tier on push, on Testcontainers against real PostgreSQL and Redis; the end-to-end Cucumber tier nightly and on demand, against the Firebase Authentication and Firestore emulators. |
+| [`build-image.yml`](.github/workflows/build-image.yml) | push to main | Publishes the container image to `ghcr.io/check-it-out-dev/checkitout-backend` — what the frontend's nightly and Kubernetes tiers run against, and what the sandbox deploys. |
+| [`dependency-review.yml`](.github/workflows/dependency-review.yml) | pull request | Fails a pull request that introduces a dependency with a known high-severity advisory. CodeQL runs through GitHub's default setup on the extended query suite, java-kotlin and the workflow files included, and reports under Security. |
+
+Every run publishes to the [quality dashboard](https://check-it-out-dev.github.io/checkitout-backend/) — pass
+rate, per-tier counts, the flaky list over the last ten runs — and an
+[Allure report](https://check-it-out-dev.github.io/checkitout-backend/allure/latest/) whose history carries
+across runs.
+
+The end-to-end tier is the one worth a sentence. It used to need a real Firebase project, which is why it
+could not run in public CI at all. It now runs against the emulator suite — password sign-in, ID tokens,
+custom claims, Firestore — seeded at startup with the three actors the feature files name, so the whole
+corpus runs on a public runner with no credential anywhere in the environment. One scenario class abstains
+honestly rather than passing: travel analysis needs the licensed GeoLite2 database, which is not shipped, so
+those scenarios report a missing input.
+
+Two things outside this repository close the loop. The frontend's
+[`contract-check`](https://github.com/Check-It-Out-Dev/checkitout-frontend/actions/workflows/contract-check.yml)
+boots this application daily, takes the OpenAPI document from the running server and compares it with the copy
+the frontend compiles against, so a contract change here becomes a build error there rather than a runtime
+surprise. And [checkitout.app/sandbox](https://checkitout.app/sandbox/) is this backend on the `dev-lite`
+profile with two fixed demo accounts — a live instance to look at rather than run.
 
 ## In progress
 
-Dated 2026-09. 🟡 under way · ⬜ designed, not started.
+Dated 2026-09. ✅ built · 🟡 under way · ⬜ designed, not started.
 
 |     | What | Detail |
 | :-- | :-- | :-- |
-| 🟡 | **A test pipeline** | The three tiers in CI, sharded: JUnit 5 parallel for the unit tier, the integration tier on Testcontainers, the Cucumber suites split by feature across ephemeral runners (Testkube Test Workflows on GitHub ARC) — Kubernetes as the place tests run, not as hosting |
+| ✅ | **A test pipeline** | All three tiers run in `ci-tests.yml` on free hosted runners: unit on every push, integration on Testcontainers, the Cucumber corpus nightly against the Firebase emulators with no credential. Not the sharded Testkube-on-ARC shape this row once described — the Kubernetes tier lives in the frontend repository, where a kind cluster runs Playwright as an Indexed Job and k6 against this backend's image |
 | 🟡 | **Rollback wired into the release chain** | The reusable rollback exists; it becomes the failure path of `reload-and-validate` |
-| ⬜ | **Report aggregation** | JUnit XML → GitHub checks on the pull request; Allure Report first, ReportPortal when run history and a flaky quarantine matter |
-| ⬜ | **Performance in CI** | k6 thresholds on the API's public surface, run through k6-operator as a `TestRun` once the test pipeline is on Kubernetes; the frontend already gates the demo's routes the same way |
+| ✅ | **Report aggregation** | JUnit XML from every tier feeds a quality dashboard on GitHub Pages with run history and a flaky list over the last ten runs, plus an Allure report whose history carries across runs. ReportPortal stays deferred; a flaky *quarantine* is a policy question, not a missing tool, and is still open |
+| ✅ | **Performance in CI** | k6 gates this API's public surface — browse and apply journeys with per-journey and per-endpoint thresholds — run from the frontend repository, which owns the script: as a k6-operator `TestRun` against the in-cluster service in the Kubernetes tier, and against the live sandbox after every deploy. Metrics are remote-written to a public Grafana Cloud dashboard |
 | ⬜ | **Schemathesis against the running server** | The one thing the contract chain does not prove: that the server matches its own published spec |
 
 ## The rest of the estate
