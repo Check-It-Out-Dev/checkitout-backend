@@ -1,0 +1,3 @@
+08:45:33.507 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.TwoFactorStatusController&amp#27;[0;39m - GDPR: Operation=verify2FASetup, FirebaseUID=test-firebase-uid-123, DataAccessed=2fa_secret,user_role, Purpose=security_verification
+08:45:33.507 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.TwoFactorStatusController&amp#27;[0;39m - Invalid TOTP code during setup for user: test-firebase-uid-123
+08:45:33.508 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.e.h.BaseExceptionHandler&amp#27;[0;39m - CLIENT_ERROR - ValidationTranslatableException [trace=ERR-487c8dc7, path=/twofactor/verify-setup, method=POST, user=test-firebase-uid-123, ip=127.0.0.1]: error.auth.2fa_invalid_code
