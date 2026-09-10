@@ -43,7 +43,7 @@ jobs:
           IN_IMAGE_TAG: ${{ inputs.image-tag }}
           IN_GSM_INIT_IMAGE_TAG: ${{ inputs.gsm-init-image-tag }}
         run: |
-          CONFIG='${IN_CONFIG_JSON}'
+          CONFIG="$IN_CONFIG_JSON"
           
           # Extract essential values
           ENVIRONMENT=$(echo "$CONFIG" | jq -r '._flat.environment // .deployment.environment')
@@ -134,7 +134,7 @@ jobs:
           echo "🔧 Generating deployment configuration..."
           
           # Save config JSON
-          echo '${IN_CONFIG_JSON}' > /tmp/config.json
+          printf '%s' "$IN_CONFIG_JSON" > /tmp/config.json
           
           # Validate JSON
           if ! jq -e . >/dev/null 2>&1 </tmp/config.json; then
@@ -623,7 +623,7 @@ jobs:
         run: |
           echo "✅ Verifying deployment..."
           
-          CONFIG='${IN_CONFIG_JSON}'
+          CONFIG="$IN_CONFIG_JSON"
           DEPLOYMENT_PATH=$(echo "$CONFIG" | jq -r '._flat.deployment_path')
           
           ssh deploy-server << VERIFY_SSH

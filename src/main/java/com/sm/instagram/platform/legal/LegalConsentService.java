@@ -1,5 +1,7 @@
 package com.sm.instagram.platform.legal;
 
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
 import com.sm.instagram.platform.auth.cache.UserCacheService;
 import com.sm.instagram.platform.common.exceptions.ValidationTranslatableException;
 import com.sm.instagram.platform.common.util.RequestContextUtils;
@@ -438,7 +440,11 @@ public class LegalConsentService {
         if (latestPublished.isEmpty()) return null;
 
         LocalDateTime deadline = latestPublished.get().plusDays(gracePeriodDays);
-        long daysRemaining = ChronoUnit.DAYS.between(LocalDateTime.now(), deadline);
+        // Zoned before counting days: DAYS.between on wall-clock values lands on the wrong side of
+        // a day boundary across a daylight-saving change (java:S8700), and this decides how long
+        // a user has left to accept new terms.
+        ZoneId zone = ZoneId.systemDefault();
+        long daysRemaining = ChronoUnit.DAYS.between(ZonedDateTime.now(zone), deadline.atZone(zone));
         return Math.max(0, (int) daysRemaining);
     }
 

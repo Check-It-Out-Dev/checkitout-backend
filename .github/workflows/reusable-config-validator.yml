@@ -30,7 +30,7 @@ jobs:
         env:
           IN_CONFIG_JSON: ${{ inputs.config-json }}
         run: |
-          CONFIG='${IN_CONFIG_JSON}'
+          CONFIG="$IN_CONFIG_JSON"
           ERRORS=0
           MISSING=""
           
@@ -85,7 +85,7 @@ jobs:
         env:
           IN_CONFIG_JSON: ${{ inputs.config-json }}
         run: |
-          CONFIG='${IN_CONFIG_JSON}'
+          CONFIG="$IN_CONFIG_JSON"
           ERRORS=0
           
           echo "🔍 Validating field formats..."
@@ -139,7 +139,7 @@ jobs:
         env:
           IN_CONFIG_JSON: ${{ inputs.config-json }}
         run: |
-          CONFIG='${IN_CONFIG_JSON}'
+          CONFIG="$IN_CONFIG_JSON"
           ERRORS=0
           
           echo "🔍 Checking template resolution..."
@@ -171,12 +171,12 @@ jobs:
       - name: Final validation result
         id: final
         env:
-          OUT_ERRORS: ${{ steps.check.outputs.errors }}
-          OUT_ERRORS: ${{ steps.format.outputs.errors }}
-          OUT_ERRORS: ${{ steps.templates.outputs.errors }}
+          ERRORS_REQUIRED: ${{ steps.check.outputs.errors }}
+          ERRORS_FORMAT: ${{ steps.format.outputs.errors }}
+          ERRORS_TEMPLATE: ${{ steps.templates.outputs.errors }}
           IN_STRICT_MODE: ${{ inputs.strict-mode }}
         run: |
-          TOTAL_ERRORS=$((${OUT_ERRORS} + ${OUT_ERRORS} + ${OUT_ERRORS}))
+          TOTAL_ERRORS=$(( ${ERRORS_REQUIRED:-0} + ${ERRORS_FORMAT:-0} + ${ERRORS_TEMPLATE:-0} ))
           
           if [[ $TOTAL_ERRORS -eq 0 ]]; then
             echo "✅ All validations passed!"
@@ -194,12 +194,12 @@ jobs:
         env:
           IN_CONFIG_JSON: ${{ inputs.config-json }}
           OUT_PASSED: ${{ steps.final.outputs.passed }}
-          OUT_ERRORS: ${{ steps.check.outputs.errors }}
-          OUT_ERRORS: ${{ steps.format.outputs.errors }}
-          OUT_ERRORS: ${{ steps.templates.outputs.errors }}
+          ERRORS_REQUIRED: ${{ steps.check.outputs.errors }}
+          ERRORS_FORMAT: ${{ steps.format.outputs.errors }}
+          ERRORS_TEMPLATE: ${{ steps.templates.outputs.errors }}
           OUT_MISSING: ${{ steps.check.outputs.missing }}
         run: |
-          CONFIG='${IN_CONFIG_JSON}'
+          CONFIG="$IN_CONFIG_JSON"
           
           echo "# 🔍 Configuration Validation Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -212,9 +212,9 @@ jobs:
           
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 📊 Validation Results" >> $GITHUB_STEP_SUMMARY
-          echo "- Required field errors: ${OUT_ERRORS}" >> $GITHUB_STEP_SUMMARY
-          echo "- Format validation errors: ${OUT_ERRORS}" >> $GITHUB_STEP_SUMMARY
-          echo "- Template resolution errors: ${OUT_ERRORS}" >> $GITHUB_STEP_SUMMARY
+          echo "- Required field errors: ${ERRORS_REQUIRED}" >> $GITHUB_STEP_SUMMARY
+          echo "- Format validation errors: ${ERRORS_FORMAT}" >> $GITHUB_STEP_SUMMARY
+          echo "- Template resolution errors: ${ERRORS_TEMPLATE}" >> $GITHUB_STEP_SUMMARY
           
           if [[ -n "${OUT_MISSING}" ]]; then
             echo "" >> $GITHUB_STEP_SUMMARY

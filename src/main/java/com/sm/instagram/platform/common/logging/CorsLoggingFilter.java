@@ -121,19 +121,68 @@ public class CorsLoggingFilter extends OncePerRequestFilter {
                         requestId, correlationId, origin);
             }
 
-            // Log suspicious patterns
-            if (origin.contains("localhost") && !origin.startsWith("http://localhost") && !origin.startsWith("https://localhost")) {
-                log.warn("CORS_SUSPICIOUS_LOCALHOST: requestId={}, correlationId={}, suspiciousOrigin={}", requestId, correlationId, origin);
-            }
+            // Log suspicious patterns.
+            // A same-origin request carries no Origin header at all, so origin is null more often
+            // than not, and this is a logging filter: it has no business throwing on a request it
+            // only meant to describe (javabugs:S2259). One guard for both checks, so a later edit
+            // cannot leave a sibling unguarded the way the length check was.
+            if (origin != null) {
+                if (origin.contains("localhost") && !isLocalhostOrigin(origin)) {
+                    log.warn("CORS_SUSPICIOUS_LOCALHOST: requestId={}, correlationId={}, suspiciousOrigin={}", requestId, correlationId, origin);
+                }
 
-            if (origin.length() > 100) {
-                log.warn("CORS_SUSPICIOUS_LONG_ORIGIN: requestId={}, correlationId={}, originLength={}", requestId, correlationId, origin.length());
+                if (origin.length() > 100) {
+                    log.warn("CORS_SUSPICIOUS_LONG_ORIGIN: requestId={}, correlationId={}, originLength={}", requestId, correlationId, origin.length());
+                }
             }
             
         } finally {
             // Don't clear MDC here since other filters might still need it
             // The RequestCorrelationFilter will handle clearing at the end
         }
+    }
+
+    /**
+     * True only when the origin's host component IS localhost -- not merely when the origin starts
+     * with "http://localhost", and not when something before the host merely looks like it.
+     *
+     * <p>Two shapes this has to refuse, both found by a test rather than by reading:
+     * <ul>
+     *   <li>{@code http://localhost.evil.com} -- an attacker-controlled apex whose leftmost label
+     *       begins with "localhost". A startsWith test calls it legitimate, so it was the one
+     *       origin the suspicious-localhost warning never fired on.
+     *   <li>{@code https://localhost:4200@evil.com} -- "localhost:4200" is USERINFO here; the host
+     *       is evil.com. Taking the host as everything up to the first ':' reads the userinfo as
+     *       the host and calls that legitimate too. The Origin header has no userinfo form at all
+     *       (RFC 6454 is scheme, host and port), so an '@' in the authority means this is not a
+     *       plain origin and is exactly the kind of thing worth logging.
+     * </ul>
+     */
+    private boolean isLocalhostOrigin(String origin) {
+        int schemeEnd = origin.indexOf("://");
+        if (schemeEnd < 0) {
+            return false;
+        }
+        String scheme = origin.substring(0, schemeEnd);
+        if (!"http".equals(scheme) && !"https".equals(scheme)) {
+            return false;
+        }
+        String rest = origin.substring(schemeEnd + 3);
+        int authorityEnd = rest.length();
+        for (int i = 0; i < rest.length(); i++) {
+            char c = rest.charAt(i);
+            if (c == '/' || c == '?' || c == '#') {
+                authorityEnd = i;
+                break;
+            }
+        }
+        String authority = rest.substring(0, authorityEnd);
+        if (authority.indexOf('@') >= 0) {
+            return false;
+        }
+        int portAt = authority.indexOf(':');
+        String host = portAt < 0 ? authority : authority.substring(0, portAt);
+        return "localhost".equals(host);
     }
 
     private void logCorsResponse(HttpServletRequest request, HttpServletResponse response, String origin, String requestId, String correlationId) {

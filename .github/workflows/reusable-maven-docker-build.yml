@@ -85,7 +85,7 @@ jobs:
         env:
           IN_CONFIG_JSON: ${{ inputs.config-json }}
         run: |
-          CONFIG='${IN_CONFIG_JSON}'
+          CONFIG="$IN_CONFIG_JSON"
           
           # Java/Maven config (optimized for self-hosted runner with 24GB RAM)
           echo "JAVA_VERSION=$(echo "$CONFIG" | jq -r '._flat.java_version')" >> $GITHUB_ENV
@@ -605,8 +605,8 @@ jobs:
         env:
           OUT_BUILD_START: ${{ steps.init.outputs.BUILD_START }}
           IN_ENVIRONMENT: ${{ inputs.environment }}
-          OUT_DIGEST: ${{ steps.docker-build.outputs.digest }}
-          OUT_DIGEST: ${{ steps.docker-build-gsm.outputs.digest }}
+          OUT_DIGEST_APP: ${{ steps.docker-build.outputs.digest }}
+          OUT_DIGEST_GSM: ${{ steps.docker-build-gsm.outputs.digest }}
         run: |
           # Calculate duration
           BUILD_END=$(date +%s)
@@ -627,7 +627,7 @@ jobs:
           echo "image-tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
           echo "image-tag-sha=${IMAGE_TAG_SHA}" >> $GITHUB_OUTPUT
           echo "image-tag-latest=${IMAGE_TAG_LATEST}" >> $GITHUB_OUTPUT
-          echo "image-digest=${OUT_DIGEST}" >> $GITHUB_OUTPUT
+          echo "image-digest=${OUT_DIGEST_APP}" >> $GITHUB_OUTPUT
           
           # GSM outputs
           GSM_IMAGE_TAG="${IMAGE_BASE}/google-secrets-init:${{ env.BUILD_VERSION }}"
@@ -635,7 +635,7 @@ jobs:
           
           echo "gsm-init-image-tag=${GSM_IMAGE_TAG}" >> $GITHUB_OUTPUT
           echo "gsm-init-image-tag-sha=${GSM_IMAGE_TAG_SHA}" >> $GITHUB_OUTPUT
-          echo "gsm-init-image-digest=${OUT_DIGEST}" >> $GITHUB_OUTPUT
+          echo "gsm-init-image-digest=${OUT_DIGEST_GSM}" >> $GITHUB_OUTPUT
           
           # Debug: Verify outputs
           echo ""

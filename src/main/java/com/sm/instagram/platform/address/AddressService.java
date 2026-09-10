@@ -121,9 +121,19 @@ public class AddressService extends BaseService<Address, Long, AddressDtoIn> {
 
             // If the except address isn't in the list or isn't primary, use the most recently updated
             if (addressToKeepPrimary == null) {
+                // orElseThrow, not orElse(null): the enclosing branch is size() > 1, so max() is always
+                // present and the null was unreachable -- but it was dereferenced two lines later all
+                // the same, which is what javabugs:S2259 saw. Saying "cannot happen" out loud beats a
+                // null the next reader has to prove impossible.
+                //
+                // nullsFirst is the defect the analyser did not flag: Comparator.comparing throws NPE
+                // inside the comparator when an address has no lastUpdateTime, and a row written before
+                // that column was populated has exactly that.
                 addressToKeepPrimary = primaryAddresses.stream()
-                        .max(Comparator.comparing(Address::getLastUpdateTime))
-                        .orElse(null);
+                        .max(Comparator.comparing(Address::getLastUpdateTime,
+                                Comparator.nullsFirst(Comparator.naturalOrder())))
+                        .orElseThrow(() -> new IllegalStateException(
+                                "more than one primary address, yet no maximum: " + primaryAddresses.size()));
             }
 
             // Set all other addresses to non-primary
@@ -154,9 +164,19 @@ public class AddressService extends BaseService<Address, Long, AddressDtoIn> {
 
             // If the except address isn't in the list or isn't primary, use the most recently updated
             if (addressToKeepPrimary == null) {
+                // orElseThrow, not orElse(null): the enclosing branch is size() > 1, so max() is always
+                // present and the null was unreachable -- but it was dereferenced two lines later all
+                // the same, which is what javabugs:S2259 saw. Saying "cannot happen" out loud beats a
+                // null the next reader has to prove impossible.
+                //
+                // nullsFirst is the defect the analyser did not flag: Comparator.comparing throws NPE
+                // inside the comparator when an address has no lastUpdateTime, and a row written before
+                // that column was populated has exactly that.
                 addressToKeepPrimary = primaryAddresses.stream()
-                        .max(Comparator.comparing(Address::getLastUpdateTime))
-                        .orElse(null);
+                        .max(Comparator.comparing(Address::getLastUpdateTime,
+                                Comparator.nullsFirst(Comparator.naturalOrder())))
+                        .orElseThrow(() -> new IllegalStateException(
+                                "more than one primary address, yet no maximum: " + primaryAddresses.size()));
             }
 
             // Set all other addresses to non-primary

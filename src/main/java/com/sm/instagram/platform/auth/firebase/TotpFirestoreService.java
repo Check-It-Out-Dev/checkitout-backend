@@ -6,6 +6,7 @@ import com.sm.instagram.model.firestore.TotpSecretDocument;
 import com.sm.instagram.platform.auth.exceptions.TwoFactorAuthException;
 import com.sm.instagram.platform.common.exceptions.BusinessRuleTranslatableException;
 import com.sm.instagram.platform.common.security.TotpEncryptionService;
+import com.sm.instagram.platform.common.util.Interrupts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -393,12 +394,8 @@ public class TotpFirestoreService {
             log.info("All 2FA data deleted for user: {}", userId);
             
         } catch (Exception e) {
-            // A broad catch takes InterruptedException with it, and the interrupt flag goes
-            // too: a pool thread told to stop would carry on as if nothing had happened.
-            // Restore it, then handle the failure exactly as before.
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+            // A broad catch swallows the interrupt too; put the flag back before handling the failure.
+            Interrupts.preserveInterrupt(e);
             log.error("Failed to delete 2FA data for user {}: {}", userId, e.getMessage());
             throw new BusinessRuleTranslatableException("error.business.data_integrity");
         }

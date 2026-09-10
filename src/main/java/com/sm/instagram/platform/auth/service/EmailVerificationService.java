@@ -1,5 +1,7 @@
 package com.sm.instagram.platform.auth.service;
 
+import java.time.ZoneId;
+import java.time.Instant;
 import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -322,9 +324,14 @@ public class EmailVerificationService {
         if (user.getEmailVerificationSentAt() == null) {
             return true;
         }
+        // Both ends through the same zone before subtracting. Duration.between on two
+        // LocalDateTime values counts wall-clock, so a daylight-saving transition between them
+        // makes it an hour out (java:S8700) -- and this is a security cooldown, so an hour out is
+        // either a lockout or a free retry.
+        ZoneId zone = ZoneId.systemDefault();
         Duration timeSinceLastSent = Duration.between(
-            user.getEmailVerificationSentAt(),
-            LocalDateTime.now()
+            user.getEmailVerificationSentAt().atZone(zone).toInstant(),
+            Instant.now()
         );
         return timeSinceLastSent.toSeconds() >= verificationCooldownSeconds;
     }

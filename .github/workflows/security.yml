@@ -82,6 +82,14 @@ jobs:
         with:
           sarif_file: semgrep.sarif
           category: semgrep
+      # Also kept as an artifact. upload-sarif tells the Security tab; the summary job below counts
+      # what every scanner found and puts one number on the dashboard, and it can only read files.
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6
+        if: always() && hashFiles('semgrep.sarif') != ''
+        with:
+          name: sarif-semgrep
+          path: semgrep.sarif
+          retention-days: 7
 
   iac:
     name: Checkov (manifests, images, workflows)
@@ -114,6 +122,12 @@ jobs:
         with:
           sarif_file: checkov.sarif
           category: checkov
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6
+        if: always() && hashFiles('checkov.sarif') != ''
+        with:
+          name: sarif-checkov
+          path: checkov.sarif
+          retention-days: 7
 
   supply-chain:
     name: Trivy and an SBOM
@@ -148,6 +162,12 @@ jobs:
         with:
           sarif_file: trivy.sarif
           category: trivy
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6
+        if: always() && hashFiles('trivy.sarif') != ''
+        with:
+          name: sarif-trivy
+          path: trivy.sarif
+          retention-days: 7
       # The image is what actually runs — in the sandbox, in the nightly and in the kind cluster —
       # so its base layer and its bundled JRE are part of the attack surface the tree cannot show.
       - name: Published image CVEs
@@ -166,7 +186,81 @@ jobs:
           sarif_file: trivy-image.sarif
           category: trivy-image
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6
+        if: always() && hashFiles('trivy-image.sarif') != ''
+        with:
+          name: sarif-trivy-image
+          path: trivy-image.sarif
+          retention-days: 7
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6
         with:
           name: sbom-${{ github.run_number }}
           path: sbom*.cdx.json
           retention-days: 90
+
+  summary:
+    name: What the scanners found, in one number
+    needs: [sast, iac, supply-chain]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # The frontend has had this job since the dashboard was built; the backend never did, so its
+    # dashboard showed tests and coverage over time and nothing about security. Same tool, same
+    # shape, same file name, so the two dashboards say comparable things.
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+      # sarif-summary.mjs and the dashboard live in the frontend repository (docs/ci/METRICS.md
+      # there); the backend runs the same tool on its own scanners' output.
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+        with:
+          repository: Check-It-Out-Dev/checkitout-frontend
+          path: frontend
+          # tools/lib too: the shared scripts import the ordering comparator from it, and a
+          # checkout of tools/ci alone fails at import time with ERR_MODULE_NOT_FOUND.
+          sparse-checkout: |
+            tools/ci
+            tools/lib
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444  # v5
+        with:
+          node-version: 24
+
+      - name: Collect the SARIF every tool produced
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131  # v7
+        with:
+          pattern: sarif-*
+          path: sarif
+          merge-multiple: true
+        continue-on-error: true
+
+      - name: Count it
+        run: |
+          set -o pipefail
+          node frontend/tools/ci/sarif-summary.mjs "sarif/*.sarif" --json security-summary.json | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Pages site (previous state)
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+        with:
+          ref: gh-pages
+          path: site
+        continue-on-error: true
+      - name: This tier's number into the site, for the dashboard to trend
+        run: |
+          rm -rf site/.git
+          mkdir -p site/security
+          cp security-summary.json site/security/latest.json
+      - name: Publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # A retrying overlay push rather than the action: several tiers publish in parallel and the
+        # loser of the race used to drop its result.
+        run: |
+          bash tools/ci/publish-pages.sh site "security run ${{ github.run_number }}"
+
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6
+        if: always()
+        with:
+          name: security-summary-${{ github.run_number }}
+          path: security-summary.json
+          retention-days: 90
+
