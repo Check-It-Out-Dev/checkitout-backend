@@ -98,16 +98,42 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-			<!-- Override specific versions to avoid conflicts -->
+			<!-- The rest of the Google stack is one train too, and it was hand-pinned artifact by
+					 artifact: gax 2.42, google-cloud-core 2.30, storage 2.32, auth 1.20, protobuf 3.25.2,
+					 common-protos 2.33. Every one of them was BELOW what something in the tree asked for.
+					 requireUpperBoundDeps reported twenty inversions, so Maven's nearest-wins mediation was
+					 handing the runtime older classes than firebase-admin and grpc 1.75 were compiled against.
+					 That is the same shape as the gRPC incident above, which linked cleanly and then threw
+					 NoSuchMethodError on the first call. libraries-bom is Google's own answer: one version for
+					 the whole set, imported AFTER grpc-bom so gRPC keeps the version chosen above. The four
+					 google-cloud-* dependencies below it lost their <version> tags on purpose: a direct
+					 version beats dependencyManagement, so leaving them would have kept four of the twenty. -->
 			<dependency>
-				<groupId>com.google.http-client</groupId>
-				<artifactId>google-http-client</artifactId>
-				<version>1.44.1</version>
+				<groupId>com.google.cloud</groupId>
+				<artifactId>libraries-bom</artifactId>
+				<version>26.44.0</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
+			<!-- Guava is the one artifact the BOM cannot settle: grpc 1.75 asks for 33.3.1-android and
+					 libraries-bom 26.44 manages 33.2.1-jre, so whichever of the two BOMs wins leaves an
+					 inversion. Pinning above both ends it, and guava's two companions have to move with it:
+					 33.4.8-jre asks for exactly these. They are pins, not preferences: raise guava and the
+					 enforcer will name whichever of the three was left behind. -->
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>32.1.3-jre</version>
+				<version>33.4.8-jre</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>failureaccess</artifactId>
+				<version>1.0.3</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.errorprone</groupId>
+				<artifactId>error_prone_annotations</artifactId>
+				<version>2.36.0</version>
 			</dependency>
 			<!-- Override httpclient to exclude commons-logging -->
 			<dependency>
@@ -214,7 +240,6 @@
 		<dependency>
 			<groupId>com.google.cloud</groupId>
 			<artifactId>google-cloud-recaptchaenterprise</artifactId>
-			<version>3.32.0</version>
 			<exclusions>
 				<exclusion>
 					<groupId>commons-logging</groupId>
@@ -227,20 +252,27 @@
 		<dependency>
 			<groupId>com.google.cloud</groupId>
 			<artifactId>google-cloud-storage</artifactId>
-			<version>2.32.0</version>
+			<exclusions>
+				<!-- storage 2.41 declares commons-logging directly; 2.32 only reached it through
+						 httpclient, which the dependencyManagement block above already excludes. Spring Boot
+						 routes JCL through jcl-over-slf4j, and two JCL implementations on one classpath is
+						 why the bannedDependencies rule exists. The rule is what caught this. -->
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- Google Auth Library for service account credentials -->
 		<dependency>
 			<groupId>com.google.auth</groupId>
 			<artifactId>google-auth-library-oauth2-http</artifactId>
-			<version>1.20.0</version>
 		</dependency>
 
 		<!-- Google Cloud KMS for token encryption -->
 		<dependency>
 			<groupId>com.google.cloud</groupId>
 			<artifactId>google-cloud-kms</artifactId>
-			<version>2.34.0</version>
 			<exclusions>
 				<exclusion>
 					<groupId>commons-logging</groupId>
@@ -779,6 +811,11 @@
 										<dependency>io.grpc:*</dependency>
 									</dependencies>
 								</requireSameVersions>
+								<!-- The other half of the same lesson: requireSameVersions catches a train pulled
+										 apart, this catches a dependency resolved BELOW what something in the tree compiled
+										 against. Twenty of those were open across the Google stack until the BOM above landed;
+										 it is zero now, and the build is what keeps it there. -->
+								<requireUpperBoundDeps/>
 								<bannedDependencies>
 									<excludes>
 										<exclude>commons-logging:commons-logging</exclude>
