@@ -37,8 +37,13 @@ jobs:
     steps:
       - name: 📋 Parse Configuration
         id: config
+        env:
+          IN_CONFIG_JSON: ${{ inputs.config-json }}
+          SEC_INSTAGRAM_SCRIPTS_ADMIN_USER: ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}
+          IN_IMAGE_TAG: ${{ inputs.image-tag }}
+          IN_GSM_INIT_IMAGE_TAG: ${{ inputs.gsm-init-image-tag }}
         run: |
-          CONFIG='${{ inputs.config-json }}'
+          CONFIG='${IN_CONFIG_JSON}'
           
           # Extract essential values
           ENVIRONMENT=$(echo "$CONFIG" | jq -r '._flat.environment // .deployment.environment')
@@ -51,15 +56,15 @@ jobs:
           echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
           echo "ADMIN_HOME=$ADMIN_HOME" >> $GITHUB_ENV
           echo "SCRIPT_TIMEOUT=$SCRIPT_TIMEOUT" >> $GITHUB_ENV
-          echo "ADMIN_USER=${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}" >> $GITHUB_ENV
+          echo "ADMIN_USER=${SEC_INSTAGRAM_SCRIPTS_ADMIN_USER}" >> $GITHUB_ENV
           
           # Display configuration
           echo "📊 Deployment Configuration:"
           echo "  Environment: $ENVIRONMENT"
           echo "  Admin Home: $ADMIN_HOME"
           echo "  Script Timeout: ${SCRIPT_TIMEOUT}s"
-          echo "  Image Tag: ${{ inputs.image-tag }}"
-          echo "  GSM Init Tag: ${{ inputs.gsm-init-image-tag }}"
+          echo "  Image Tag: ${IN_IMAGE_TAG}"
+          echo "  GSM Init Tag: ${IN_GSM_INIT_IMAGE_TAG}"
 
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
@@ -70,16 +75,20 @@ jobs:
             deployment/${{ env.ENVIRONMENT }}/
 
       - name: 🔐 Setup SSH
+        env:
+          SEC_INSTAGRAM_SCRIPTS_ADMIN_SSH_KEY: ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_SSH_KEY }}
+          SEC_INSTAGRAM_SERVER_HOST: ${{ secrets.INSTAGRAM_SERVER_HOST }}
+          SEC_INSTAGRAM_SCRIPTS_ADMIN_USER: ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_SSH_KEY }}" > ~/.ssh/id_rsa
+          echo "${SEC_INSTAGRAM_SCRIPTS_ADMIN_SSH_KEY}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           
           # Configure SSH
           cat >> ~/.ssh/config << EOF
           Host deploy-server
-              HostName ${{ secrets.INSTAGRAM_SERVER_HOST }}
-              User ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}
+              HostName ${SEC_INSTAGRAM_SERVER_HOST}
+              User ${SEC_INSTAGRAM_SCRIPTS_ADMIN_USER}
               IdentityFile ~/.ssh/id_rsa
               StrictHostKeyChecking no
               ServerAliveInterval 30
@@ -88,7 +97,7 @@ jobs:
               LogLevel ERROR
           EOF
           
-          ssh-keyscan -H ${{ secrets.INSTAGRAM_SERVER_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+          ssh-keyscan -H ${SEC_INSTAGRAM_SERVER_HOST} >> ~/.ssh/known_hosts 2>/dev/null || true
           echo "✅ SSH configured"
 
       - name: ☢️ Nuclear Cleanup - START
@@ -117,11 +126,15 @@ jobs:
           NUCLEAR_START
 
       - name: 📋 Generate deployment configuration
+        env:
+          IN_CONFIG_JSON: ${{ inputs.config-json }}
+          IN_IMAGE_TAG: ${{ inputs.image-tag }}
+          IN_GSM_INIT_IMAGE_TAG: ${{ inputs.gsm-init-image-tag }}
         run: |
           echo "🔧 Generating deployment configuration..."
           
           # Save config JSON
-          echo '${{ inputs.config-json }}' > /tmp/config.json
+          echo '${IN_CONFIG_JSON}' > /tmp/config.json
           
           # Validate JSON
           if ! jq -e . >/dev/null 2>&1 </tmp/config.json; then
@@ -131,8 +144,8 @@ jobs:
           
           # Set up environment
           export ENVIRONMENT="$ENVIRONMENT"
-          export IMAGE_TAG="${{ inputs.image-tag }}"
-          export GSM_INIT_IMAGE_FULL="${{ inputs.gsm-init-image-tag }}"
+          export IMAGE_TAG="${IN_IMAGE_TAG}"
+          export GSM_INIT_IMAGE_FULL="${IN_GSM_INIT_IMAGE_TAG}"
           export OUTPUT_FILE="deployment/$ENVIRONMENT/.env"
           
           # Debug: Verify GSM_INIT_IMAGE_FULL is set correctly
@@ -244,11 +257,15 @@ jobs:
           echo "VALIDATE_CHECKSUM=$VALIDATE_CHECKSUM" >> $GITHUB_ENV
 
       - name: 📤 Secure upload of deployment package
+        env:
+          GH_RUN_ID: ${{ github.run_id }}
+          SEC_INSTAGRAM_SCRIPTS_ADMIN_USER: ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}
+          SEC_INSTAGRAM_SERVER_HOST: ${{ secrets.INSTAGRAM_SERVER_HOST }}
         run: |
           echo "📤 Preparing deployment package with immutability..."
           
-          DEPLOY_SCRIPT="deploy-and-secure-${{ github.run_id }}.sh"
-          VALIDATOR="validate-and-exec-ci-script-${{ github.run_id }}.sh"
+          DEPLOY_SCRIPT="deploy-and-secure-${GH_RUN_ID}.sh"
+          VALIDATOR="validate-and-exec-ci-script-${GH_RUN_ID}.sh"
           
           # Create deployment package directory
           ssh deploy-server "mkdir -p ${{ env.ADMIN_HOME }}/deployment-package"
@@ -361,8 +378,8 @@ jobs:
               .github/scripts/remote/secure-logger.sh \
               "${{ env.ADMIN_HOME }}/secure-logger.sh" \
               ~/.ssh/id_rsa \
-              "${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}" \
-              "${{ secrets.INSTAGRAM_SERVER_HOST }}"); then
+              "${SEC_INSTAGRAM_SCRIPTS_ADMIN_USER}" \
+              "${SEC_INSTAGRAM_SERVER_HOST}"); then
             echo "❌ ERROR: Failed to upload secure-logger.sh!"
             exit 1
           fi
@@ -415,8 +432,8 @@ jobs:
               .github/scripts/remote/deploy-and-secure.sh \
               "${{ env.ADMIN_HOME }}/$DEPLOY_SCRIPT" \
               ~/.ssh/id_rsa \
-              "${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}" \
-              "${{ secrets.INSTAGRAM_SERVER_HOST }}")
+              "${SEC_INSTAGRAM_SCRIPTS_ADMIN_USER}" \
+              "${SEC_INSTAGRAM_SERVER_HOST}")
           
           echo "✅ Deploy script uploaded and protected (timestamp: $DEPLOY_TIMESTAMP)"
           
@@ -426,8 +443,8 @@ jobs:
               .github/scripts/remote/validate-and-exec-ci-script.sh \
               "${{ env.ADMIN_HOME }}/$VALIDATOR" \
               ~/.ssh/id_rsa \
-              "${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}" \
-              "${{ secrets.INSTAGRAM_SERVER_HOST }}")
+              "${SEC_INSTAGRAM_SCRIPTS_ADMIN_USER}" \
+              "${SEC_INSTAGRAM_SERVER_HOST}")
           
           echo "✅ Validator uploaded and protected (timestamp: $VALIDATE_TIMESTAMP)"
           
@@ -513,11 +530,13 @@ jobs:
           EOF
 
       - name: 🔍 Verify script protection
+        env:
+          GH_RUN_ID: ${{ github.run_id }}
         run: |
           echo "🔍 Verifying all scripts are properly protected..."
           
-          DEPLOY_SCRIPT="deploy-and-secure-${{ github.run_id }}.sh"
-          VALIDATOR="validate-and-exec-ci-script-${{ github.run_id }}.sh"
+          DEPLOY_SCRIPT="deploy-and-secure-${GH_RUN_ID}.sh"
+          VALIDATOR="validate-and-exec-ci-script-${GH_RUN_ID}.sh"
           
           ssh deploy-server << EOF
             cd ${{ env.ADMIN_HOME }}
@@ -539,11 +558,13 @@ jobs:
 
       - name: 🚀 Execute Deployment
         id: deploy
+        env:
+          GH_RUN_ID: ${{ github.run_id }}
         run: |
           echo "🚀 Executing secure deployment..."
           
-          DEPLOY_SCRIPT="deploy-and-secure-${{ github.run_id }}.sh"
-          VALIDATOR="validate-and-exec-ci-script-${{ github.run_id }}.sh"
+          DEPLOY_SCRIPT="deploy-and-secure-${GH_RUN_ID}.sh"
+          VALIDATOR="validate-and-exec-ci-script-${GH_RUN_ID}.sh"
           
           # Create a local script that will be executed on the server
           cat > /tmp/deploy_execution.sh << 'DEPLOY_EXEC'
@@ -588,19 +609,21 @@ jobs:
           sed -i "s/DEPLOY_SCRIPT/$DEPLOY_SCRIPT/g" /tmp/deploy_execution.sh
           
           # Copy and execute
-          scp -i ~/.ssh/id_rsa /tmp/deploy_execution.sh deploy-server:/tmp/deploy_exec_${{ github.run_id }}.sh
+          scp -i ~/.ssh/id_rsa /tmp/deploy_execution.sh deploy-server:/tmp/deploy_exec_${GH_RUN_ID}.sh
           
           # Execute with single SSH command (avoids heredoc TTY issues)
-          ssh deploy-server "chmod +x /tmp/deploy_exec_${{ github.run_id }}.sh && /tmp/deploy_exec_${{ github.run_id }}.sh; rm -f /tmp/deploy_exec_${{ github.run_id }}.sh"
+          ssh deploy-server "chmod +x /tmp/deploy_exec_${GH_RUN_ID}.sh && /tmp/deploy_exec_${GH_RUN_ID}.sh; rm -f /tmp/deploy_exec_${GH_RUN_ID}.sh"
           
           rm -f /tmp/deploy_execution.sh
 
       - name: ✅ Post-deployment Verification
         if: success()
+        env:
+          IN_CONFIG_JSON: ${{ inputs.config-json }}
         run: |
           echo "✅ Verifying deployment..."
           
-          CONFIG='${{ inputs.config-json }}'
+          CONFIG='${IN_CONFIG_JSON}'
           DEPLOYMENT_PATH=$(echo "$CONFIG" | jq -r '._flat.deployment_path')
           
           ssh deploy-server << VERIFY_SSH
@@ -650,6 +673,10 @@ jobs:
 
       - name: 📊 Deployment Summary
         if: always()
+        env:
+          IN_IMAGE_TAG: ${{ inputs.image-tag }}
+          IN_GSM_INIT_IMAGE_TAG: ${{ inputs.gsm-init-image-tag }}
+          GH_RUN_ID: ${{ github.run_id }}
         run: |
           cat << EOF >> $GITHUB_STEP_SUMMARY
           ## 🔒 Secure Deployment Report
@@ -658,9 +685,9 @@ jobs:
           |-----------|-------|
           | Environment | ${{ env.ENVIRONMENT }} |
           | Status | ${{ job.status }} |
-          | Image Tag | ${{ inputs.image-tag }} |
-          | GSM Init Tag | ${{ inputs.gsm-init-image-tag }} |
-          | Run ID | ${{ github.run_id }} |
+          | Image Tag | ${IN_IMAGE_TAG} |
+          | GSM Init Tag | ${IN_GSM_INIT_IMAGE_TAG} |
+          | Run ID | ${GH_RUN_ID} |
           
           ### 🔐 Security Features
           - ✅ All scripts uploaded with immutability

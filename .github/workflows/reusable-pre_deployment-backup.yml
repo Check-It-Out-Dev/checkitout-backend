@@ -91,16 +91,20 @@ jobs:
             .github/scripts/runner/
 
       - name: 🔐 Setup SSH
+        env:
+          SEC_INSTAGRAM_SCRIPTS_ADMIN_SSH_KEY: ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_SSH_KEY }}
+          SEC_INSTAGRAM_SERVER_HOST: ${{ secrets.INSTAGRAM_SERVER_HOST }}
+          SEC_INSTAGRAM_SCRIPTS_ADMIN_USER: ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_SSH_KEY }}" > ~/.ssh/id_rsa
+          echo "${SEC_INSTAGRAM_SCRIPTS_ADMIN_SSH_KEY}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           
           # SSH config
           cat > ~/.ssh/config << EOF
           Host backup-server
-              HostName ${{ secrets.INSTAGRAM_SERVER_HOST }}
-              User ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}
+              HostName ${SEC_INSTAGRAM_SERVER_HOST}
+              User ${SEC_INSTAGRAM_SCRIPTS_ADMIN_USER}
               IdentityFile ~/.ssh/id_rsa
               StrictHostKeyChecking no
               ServerAliveInterval 30
@@ -109,7 +113,7 @@ jobs:
               LogLevel ERROR
           EOF
           
-          ssh-keyscan -H ${{ secrets.INSTAGRAM_SERVER_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+          ssh-keyscan -H ${SEC_INSTAGRAM_SERVER_HOST} >> ~/.ssh/known_hosts 2>/dev/null || true
 
       - name: ☢️ Nuclear Cleanup - START
         run: |
@@ -136,12 +140,16 @@ jobs:
           NUCLEAR_START
 
       - name: 📤 Secure upload of scripts
+        env:
+          GH_RUN_ID: ${{ github.run_id }}
+          SEC_INSTAGRAM_SCRIPTS_ADMIN_USER: ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}
+          SEC_INSTAGRAM_SERVER_HOST: ${{ secrets.INSTAGRAM_SERVER_HOST }}
         run: |
           echo "📤 Uploading scripts with immutability protection..."
           
           # Define script names that match sudoers patterns
-          BACKUP_SCRIPT="backup-pre-deploy-${{ github.run_id }}.sh"
-          VALIDATOR="validate-and-exec-ci-script-${{ github.run_id }}.sh"
+          BACKUP_SCRIPT="backup-pre-deploy-${GH_RUN_ID}.sh"
+          VALIDATOR="validate-and-exec-ci-script-${GH_RUN_ID}.sh"
           
           # Get backup script checksum for validation
           BACKUP_SHA256=$(sha256sum .github/scripts/remote/create-pre-deployment-backup.sh | cut -d' ' -f1)
@@ -153,7 +161,7 @@ jobs:
           export DEPLOYMENT_PATH=$DEPLOYMENT_PATH
           export BACKUP_BASE_PATH=$BACKUP_PATH
           export RETENTION_COUNT=$RETENTION_COUNT
-          export GITHUB_RUN_ID=${{ github.run_id }}
+          export GITHUB_RUN_ID=${GH_RUN_ID}
           export TIMESTAMP=$(date +%s)
           export SCRIPT_EXECUTION_TIMEOUT_SECONDS=$SCRIPT_TIMEOUT
           EOF
@@ -173,8 +181,8 @@ jobs:
               .github/scripts/remote/secure-logger.sh \
               "$ADMIN_HOME/secure-logger.sh" \
               ~/.ssh/id_rsa \
-              "${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}" \
-              "${{ secrets.INSTAGRAM_SERVER_HOST }}")
+              "${SEC_INSTAGRAM_SCRIPTS_ADMIN_USER}" \
+              "${SEC_INSTAGRAM_SERVER_HOST}")
           echo "✅ secure-logger.sh uploaded and protected (timestamp: $LOGGER_TIMESTAMP)"
           
           # Upload backup script using secure helper
@@ -183,8 +191,8 @@ jobs:
               .github/scripts/remote/create-pre-deployment-backup.sh \
               "$ADMIN_HOME/$BACKUP_SCRIPT" \
               ~/.ssh/id_rsa \
-              "${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}" \
-              "${{ secrets.INSTAGRAM_SERVER_HOST }}")
+              "${SEC_INSTAGRAM_SCRIPTS_ADMIN_USER}" \
+              "${SEC_INSTAGRAM_SERVER_HOST}")
           echo "✅ Backup script uploaded and protected (timestamp: $BACKUP_TIMESTAMP)"
           
           # Upload validator script using secure helper
@@ -193,11 +201,13 @@ jobs:
               .github/scripts/remote/validate-and-exec-ci-script.sh \
               "$ADMIN_HOME/$VALIDATOR" \
               ~/.ssh/id_rsa \
-              "${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}" \
-              "${{ secrets.INSTAGRAM_SERVER_HOST }}")
+              "${SEC_INSTAGRAM_SCRIPTS_ADMIN_USER}" \
+              "${SEC_INSTAGRAM_SERVER_HOST}")
           echo "✅ Validator uploaded and protected (timestamp: $VALIDATOR_TIMESTAMP)"
 
       - name: 🔧 Verify protection
+        env:
+          GH_RUN_ID: ${{ github.run_id }}
         run: |
           echo "🔧 Verifying all files are protected..."
           ssh backup-server "
@@ -207,7 +217,7 @@ jobs:
             echo ''
           
             # Check each file
-            for file in .env secure-logger.sh backup-pre-deploy-${{ github.run_id }}.sh* validate-and-exec-ci-script-${{ github.run_id }}.sh*; do
+            for file in .env secure-logger.sh backup-pre-deploy-${GH_RUN_ID}.sh* validate-and-exec-ci-script-${GH_RUN_ID}.sh*; do
               if [ -f \"\$file\" ]; then
                 if lsattr \"\$file\" 2>/dev/null | grep -q '^....i'; then
                   echo \"✅ \$file is immutable\"

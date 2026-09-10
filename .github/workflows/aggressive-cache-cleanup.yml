@@ -24,8 +24,10 @@ jobs:
       actions: write
     steps:
       - name: Setup cleanup environment
+        env:
+          TARGET_SIZE_GB: ${{ github.event.inputs.target_size_gb || '3' }}
         run: |
-          echo "TARGET_SIZE_GB=${{ github.event.inputs.target_size_gb || '3' }}" >> $GITHUB_ENV
+          echo "TARGET_SIZE_GB=${TARGET_SIZE_GB}" >> $GITHUB_ENV
           echo "REGISTRY=ghcr.io" >> $GITHUB_ENV
           echo "NAMESPACE=check-it-out-dev" >> $GITHUB_ENV
 
@@ -236,6 +238,7 @@ jobs:
       - name: Clean GitHub Actions cache
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPOSITORY: ${{ github.repository }}
         run: |
           echo "🧹 Cleaning GitHub Actions cache..."
           
@@ -243,7 +246,7 @@ jobs:
           CACHES=$(gh api \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            "/repos/${{ github.repository }}/actions/caches?per_page=100" | \
+            "/repos/${GH_REPOSITORY}/actions/caches?per_page=100" | \
             jq '.actions_caches // []')
           
           CACHE_COUNT=$(echo "$CACHES" | jq 'length')
@@ -258,7 +261,7 @@ jobs:
                   --method DELETE \
                   -H "Accept: application/vnd.github+json" \
                   -H "X-GitHub-Api-Version: 2022-11-28" \
-                  "/repos/${{ github.repository }}/actions/caches/$cache_id" \
+                  "/repos/${GH_REPOSITORY}/actions/caches/$cache_id" \
                   2>/dev/null || true
               fi
             done
@@ -277,6 +280,7 @@ jobs:
       - name: Final report
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPOSITORY: ${{ github.repository }}
         run: |
           echo "## 📊 Cache Cleanup Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -297,7 +301,7 @@ jobs:
           ACTIONS_CACHE=$(gh api \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            "/repos/${{ github.repository }}/actions/cache/usage" 2>/dev/null || echo '{"active_caches_size_in_bytes": 0, "active_caches_count": 0}')
+            "/repos/${GH_REPOSITORY}/actions/cache/usage" 2>/dev/null || echo '{"active_caches_size_in_bytes": 0, "active_caches_count": 0}')
           
           echo "### Container Registry Status" >> $GITHUB_STEP_SUMMARY
           echo "- **Target Size**: ${{ env.TARGET_SIZE_GB }} GB" >> $GITHUB_STEP_SUMMARY
