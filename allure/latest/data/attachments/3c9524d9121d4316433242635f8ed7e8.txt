@@ -1,0 +1,53 @@
+12:34:24.627 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - GDPR: Operation=validateRedisAccess, Purpose=system_startup_validation, DataAccessed=none
+12:34:24.627 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - ==========================================
+12:34:24.627 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - 🚀 REDIS VALIDATION SERVICE
+12:34:24.627 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - ==========================================
+12:34:24.627 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - 📍 Redis Configuration:
+12:34:24.627 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Storage Mode: redis
+12:34:24.627 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Host: localhost
+12:34:24.627 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Port: 6379
+12:34:24.627 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Database: 0
+12:34:24.627 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Timeout: 2000ms
+12:34:24.627 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - 
+🧪 Testing Redis Connection:
+12:34:24.627 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Testing PING...
+12:34:24.627 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ PING successful
+12:34:24.627 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Retrieving server info...
+12:34:24.627 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Server Info Retrieved:
+12:34:24.627 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -      - Version: 7.0.0
+12:34:24.627 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -      - Mode: standalone
+12:34:24.627 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -      - Connected Clients: 10
+12:34:24.627 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -      - Memory Used: 100 MB
+12:34:24.627 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -      - Memory Limit: 1024 MB
+12:34:24.627 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -      - Memory Usage: {:.2f}%
+12:34:24.627 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Checking database size...
+12:34:24.627 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Database contains 100 keys
+12:34:24.627 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Testing write/read operations...
+12:34:24.628 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Write/Read test successful
+12:34:24.628 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Counting rate limit keys...
+12:34:24.628 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Found 0 rate limit keys
+12:34:24.628 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - 
+🧪 Testing Redis Data Types:
+12:34:24.628 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ String ops: Stored and retrieved 'OK'
+12:34:24.628 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ List ops: Created list with 3 items
+12:34:24.628 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Set ops: Created set with 3 unique items
+12:34:24.628 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Hash ops: Created hash with 3 fields
+12:34:24.628 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ ZSet ops: Created sorted set with 3 items
+12:34:24.628 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - 
+🧪 Testing Rate Limiting Simulation:
+12:34:24.629 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Created 0 rate limit test entries (with hashed IDs)
+12:34:24.629 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Rate limiting keys will expire in 1 minute
+12:34:24.629 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Counter increment test: value = 1
+12:34:24.629 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - 
+🧪 Testing Key Expiration:
+12:34:24.629 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Set key with 3 second TTL, remaining: 3 seconds
+12:34:24.629 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Removed expiration from key, TTL: 3 (should be -1)
+12:34:24.629 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Atomic increment by 5: result = 5
+12:34:24.629 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Response time: 1ms
+12:34:24.629 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - 
+✅ REDIS VALIDATION SUCCESSFUL
+12:34:24.629 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Connection established
+12:34:24.629 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Server responding
+12:34:24.629 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Read/Write operations working
+12:34:24.629 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Ready for rate limiting!
+12:34:24.629 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - ==========================================
