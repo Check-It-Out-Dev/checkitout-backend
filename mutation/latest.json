@@ -1,0 +1,448 @@
+{
+ "mutationScore": 43.78,
+ "coveredScore": 69.87,
+ "mutants": {
+  "total": 2405,
+  "SURVIVED": 454,
+  "NO_COVERAGE": 898,
+  "KILLED": 1052,
+  "TIMED_OUT": 1
+ },
+ "classesWithNoUnitTest": 15,
+ "floor": 40,
+ "ran": true,
+ "classes": [
+  {
+   "class": "auth.service.TokenExchangeService",
+   "score": 39.33,
+   "killed": 118,
+   "survived": 113,
+   "noCoverage": 69,
+   "n": 300
+  },
+  {
+   "class": "auth.service.FirebaseAuthProxyService",
+   "score": 7.46,
+   "killed": 17,
+   "survived": 14,
+   "noCoverage": 197,
+   "n": 228
+  },
+  {
+   "class": "common.ratelimit.RateLimitInterceptor",
+   "score": 71.34,
+   "killed": 117,
+   "survived": 35,
+   "noCoverage": 12,
+   "n": 164
+  },
+  {
+   "class": "auth.service.OAuthCallbackService",
+   "score": 59.52,
+   "killed": 75,
+   "survived": 44,
+   "noCoverage": 7,
+   "n": 126
+  },
+  {
+   "class": "auth.service.SessionSecurityService",
+   "score": 0,
+   "killed": 0,
+   "survived": 0,
+   "noCoverage": 126,
+   "n": 126
+  },
+  {
+   "class": "auth.service.EmailVerificationService",
+   "score": 60.98,
+   "killed": 75,
+   "survived": 14,
+   "noCoverage": 34,
+   "n": 123
+  },
+  {
+   "class": "auth.service.RegistrationService",
+   "score": 73.98,
+   "killed": 91,
+   "survived": 28,
+   "noCoverage": 4,
+   "n": 123
+  },
+  {
+   "class": "common.security.geoip.TravelPatternService",
+   "score": 66.67,
+   "killed": 78,
+   "survived": 30,
+   "noCoverage": 9,
+   "n": 117
+  },
+  {
+   "class": "common.security.GeoIpStorageService",
+   "score": 2.47,
+   "killed": 2,
+   "survived": 0,
+   "noCoverage": 79,
+   "n": 81
+  },
+  {
+   "class": "common.ratelimit.GdprCompliantRateLimiterService",
+   "score": 61.97,
+   "killed": 44,
+   "survived": 19,
+   "noCoverage": 8,
+   "n": 71
+  },
+  {
+   "class": "common.security.geoip.InMemoryGeoLocationCache",
+   "score": 52.24,
+   "killed": 35,
+   "survived": 16,
+   "noCoverage": 16,
+   "n": 67
+  },
+  {
+   "class": "common.security.GeoLocationGdprService",
+   "score": 81.97,
+   "killed": 50,
+   "survived": 11,
+   "noCoverage": 0,
+   "n": 61
+  },
+  {
+   "class": "auth.service.TwoFactorAuthService",
+   "score": 79.31,
+   "killed": 46,
+   "survived": 8,
+   "noCoverage": 4,
+   "n": 58
+  },
+  {
+   "class": "common.security.geoip.GeoLocationFacade",
+   "score": 35.09,
+   "killed": 20,
+   "survived": 16,
+   "noCoverage": 21,
+   "n": 57
+  },
+  {
+   "class": "common.ratelimit.RedisRateLimiterService",
+   "score": 0,
+   "killed": 0,
+   "survived": 0,
+   "noCoverage": 51,
+   "n": 51
+  },
+  {
+   "class": "auth.service.PasswordResetService",
+   "score": 66,
+   "killed": 33,
+   "survived": 14,
+   "noCoverage": 3,
+   "n": 50
+  },
+  {
+   "class": "common.security.KMSValidationService",
+   "score": 38,
+   "killed": 19,
+   "survived": 0,
+   "noCoverage": 31,
+   "n": 50
+  },
+  {
+   "class": "common.security.geoip.RedisGeoLocationCache",
+   "score": 33.33,
+   "killed": 14,
+   "survived": 4,
+   "noCoverage": 24,
+   "n": 42
+  },
+  {
+   "class": "common.ratelimit.InMemoryRateLimiterService",
+   "score": 10.26,
+   "killed": 4,
+   "survived": 33,
+   "noCoverage": 2,
+   "n": 39
+  },
+  {
+   "class": "common.security.geoip.MaxMindDatabaseService",
+   "score": 5.26,
+   "killed": 2,
+   "survived": 0,
+   "noCoverage": 36,
+   "n": 38
+  },
+  {
+   "class": "common.security.TotpEncryptionService",
+   "score": 83.78,
+   "killed": 31,
+   "survived": 5,
+   "noCoverage": 1,
+   "n": 37
+  },
+  {
+   "class": "auth.service.QRCodeGeneratorService",
+   "score": 33.33,
+   "killed": 12,
+   "survived": 17,
+   "noCoverage": 7,
+   "n": 36
+  },
+  {
+   "class": "auth.service.RecaptchaService",
+   "score": 85.29,
+   "killed": 29,
+   "survived": 3,
+   "noCoverage": 2,
+   "n": 34
+  },
+  {
+   "class": "auth.service.EmailChangeService",
+   "score": 0,
+   "killed": 0,
+   "survived": 0,
+   "noCoverage": 34,
+   "n": 34
+  },
+  {
+   "class": "common.security.TokenEncryptionService",
+   "score": 53.13,
+   "killed": 17,
+   "survived": 14,
+   "noCoverage": 1,
+   "n": 32
+  },
+  {
+   "class": "common.security.MaxMindStartupValidator",
+   "score": 0,
+   "killed": 0,
+   "survived": 0,
+   "noCoverage": 30,
+   "n": 30
+  },
+  {
+   "class": "auth.service.ImprovedQRCodeService",
+   "score": 62.07,
+   "killed": 18,
+   "survived": 1,
+   "noCoverage": 10,
+   "n": 29
+  },
+  {
+   "class": "auth.service.AdminIntegrityChecker",
+   "score": 0,
+   "killed": 0,
+   "survived": 0,
+   "noCoverage": 29,
+   "n": 29
+  },
+  {
+   "class": "common.ratelimit.RateLimiterService",
+   "score": 70.83,
+   "killed": 17,
+   "survived": 6,
+   "noCoverage": 1,
+   "n": 24
+  },
+  {
+   "class": "auth.service.InstagramDataDeletionService",
+   "score": 85,
+   "killed": 17,
+   "survived": 2,
+   "noCoverage": 1,
+   "n": 20
+  },
+  {
+   "class": "common.security.LocalTotpCipher",
+   "score": 95,
+   "killed": 19,
+   "survived": 1,
+   "noCoverage": 0,
+   "n": 20
+  },
+  {
+   "class": "common.ratelimit.RedisRateLimiterService$InMemoryWindow",
+   "score": 0,
+   "killed": 0,
+   "survived": 0,
+   "noCoverage": 16,
+   "n": 16
+  },
+  {
+   "class": "common.security.GeoLocationGdprController",
+   "score": 0,
+   "killed": 0,
+   "survived": 0,
+   "noCoverage": 14,
+   "n": 14
+  },
+  {
+   "class": "auth.service.MetaSignedRequestService",
+   "score": 100,
+   "killed": 13,
+   "survived": 0,
+   "noCoverage": 0,
+   "n": 13
+  },
+  {
+   "class": "auth.service.InstagramDeauthorizationService",
+   "score": 76.92,
+   "killed": 10,
+   "survived": 1,
+   "noCoverage": 2,
+   "n": 13
+  },
+  {
+   "class": "common.ratelimit.RateLimitMetricsService",
+   "score": 0,
+   "killed": 0,
+   "survived": 0,
+   "noCoverage": 6,
+   "n": 6
+  },
+  {
+   "class": "common.ratelimit.RateLimitPrivacyController",
+   "score": 0,
+   "killed": 0,
+   "survived": 0,
+   "noCoverage": 5,
+   "n": 5
+  },
+  {
+   "class": "common.ratelimit.RateLimiterService$RateLimitResult",
+   "score": 100,
+   "killed": 5,
+   "survived": 0,
+   "noCoverage": 0,
+   "n": 5
+  },
+  {
+   "class": "common.security.geoip.InMemoryGeoLocationCache$CachedLocation",
+   "score": 75,
+   "killed": 3,
+   "survived": 1,
+   "noCoverage": 0,
+   "n": 4
+  },
+  {
+   "class": "common.security.GeoLocation",
+   "score": 100,
+   "killed": 4,
+   "survived": 0,
+   "noCoverage": 0,
+   "n": 4
+  },
+  {
+   "class": "auth.service.TokenExchangeService$OAuthCookieData",
+   "score": 75,
+   "killed": 3,
+   "survived": 1,
+   "noCoverage": 0,
+   "n": 4
+  },
+  {
+   "class": "auth.service.TokenExchangeService$FirebaseTokenCookieData",
+   "score": 75,
+   "killed": 3,
+   "survived": 1,
+   "noCoverage": 0,
+   "n": 4
+  },
+  {
+   "class": "common.ratelimit.SecureRateLimitStorage",
+   "score": 100,
+   "killed": 3,
+   "survived": 0,
+   "noCoverage": 0,
+   "n": 3
+  },
+  {
+   "class": "common.ratelimit.SecureRateLimitStorage$RateLimitStatus",
+   "score": 100,
+   "killed": 3,
+   "survived": 0,
+   "noCoverage": 0,
+   "n": 3
+  },
+  {
+   "class": "util.ServiceAccountKeyValidator",
+   "score": 100,
+   "killed": 3,
+   "survived": 0,
+   "noCoverage": 0,
+   "n": 3
+  },
+  {
+   "class": "common.ratelimit.RateLimitCleanupTask",
+   "score": 0,
+   "killed": 0,
+   "survived": 2,
+   "noCoverage": 0,
+   "n": 2
+  },
+  {
+   "class": "common.ratelimit.RateLimitProfile",
+   "score": 100,
+   "killed": 2,
+   "survived": 0,
+   "noCoverage": 0,
+   "n": 2
+  },
+  {
+   "class": "common.ratelimit.GdprCompliantRateLimiterService$RateLimitAuditEvent",
+   "score": 0,
+   "killed": 0,
+   "survived": 0,
+   "noCoverage": 1,
+   "n": 1
+  },
+  {
+   "class": "auth.service.RegistrationService$3",
+   "score": 0,
+   "killed": 0,
+   "survived": 0,
+   "noCoverage": 1,
+   "n": 1
+  },
+  {
+   "class": "auth.service.RegistrationService$1",
+   "score": 0,
+   "killed": 0,
+   "survived": 0,
+   "noCoverage": 1,
+   "n": 1
+  },
+  {
+   "class": "auth.service.RegistrationService$2",
+   "score": 0,
+   "killed": 0,
+   "survived": 0,
+   "noCoverage": 1,
+   "n": 1
+  },
+  {
+   "class": "auth.service.PasswordResetService$ResetContext",
+   "score": 100,
+   "killed": 1,
+   "survived": 0,
+   "noCoverage": 0,
+   "n": 1
+  },
+  {
+   "class": "auth.service.EmailChangeService$1",
+   "score": 0,
+   "killed": 0,
+   "survived": 0,
+   "noCoverage": 1,
+   "n": 1
+  },
+  {
+   "class": "common.ratelimit.FirebaseRateLimitConfiguration",
+   "score": 0,
+   "killed": 0,
+   "survived": 0,
+   "noCoverage": 1,
+   "n": 1
+  }
+ ]
+}
