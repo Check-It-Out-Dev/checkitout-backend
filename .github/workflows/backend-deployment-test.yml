@@ -68,9 +68,43 @@ jobs:
       config-json: ${{ needs.config.outputs.config-json }}
     secrets: inherit
 
+  # ── Automatic rollback ────────────────────────────────────────────────────────────────────────
+  # A deployment pipeline without one asks a human to notice, at whatever hour the deploy ran, that
+  # the health gate never cleared. This restores the pre-deployment backup, restarts the service and
+  # re-checks health, by itself.
+  #
+  # The condition is narrow on purpose. It needs a backup that actually exists -- rolling back to
+  # nothing is worse than staying broken -- and it only fires when something AFTER the backup went
+  # wrong. A failure in config, validation or build never reaches the server, so there is nothing to
+  # undo, and firing then would restore over a healthy system.
+  rollback:
+    name: 🔄 Automatic rollback
+    needs: [config, backup, deploy, reload-and-validate]
+    if: >-
+      always()
+      && needs.backup.result == 'success'
+      && (needs.deploy.result == 'failure' || needs['reload-and-validate'].result == 'failure')
+    uses: ./.github/workflows/auto-rollback-systemd.yml
+    with:
+      environment: ${{ fromJSON(needs.config.outputs.config-json)._flat.environment }}
+      deployment-path: ${{ fromJSON(needs.config.outputs.config-json)._flat.deployment_path }}
+      backup-location: ${{ needs.backup.outputs.backup-location }}
+      docker-compose-file: ${{ fromJSON(needs.config.outputs.config-json)._flat.docker_compose_file }}
+      systemd-service-name: ${{ fromJSON(needs.config.outputs.config-json)._flat.systemd_service_name }}
+      admin-home-directory: ${{ fromJSON(needs.config.outputs.config-json)._flat.admin_home_directory }}
+      container-user-name: ${{ fromJSON(needs.config.outputs.config-json)._flat.container_user_name }}
+      container-group-name: ${{ fromJSON(needs.config.outputs.config-json)._flat.container_group_name }}
+      server-port: ${{ fromJSON(needs.config.outputs.config-json)._flat.server_port }}
+      # Which stage failed, computed here rather than taken from anything a person typed. The
+      # workflow binds every input to an env var before the shell sees it, so free text is safe
+      # either way, but a reason that names a job is also more use at three in the morning.
+      failure-reason: >-
+        ${{ needs.deploy.result == 'failure' && 'Deploy stage failed' || 'Health gate never cleared after reload' }}
+    secrets: inherit
+
   summary:
     name: Summary
-    needs: [config, validate, build, backup, deploy, reload-and-validate]
+    needs: [config, validate, build, backup, deploy, reload-and-validate, rollback]
     if: always()
     runs-on: [self-hosted, Linux, x64]
     steps:
@@ -85,7 +119,8 @@ jobs:
           echo "| Build | ${{ needs.build.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Backup (Secure) | ${{ needs.backup.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Deploy (Secure) | ${{ needs.deploy.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Reload & Validate | ${{ needs.reload-and-validate.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Reload & Validate | ${{ needs['reload-and-validate'].result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Automatic rollback | ${{ needs.rollback.result == 'skipped' && 'not needed' || needs.rollback.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
           # Extract key values from config JSON
@@ -111,4 +146,4 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           
           echo "### 🚀 Deployment Status" >> $GITHUB_STEP_SUMMARY
-          echo "**Status**: ${{ needs.reload-and-validate.outputs.deployment-status }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Status**: ${{ needs['reload-and-validate'].outputs.deployment-status }}" >> $GITHUB_STEP_SUMMARY

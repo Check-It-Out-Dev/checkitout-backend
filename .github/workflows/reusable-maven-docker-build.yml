@@ -246,10 +246,10 @@ jobs:
         id: init
         run: |
           echo "BUILD_START=$(date +%s)" >> $GITHUB_OUTPUT
-          echo "BUILD_VERSION=${{ needs.maven-build.outputs.build-version }}" >> $GITHUB_ENV
+          echo "BUILD_VERSION=${{ needs['maven-build'].outputs.build-version }}" >> $GITHUB_ENV
           
           echo "🐳 Starting Docker build on regular runner"
-          echo "📦 Build Version: ${{ needs.maven-build.outputs.build-version }}"
+          echo "📦 Build Version: ${{ needs['maven-build'].outputs.build-version }}"
 
       - name: 📋 Parse Configuration
         id: config
@@ -334,7 +334,7 @@ jobs:
       - name: 📥 Download JAR Artifact
         uses: actions/download-artifact@v4
         with:
-          name: application-jar-${{ needs.maven-build.outputs.build-version }}
+          name: application-jar-${{ needs['maven-build'].outputs.build-version }}
           path: target
 
       # ========== DOCKER BUILD ==========
@@ -580,7 +580,7 @@ jobs:
         run: |
           # Calculate duration
           BUILD_END=$(date +%s)
-          MAVEN_BUILD_START=$(date -d "${{ needs.maven-build.outputs.build-version }}" +%s 2>/dev/null || echo ${{ steps.init.outputs.BUILD_START }})
+          MAVEN_BUILD_START=$(date -d "${{ needs['maven-build'].outputs.build-version }}" +%s 2>/dev/null || echo ${{ steps.init.outputs.BUILD_START }})
           DURATION=$((BUILD_END - MAVEN_BUILD_START))
           
           IMAGE_BASE="${{ env.REGISTRY }}/check-it-out-dev/checkitout-be"

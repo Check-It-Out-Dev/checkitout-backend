@@ -15,11 +15,10 @@ production with real users; the frontend's mocked build is the open demo today.
 [![OpenAPI](https://img.shields.io/badge/OpenAPI-3.1-85ea2d.svg)](docs/openapi/openapi.json)
 [![Tests](https://img.shields.io/endpoint?url=https://check-it-out-dev.github.io/checkitout-backend/badges/tests.json)](https://check-it-out-dev.github.io/checkitout-backend/)
 [![Flaky](https://img.shields.io/endpoint?url=https://check-it-out-dev.github.io/checkitout-backend/badges/flaky.json)](https://check-it-out-dev.github.io/checkitout-backend/)
-[![ci-tests](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/ci-tests.yml)
+[![Mutation](https://img.shields.io/endpoint?url=https://check-it-out-dev.github.io/checkitout-backend/badges/mutation.json)](https://check-it-out-dev.github.io/checkitout-backend/#quality)
+[![pull-request pipeline](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/pr.yml/badge.svg)](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/pr.yml)
+[![nightly pipeline](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/nightly.yml/badge.svg)](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/nightly.yml)
 [![image](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/build-image.yml/badge.svg)](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/build-image.yml)
-[![dependency review](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/dependency-review.yml)
-[![security](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/security.yml/badge.svg)](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/security.yml)
-[![api-fuzz](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/api-fuzz.yml/badge.svg)](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/api-fuzz.yml)
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=Check-It-Out-Dev_checkitout-backend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Check-It-Out-Dev_checkitout-backend)
 
 <sub>The test and flaky badges are read live from the <a href="https://check-it-out-dev.github.io/checkitout-backend/">quality dashboard</a>, which every run republishes.</sub>
@@ -207,28 +206,42 @@ Every uploaded script is sha256-gated and made immutable on the host before it
 runs; images are tagged by version and commit; the target is a hardened VPS
 provisioned by Ansible (15 roles — base system, Docker, PostgreSQL, nginx with
 mTLS, log shipping, backups; runbooks in [`ansible/`](ansible/) and
-[`deployment/`](deployment/)). A reusable rollback workflow
-([`auto-rollback-systemd.yml`](.github/workflows/auto-rollback-systemd.yml):
-restore the backup, restart, nine health attempts) exists and its wiring into
-the chain is in progress. Hosting is Docker Compose and systemd on that one VPS —
+[`deployment/`](deployment/)). **Rollback is automatic.** [`auto-rollback-systemd.yml`](.github/workflows/auto-rollback-systemd.yml)
+— restore the backup, restart the unit, nine health attempts — is wired into both chains as a job
+that fires when the backup succeeded and something after it did not. The condition is narrow on
+purpose: rolling back to a backup that does not exist is worse than staying broken, and a failure in
+config, validation or build never reached the server, so there is nothing there to undo. Hosting is Docker Compose and systemd on that one VPS —
 right-sized for this product, and the reason the documents say no to Kubernetes
 *for hosting*.
 
-The **test pipeline** runs beside it, on GitHub-hosted runners on the free tier:
+The **test pipeline** runs beside it, on GitHub-hosted runners on the free tier, as **two pipelines
+with two verdicts**. Six workflows used to fire on every push and pull request, each with its own
+outcome; every tier below is now a reusable workflow with no trigger of its own — still dispatchable
+while you work on it, never firing by itself — and each pipeline ends in one line.
 
-| Workflow | Trigger | What runs |
+| Pipeline | Trigger | What it calls | Budget |
+| :--- | :--- | :--- | :--- |
+| [`pr.yml`](.github/workflows/pr.yml) | pull request, push to `main` | unit · integration · Sonar's new-code gate · dependency review | ~7 min |
+| [`nightly.yml`](.github/workflows/nightly.yml) | 02:30 UTC, on demand | every tier including end-to-end · Schemathesis · mutation · security | as long as it takes |
+
+| Tier | What runs |
+| :--- | :--- |
+| [`ci-tests.yml`](.github/workflows/ci-tests.yml) | Unit (surefire, `-Ptest`), integration (failsafe, `-Pintegration`, Testcontainers) and end-to-end (Cucumber, `-Pe2e`) — which tiers run is the `tier` input, never the event. Allure 3 with history to Pages. |
+| [`mutation.yml`](.github/workflows/mutation.yml) | PIT over the security, rate-limit and auth services: **43.35 %**, or **69.22 %** on the code the unit suite actually reaches, across 2,397 mutants. Coverage says a line ran; this says whether anything checked the result. The report names the seventeen classes with no unit test at all rather than hiding them in an average. |
+| [`api-fuzz.yml`](.github/workflows/api-fuzz.yml) | Schemathesis generates requests from the OpenAPI document and sends them at a running instance, checking every response against the schema it claims. |
+| [`security.yml`](.github/workflows/security.yml) | Semgrep over the OWASP, secrets and Java rule sets; Checkov on the Dockerfiles and workflows; Trivy on the tree and the published image, with an SBOM of each. Every scanner writes SARIF into code scanning. |
+| [`sonar.yml`](.github/workflows/sonar.yml) | SonarQube Cloud, fed the JaCoCo coverage the unit tier writes. |
+
+| | Trigger | What runs |
 | :--- | :--- | :--- |
-| [`ci-tests.yml`](.github/workflows/ci-tests.yml) | push, pull request, nightly | The unit tier on every push and pull request; the integration tier on push, on Testcontainers against real PostgreSQL and Redis; the end-to-end Cucumber tier nightly and on demand, against the Firebase Authentication and Firestore emulators. |
-| [`build-image.yml`](.github/workflows/build-image.yml) | push to main | Publishes the container image to `ghcr.io/check-it-out-dev/checkitout-backend` — what the frontend's nightly and Kubernetes tiers run against, and what the sandbox deploys. |
-| [`security.yml`](.github/workflows/security.yml) | push, pull request, weekly | Semgrep over the OWASP, secrets and Java rule sets; Checkov on the Dockerfiles and workflows; Trivy on the source tree and on the published image, with an SBOM of each. Every scanner writes SARIF into code scanning. |
-| [`api-fuzz.yml`](.github/workflows/api-fuzz.yml) | nightly, on demand | Schemathesis generates requests from the OpenAPI document and sends them at a running instance, checking undocumented status codes, schema conformance and server errors. |
-| [`sonar.yml`](.github/workflows/sonar.yml) | push, pull request | SonarQube Cloud, fed the JaCoCo coverage the unit tier writes. |
-| [`dependency-review.yml`](.github/workflows/dependency-review.yml) | pull request | Fails a pull request that introduces a dependency with a known high-severity advisory. CodeQL runs through GitHub's default setup on the extended query suite, java-kotlin and the workflow files included, and reports under Security. |
+| [`build-image.yml`](.github/workflows/build-image.yml) | push to main | Publishes the container image to `ghcr.io/check-it-out-dev/checkitout-backend` — what the frontend's full-stack and Kubernetes tiers boot against. |
 
-Every run publishes to the [quality dashboard](https://check-it-out-dev.github.io/checkitout-backend/) — pass
-rate, per-tier counts, the flaky list over the last ten runs — and an
-[Allure report](https://check-it-out-dev.github.io/checkitout-backend/allure/latest/) whose history carries
-across runs.
+Every run publishes to the [quality dashboard](https://check-it-out-dev.github.io/checkitout-backend/) — pass rate and its trend, **mutation score**,
+per-tier counts, the flaky list over the last ten runs — and an
+[Allure report](https://check-it-out-dev.github.io/checkitout-backend/allure/latest/) whose history carries across runs. The frontend's dashboard is
+the [same page for that repository](https://check-it-out-dev.github.io/checkitout-frontend/), and its
+[docs/ci/METRICS.md](https://github.com/Check-It-Out-Dev/checkitout-frontend/blob/main/docs/ci/METRICS.md)
+is the schema both sites publish.
 
 The end-to-end tier is the one worth a sentence. It used to need a real Firebase project, which is why it
 could not run in public CI at all. It now runs against the emulator suite — password sign-in, ID tokens,
