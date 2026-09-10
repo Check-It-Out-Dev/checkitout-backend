@@ -1,0 +1,107 @@
+# The night pipeline: everything the pull-request pipeline cannot afford.
+#
+# The trade is explicit. pr.yml answers "is this change safe to merge" in a few minutes and is
+# allowed to miss what a few minutes cannot see. This answers "is the system actually healthy",
+# takes as long as it takes, and runs while nobody is waiting.
+#
+#   tests      every tier, end to end included: Cucumber against the Firebase emulator suite,
+#              which needs no credential -- the reason that tier is honest again
+#   api-fuzz   Schemathesis against a booted backend: property-based cases generated from the
+#              OpenAPI document, which is the one part of the contract chain a compiler cannot check
+#   security   Semgrep on the OWASP rules, Checkov over the manifests, Trivy, and an SBOM
+#
+# One table and one word at the end. A night run that nobody reads is a night run that should not
+# exist, and a night run that reports a cancelled tier as green is worse than one nobody reads.
+#
+# 02:30 rather than 02:00: the frontend's night starts at 02:00 and boots this repository's image.
+name: nightly
+
+on:
+  schedule:
+    - cron: "30 2 * * *"
+  workflow_dispatch:
+    inputs:
+      skip_fuzz:
+        description: Skip the Schemathesis tier
+        type: boolean
+        default: false
+
+concurrency:
+  group: nightly
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Every tier
+    uses: ./.github/workflows/ci-tests.yml
+    with:
+      tier: all
+      publish: true
+    # A called workflow may never hold more than the job that calls it, and this one publishes the
+    # Allure report to the Pages branch and writes a check run per tier.
+    permissions:
+      contents: write
+      checks: write
+    secrets: inherit
+
+  api-fuzz:
+    name: Schemathesis
+    if: ${{ !inputs.skip_fuzz }}
+    uses: ./.github/workflows/api-fuzz.yml
+    permissions:
+      contents: read
+    secrets: inherit
+
+  security:
+    name: Security
+    uses: ./.github/workflows/security.yml
+    permissions:
+      contents: read
+      security-events: write
+    secrets: inherit
+
+  verdict:
+    name: One night, one verdict
+    needs: [tests, api-fuzz, security]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: The night in one table
+        run: |
+          set -euo pipefail
+          tests='${{ needs.tests.result }}'
+          fuzz='${{ needs['api-fuzz'].result }}'
+          security='${{ needs.security.result }}'
+          incomplete=0
+          failed=0
+          for r in "$tests" "$fuzz" "$security"; do
+            case "$r" in
+              success|skipped) ;;
+              cancelled) incomplete=1 ;;
+              *) failed=1 ;;
+            esac
+          done
+          if [ "$incomplete" = 1 ]; then verdict='incomplete'
+          elif [ "$failed" = 1 ]; then verdict='red'
+          else verdict='green'; fi
+          {
+            echo "### The night"
+            echo
+            echo "**Verdict: $verdict.**"
+            if [ "$incomplete" = 1 ]; then
+              echo "A cancelled tier means this run cannot be read as healthy."
+            fi
+            echo
+            echo "| tier | result |"
+            echo "| --- | --- |"
+            echo "| unit, integration, end to end | $tests |"
+            echo "| Schemathesis | $fuzz |"
+            echo "| security | $security |"
+            echo
+            echo "Reports: the Allure site on Pages, and each tier's artifacts on this run."
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+          [ "$verdict" = green ] || exit 1

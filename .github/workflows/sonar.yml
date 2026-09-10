@@ -17,15 +17,20 @@
 # early costs nothing.
 name: sonar
 
+# Called by pr.yml; still dispatchable on its own while you are working on it.
 on:
-  push:
-    branches: [main]
-  pull_request:
+  workflow_call:
   workflow_dispatch:
 
+# The group is keyed by the CALLING pipeline as well as the ref. Without `github.workflow` --
+# which under workflow_call is the caller's name -- a push to main starts `pr`, `pr` calls this
+# tier, and it cancels the copy the night is already running.
 concurrency:
-  group: sonar-${{ github.ref }}
-  cancel-in-progress: true
+  group: sonar-${{ github.workflow }}-${{ github.ref }}
+  # The caller's event, because under workflow_call that is whose event it is: a superseded
+  # pull-request run is waste, but a superseded push to main loses the record of what main
+  # did, and a night is never worth cancelling.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -69,7 +74,6 @@ jobs:
         run: |
           chmod +x mvnw
           ./mvnw -B -ntp test -Ptest -DskipITs -Dpmd.skip=true -Dcpd.skip=true -Dcheckstyle.skip=true
-          ./mvnw -B -ntp jacoco:report
 
       - name: Analyse
         if: env.SONAR_TOKEN != ''
