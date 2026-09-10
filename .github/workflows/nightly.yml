@@ -8,6 +8,7 @@
 #              which needs no credential -- the reason that tier is honest again
 #   api-fuzz   Schemathesis against a booted backend: property-based cases generated from the
 #              OpenAPI document, which is the one part of the contract chain a compiler cannot check
+#   mutation   PIT: whether the unit tests would notice if the code were wrong
 #   security   Semgrep on the OWASP rules, Checkov over the manifests, Trivy, and an SBOM
 #
 # One table and one word at the end. A night run that nobody reads is a night run that should not
@@ -55,6 +56,13 @@ jobs:
       contents: read
     secrets: inherit
 
+  mutation:
+    name: Mutation
+    uses: ./.github/workflows/mutation.yml
+    permissions:
+      contents: read
+    secrets: inherit
+
   security:
     name: Security
     uses: ./.github/workflows/security.yml
@@ -65,7 +73,7 @@ jobs:
 
   verdict:
     name: One night, one verdict
-    needs: [tests, api-fuzz, security]
+    needs: [tests, api-fuzz, mutation, security]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -75,10 +83,11 @@ jobs:
           set -euo pipefail
           tests='${{ needs.tests.result }}'
           fuzz='${{ needs['api-fuzz'].result }}'
+          mutation='${{ needs.mutation.result }}'
           security='${{ needs.security.result }}'
           incomplete=0
           failed=0
-          for r in "$tests" "$fuzz" "$security"; do
+          for r in "$tests" "$fuzz" "$mutation" "$security"; do
             case "$r" in
               success|skipped) ;;
               cancelled) incomplete=1 ;;
@@ -100,6 +109,7 @@ jobs:
             echo "| --- | --- |"
             echo "| unit, integration, end to end | $tests |"
             echo "| Schemathesis | $fuzz |"
+            echo "| mutation (PIT) | $mutation |"
             echo "| security | $security |"
             echo
             echo "Reports: the Allure site on Pages, and each tier's artifacts on this run."
