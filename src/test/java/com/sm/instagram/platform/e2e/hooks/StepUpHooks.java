@@ -46,7 +46,7 @@ public class StepUpHooks extends CucumberSpringConfig {
     private static final String COMPANY_EMAIL = "e2e.company@test.com";
 
     private static final String INFLUENCER_FIREBASE_UID = "E2E_INFLUENCER_001";
-    private static final String INFLUENCER_EMAIL = "norbert.marchewka97999@wp.pl";
+    private static final String INFLUENCER_EMAIL = "e2e.influencer@test.com";
 
     /**
      * Restores users to login-ready state before each scenario.

@@ -275,7 +275,7 @@ mvn verify -Pe2e "-Dcucumber.filter.tags=@authentication"
 │  └── KMS Key: totp-secrets-key (symmetric decryption)                       │
 │                                                                              │
 │  INFLUENCER USER (OAuth)                                                     │
-│  ├── Firebase UID: SEWgduxUjRh4KDqxVWFs6zgThIa2                             │
+│  ├── Firebase UID: E2E_INFLUENCER_001                             │
 │  ├── Role: INFLUENCER                                                       │
 │  ├── Instagram Token: Encrypted in Firestore instagramUsers/{uid}           │
 │  └── KMS Key: token-encryption-key (symmetric decryption)                   │

@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * <p>Uses real admin account (2FA verified) to operate on existing robot users:
  * <ul>
  *   <li>E2E_COMPANY_001 - Company user for admin to operate on</li>
- *   <li>E2E_INFLUENCER_001 - Influencer user (norbertmarchewka) for admin to operate on</li>
+ *   <li>E2E_INFLUENCER_001 - Influencer user (styleguru) for admin to operate on</li>
  * </ul>
  *
  * <p>Run with: mvn verify -Pe2e -Dit.test=RunAdminIT
@@ -498,7 +498,7 @@ public class AdminUserManagementSteps extends CucumberSpringConfig {
     private String resolveEmail(String targetAlias) {
         // Check for known Firebase UIDs
         if (COMPANY_FIREBASE_UID.equals(targetAlias)) return "e2e.company@test.com";
-        if (INFLUENCER_FIREBASE_UID.equals(targetAlias)) return "norbertmarchewka@instagram-e2e.test";
+        if (INFLUENCER_FIREBASE_UID.equals(targetAlias)) return "styleguru@instagram-e2e.test";
         // Check for alias patterns
         if (targetAlias.contains("COMPANY")) return "e2e.company@test.com";
         if (targetAlias.contains("INFLUENCER")) return "e2e.influencer@test.com";
