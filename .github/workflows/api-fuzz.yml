@@ -1,0 +1,148 @@
+# Property-based fuzzing against the running server — the gap the contract chain did not cover.
+#
+# The chain already proves a lot: the OpenAPI document is generated from a booted application, the
+# frontend's client is generated from that document, and three kinds of consumer fail to COMPILE when
+# a field moves. What none of that proves is that the running server does what its own document says.
+# Schemathesis generates requests from the schema, sends them at a real instance, and checks the
+# answers against it: undocumented status codes, responses that do not match their declared schema,
+# content types that were never promised, and server errors.
+#
+# It found something on its first run against the public sandbox — every secured operation answered
+# 401 while the document declared no 401 at all (fixed by AuthFailureResponsesCustomizer).
+name: api-fuzz
+
+on:
+  schedule:
+    - cron: "40 2 * * *"
+  workflow_dispatch:
+    inputs:
+      backend_tag:
+        description: Backend image tag on ghcr.io
+        type: string
+        default: main
+      max_examples:
+        description: Generated cases per operation
+        type: string
+        default: "8"
+  push:
+    branches: [main]
+    paths:
+      - "src/main/java/**/config/**"
+      - "src/main/java/**/*Controller.java"
+      - ".github/workflows/api-fuzz.yml"
+
+concurrency:
+  group: api-fuzz-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  fuzz:
+    name: Schemathesis against a running backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_PASSWORD: admin
+          POSTGRES_DB: postgres
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s
+          --health-timeout 3s --health-retries 20
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s
+          --health-timeout 3s --health-retries 20
+      backend:
+        image: ghcr.io/check-it-out-dev/checkitout-backend:${{ inputs.backend_tag || 'main' }}
+        env:
+          SPRING_PROFILES_ACTIVE: dev-lite
+          SPRING_DATASOURCE_HOST: postgres
+          SPRING_DATASOURCE_PORT: "5432"
+          SPRING_DATASOURCE_DATABASE: postgres
+          SPRING_DATASOURCE_USERNAME: postgres
+          SPRING_DATASOURCE_PASSWORD: admin
+          SPRING_DATA_REDIS_HOST: redis
+          SPRING_DATA_REDIS_PORT: "6379"
+          SPRING_LIQUIBASE_CONTEXTS: dev,local,dev-lite
+          SERVER_PORT: "8080"
+          TZ: UTC
+        ports: ["8080:8080"]
+        options: >-
+          --health-cmd "wget -qO- http://127.0.0.1:8080/api/actuator/health/readiness | grep -q UP"
+          --health-interval 10s --health-timeout 5s --health-retries 40 --health-start-period 60s
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --quiet "schemathesis>=4,<5"
+
+      # dev-lite mints a session without any credential, which is the whole reason this can run on a
+      # public runner. Fuzzing unauthenticated would prove only that 280 paths answer 401.
+      - name: A session to fuzz with
+        id: session
+        run: |
+          set -euo pipefail
+          curl -sS -D /tmp/h -o /dev/null -X POST http://localhost:8080/api/test/auth/mock-session \
+            -H "Content-Type: application/json" \
+            -d '{"email":"e2e.company@test.com","role":"COMPANY"}'
+          COOKIES=$(grep -i '^set-cookie:' /tmp/h | sed 's/^[Ss]et-[Cc]ookie: //' | cut -d';' -f1 | paste -sd'; ' -)
+          test -n "$COOKIES"
+          echo "::add-mask::$COOKIES"
+          echo "cookies=$COOKIES" >> "$GITHUB_OUTPUT"
+          echo "signed in, $(grep -ci '^set-cookie:' /tmp/h) cookie(s)"
+
+      - name: Fuzz
+        id: fuzz
+        run: |
+          set -euo pipefail
+          st run http://localhost:8080/api/v3/api-docs \
+            --url http://localhost:8080/api \
+            -H "Cookie: ${{ steps.session.outputs.cookies }}" \
+            --exclude-path-regex '^/(test|actuator|dev-lite)/' \
+            --max-examples "${{ inputs.max_examples || '8' }}" \
+            --continue-on-failure \
+            --workers 4 \
+            --phases examples,coverage,fuzzing \
+            --report junit --report-dir reports \
+            --report-junit-path reports/junit.xml | tee /tmp/fuzz.txt
+        continue-on-error: true
+
+      - name: Summary
+        if: always()
+        run: |
+          set -o pipefail
+          {
+            echo "### Schemathesis"
+            echo
+            echo '```'
+            sed -n '/=* SUMMARY/,$p' /tmp/fuzz.txt || echo "no summary produced"
+            echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Backend log on failure
+        if: steps.fuzz.outcome != 'success'
+        run: docker logs ${{ job.services.backend.id }} 2>&1 | tail -120
+
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: api-fuzz-${{ github.run_number }}
+          path: reports/
+          retention-days: 30
+
+      # The fuzzer's verdict is the job's verdict. It is separated from the run step so the summary
+      # and the artifact are published either way - a red run you cannot read is worth nothing.
+      - name: Verdict
+        if: always()
+        run: |
+          if [ "${{ steps.fuzz.outcome }}" != "success" ]; then
+            echo "Schemathesis found contract violations - the report is in the artifact." >&2
+            exit 1
+          fi
+          echo "the running server matches its own document on every generated case"
