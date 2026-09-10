@@ -53,8 +53,13 @@ updates:
           - "org.assertj*"
           - "org.pitest*"
 
+  # The Dockerfiles are not at the root — Dependabot's first run said so plainly, "No Dockerfiles nor
+  # Kubernetes YAML found in /" — so each image directory is named.
   - package-ecosystem: docker
-    directory: "/"
+    directories:
+      - "/docker/instagram-platform"
+      - "/docker/google-secrets-init"
+      - "/docker/secret-tester"
     schedule:
       interval: weekly
       day: monday
