@@ -131,14 +131,14 @@ jobs:
       # opened a pull request for yet, and writes an SBOM of what is actually there.
       - name: Filesystem CVEs
         run: |
-          trivy fs . --scanners vuln,secret,misconfig \
+          trivy fs . --offline-scan --scanners vuln,secret,misconfig \
             --skip-dirs target,node_modules \
             --format sarif --output trivy.sarif --exit-code 0
-          trivy fs . --format cyclonedx --output sbom.cdx.json --skip-dirs target,node_modules
+          trivy fs . --offline-scan --format cyclonedx --output sbom.cdx.json --skip-dirs target,node_modules
           {
             echo "### Trivy"
             echo
-            trivy fs . --scanners vuln --skip-dirs target,node_modules \
+            trivy fs . --offline-scan --scanners vuln --skip-dirs target,node_modules \
               --format table --severity HIGH,CRITICAL --exit-code 0 2>/dev/null | tail -25
           } | tee -a "$GITHUB_STEP_SUMMARY"
       - uses: github/codeql-action/upload-sarif@v4
