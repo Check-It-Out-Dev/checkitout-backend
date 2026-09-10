@@ -13,7 +13,7 @@ Feature: Admin Platform Management Operations (CONSOLIDATED)
   # Test Users:
   #   - Admin: E2E_ADMIN_001 (e2e.admin@test.com)
   #   - Company: E2E_COMPANY_001 (e2e.company@test.com)
-  #   - Influencer: E2E_INFLUENCER_001 (norbertmarchewka - Instagram OAuth)
+  #   - Influencer: E2E_INFLUENCER_001 (styleguru - Instagram OAuth)
   #
   # Run with: mvn verify -Pe2e -Dcucumber.filter.tags="@admin-platform"
   # =============================================================================
