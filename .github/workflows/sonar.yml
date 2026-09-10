@@ -1,0 +1,78 @@
+# SonarQube Cloud analysis — the quality gate CodeQL does not provide.
+#
+# CodeQL answers "is this exploitable". Sonar answers "is this maintainable, and is the code you
+# just wrote worse than the code you already had". The second question is the one that makes a
+# backlog of 655 existing alerts survivable: Sonar's gate can be set on NEW code only, so the
+# ratchet tightens without demanding the whole history be fixed first.
+#
+# GitHub's own starter template for this still points at SonarSource/sonarcloud-github-action, which
+# is archived; the maintained action is sonarqube-scan-action, pinned here to the lowest major that
+# runs on the node24 runtime.
+#
+# BEFORE THIS DOES ANYTHING the owner has to do three things once, all free for public repositories:
+#   1. sign in at sonarcloud.io with GitHub and install the SonarQube Cloud app on Check-It-Out-Dev
+#   2. create the organisation and import this repository (project key below)
+#   3. put the generated token in this repository's secrets as SONAR_TOKEN
+# Until then the analysis step skips with a message rather than failing the build, so landing this
+# early costs nothing.
+name: sonar
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: sonar-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  analysis:
+    name: SonarQube Cloud
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # Sonar attributes issues to authors and measures new code against a baseline; a shallow
+          # clone leaves it guessing at both.
+          fetch-depth: 0
+
+      - name: Not configured yet
+        if: env.SONAR_TOKEN == ''
+        run: |
+          {
+            echo "### SonarQube Cloud is not configured"
+            echo
+            echo "No \`SONAR_TOKEN\` secret, so the analysis was skipped rather than failed."
+            echo "It is free for public repositories; see the header of this workflow for the three steps."
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/setup-java@v5
+        if: env.SONAR_TOKEN != ''
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      # Sonar reads coverage rather than measuring it, and needs the compiled classes to resolve
+      # types. The unit tier produces both in one pass.
+      - name: Unit tier with coverage
+        if: env.SONAR_TOKEN != ''
+        run: |
+          chmod +x mvnw
+          ./mvnw -B -ntp test -Ptest -DskipITs -Dpmd.skip=true -Dcpd.skip=true -Dcheckstyle.skip=true
+          ./mvnw -B -ntp jacoco:report
+
+      - name: Analyse
+        if: env.SONAR_TOKEN != ''
+        uses: SonarSource/sonarqube-scan-action@v7
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
