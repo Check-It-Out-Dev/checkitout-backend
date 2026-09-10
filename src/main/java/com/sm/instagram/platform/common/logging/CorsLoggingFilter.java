@@ -122,7 +122,11 @@ public class CorsLoggingFilter extends OncePerRequestFilter {
             }
 
             // Log suspicious patterns
-            if (origin.contains("localhost") && !origin.startsWith("http://localhost") && !origin.startsWith("https://localhost")) {
+            // A same-origin request carries no Origin header at all, so this is null more often than not
+        // -- and this is a logging filter, which has no business throwing on a request it only meant
+        // to describe (javabugs:S2259). isOriginAllowed above already tolerates null; this did not.
+        if (origin != null && origin.contains("localhost")
+                && !origin.startsWith("http://localhost") && !origin.startsWith("https://localhost")) {
                 log.warn("CORS_SUSPICIOUS_LOCALHOST: requestId={}, correlationId={}, suspiciousOrigin={}", requestId, correlationId, origin);
             }
 

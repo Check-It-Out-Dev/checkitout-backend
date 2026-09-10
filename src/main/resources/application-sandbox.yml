@@ -48,9 +48,14 @@ management:
 file-upload:
   local-sink:
     dir: /data/uploads
+  # Half of production's 10MB. The sandbox is a public demo whose only upload is a profile picture or
+  # a campaign photo, so it does not need production's headroom, and every megabyte of it is buffered
+  # for anyone who finds the URL (java:S5693). The application's own limit is set alongside the
+  # container's so an oversized file is refused with a message rather than by the servlet.
+  max-file-size: 5242880
 
 spring:
   servlet:
     multipart:
-      max-file-size: 10MB
-      max-request-size: 12MB
+      max-file-size: 5MB
+      max-request-size: 6MB

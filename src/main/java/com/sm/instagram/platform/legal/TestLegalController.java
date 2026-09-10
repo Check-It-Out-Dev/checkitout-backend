@@ -1,5 +1,7 @@
 package com.sm.instagram.platform.legal;
 
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
 import com.sm.instagram.platform.auth.cache.UserCacheService;
 import com.sm.instagram.platform.user.AccountStatus;
 import com.sm.instagram.platform.user.User;
@@ -182,7 +184,11 @@ public class TestLegalController {
 
         LocalDateTime published = latestPublished.get();
         LocalDateTime deadline = published.plusDays(gracePeriodDays);
-        long daysRemaining = Math.max(0, ChronoUnit.DAYS.between(LocalDateTime.now(), deadline));
+        // Zoned before counting days: DAYS.between on wall-clock values lands on the wrong side of
+        // a day boundary across a daylight-saving change (java:S8700), and this decides how long
+        // a user has left to accept new terms.
+        ZoneId zone = ZoneId.systemDefault();
+        long daysRemaining = Math.max(0, ChronoUnit.DAYS.between(ZonedDateTime.now(zone), deadline.atZone(zone)));
         boolean expired = LocalDateTime.now().isAfter(deadline);
 
         return ResponseEntity.ok(Map.of(

@@ -1,5 +1,7 @@
 package com.sm.instagram.platform.auth.service;
 
+import java.time.ZoneId;
+import java.time.Instant;
 import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -118,9 +120,12 @@ public class PasswordResetService {
 
         // 2. Cooldown check (60 seconds)
         if (user.getPasswordResetSentAt() != null) {
+            // Both ends through the same zone: wall-clock subtraction is an hour out across a
+            // daylight-saving change (java:S8700), and this is the reset cooldown.
+            ZoneId zone = ZoneId.systemDefault();
             Duration timeSinceLastRequest = Duration.between(
-                user.getPasswordResetSentAt(),
-                LocalDateTime.now()
+                user.getPasswordResetSentAt().atZone(zone).toInstant(),
+                Instant.now()
             );
             if (timeSinceLastRequest.getSeconds() < passwordResetCooldownSeconds) {
                 log.info("Password reset cooldown active for user: {} ({}s remaining)",

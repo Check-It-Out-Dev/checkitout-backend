@@ -392,6 +392,11 @@ public class UserService extends BaseService<User, Long, UserDtoIn> {
     // ===== Permissions =====
 
     private boolean validateUserUpdatePermission(User user) {
+        // Every caller reaches this with a user that exists -- findById throws rather than returning
+        // null -- but the analyser cannot see through orElseThrow and flagged the dereference below
+        // (javabugs:S2259). Stating the precondition is cheaper than arguing with it, and a future
+        // caller that does pass null gets told where it went wrong rather than a bare NPE.
+        Objects.requireNonNull(user, "validateUserUpdatePermission requires a user");
         if (!permissionUtils.isAdmin() && !permissionUtils.isUserOwner(user)) {
             throw new InsufficientPermissionsException(
                     "error.auth.insufficient_permissions",
