@@ -18,6 +18,9 @@ production with real users; the frontend's mocked build is the open demo today.
 [![ci-tests](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/ci-tests.yml)
 [![image](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/build-image.yml/badge.svg)](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/build-image.yml)
 [![dependency review](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/dependency-review.yml)
+[![security](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/security.yml/badge.svg)](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/security.yml)
+[![api-fuzz](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/api-fuzz.yml/badge.svg)](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/api-fuzz.yml)
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=Check-It-Out-Dev_checkitout-backend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Check-It-Out-Dev_checkitout-backend)
 
 <sub>The test and flaky badges are read live from the <a href="https://check-it-out-dev.github.io/checkitout-backend/">quality dashboard</a>, which every run republishes.</sub>
 
@@ -217,6 +220,9 @@ The **test pipeline** runs beside it, on GitHub-hosted runners on the free tier:
 | :--- | :--- | :--- |
 | [`ci-tests.yml`](.github/workflows/ci-tests.yml) | push, pull request, nightly | The unit tier on every push and pull request; the integration tier on push, on Testcontainers against real PostgreSQL and Redis; the end-to-end Cucumber tier nightly and on demand, against the Firebase Authentication and Firestore emulators. |
 | [`build-image.yml`](.github/workflows/build-image.yml) | push to main | Publishes the container image to `ghcr.io/check-it-out-dev/checkitout-backend` — what the frontend's nightly and Kubernetes tiers run against, and what the sandbox deploys. |
+| [`security.yml`](.github/workflows/security.yml) | push, pull request, weekly | Semgrep over the OWASP, secrets and Java rule sets; Checkov on the Dockerfiles and workflows; Trivy on the source tree and on the published image, with an SBOM of each. Every scanner writes SARIF into code scanning. |
+| [`api-fuzz.yml`](.github/workflows/api-fuzz.yml) | nightly, on demand | Schemathesis generates requests from the OpenAPI document and sends them at a running instance, checking undocumented status codes, schema conformance and server errors. |
+| [`sonar.yml`](.github/workflows/sonar.yml) | push, pull request | SonarQube Cloud, fed the JaCoCo coverage the unit tier writes. |
 | [`dependency-review.yml`](.github/workflows/dependency-review.yml) | pull request | Fails a pull request that introduces a dependency with a known high-severity advisory. CodeQL runs through GitHub's default setup on the extended query suite, java-kotlin and the workflow files included, and reports under Security. |
 
 Every run publishes to the [quality dashboard](https://check-it-out-dev.github.io/checkitout-backend/) — pass
@@ -245,10 +251,12 @@ Dated 2026-09. ✅ built · 🟡 under way · ⬜ designed, not started.
 |     | What | Detail |
 | :-- | :-- | :-- |
 | ✅ | **A test pipeline** | All three tiers run in `ci-tests.yml` on free hosted runners: unit on every push, integration on Testcontainers, the Cucumber corpus nightly against the Firebase emulators with no credential. Not the sharded Testkube-on-ARC shape this row once described — the Kubernetes tier lives in the frontend repository, where a kind cluster runs Playwright as an Indexed Job and k6 against this backend's image |
-| 🟡 | **Rollback wired into the release chain** | The reusable rollback exists; it becomes the failure path of `reload-and-validate` |
+| 🟡 | **Rollback wired into the release chain** | The reusable rollback exists and is still not wired — and a security triage found why that is no longer a simple job. `auto-rollback-systemd.yml` interpolates `${{ }}` expressions straight into shell across 91 sites, which CodeQL flags and which is harmless today only because the workflow has no callers and its self-hosted runner cannot be scheduled on a public repository. Wire it to a caller that passes a commit message and those become remote code execution on a runner holding the deploy key. The `env:`-binding fix comes first |
 | ✅ | **Report aggregation** | JUnit XML from every tier feeds a quality dashboard on GitHub Pages with run history and a flaky list over the last ten runs, plus an Allure report whose history carries across runs. ReportPortal stays deferred; a flaky *quarantine* is a policy question, not a missing tool, and is still open |
 | ✅ | **Performance in CI** | k6 gates this API's public surface — browse and apply journeys with per-journey and per-endpoint thresholds — run from the frontend repository, which owns the script: as a k6-operator `TestRun` against the in-cluster service in the Kubernetes tier, and against the live sandbox after every deploy. Metrics are remote-written to a public Grafana Cloud dashboard |
-| ⬜ | **Schemathesis against the running server** | The one thing the contract chain does not prove: that the server matches its own published spec |
+| ✅ | **Schemathesis against the running server** | `api-fuzz.yml` generates requests from the schema and sends them at a real instance. It earned its place on the first run: every secured operation answered 401 while the document declared none, which is a contract defect because the frontend generates its client from that document. Fixed by `AuthFailureResponsesCustomizer`; the fuzzer now runs nightly |
+| ✅ | **OWASP Top 10 in the pipeline** | `security.yml`: Semgrep over the OWASP, secrets and Java rule sets; Checkov on the Dockerfiles and workflows for the misconfiguration surface nothing else reaches; Trivy on both the source tree and the **published image**, with an SBOM of each. All SARIF into code scanning. The dynamic half runs from the frontend repository, against the sandbox — which is this backend |
+| ✅ | **SonarQube Cloud quality gate** | Free for public repositories; fed the JaCoCo coverage the unit tier already writes. Its gate can be set on new code alone, which is what makes an existing backlog survivable |
 
 ## The rest of the estate
 
