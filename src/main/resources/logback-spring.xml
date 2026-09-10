@@ -54,8 +54,17 @@
         <!-- UNIFIED PRODUCTION APPENDER - All logs in one file for production environment -->
         <appender name="UNIFIED_PROD_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <file>${LOG_DIR}/${APP_NAME}-prod-unified.log</file>
-            <encoder>
-                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{REQUEST_ID:-NO-REQ}] [%X{correlationId:-NO-TRACE}] [%X{requestMethod:-}:%X{requestUri:-}] %logger{50} - %msg%n</pattern>
+            <!-- Structured ECS, not a %msg%n pattern, and the reason is security rather than taste.
+                 A pattern encoder writes the message verbatim, so a value carrying a newline forges
+                 a whole log line: anyone who controls a logged string can invent entries that look
+                 exactly like the real ones. CodeQL counts 500 such sinks here, and sanitising 500
+                 call sites is never as reliable as an encoder that cannot emit a raw newline at all
+                 JSON escapes it, and the record stays one line.
+                 The MDC values the old pattern printed by hand (REQUEST_ID, correlationId, method,
+                 uri) become first-class fields, which is also what Loki wants. The sandbox profile
+                 below has run this same encoder since it went public. -->
+            <encoder class="org.springframework.boot.logging.logback.StructuredLogEncoder">
+                <format>ecs</format>
             </encoder>
             <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
                 <fileNamePattern>${LOG_DIR}/${APP_NAME}-prod-unified.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
