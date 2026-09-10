@@ -38,8 +38,13 @@
         <!-- UNIFIED TEST APPENDER - All logs in one file for test environment -->
         <appender name="UNIFIED_TEST_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <file>${LOG_DIR}/${APP_NAME}-test-unified.log</file>
-            <encoder>
-                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{REQUEST_ID:-NO-REQ}] [%X{correlationId:-NO-TRACE}] [%X{requestMethod:-}:%X{requestUri:-}] %logger{50} - %msg%n</pattern>
+            <!-- Structured, for the same reason as prod: a %msg%n pattern writes the message
+                 verbatim, so any logged value carrying a newline forges a whole record. tst is a
+                 deployed environment whose logs are kept and shipped, so it gets the same control.
+                 The dev and local console appenders keep their human-readable pattern on purpose:
+                 that output goes to a developer terminal, where there is no audit trail to forge. -->
+            <encoder class="org.springframework.boot.logging.logback.StructuredLogEncoder">
+                <format>ecs</format>
             </encoder>
             <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
                 <fileNamePattern>${LOG_DIR}/${APP_NAME}-test-unified.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
