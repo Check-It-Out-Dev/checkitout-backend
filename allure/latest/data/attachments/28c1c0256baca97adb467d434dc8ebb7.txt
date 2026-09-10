@@ -1,0 +1,4 @@
+07:58:16.077 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.TwoFactorStatusController&amp#27;[0;39m - GDPR: Operation=check2FAStatus, FirebaseUID=test-firebase-uid-123, DataAccessed=2fa_status,user_role, Purpose=security_verification
+07:58:16.077 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.TwoFactorStatusController&amp#27;[0;39m - Failed to check 2FA status for user: test-firebase-uid-123
+com.google.firebase.auth.FirebaseAuthException: null
+07:58:16.078 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.e.h.BaseExceptionHandler&amp#27;[0;39m - CLIENT_ERROR - AuthenticationTranslatableException [trace=ERR-3daada60, path=/twofactor/status, method=GET, user=test-firebase-uid-123, ip=127.0.0.1]: error.auth.firebase_account_not_found
