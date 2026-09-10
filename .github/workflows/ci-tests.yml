@@ -267,7 +267,9 @@ jobs:
             --junit 'results/unit-results/surefire-reports/TEST-*.xml:unit' \
             --junit 'results/integration-results/failsafe-reports/TEST-*.xml:integration' \
             --junit 'results/e2e-results/failsafe-reports/**/TEST-*.xml:e2e' \
-            --jacoco results/unit-results/site/jacoco-unit/jacoco.xml \n            --mutation site/mutation/latest.json --security site/security/latest.json \n            --copy allure=allure-report | tee -a "$GITHUB_STEP_SUMMARY"
+            --jacoco results/unit-results/site/jacoco-unit/jacoco.xml \
+            --mutation site/mutation/latest.json --security site/security/latest.json \
+            --copy allure=allure-report | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
