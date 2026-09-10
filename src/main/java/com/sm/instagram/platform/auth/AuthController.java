@@ -559,6 +559,18 @@ public class AuthController {
         String firebaseUid = permissionUtils.getUserId();
         String language = LocaleContextHolder.getLocale().getLanguage();
 
+        // /api/auth/** is permitAll, because sign-in, registration and forgot-password have to be
+        // reachable by someone who is not signed in yet. This endpoint is not one of those: it
+        // resends verification to the CURRENT user, so with no principal there is no user to act
+        // on. Without this it walked on with a null uid and the repository lookup answered
+        // "User not found" -- a 404 that says the account does not exist when what happened is
+        // that nobody was signed in. An e2e failure spent two runs being read as a missing row.
+        if (firebaseUid == null) {
+            log.warn("SECURITY_METRIC: event_type=ANONYMOUS_CALL_TO_CURRENT_USER_ENDPOINT, path=/auth/send-verification-email");
+            throw new com.sm.instagram.platform.common.exceptions.AuthenticationTranslatableException(
+                    "error.auth.not_authenticated");
+        }
+
         log.info("GDPR: Operation=sendVerificationEmail, FirebaseUID={}, Purpose=email_verification", firebaseUid);
 
         emailVerificationService.sendVerificationEmail(firebaseUid, language);
