@@ -34,8 +34,11 @@ on:
         type: boolean
         default: true
 
+# The group is keyed by the CALLING pipeline as well as the ref. Without `github.workflow` --
+# which under workflow_call is the caller's name -- a push to main starts `pr`, `pr` calls this
+# tier, and it cancels the copy the night is already running.
 concurrency:
-  group: ci-tests-${{ github.ref }}
+  group: ci-tests-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
