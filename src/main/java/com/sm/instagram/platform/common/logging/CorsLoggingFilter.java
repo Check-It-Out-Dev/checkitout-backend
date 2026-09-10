@@ -121,23 +121,52 @@ public class CorsLoggingFilter extends OncePerRequestFilter {
                         requestId, correlationId, origin);
             }
 
-            // Log suspicious patterns
-            // A same-origin request carries no Origin header at all, so this is null more often than not
-        // -- and this is a logging filter, which has no business throwing on a request it only meant
-        // to describe (javabugs:S2259). isOriginAllowed above already tolerates null; this did not.
-        if (origin != null && origin.contains("localhost")
-                && !origin.startsWith("http://localhost") && !origin.startsWith("https://localhost")) {
-                log.warn("CORS_SUSPICIOUS_LOCALHOST: requestId={}, correlationId={}, suspiciousOrigin={}", requestId, correlationId, origin);
-            }
+            // Log suspicious patterns.
+            // A same-origin request carries no Origin header at all, so origin is null more often
+            // than not, and this is a logging filter: it has no business throwing on a request it
+            // only meant to describe (javabugs:S2259). One guard for both checks, so a later edit
+            // cannot leave a sibling unguarded the way the length check was.
+            if (origin != null) {
+                if (origin.contains("localhost") && !isLocalhostOrigin(origin)) {
+                    log.warn("CORS_SUSPICIOUS_LOCALHOST: requestId={}, correlationId={}, suspiciousOrigin={}", requestId, correlationId, origin);
+                }
 
-            if (origin.length() > 100) {
-                log.warn("CORS_SUSPICIOUS_LONG_ORIGIN: requestId={}, correlationId={}, originLength={}", requestId, correlationId, origin.length());
+                if (origin.length() > 100) {
+                    log.warn("CORS_SUSPICIOUS_LONG_ORIGIN: requestId={}, correlationId={}, originLength={}", requestId, correlationId, origin.length());
+                }
             }
             
         } finally {
             // Don't clear MDC here since other filters might still need it
             // The RequestCorrelationFilter will handle clearing at the end
         }
+    }
+
+    /**
+     * True only when the origin's host component IS localhost -- not merely when the origin starts
+     * with "http://localhost". A prefix test calls "http://localhost.evil.com" legitimate, which is
+     * exactly the shape the suspicious-localhost warning exists to catch, so the attacker-controlled
+     * domain was the one origin that never got logged.
+     */
+    private boolean isLocalhostOrigin(String origin) {
+        int schemeEnd = origin.indexOf("://");
+        if (schemeEnd < 0) {
+            return false;
+        }
+        String scheme = origin.substring(0, schemeEnd);
+        if (!"http".equals(scheme) && !"https".equals(scheme)) {
+            return false;
+        }
+        String hostAndRest = origin.substring(schemeEnd + 3);
+        int hostEnd = hostAndRest.length();
+        for (int i = 0; i < hostAndRest.length(); i++) {
+            char c = hostAndRest.charAt(i);
+            if (c == ':' || c == '/' || c == '?' || c == '#') {
+                hostEnd = i;
+                break;
+            }
+        }
+        return "localhost".equals(hostAndRest.substring(0, hostEnd));
     }
 
     private void logCorsResponse(HttpServletRequest request, HttpServletResponse response, String origin, String requestId, String correlationId) {

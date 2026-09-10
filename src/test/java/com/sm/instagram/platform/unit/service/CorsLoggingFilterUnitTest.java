@@ -16,6 +16,10 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
+import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -42,6 +46,14 @@ class CorsLoggingFilterUnitTest {
     private MockHttpServletResponse response;
     private CorsLoggingFilter filter;
 
+    /**
+     * The suspicious-origin branches only ever produce a log line, so a test that asserts nothing
+     * but "the chain was invoked" passes with the detection deleted. These tests read the filter's
+     * own logger instead.
+     */
+    private ListAppender<ILoggingEvent> logs;
+    private ch.qos.logback.classic.Logger filterLogger;
+
     @BeforeEach
     void setUp() {
         request = new MockHttpServletRequest();
@@ -55,11 +67,27 @@ class CorsLoggingFilterUnitTest {
         ));
         filter = new CorsLoggingFilter(corsProperties);
         MDC.clear();
+
+        filterLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(CorsLoggingFilter.class);
+        filterLogger.setLevel(Level.DEBUG);
+        logs = new ListAppender<>();
+        logs.start();
+        filterLogger.addAppender(logs);
     }
 
     @AfterEach
     void tearDown() {
         MDC.clear();
+        if (filterLogger != null && logs != null) {
+            filterLogger.detachAppender(logs);
+            logs.stop();
+            filterLogger.setLevel(null);
+        }
+    }
+
+    /** Every message the filter logged during the test, already formatted. */
+    private List<String> loggedMessages() {
+        return logs.list.stream().map(ILoggingEvent::getFormattedMessage).toList();
     }
 
     @Nested
@@ -597,7 +625,11 @@ class CorsLoggingFilterUnitTest {
         @ValueSource(strings = {
             "http://mylocalhost:4200",
             "https://fakehost.localhost.com",
+            // A subdomain of an attacker-controlled apex that merely BEGINS with "localhost" is the
+            // shape this warning exists for, and the one a startsWith test let through.
             "http://localhost.evil.com",
+            "https://localhost.attacker.example:8443",
+            "http://localhost-evil.com",
             "https://notlocalhost:4200"
         })
         @DisplayName("should log warning for suspicious localhost patterns")
@@ -612,6 +644,30 @@ class CorsLoggingFilterUnitTest {
 
             // Then
             verify(filterChain).doFilter(any(), any());
+            assertThat(loggedMessages())
+                    .anyMatch(m -> m.startsWith("CORS_SUSPICIOUS_LOCALHOST") && m.contains(origin));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "http://localhost",
+            "http://localhost:4200",
+            "https://localhost:8443",
+            "http://localhost/some/path"
+        })
+        @DisplayName("should not flag an origin whose host really is localhost")
+        void shouldNotFlagRealLocalhostOrigins(String origin) throws ServletException, IOException {
+            // Given
+            request.setRequestURI("/api/test");
+            request.setMethod("GET");
+            request.addHeader("Origin", origin);
+
+            // When
+            filter.doFilter(request, response, filterChain);
+
+            // Then
+            verify(filterChain).doFilter(any(), any());
+            assertThat(loggedMessages()).noneMatch(m -> m.startsWith("CORS_SUSPICIOUS_LOCALHOST"));
         }
 
         @Test
@@ -627,6 +683,7 @@ class CorsLoggingFilterUnitTest {
 
             // Then
             verify(filterChain).doFilter(any(), any());
+            assertThat(loggedMessages()).noneMatch(m -> m.startsWith("CORS_SUSPICIOUS_LOCALHOST"));
         }
 
         @Test
@@ -643,6 +700,9 @@ class CorsLoggingFilterUnitTest {
 
             // Then
             verify(filterChain).doFilter(any(), any());
+            assertThat(loggedMessages())
+                    .anyMatch(m -> m.startsWith("CORS_SUSPICIOUS_LONG_ORIGIN")
+                            && m.contains("originLength=" + longOrigin.length()));
         }
 
         @Test
@@ -659,6 +719,24 @@ class CorsLoggingFilterUnitTest {
 
             // Then
             verify(filterChain).doFilter(any(), any());
+            assertThat(loggedMessages()).noneMatch(m -> m.startsWith("CORS_SUSPICIOUS_"));
+        }
+
+        @Test
+        @DisplayName("should describe a same-origin request without an Origin header, and throw nothing")
+        void shouldTolerateAbsentOriginHeader() throws ServletException, IOException {
+            // Given -- a same-origin request carries no Origin header at all. Both suspicious-pattern
+            // checks dereference the origin, so an unguarded one throws here (javabugs:S2259).
+            request.setRequestURI("/api/test");
+            request.setMethod("GET");
+
+            // When
+            assertThatCode(() -> filter.doFilter(request, response, filterChain))
+                    .doesNotThrowAnyException();
+
+            // Then -- the chain still ran and nothing CORS-shaped was logged
+            verify(filterChain).doFilter(any(), any());
+            assertThat(loggedMessages()).noneMatch(m -> m.startsWith("CORS_"));
         }
     }
 
