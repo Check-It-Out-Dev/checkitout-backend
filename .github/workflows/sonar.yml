@@ -75,6 +75,24 @@ jobs:
           chmod +x mvnw
           ./mvnw -B -ntp test -Ptest -DskipITs -Dpmd.skip=true -Dcpd.skip=true -Dcheckstyle.skip=true
 
+      # And the integration tier, because a whole tier of tests was invisible to this number.
+      #
+      # Sonar was reading only jacoco-unit, so every line whose only test is an integration test
+      # counted as uncovered -- new code in AppliedOpportunityService showed 11 uncovered lines and
+      # 10 uncovered branches on the same day three integration tests were written for exactly that
+      # block. The gate was measuring which tier happened to be wired up, not which code is tested.
+      #
+      # The two profiles are mutually exclusive by construction (`integration` sets skipTests), so
+      # this is a second invocation rather than a second profile on the first. It costs the job
+      # about ninety seconds and Testcontainers pulls; the sonar job runs beside the tests job, so
+      # the pipeline's wall clock does not move. Never fatal on its own: an unavailable Docker
+      # daemon should degrade the coverage number, not lose the analysis.
+      - name: Integration tier with coverage
+        if: env.SONAR_TOKEN != ''
+        continue-on-error: true
+        run: |
+          ./mvnw -B -ntp verify -Pintegration -Dpmd.skip=true -Dcpd.skip=true -Dcheckstyle.skip=true
+
       - name: Analyse
         if: env.SONAR_TOKEN != ''
         uses: SonarSource/sonarqube-scan-action@c7ee0f9df90b7aa20e8dcf9695dcfe2e7da5b4f2  # v7
