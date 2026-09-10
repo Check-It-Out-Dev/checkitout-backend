@@ -92,3 +92,7 @@ dump.*
 # dev-lite wizard runtime state (logs, pids) and local upload sink
 /.dev-lite/
 /dev-lite-storage/
+
+# Mutation-testing output: derived from a run, belongs to the artifact rather than the repository.
+pit-summary.json
+target/pit-reports/
