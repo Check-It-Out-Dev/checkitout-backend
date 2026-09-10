@@ -8,13 +8,20 @@
 # docs/ci/ARCHITECTURE.md §6.
 name: ci-tests
 
+# Called by pr.yml (tier: integration) and nightly.yml (tier: all); still dispatchable on its own.
+# Which tiers run is decided by `tier` alone -- never by the event -- because under workflow_call the
+# event belongs to the caller and "is this a push" stops being a question this file can answer.
 on:
-  pull_request:
-    branches: [main, greenfield]
-  push:
-    branches: [main, greenfield]
-  schedule:
-    - cron: "30 1 * * *"
+  workflow_call:
+    inputs:
+      tier:
+        description: "unit | integration | e2e | all"
+        type: string
+        default: all
+      publish:
+        description: Publish the Allure report and the metrics to Pages
+        type: boolean
+        default: true
   workflow_dispatch:
     inputs:
       tier:
@@ -22,6 +29,10 @@ on:
         type: choice
         options: [unit, integration, e2e, all]
         default: all
+      publish:
+        description: Publish the Allure report and the metrics to Pages
+        type: boolean
+        default: true
 
 concurrency:
   group: ci-tests-${{ github.ref }}
@@ -38,7 +49,7 @@ env:
 jobs:
   unit:
     name: Unit (surefire, -Ptest)
-    if: ${{ github.event_name != 'schedule' && (inputs.tier == '' || inputs.tier == 'unit' || inputs.tier == 'all') }}
+    if: ${{ contains(fromJSON('["unit","integration","all"]'), inputs.tier) }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -67,7 +78,7 @@ jobs:
 
   integration:
     name: Integration (failsafe, -Pintegration, Testcontainers)
-    if: ${{ github.event_name == 'push' || inputs.tier == 'integration' || inputs.tier == 'all' }}
+    if: ${{ contains(fromJSON('["integration","all"]'), inputs.tier) }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -98,7 +109,7 @@ jobs:
 
   e2e:
     name: End to end (Cucumber, -Pe2e)
-    if: ${{ github.event_name == 'schedule' || inputs.tier == 'e2e' || inputs.tier == 'all' }}
+    if: ${{ contains(fromJSON('["e2e","all"]'), inputs.tier) }}
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
@@ -169,7 +180,7 @@ jobs:
   report:
     name: Allure 3 with history, quality metrics, Pages
     needs: [unit, integration, e2e]
-    if: ${{ always() && github.event_name != 'pull_request' }}
+    if: ${{ always() && inputs.publish }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:

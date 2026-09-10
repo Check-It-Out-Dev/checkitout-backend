@@ -17,10 +17,9 @@
 # early costs nothing.
 name: sonar
 
+# Called by pr.yml; still dispatchable on its own while you are working on it.
 on:
-  push:
-    branches: [main]
-  pull_request:
+  workflow_call:
   workflow_dispatch:
 
 concurrency:

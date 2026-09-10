@@ -11,9 +11,18 @@
 # 401 while the document declared no 401 at all (fixed by AuthFailureResponsesCustomizer).
 name: api-fuzz
 
+# Called by nightly.yml; still dispatchable on its own while you are working on it.
 on:
-  schedule:
-    - cron: "40 2 * * *"
+  workflow_call:
+    inputs:
+      backend_tag:
+        description: Backend image tag on ghcr.io
+        type: string
+        default: main
+      max_examples:
+        description: Generated cases per operation
+        type: string
+        default: "8"
   workflow_dispatch:
     inputs:
       backend_tag:
@@ -24,12 +33,6 @@ on:
         description: Generated cases per operation
         type: string
         default: "8"
-  push:
-    branches: [main]
-    paths:
-      - "src/main/java/**/config/**"
-      - "src/main/java/**/*Controller.java"
-      - ".github/workflows/api-fuzz.yml"
 
 concurrency:
   group: api-fuzz-${{ github.ref }}

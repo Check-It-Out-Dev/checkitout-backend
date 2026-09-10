@@ -1,0 +1,107 @@
+# The pull-request pipeline: fast enough that nobody routes around it.
+#
+# Six workflows used to fire on every push and pull request here, each with its own verdict. Six
+# verdicts is the same as none: the answer to "is this safe to merge" became a paragraph you had to
+# assemble by hand. This is one of two entry points; everything slow lives in nightly.yml, and every
+# piece below is a reusable workflow that can still be dispatched on its own while you work on it.
+#
+#   tests      unit (surefire, -Ptest) and integration (failsafe, -Pintegration, Testcontainers)
+#   sonar      SonarQube Cloud, with the quality gate on NEW code
+#   deps       dependency review, which only exists on a pull request
+#   CodeQL     runs on its own through the organisation's default setup
+#
+# The end-to-end tier, Schemathesis and the security sweep run at night. They are worth ten minutes
+# of nobody's attention and would be worth nothing at all if people learned to ignore them.
+name: pr
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  # A superseded pull-request run is waste; a superseded push to main loses the record of what main
+  # did, so those are allowed to finish.
+  group: pr-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# The floor. Jobs that publish or write checks raise their own; a called workflow may never hold
+# more than the job calling it, so these grants have to be here rather than only in the callee.
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  tests:
+    name: Tests
+    uses: ./.github/workflows/ci-tests.yml
+    with:
+      # unit and integration: the two that are worth waiting for before a merge.
+      tier: integration
+      # A pull request gets its report as an artifact and a check, not as a publish: the Pages site
+      # is the record of what main did, and a branch has no business rewriting it.
+      publish: ${{ github.event_name == 'push' }}
+    permissions:
+      contents: write
+      checks: write
+    secrets: inherit
+
+  sonar:
+    name: Quality gate
+    uses: ./.github/workflows/sonar.yml
+    secrets: inherit
+
+  # Dependency review compares the manifests either side of a pull request and fails when the
+  # difference introduces a known advisory. It needs a base and a head, so it cannot run on a push.
+  #
+  # CodeQL is deliberately NOT a job here. The organisation enables CodeQL default setup, and an
+  # advanced setup in a workflow file cannot coexist with it -- GitHub refuses the SARIF outright,
+  # so the job would be permanently red while adding nothing. Its findings are under Security.
+  deps:
+    name: Dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+          comment-summary-in-pr: on-failure
+
+  verdict:
+    name: Merge verdict
+    needs: [tests, sonar]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # One line that says whether this change is safe to merge. A cancelled job is not a pass,
+      # which is the failure mode a naive always() summary has.
+      - name: Say it in one line
+        run: |
+          set -euo pipefail
+          tests='${{ needs.tests.result }}'
+          sonar='${{ needs.sonar.result }}'
+          {
+            echo "### Pull-request verdict"
+            echo
+            echo "| check | result |"
+            echo "| --- | --- |"
+            echo "| unit + integration | $tests |"
+            echo "| quality gate | $sonar |"
+            echo
+            echo "The end-to-end tier, Schemathesis and the security sweep run in \`nightly\`."
+            echo "This pipeline is the fast half on purpose."
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+          for r in "$tests" "$sonar"; do
+            case "$r" in
+              success|skipped) ;;
+              *) echo "::error::a required check reported '$r'"; exit 1 ;;
+            esac
+          done
+          echo "safe to merge as far as this pipeline can tell"
