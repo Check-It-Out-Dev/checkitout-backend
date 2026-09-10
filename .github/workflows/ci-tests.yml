@@ -196,7 +196,11 @@ jobs:
         with:
           repository: Check-It-Out-Dev/checkitout-frontend
           path: frontend
-          sparse-checkout: tools/ci
+          # tools/lib too: the shared scripts import the ordering comparator from it, and a
+          # checkout of tools/ci alone fails at import time with ERR_MODULE_NOT_FOUND.
+          sparse-checkout: |
+            tools/ci
+            tools/lib
       # By name into an explicit directory, one step each. Downloading everything at once used to create a
       # directory per artifact, but no longer does when the run produced exactly one - so a tier=e2e
       # dispatch landed the files at results/ instead of results/e2e-results/, and on a full run the

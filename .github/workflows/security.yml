@@ -216,7 +216,11 @@ jobs:
         with:
           repository: Check-It-Out-Dev/checkitout-frontend
           path: frontend
-          sparse-checkout: tools/ci
+          # tools/lib too: the shared scripts import the ordering comparator from it, and a
+          # checkout of tools/ci alone fails at import time with ERR_MODULE_NOT_FOUND.
+          sparse-checkout: |
+            tools/ci
+            tools/lib
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444  # v5
         with:
           node-version: 24
