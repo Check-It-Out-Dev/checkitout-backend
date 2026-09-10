@@ -2,33 +2,33 @@
   "schema": 1,
   "repo": "Check-It-Out-Dev/checkitout-backend",
   "run": {
-    "number": 28,
-    "id": 34414027672,
-    "sha": "688846b",
+    "number": 29,
+    "id": 34421130488,
+    "sha": "c329a41",
     "branch": "main",
     "workflow": "ci-tests",
-    "startedAt": "2026-09-09T22:48:39Z",
-    "durationSec": 1759,
-    "url": "https://github.com/Check-It-Out-Dev/checkitout-backend/actions/runs/34414027672"
+    "startedAt": "2026-09-10T00:24:06Z",
+    "durationSec": 278,
+    "url": "https://github.com/Check-It-Out-Dev/checkitout-backend/actions/runs/34421130488"
   },
   "tests": {
-    "total": 297,
-    "passed": 276,
+    "total": 10336,
+    "passed": 10336,
     "failed": 0,
     "flaky": 0,
-    "skipped": 21,
+    "skipped": 0,
     "passRate": 1,
     "flakyRate": 0,
-    "durationMeanSec": 2.23,
-    "durationP95Sec": 33.19,
+    "durationMeanSec": 0.01,
+    "durationP95Sec": 0.01,
     "tiers": {
-      "e2e": {
-        "total": 297,
-        "passed": 276,
+      "unit": {
+        "total": 10336,
+        "passed": 10336,
         "failed": 0,
         "flaky": 0,
-        "skipped": 21,
-        "durationSec": 615
+        "skipped": 0,
+        "durationSec": 92
       }
     }
   },
@@ -36,7 +36,7 @@
     {
       "title": "confirmPasswordReset_expiredOobCode_throwsValidation",
       "file": "com.sm.instagram.platform.unit.service.FirebaseAuthProxyServiceUnitTest$ConfirmPasswordResetTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -49,13 +49,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "confirmPasswordReset_invalidOobCode_throwsValidation",
       "file": "com.sm.instagram.platform.unit.service.FirebaseAuthProxyServiceUnitTest$ConfirmPasswordResetTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -68,13 +69,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "confirmPasswordReset_success_noEmail_returnsSuccess",
       "file": "com.sm.instagram.platform.unit.service.FirebaseAuthProxyServiceUnitTest$ConfirmPasswordResetTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -87,13 +89,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "confirmPasswordReset_success_returnsSuccessWithEmail",
       "file": "com.sm.instagram.platform.unit.service.FirebaseAuthProxyServiceUnitTest$ConfirmPasswordResetTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -106,13 +109,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "confirmPasswordReset_unknownError_throwsNetwork",
       "file": "com.sm.instagram.platform.unit.service.FirebaseAuthProxyServiceUnitTest$ConfirmPasswordResetTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -125,13 +129,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "confirmPasswordReset_weakPassword_throwsValidation",
       "file": "com.sm.instagram.platform.unit.service.FirebaseAuthProxyServiceUnitTest$ConfirmPasswordResetTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -144,13 +149,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "devLiteBeansActivateOnlyUnderDevLite",
       "file": "com.sm.instagram.platform.unit.config.ProfileGateUnitTest",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -161,6 +167,7 @@
         "pass",
         "pass",
         "fail",
+        "absent",
         "absent",
         "absent",
         "absent"
@@ -169,7 +176,7 @@
     {
       "title": "shouldAddEmailProvidedClaimAfterUpdate",
       "file": "com.sm.instagram.platform.unit.service.FirebaseServiceUnitTest$UpdateFirebaseUserEmailTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -182,13 +189,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "shouldBCryptHashEachCode",
       "file": "com.sm.instagram.platform.unit.service.EncryptionServicesUnitTest$TotpEncryptionServiceTests$EncryptBackupCodesTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -201,13 +209,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "shouldDecryptTotpSecretSuccessfully",
       "file": "com.sm.instagram.platform.unit.service.EncryptionServicesUnitTest$TotpEncryptionServiceTests$DecryptTotpSecretTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -220,13 +229,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "shouldEncryptBackupCodesSuccessfully",
       "file": "com.sm.instagram.platform.unit.service.EncryptionServicesUnitTest$TotpEncryptionServiceTests$EncryptBackupCodesTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -239,13 +249,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "shouldEncryptThenDecryptSecret",
       "file": "com.sm.instagram.platform.unit.service.EncryptionServicesUnitTest$TotpEncryptionServiceTests$TotpEndToEndTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -258,13 +269,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "shouldEncryptThenVerifyBackupCode",
       "file": "com.sm.instagram.platform.unit.service.EncryptionServicesUnitTest$TotpEncryptionServiceTests$TotpEndToEndTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -277,13 +289,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "shouldEncryptTotpSecretSuccessfully",
       "file": "com.sm.instagram.platform.unit.service.EncryptionServicesUnitTest$TotpEncryptionServiceTests$EncryptTotpSecretTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -296,13 +309,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "shouldHandleBase32Secrets",
       "file": "com.sm.instagram.platform.unit.service.EncryptionServicesUnitTest$TotpEncryptionServiceTests$EncryptTotpSecretTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -315,13 +329,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "shouldHandleMultipleBackupCodes",
       "file": "com.sm.instagram.platform.unit.service.EncryptionServicesUnitTest$TotpEncryptionServiceTests$EncryptBackupCodesTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -334,13 +349,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "shouldHandleRemovingLastCode",
       "file": "com.sm.instagram.platform.unit.service.EncryptionServicesUnitTest$TotpEncryptionServiceTests$RemoveUsedBackupCodeTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -353,13 +369,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "shouldKeepAllCodesWhenNotFound",
       "file": "com.sm.instagram.platform.unit.service.EncryptionServicesUnitTest$TotpEncryptionServiceTests$RemoveUsedBackupCodeTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -372,13 +389,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "shouldNotThrowWhenClaimsUpdateFails",
       "file": "com.sm.instagram.platform.unit.service.FirebaseServiceUnitTest$UpdateFirebaseUserEmailTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -391,13 +409,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "shouldPreserveExistingClaimsWhenAddingEmailProvided",
       "file": "com.sm.instagram.platform.unit.service.FirebaseServiceUnitTest$UpdateFirebaseUserEmailTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -410,13 +429,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "shouldRemoveUsedBackupCode",
       "file": "com.sm.instagram.platform.unit.service.EncryptionServicesUnitTest$TotpEncryptionServiceTests$RemoveUsedBackupCodeTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -429,13 +449,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "shouldReturnTrueWhenCodeMatches",
       "file": "com.sm.instagram.platform.unit.service.EncryptionServicesUnitTest$TotpEncryptionServiceTests$VerifyBackupCodeTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -448,13 +469,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "shouldThrowExternalServiceExceptionWhenEmailUpdateFails",
       "file": "com.sm.instagram.platform.unit.service.FirebaseServiceUnitTest$UpdateFirebaseUserEmailTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -467,13 +489,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "shouldUpdateUserEmailSuccessfully",
       "file": "com.sm.instagram.platform.unit.service.FirebaseServiceUnitTest$UpdateFirebaseUserEmailTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -486,13 +509,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "shouldUseSameKmsService",
       "file": "com.sm.instagram.platform.unit.service.EncryptionServicesUnitTest$CrossServiceIntegrationTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -505,13 +529,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "shouldVerifyCodeAmongMultiple",
       "file": "com.sm.instagram.platform.unit.service.EncryptionServicesUnitTest$TotpEncryptionServiceTests$VerifyBackupCodeTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -524,13 +549,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "verifyResetCode_expiredOobCode_throwsValidation",
       "file": "com.sm.instagram.platform.unit.service.FirebaseAuthProxyServiceUnitTest$VerifyResetCodeTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -543,13 +569,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "verifyResetCode_invalidOobCode_throwsValidation",
       "file": "com.sm.instagram.platform.unit.service.FirebaseAuthProxyServiceUnitTest$VerifyResetCodeTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -562,13 +589,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "verifyResetCode_success_noEmail_returnsSuccessWithoutEmail",
       "file": "com.sm.instagram.platform.unit.service.FirebaseAuthProxyServiceUnitTest$VerifyResetCodeTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -581,13 +609,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "verifyResetCode_success_returnsEmailAndRequestType",
       "file": "com.sm.instagram.platform.unit.service.FirebaseAuthProxyServiceUnitTest$VerifyResetCodeTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -600,13 +629,14 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     },
     {
       "title": "verifyResetCode_unknownError_throwsNetwork",
       "file": "com.sm.instagram.platform.unit.service.FirebaseAuthProxyServiceUnitTest$VerifyResetCodeTests",
-      "window": 9,
+      "window": 10,
       "runsFlaky": 0,
       "runsFailed": 1,
       "lastSeen": 22,
@@ -619,11 +649,12 @@
         "fail",
         "pass",
         "pass",
-        "absent"
+        "absent",
+        "pass"
       ]
     }
   ],
   "reports": {
-    "allure": "allure/28/"
+    "allure": "allure/29/"
   }
 }
