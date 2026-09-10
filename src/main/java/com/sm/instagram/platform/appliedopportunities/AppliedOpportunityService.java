@@ -1567,15 +1567,31 @@ public class AppliedOpportunityService extends BaseService<AppliedOpportunity, L
         // Handle influencer assignment before mapping
         String currentUserId = permissionUtils.getUserId();
         var currentUser = getUserByFirebaseId(currentUserId);
-        if (!permissionUtils.isAdmin() &&
-                (currentUser.getSocialConnections().isEmpty() ||
-                        !currentUser.getAccountStatus().isActive() ||
-                        !permissionUtils.isInfluencer())) {
-            throw new InsufficientPermissionsException(
-                    "error.auth.insufficient_permissions",
-                    currentUserId,
-                    "saveAsDto",
-                    "AppliedOpportunity (missing requirements)");
+        if (!permissionUtils.isAdmin()) {
+            // Three separate requirements used to be reported as one phrase, "missing requirements",
+            // which named none of them. A caller then has to guess, and an e2e failure that is
+            // really "the account is still IN_VALIDATION" looks exactly like "no social account
+            // connected". The response body stays the same generic key -- an applicant learning
+            // which precondition they fail is an enumeration aid -- but the server log says which.
+            List<String> unmet = new ArrayList<>(3);
+            if (currentUser.getSocialConnections().isEmpty()) {
+                unmet.add("no social connection");
+            }
+            if (!currentUser.getAccountStatus().isActive()) {
+                unmet.add("account status " + currentUser.getAccountStatus());
+            }
+            if (!permissionUtils.isInfluencer()) {
+                unmet.add("role is not INFLUENCER");
+            }
+            if (!unmet.isEmpty()) {
+                log.warn("GDPR: AccessDenied Operation=createAppliedOpportunity, FirebaseUID={}, Unmet={}",
+                        currentUserId, unmet);
+                throw new InsufficientPermissionsException(
+                        "error.auth.insufficient_permissions",
+                        currentUserId,
+                        "saveAsDto",
+                        "AppliedOpportunity (unmet: " + String.join("; ", unmet) + ")");
+            }
         }
         if (dto.getInfluencer() == null) {
             if (permissionUtils.isInfluencer()) {

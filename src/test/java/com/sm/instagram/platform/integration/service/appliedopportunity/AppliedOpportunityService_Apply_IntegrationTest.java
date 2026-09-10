@@ -7,6 +7,7 @@ import com.sm.instagram.platform.appliedopportunities.OpportunityStatus;
 import com.sm.instagram.platform.common.exceptions.FollowerValidationException;
 import com.sm.instagram.platform.common.exceptions.InsufficientPermissionsException;
 import com.sm.instagram.platform.partnershipopportunities.PartnershipOpportunity;
+import com.sm.instagram.platform.user.AccountStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -181,6 +182,70 @@ class AppliedOpportunityService_Apply_IntegrationTest extends AppliedOpportunity
             assertThat(result).isNotNull();
             assertThat(result.getId()).isNotNull();
             assertThat(result.getNote()).isEqualTo("Integration test application via DTO");
+        }
+
+        @Test
+        @DisplayName("saveAsDto names the social connection as the unmet requirement")
+        void saveAsDtoNamesMissingSocialConnection() {
+            // secondInfluencer is ACTIVE and an INFLUENCER; only the connection is missing.
+            authenticateAs(secondInfluencer);
+            setUpMockHttpContext();
+
+            AppliedOpportunityDtoIn dto = createTestAppliedOpportunityDto(
+                    secondInfluencer,
+                    testPartnershipOpportunity
+            );
+
+            // The message key stays generic on purpose -- telling an applicant which precondition
+            // they fail is an enumeration aid. The detail that names it rides on `resource`.
+            assertThatThrownBy(() -> appliedOpportunityService.saveAsDto(dto))
+                    .isInstanceOf(InsufficientPermissionsException.class)
+                    .extracting(e -> ((InsufficientPermissionsException) e).getResource())
+                    .asString()
+                    .contains("no social connection")
+                    .doesNotContain("account status", "role is not INFLUENCER");
+        }
+
+        @Test
+        @DisplayName("saveAsDto names the account status as the unmet requirement, and which status")
+        void saveAsDtoNamesInactiveAccountStatus() {
+            // testInfluencer HAS a social connection, so the account status is the only thing left.
+            // Told apart from the case above only because the message says so: an e2e run that
+            // seeded Instagram and forgot to activate used to read as "no social connection".
+            testInfluencer.setAccountStatus(AccountStatus.IN_VALIDATION);
+            userRepository.saveAndFlush(testInfluencer);
+            authenticateAs(testInfluencer);
+            setUpMockHttpContext();
+
+            AppliedOpportunityDtoIn dto = createTestAppliedOpportunityDto(
+                    testInfluencer,
+                    testPartnershipOpportunity
+            );
+
+            assertThatThrownBy(() -> appliedOpportunityService.saveAsDto(dto))
+                    .isInstanceOf(InsufficientPermissionsException.class)
+                    .extracting(e -> ((InsufficientPermissionsException) e).getResource())
+                    .asString()
+                    .contains("account status IN_VALIDATION")
+                    .doesNotContain("no social connection", "role is not INFLUENCER");
+        }
+
+        @Test
+        @DisplayName("saveAsDto names the role as the unmet requirement for a company")
+        void saveAsDtoNamesWrongRole() {
+            authenticateAs(testCompany);
+            setUpMockHttpContext();
+
+            AppliedOpportunityDtoIn dto = createTestAppliedOpportunityDto(
+                    testInfluencer,
+                    testPartnershipOpportunity
+            );
+
+            assertThatThrownBy(() -> appliedOpportunityService.saveAsDto(dto))
+                    .isInstanceOf(InsufficientPermissionsException.class)
+                    .extracting(e -> ((InsufficientPermissionsException) e).getResource())
+                    .asString()
+                    .contains("role is not INFLUENCER");
         }
 
         @Test
