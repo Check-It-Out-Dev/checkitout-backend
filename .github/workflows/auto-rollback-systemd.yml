@@ -117,7 +117,7 @@ jobs:
           ssh-keyscan -H ${SEC_SSH_HOST} >> ~/.ssh/known_hosts
 
       - name: 📥 Checkout repository (for scripts)
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
         with:
           sparse-checkout: |
             .github/scripts/remote/

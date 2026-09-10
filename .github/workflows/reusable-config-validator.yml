@@ -27,8 +27,10 @@ jobs:
     steps:
       - name: Validate JSON configuration
         id: check
+        env:
+          IN_CONFIG_JSON: ${{ inputs.config-json }}
         run: |
-          CONFIG='${{ inputs.config-json }}'
+          CONFIG='${IN_CONFIG_JSON}'
           ERRORS=0
           MISSING=""
           
@@ -80,8 +82,10 @@ jobs:
 
       - name: Validate field formats
         id: format
+        env:
+          IN_CONFIG_JSON: ${{ inputs.config-json }}
         run: |
-          CONFIG='${{ inputs.config-json }}'
+          CONFIG='${IN_CONFIG_JSON}'
           ERRORS=0
           
           echo "🔍 Validating field formats..."
@@ -132,8 +136,10 @@ jobs:
 
       - name: Validate template resolution
         id: templates
+        env:
+          IN_CONFIG_JSON: ${{ inputs.config-json }}
         run: |
-          CONFIG='${{ inputs.config-json }}'
+          CONFIG='${IN_CONFIG_JSON}'
           ERRORS=0
           
           echo "🔍 Checking template resolution..."
@@ -164,8 +170,13 @@ jobs:
 
       - name: Final validation result
         id: final
+        env:
+          OUT_ERRORS: ${{ steps.check.outputs.errors }}
+          OUT_ERRORS: ${{ steps.format.outputs.errors }}
+          OUT_ERRORS: ${{ steps.templates.outputs.errors }}
+          IN_STRICT_MODE: ${{ inputs.strict-mode }}
         run: |
-          TOTAL_ERRORS=$((${{ steps.check.outputs.errors }} + ${{ steps.format.outputs.errors }} + ${{ steps.templates.outputs.errors }}))
+          TOTAL_ERRORS=$((${OUT_ERRORS} + ${OUT_ERRORS} + ${OUT_ERRORS}))
           
           if [[ $TOTAL_ERRORS -eq 0 ]]; then
             echo "✅ All validations passed!"
@@ -173,20 +184,27 @@ jobs:
           else
             echo "❌ Validation failed with $TOTAL_ERRORS errors"
             echo "passed=false" >> $GITHUB_OUTPUT
-            if [[ "${{ inputs.strict-mode }}" == "true" ]]; then
+            if [[ "${IN_STRICT_MODE}" == "true" ]]; then
               exit 1
             fi
           fi
           
       - name: Generate validation summary
         if: always()
+        env:
+          IN_CONFIG_JSON: ${{ inputs.config-json }}
+          OUT_PASSED: ${{ steps.final.outputs.passed }}
+          OUT_ERRORS: ${{ steps.check.outputs.errors }}
+          OUT_ERRORS: ${{ steps.format.outputs.errors }}
+          OUT_ERRORS: ${{ steps.templates.outputs.errors }}
+          OUT_MISSING: ${{ steps.check.outputs.missing }}
         run: |
-          CONFIG='${{ inputs.config-json }}'
+          CONFIG='${IN_CONFIG_JSON}'
           
           echo "# 🔍 Configuration Validation Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
-          if [[ "${{ steps.final.outputs.passed }}" == "true" ]]; then
+          if [[ "${OUT_PASSED}" == "true" ]]; then
             echo "## ✅ Validation Passed" >> $GITHUB_STEP_SUMMARY
           else
             echo "## ❌ Validation Failed" >> $GITHUB_STEP_SUMMARY
@@ -194,15 +212,15 @@ jobs:
           
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 📊 Validation Results" >> $GITHUB_STEP_SUMMARY
-          echo "- Required field errors: ${{ steps.check.outputs.errors }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Format validation errors: ${{ steps.format.outputs.errors }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Template resolution errors: ${{ steps.templates.outputs.errors }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Required field errors: ${OUT_ERRORS}" >> $GITHUB_STEP_SUMMARY
+          echo "- Format validation errors: ${OUT_ERRORS}" >> $GITHUB_STEP_SUMMARY
+          echo "- Template resolution errors: ${OUT_ERRORS}" >> $GITHUB_STEP_SUMMARY
           
-          if [[ -n "${{ steps.check.outputs.missing }}" ]]; then
+          if [[ -n "${OUT_MISSING}" ]]; then
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "### ❌ Missing Fields" >> $GITHUB_STEP_SUMMARY
             echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-            echo "${{ steps.check.outputs.missing }}" | tr ',' '\n' >> $GITHUB_STEP_SUMMARY
+            echo "${OUT_MISSING}" | tr ',' '\n' >> $GITHUB_STEP_SUMMARY
             echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           fi
           

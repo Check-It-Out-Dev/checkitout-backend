@@ -82,8 +82,10 @@ jobs:
 
       - name: 📋 Parse Configuration
         id: config
+        env:
+          IN_CONFIG_JSON: ${{ inputs.config-json }}
         run: |
-          CONFIG='${{ inputs.config-json }}'
+          CONFIG='${IN_CONFIG_JSON}'
           
           # Java/Maven config (optimized for self-hosted runner with 24GB RAM)
           echo "JAVA_VERSION=$(echo "$CONFIG" | jq -r '._flat.java_version')" >> $GITHUB_ENV
@@ -101,12 +103,12 @@ jobs:
 
       # ========== CHECKOUT & JAVA SETUP ==========
       - name: 📥 Smart Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
         with:
           fetch-depth: 0
 
       - name: ☕ Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3  # v4
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
@@ -206,7 +208,7 @@ jobs:
 
       # ========== UPLOAD JAR ARTIFACT ==========
       - name: 📤 Upload JAR Artifact for Docker Job
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
         with:
           name: application-jar-${{ steps.init.outputs.BUILD_VERSION }}
           path: target/*.jar
@@ -253,6 +255,8 @@ jobs:
 
       - name: 📋 Parse Configuration
         id: config
+        env:
+          IN_ENVIRONMENT: ${{ inputs.environment }}
         run: |
           # Store config in a file to avoid shell escaping issues
           cat > /tmp/config.json << 'EOF'
@@ -283,7 +287,7 @@ jobs:
           }' /tmp/config.json
           
           # Extract environment
-          ENV_NAME="${{ inputs.environment }}"
+          ENV_NAME="${IN_ENVIRONMENT}"
           echo "Environment: $ENV_NAME"
           
           # Docker config - read from file
@@ -328,21 +332,23 @@ jobs:
 
       # ========== CHECKOUT CODE ==========
       - name: 📥 Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
 
       # ========== DOWNLOAD JAR ARTIFACT ==========
       - name: 📥 Download JAR Artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093  # v4
         with:
           name: application-jar-${{ needs['maven-build'].outputs.build-version }}
           path: target
 
       # ========== DOCKER BUILD ==========
       - name: 🐳 Setup Docker Buildx
+        env:
+          GH_RUN_ID: ${{ github.run_id }}
         run: |
           # Create buildx builder with sudo (runner not in docker group)
           sudo docker buildx create \
-            --name builder-${{ github.run_id }} \
+            --name builder-${GH_RUN_ID} \
             --driver docker-container \
             --driver-opt image=moby/buildkit:master \
             --driver-opt network=host \
@@ -355,17 +361,22 @@ jobs:
           echo "✅ Docker Buildx ready"
 
       - name: 🔐 Login to GitHub Container Registry
+        env:
+          SEC_TOKEN_FOR_DOCKER: ${{ secrets.TOKEN_FOR_DOCKER }}
+          GH_ACTOR: ${{ github.actor }}
         run: |
           # Login with sudo using PAT (runner not in docker group)
-          echo "${{ secrets.TOKEN_FOR_DOCKER }}" | \
+          echo "${SEC_TOKEN_FOR_DOCKER}" | \
             sudo docker login ${{ env.REGISTRY }} \
-              -u ${{ github.actor }} \
+              -u ${GH_ACTOR} \
               --password-stdin
 
           echo "✅ Logged in to ${{ env.REGISTRY }} with PAT"
 
       - name: 📝 Generate Image Metadata
         id: meta
+        env:
+          IN_ENVIRONMENT: ${{ inputs.environment }}
         run: |
           VERSION="${{ env.BUILD_VERSION }}"
           SHA_SHORT="${GITHUB_SHA:0:7}"
@@ -373,9 +384,9 @@ jobs:
           
           # Main app tags
           echo "image_tags<<EOF" >> $GITHUB_OUTPUT
-          echo "${IMAGE_BASE}/instagram-platform-backend-${{ inputs.environment }}:${VERSION}" >> $GITHUB_OUTPUT
-          echo "${IMAGE_BASE}/instagram-platform-backend-${{ inputs.environment }}:sha-${SHA_SHORT}" >> $GITHUB_OUTPUT
-          echo "${IMAGE_BASE}/instagram-platform-backend-${{ inputs.environment }}:latest" >> $GITHUB_OUTPUT
+          echo "${IMAGE_BASE}/instagram-platform-backend-${IN_ENVIRONMENT}:${VERSION}" >> $GITHUB_OUTPUT
+          echo "${IMAGE_BASE}/instagram-platform-backend-${IN_ENVIRONMENT}:sha-${SHA_SHORT}" >> $GITHUB_OUTPUT
+          echo "${IMAGE_BASE}/instagram-platform-backend-${IN_ENVIRONMENT}:latest" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
           
           # GSM init tags
@@ -416,6 +427,8 @@ jobs:
 
       # ========== VERIFY BUILD ARGS ==========
       - name: 🔍 Verify Docker Build Arguments
+        env:
+          IN_ENVIRONMENT: ${{ inputs.environment }}
         run: |
           echo "🔍 Verifying Docker build arguments:"
           echo "  CONTAINER_USER_NAME: '${CONTAINER_USER_NAME}'"
@@ -424,7 +437,7 @@ jobs:
           echo "  CONTAINER_GROUP_ID: '${CONTAINER_GROUP_ID}'"
           echo "  SPRING_PROFILE: '${SPRING_PROFILE}'"
           echo "  BUILD_VERSION: '${BUILD_VERSION}'"
-          echo "  Environment: '${{ inputs.environment }}'"
+          echo "  Environment: '${IN_ENVIRONMENT}'"
           
           # Show exact Docker build command that will be used
           echo ""
@@ -446,16 +459,21 @@ jobs:
       # ========== BUILD MAIN APPLICATION ==========
       - name: 🚀 Build & Push Main App to ghcr.io
         id: docker-build
+        env:
+          IN_ENVIRONMENT: ${{ inputs.environment }}
+          OUT_CACHE_DIR: ${{ steps.docker-cache-setup.outputs.CACHE_DIR }}
+          OUT_CACHE_HIT: ${{ steps.docker-cache-setup.outputs.cache_hit }}
+          IN_DOCKERFILE_PATH: ${{ inputs.dockerfile-path }}
         run: |
           IMAGE_BASE="${{ env.REGISTRY }}/check-it-out-dev/checkitout-be"
-          IMAGE_NAME="${IMAGE_BASE}/instagram-platform-backend-${{ inputs.environment }}"
-          CACHE_DIR="${{ steps.docker-cache-setup.outputs.CACHE_DIR }}"
+          IMAGE_NAME="${IMAGE_BASE}/instagram-platform-backend-${IN_ENVIRONMENT}"
+          CACHE_DIR="${OUT_CACHE_DIR}"
 
           # Always use cache - it persists locally
           CACHE_FROM="--cache-from type=local,src=${CACHE_DIR}"
           CACHE_TO="--cache-to type=local,dest=${CACHE_DIR},mode=max"
 
-          if [[ "${{ steps.docker-cache-setup.outputs.cache_hit }}" == "true" ]]; then
+          if [[ "${OUT_CACHE_HIT}" == "true" ]]; then
             echo "🔥 Using existing local cache for build"
           else
             echo "📝 Building fresh cache (first build)"
@@ -464,7 +482,7 @@ jobs:
           # Build with local persistent cache (using sudo as runner is not in docker group)
           sudo docker buildx build \
             --platform linux/amd64 \
-            --file ${{ inputs.dockerfile-path }} \
+            --file ${IN_DOCKERFILE_PATH} \
             --build-arg SKIP_MAVEN_BUILD=true \
             --build-arg SPRING_PROFILE=${{ env.SPRING_PROFILE }} \
             --build-arg CONTAINER_USER_ID=${{ env.CONTAINER_USER_ID }} \
@@ -489,8 +507,10 @@ jobs:
       # ========== VERIFY DOCKER CACHE ==========
       - name: ✅ Verify Docker Cache
         if: success()
+        env:
+          OUT_CACHE_DIR: ${{ steps.docker-cache-setup.outputs.CACHE_DIR }}
         run: |
-          CACHE_DIR="${{ steps.docker-cache-setup.outputs.CACHE_DIR }}"
+          CACHE_DIR="${OUT_CACHE_DIR}"
 
           echo "📊 Docker cache statistics:"
           echo "  Location: ${CACHE_DIR}"
@@ -527,15 +547,18 @@ jobs:
       # ========== BUILD GSM INIT CONTAINER ==========
       - name: 🔐 Build & Push GSM Init Container to ghcr.io
         id: docker-build-gsm
+        env:
+          OUT_CACHE_DIR: ${{ steps.gsm-cache-setup.outputs.CACHE_DIR }}
+          OUT_CACHE_HIT: ${{ steps.gsm-cache-setup.outputs.cache_hit }}
         run: |
           IMAGE_BASE="${{ env.REGISTRY }}/check-it-out-dev/checkitout-be"
-          CACHE_DIR="${{ steps.gsm-cache-setup.outputs.CACHE_DIR }}"
+          CACHE_DIR="${OUT_CACHE_DIR}"
 
           # Always use cache - it persists locally
           CACHE_FROM="--cache-from type=local,src=${CACHE_DIR}"
           CACHE_TO="--cache-to type=local,dest=${CACHE_DIR},mode=max"
 
-          if [[ "${{ steps.gsm-cache-setup.outputs.cache_hit }}" == "true" ]]; then
+          if [[ "${OUT_CACHE_HIT}" == "true" ]]; then
             echo "🔥 Using existing local cache for GSM build"
           else
             echo "📝 Building fresh GSM cache"
@@ -563,10 +586,12 @@ jobs:
       # ========== CLEANUP ==========
       - name: 🧹 Cleanup
         if: always()
+        env:
+          GH_RUN_ID: ${{ github.run_id }}
         run: |
           # Clean buildx builder
           echo "🧹 Removing buildx builder..."
-          sudo docker buildx rm builder-${{ github.run_id }} || true
+          sudo docker buildx rm builder-${GH_RUN_ID} || true
 
           echo "📊 Final cache report:"
           echo "  Main app cache: $(du -sh /var/cache/docker/buildx/main-app 2>/dev/null | cut -f1 || echo 'N/A')"
@@ -577,10 +602,15 @@ jobs:
       # ========== FINAL OUTPUT ==========
       - name: 📊 Prepare Outputs
         id: build-output
+        env:
+          OUT_BUILD_START: ${{ steps.init.outputs.BUILD_START }}
+          IN_ENVIRONMENT: ${{ inputs.environment }}
+          OUT_DIGEST: ${{ steps.docker-build.outputs.digest }}
+          OUT_DIGEST: ${{ steps.docker-build-gsm.outputs.digest }}
         run: |
           # Calculate duration
           BUILD_END=$(date +%s)
-          MAVEN_BUILD_START=$(date -d "${{ needs['maven-build'].outputs.build-version }}" +%s 2>/dev/null || echo ${{ steps.init.outputs.BUILD_START }})
+          MAVEN_BUILD_START=$(date -d "${{ needs['maven-build'].outputs.build-version }}" +%s 2>/dev/null || echo ${OUT_BUILD_START})
           DURATION=$((BUILD_END - MAVEN_BUILD_START))
           
           IMAGE_BASE="${{ env.REGISTRY }}/check-it-out-dev/checkitout-be"
@@ -590,14 +620,14 @@ jobs:
           echo "build-duration=${DURATION}" >> $GITHUB_OUTPUT
           
           # Main app outputs
-          IMAGE_TAG="${IMAGE_BASE}/instagram-platform-backend-${{ inputs.environment }}:${{ env.BUILD_VERSION }}"
-          IMAGE_TAG_SHA="${IMAGE_BASE}/instagram-platform-backend-${{ inputs.environment }}:sha-${GITHUB_SHA:0:7}"
-          IMAGE_TAG_LATEST="${IMAGE_BASE}/instagram-platform-backend-${{ inputs.environment }}:latest"
+          IMAGE_TAG="${IMAGE_BASE}/instagram-platform-backend-${IN_ENVIRONMENT}:${{ env.BUILD_VERSION }}"
+          IMAGE_TAG_SHA="${IMAGE_BASE}/instagram-platform-backend-${IN_ENVIRONMENT}:sha-${GITHUB_SHA:0:7}"
+          IMAGE_TAG_LATEST="${IMAGE_BASE}/instagram-platform-backend-${IN_ENVIRONMENT}:latest"
           
           echo "image-tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
           echo "image-tag-sha=${IMAGE_TAG_SHA}" >> $GITHUB_OUTPUT
           echo "image-tag-latest=${IMAGE_TAG_LATEST}" >> $GITHUB_OUTPUT
-          echo "image-digest=${{ steps.docker-build.outputs.digest }}" >> $GITHUB_OUTPUT
+          echo "image-digest=${OUT_DIGEST}" >> $GITHUB_OUTPUT
           
           # GSM outputs
           GSM_IMAGE_TAG="${IMAGE_BASE}/google-secrets-init:${{ env.BUILD_VERSION }}"
@@ -605,12 +635,12 @@ jobs:
           
           echo "gsm-init-image-tag=${GSM_IMAGE_TAG}" >> $GITHUB_OUTPUT
           echo "gsm-init-image-tag-sha=${GSM_IMAGE_TAG_SHA}" >> $GITHUB_OUTPUT
-          echo "gsm-init-image-digest=${{ steps.docker-build-gsm.outputs.digest }}" >> $GITHUB_OUTPUT
+          echo "gsm-init-image-digest=${OUT_DIGEST}" >> $GITHUB_OUTPUT
           
           # Debug: Verify outputs
           echo ""
           echo "📋 Output verification:"
-          echo "  Environment: ${{ inputs.environment }}"
+          echo "  Environment: ${IN_ENVIRONMENT}"
           echo "  Main app SHA tag: ${IMAGE_TAG_SHA}"
           echo "  GSM init SHA tag: ${GSM_IMAGE_TAG_SHA}"
           
@@ -618,7 +648,7 @@ jobs:
           echo "## 🚀 Build Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 📦 Images Built (ghcr.io)" >> $GITHUB_STEP_SUMMARY
-          echo "- **Main App**: \`${IMAGE_BASE}/instagram-platform-backend-${{ inputs.environment }}:${{ env.BUILD_VERSION }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Main App**: \`${IMAGE_BASE}/instagram-platform-backend-${IN_ENVIRONMENT}:${{ env.BUILD_VERSION }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- **GSM Init**: \`${IMAGE_BASE}/google-secrets-init:${{ env.BUILD_VERSION }}\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### ⏱️ Performance" >> $GITHUB_STEP_SUMMARY

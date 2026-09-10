@@ -35,8 +35,10 @@ jobs:
     steps:
       - name: 📋 Parse Configuration
         id: config
+        env:
+          IN_CONFIG_JSON: ${{ inputs.config-json }}
         run: |
-          CONFIG='${{ inputs.config-json }}'
+          CONFIG='${IN_CONFIG_JSON}'
           
           # Extract values
           echo "ENVIRONMENT=$(echo "$CONFIG" | jq -r '._flat.environment')" >> $GITHUB_ENV
@@ -63,23 +65,27 @@ jobs:
           echo "  Admin Home: $ADMIN_HOME"
 
       - name: 📥 Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
         with:
           sparse-checkout: |
             .github/scripts/remote/
             .github/scripts/runner/
 
       - name: 🔐 Setup SSH
+        env:
+          SEC_INSTAGRAM_SCRIPTS_ADMIN_SSH_KEY: ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_SSH_KEY }}
+          SEC_INSTAGRAM_SERVER_HOST: ${{ secrets.INSTAGRAM_SERVER_HOST }}
+          SEC_INSTAGRAM_SCRIPTS_ADMIN_USER: ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_SSH_KEY }}" > ~/.ssh/id_rsa
+          echo "${SEC_INSTAGRAM_SCRIPTS_ADMIN_SSH_KEY}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           
           # Configure SSH
           cat >> ~/.ssh/config << EOF
           Host admin-server
-              HostName ${{ secrets.INSTAGRAM_SERVER_HOST }}
-              User ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}
+              HostName ${SEC_INSTAGRAM_SERVER_HOST}
+              User ${SEC_INSTAGRAM_SCRIPTS_ADMIN_USER}
               IdentityFile ~/.ssh/id_rsa
               StrictHostKeyChecking no
               ServerAliveInterval 30
@@ -88,7 +94,7 @@ jobs:
               LogLevel ERROR
           EOF
           
-          ssh-keyscan -H ${{ secrets.INSTAGRAM_SERVER_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+          ssh-keyscan -H ${SEC_INSTAGRAM_SERVER_HOST} >> ~/.ssh/known_hosts 2>/dev/null || true
           echo "✅ SSH configured for admin user"
 
       - name: ☢️ Nuclear Cleanup - START
@@ -121,6 +127,10 @@ jobs:
           NUCLEAR_START
 
       - name: 📝 Generate environment file
+        env:
+          GH_RUN_ID: ${{ github.run_id }}
+          GH_RUN_NUMBER: ${{ github.run_number }}
+          IN_VALIDATION_TIMEOUT: ${{ inputs.validation-timeout }}
         run: |
           echo "📝 Generating environment file for service reload..."
           
@@ -140,20 +150,23 @@ jobs:
           export CICD_LOG_GROUP=${{ env.CICD_LOG_GROUP }}
           
           # GitHub context
-          export GITHUB_RUN_ID=${{ github.run_id }}
-          export GITHUB_RUN_NUMBER=${{ github.run_number }}
+          export GITHUB_RUN_ID=${GH_RUN_ID}
+          export GITHUB_RUN_NUMBER=${GH_RUN_NUMBER}
           export TIMESTAMP=$(date +%s)
           
           # Service restart configuration
           export RUNTIME_PATH=${{ env.RUNTIME_PATH }}
           export SERVICE_START_TIMEOUT=600  # 10 minutes for complex stack with init containers
           export SERVICE_STOP_TIMEOUT=120  # 2 minutes for graceful stop with cleanup
-          export VALIDATION_TIMEOUT=${{ inputs.validation-timeout }}
+          export VALIDATION_TIMEOUT=${IN_VALIDATION_TIMEOUT}
           EOF
           
           echo "📊 Generated .env file ($(wc -l < .env) lines)"
 
       - name: 🔒 Upload secure-logger.sh with protection
+        env:
+          SEC_INSTAGRAM_SCRIPTS_ADMIN_USER: ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}
+          SEC_INSTAGRAM_SERVER_HOST: ${{ secrets.INSTAGRAM_SERVER_HOST }}
         run: |
           echo "🔒 Uploading secure-logger.sh dependency..."
           
@@ -162,17 +175,21 @@ jobs:
               .github/scripts/remote/secure-logger.sh \
               "${{ env.ADMIN_HOME }}/secure-logger.sh" \
               ~/.ssh/id_rsa \
-              "${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}" \
-              "${{ secrets.INSTAGRAM_SERVER_HOST }}")
+              "${SEC_INSTAGRAM_SCRIPTS_ADMIN_USER}" \
+              "${SEC_INSTAGRAM_SERVER_HOST}")
           
           echo "✅ secure-logger.sh uploaded and protected (timestamp: $LOGGER_TIMESTAMP)"
 
       - name: 📤 Secure upload of scripts
+        env:
+          GH_RUN_ID: ${{ github.run_id }}
+          SEC_INSTAGRAM_SCRIPTS_ADMIN_USER: ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}
+          SEC_INSTAGRAM_SERVER_HOST: ${{ secrets.INSTAGRAM_SERVER_HOST }}
         run: |
           echo "📤 Uploading scripts with security metadata..."
           
-          RELOAD_SCRIPT="reload-and-validate-${{ github.run_id }}.sh"
-          VALIDATOR="validate-and-exec-ci-script-${{ github.run_id }}.sh"
+          RELOAD_SCRIPT="reload-and-validate-${GH_RUN_ID}.sh"
+          VALIDATOR="validate-and-exec-ci-script-${GH_RUN_ID}.sh"
           
           # First copy/rename the deploy-and-validate.sh script if it exists
           if [ -f ".github/scripts/remote/deploy-and-validate.sh" ]; then
@@ -209,8 +226,8 @@ jobs:
               .github/scripts/remote/reload-and-validate.sh \
               "${{ env.ADMIN_HOME }}/$RELOAD_SCRIPT" \
               ~/.ssh/id_rsa \
-              "${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}" \
-              "${{ secrets.INSTAGRAM_SERVER_HOST }}")
+              "${SEC_INSTAGRAM_SCRIPTS_ADMIN_USER}" \
+              "${SEC_INSTAGRAM_SERVER_HOST}")
           
           echo "✅ Reload script uploaded and protected (timestamp: $RELOAD_TIMESTAMP)"
           
@@ -220,12 +237,14 @@ jobs:
               .github/scripts/remote/validate-and-exec-ci-script.sh \
               "${{ env.ADMIN_HOME }}/$VALIDATOR" \
               ~/.ssh/id_rsa \
-              "${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}" \
-              "${{ secrets.INSTAGRAM_SERVER_HOST }}")
+              "${SEC_INSTAGRAM_SCRIPTS_ADMIN_USER}" \
+              "${SEC_INSTAGRAM_SERVER_HOST}")
           
           echo "✅ Validator uploaded and protected (timestamp: $VALIDATOR_TIMESTAMP)"
 
       - name: 🔧 Verify protection
+        env:
+          GH_RUN_ID: ${{ github.run_id }}
         run: |
           echo "🔧 Verifying all files are protected..."
           ssh admin-server "
@@ -235,7 +254,7 @@ jobs:
             echo ''
           
             # Check each file
-            for file in .env secure-logger.sh reload-and-validate-${{ github.run_id }}.sh* validate-and-exec-ci-script-${{ github.run_id }}.sh*; do
+            for file in .env secure-logger.sh reload-and-validate-${GH_RUN_ID}.sh* validate-and-exec-ci-script-${GH_RUN_ID}.sh*; do
               if [ -f \"\$file\" ]; then
                 if lsattr \"\$file\" 2>/dev/null | grep -q '^....i'; then
                   echo \"✅ \$file is immutable\"
@@ -251,11 +270,13 @@ jobs:
           "
 
       - name: 🐳 Authenticate Docker & Pre-pull Images
+        env:
+          SEC_TOKEN_FOR_DOCKER: ${{ secrets.TOKEN_FOR_DOCKER }}
         run: |
           echo "🐳 Authenticating Docker with ghcr.io and pre-pulling images..."
 
           # Check if TOKEN_FOR_DOCKER is provided (MANDATORY for private images)
-          if [ -z "${{ secrets.TOKEN_FOR_DOCKER }}" ]; then
+          if [ -z "${SEC_TOKEN_FOR_DOCKER}" ]; then
             echo "❌ ERROR: TOKEN_FOR_DOCKER secret is required for private images"
             echo "   Please configure TOKEN_FOR_DOCKER in repository secrets"
             exit 1
@@ -438,6 +459,10 @@ jobs:
 
       - name: 📊 Reload & Validate Summary
         if: always()
+        env:
+          OUT_STATUS: ${{ steps.validate-deployment.outputs.status }}
+          SEC_INSTAGRAM_SCRIPTS_ADMIN_USER: ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }}
+          GH_RUN_ID: ${{ github.run_id }}
         run: |
           cat << EOF >> $GITHUB_STEP_SUMMARY
           ## 🔐 Secure Reload & Validate Report
@@ -445,12 +470,12 @@ jobs:
           | Component | Value |
           |-----------|-------|
           | Environment | ${{ env.ENVIRONMENT }} |
-          | Status | ${{ steps.validate-deployment.outputs.status }} |
+          | Status | ${OUT_STATUS} |
           | Deployment Path | ${{ env.DEPLOYMENT_PATH }} |
           | Systemd Service | ${{ env.SYSTEMD_SERVICE_NAME }} |
           | GSM Project | ${{ env.GSM_PROJECT_ID }} |
-          | Admin User | ${{ secrets.INSTAGRAM_SCRIPTS_ADMIN_USER }} |
-          | Run ID | ${{ github.run_id }} |
+          | Admin User | ${SEC_INSTAGRAM_SCRIPTS_ADMIN_USER} |
+          | Run ID | ${GH_RUN_ID} |
           
           ### 🔒 Security Features
           - ✅ Admin user with sudo privileges

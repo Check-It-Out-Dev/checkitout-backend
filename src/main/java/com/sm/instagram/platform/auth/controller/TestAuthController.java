@@ -309,7 +309,12 @@ public class TestAuthController {
         sessionCookie.setHttpOnly(true);
         sessionCookie.setPath("/");
         sessionCookie.setMaxAge(maxAge);
-        sessionCookie.setSecure(false); // Allow HTTP for tests
+        // The Secure flag mirrors the transport this request arrived on rather than being hardcoded
+        // off: true under dev-lite with ssl (the wizard serves the backend over https), false for the
+        // plain-HTTP e2e tier -- which is exactly what application-e2e.yml already encodes as
+        // jwt.cookie.secure=false. Derived from the request, the flag can never mark a cookie Secure
+        // on a transport that could not carry it back.
+        sessionCookie.setSecure(httpRequest.isSecure());
         response.addCookie(sessionCookie);
 
         // Set signature cookie
@@ -317,7 +322,7 @@ public class TestAuthController {
         sigCookie.setHttpOnly(true);
         sigCookie.setPath("/");
         sigCookie.setMaxAge(maxAge);
-        sigCookie.setSecure(false);
+        sigCookie.setSecure(httpRequest.isSecure());
         response.addCookie(sigCookie);
 
         log.info("[E2E] Set cookies: {} and {}", cookieName, sigCookieName);
@@ -335,7 +340,7 @@ public class TestAuthController {
      * Useful for logout scenarios in E2E tests.
      */
     @PostMapping("/clear-session")
-    public ResponseEntity<Void> clearSession(HttpServletResponse response) {
+    public ResponseEntity<Void> clearSession(HttpServletRequest httpRequest, HttpServletResponse response) {
         log.info("[E2E] Clearing session cookies");
 
         // Clear all possible session cookies
@@ -344,6 +349,9 @@ public class TestAuthController {
             cookie.setHttpOnly(true);
             cookie.setPath("/");
             cookie.setMaxAge(0);
+            // Carries no value and expires immediately, but it mirrors the transport like the cookies
+            // it replaces -- one rule for the whole file beats a lone exception a reviewer re-opens.
+            cookie.setSecure(httpRequest.isSecure());
             response.addCookie(cookie);
         }
 
@@ -610,14 +618,14 @@ public class TestAuthController {
             sessionCookie.setHttpOnly(true);
             sessionCookie.setPath("/");
             sessionCookie.setMaxAge(7 * 24 * 60 * 60);
-            sessionCookie.setSecure(false);
+            sessionCookie.setSecure(httpRequest.isSecure());
             response.addCookie(sessionCookie);
 
             Cookie sigCookie = new Cookie("session_sig", signature);
             sigCookie.setHttpOnly(true);
             sigCookie.setPath("/");
             sigCookie.setMaxAge(7 * 24 * 60 * 60);
-            sigCookie.setSecure(false);
+            sigCookie.setSecure(httpRequest.isSecure());
             response.addCookie(sigCookie);
 
             log.info("[E2E] Influencer OAuth simulation complete: userId={}, socialConnectionId={}",

@@ -1,0 +1,66 @@
+# Dependabot version updates.
+#
+# Security alerts were already on — they are what opened the wave of advisory pull requests — but
+# nothing was updating dependencies on a schedule, and nothing at all was updating the actions.
+# That matters more now that every action is pinned to a commit sha rather than a tag: a sha does not
+# move, which is the point, and also means it never gets a fix unless something rewrites it.
+# Dependabot rewrites both the sha and the `# v5` comment beside it.
+#
+# Grouped and weekly on purpose. Ungrouped daily updates on a repository this size produce a wall of
+# pull requests nobody reads, and a wall nobody reads is indistinguishable from no updates at all.
+version: 2
+
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      # First-party actions move together and almost never break; one pull request for the lot.
+      github-official:
+        patterns:
+          - "actions/*"
+          - "github/*"
+      # Everything else is somebody else's code running with this repository's token, so it is
+      # reviewed separately rather than swept into the same merge.
+      third-party-actions:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "actions/*"
+          - "github/*"
+
+  - package-ecosystem: maven
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      # A Spring Boot bump that arrives one artifact at a time is a bump that never lands.
+      spring:
+        patterns:
+          - "org.springframework*"
+          - "org.springframework.boot*"
+      test-tooling:
+        patterns:
+          - "org.junit*"
+          - "org.mockito*"
+          - "org.testcontainers*"
+          - "io.cucumber*"
+          - "org.assertj*"
+          - "org.pitest*"
+
+  # The Dockerfiles are not at the root — Dependabot's first run said so plainly, "No Dockerfiles nor
+  # Kubernetes YAML found in /" — so each image directory is named.
+  - package-ecosystem: docker
+    directories:
+      - "/docker/instagram-platform"
+      - "/docker/google-secrets-init"
+      - "/docker/secret-tester"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
