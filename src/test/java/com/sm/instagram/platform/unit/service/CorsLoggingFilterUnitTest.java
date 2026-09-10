@@ -630,7 +630,15 @@ class CorsLoggingFilterUnitTest {
             "http://localhost.evil.com",
             "https://localhost.attacker.example:8443",
             "http://localhost-evil.com",
-            "https://notlocalhost:4200"
+            "https://notlocalhost:4200",
+            // A malformed Origin is exactly what a probe sends, and none of these has a host that
+            // IS localhost: no scheme separator at all, a scheme that is not http(s), and a
+            // userinfo section whose @ makes the real host something else entirely.
+            "localhost:4200",
+            "ftp://localhost",
+            "file://localhost/etc/passwd",
+            "http://localhost@evil.com",
+            "https://localhost:4200@evil.com/x"
         })
         @DisplayName("should log warning for suspicious localhost patterns")
         void shouldLogWarningForSuspiciousLocalhostPatterns(String origin) throws ServletException, IOException {
@@ -653,7 +661,10 @@ class CorsLoggingFilterUnitTest {
             "http://localhost",
             "http://localhost:4200",
             "https://localhost:8443",
-            "http://localhost/some/path"
+            "http://localhost/some/path",
+            // The host ends at the first delimiter, whichever it is.
+            "http://localhost?q=1",
+            "https://localhost#frag"
         })
         @DisplayName("should not flag an origin whose host really is localhost")
         void shouldNotFlagRealLocalhostOrigins(String origin) throws ServletException, IOException {

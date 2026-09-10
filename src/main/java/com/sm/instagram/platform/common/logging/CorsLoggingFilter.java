@@ -144,9 +144,19 @@ public class CorsLoggingFilter extends OncePerRequestFilter {
 
     /**
      * True only when the origin's host component IS localhost -- not merely when the origin starts
-     * with "http://localhost". A prefix test calls "http://localhost.evil.com" legitimate, which is
-     * exactly the shape the suspicious-localhost warning exists to catch, so the attacker-controlled
-     * domain was the one origin that never got logged.
+     * with "http://localhost", and not when something before the host merely looks like it.
+     *
+     * <p>Two shapes this has to refuse, both found by a test rather than by reading:
+     * <ul>
+     *   <li>{@code http://localhost.evil.com} -- an attacker-controlled apex whose leftmost label
+     *       begins with "localhost". A startsWith test calls it legitimate, so it was the one
+     *       origin the suspicious-localhost warning never fired on.
+     *   <li>{@code https://localhost:4200@evil.com} -- "localhost:4200" is USERINFO here; the host
+     *       is evil.com. Taking the host as everything up to the first ':' reads the userinfo as
+     *       the host and calls that legitimate too. The Origin header has no userinfo form at all
+     *       (RFC 6454 is scheme, host and port), so an '@' in the authority means this is not a
+     *       plain origin and is exactly the kind of thing worth logging.
+     * </ul>
      */
     private boolean isLocalhostOrigin(String origin) {
         int schemeEnd = origin.indexOf("://");
@@ -157,16 +167,22 @@ public class CorsLoggingFilter extends OncePerRequestFilter {
         if (!"http".equals(scheme) && !"https".equals(scheme)) {
             return false;
         }
-        String hostAndRest = origin.substring(schemeEnd + 3);
-        int hostEnd = hostAndRest.length();
-        for (int i = 0; i < hostAndRest.length(); i++) {
-            char c = hostAndRest.charAt(i);
-            if (c == ':' || c == '/' || c == '?' || c == '#') {
-                hostEnd = i;
+        String rest = origin.substring(schemeEnd + 3);
+        int authorityEnd = rest.length();
+        for (int i = 0; i < rest.length(); i++) {
+            char c = rest.charAt(i);
+            if (c == '/' || c == '?' || c == '#') {
+                authorityEnd = i;
                 break;
             }
         }
-        return "localhost".equals(hostAndRest.substring(0, hostEnd));
+        String authority = rest.substring(0, authorityEnd);
+        if (authority.indexOf('@') >= 0) {
+            return false;
+        }
+        int portAt = authority.indexOf(':');
+        String host = portAt < 0 ? authority : authority.substring(0, portAt);
+        return "localhost".equals(host);
     }
 
     private void logCorsResponse(HttpServletRequest request, HttpServletResponse response, String origin, String requestId, String correlationId) {
