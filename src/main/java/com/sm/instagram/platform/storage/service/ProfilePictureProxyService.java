@@ -1,5 +1,6 @@
 package com.sm.instagram.platform.storage.service;
 
+import com.sm.instagram.platform.common.util.Interrupts;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
@@ -116,12 +117,8 @@ public class ProfilePictureProxyService {
             return publicUrl;
 
         } catch (Exception e) {
-            // A broad catch takes InterruptedException with it, and the interrupt flag goes
-            // too: a pool thread told to stop would carry on as if nothing had happened.
-            // Restore it, then handle the failure exactly as before.
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+            // A broad catch swallows the interrupt too; put the flag back before handling the failure.
+            Interrupts.preserveInterrupt(e);
             log.error("Failed to proxy profile picture to Firebase Storage: {}", e.getMessage());
             return null; // Graceful fallback - continue with original URL or null
         }

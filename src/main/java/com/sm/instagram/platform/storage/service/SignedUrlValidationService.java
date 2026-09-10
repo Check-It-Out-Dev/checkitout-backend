@@ -1,5 +1,6 @@
 package com.sm.instagram.platform.storage.service;
 
+import com.sm.instagram.platform.common.util.Interrupts;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.cloud.storage.*;
@@ -263,12 +264,8 @@ public class SignedUrlValidationService {
                     log.error("   → Upload may have failed silently");
                 }
             } catch (Exception e) {
-                // A broad catch takes InterruptedException with it, and the interrupt flag goes
-                // too: a pool thread told to stop would carry on as if nothing had happened.
-                // Restore it, then handle the failure exactly as before.
-                if (e instanceof InterruptedException) {
-                    Thread.currentThread().interrupt();
-                }
+                // A broad catch swallows the interrupt too; put the flag back before handling the failure.
+                Interrupts.preserveInterrupt(e);
                 log.error("   ❌ VERIFICATION FAILED", e);
             }
         }

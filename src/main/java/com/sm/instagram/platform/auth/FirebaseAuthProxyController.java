@@ -16,6 +16,7 @@ import com.sm.instagram.platform.common.exceptions.BusinessRuleTranslatableExcep
 import com.sm.instagram.platform.common.exceptions.ValidationTranslatableException;
 import com.sm.instagram.platform.common.ratelimit.RateLimit;
 import com.sm.instagram.platform.common.ratelimit.RateLimitProfile;
+import com.sm.instagram.platform.common.util.Interrupts;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -184,12 +185,8 @@ public class FirebaseAuthProxyController {
                         // Re-throw business rule exceptions
                         throw e;
                     } catch (Exception e) {
-                        // A broad catch takes InterruptedException with it, and the interrupt flag goes
-                        // too: a pool thread told to stop would carry on as if nothing had happened.
-                        // Restore it, then handle the failure exactly as before.
-                        if (e instanceof InterruptedException) {
-                            Thread.currentThread().interrupt();
-                        }
+                        // A broad catch swallows the interrupt too; put the flag back before handling the failure.
+                        Interrupts.preserveInterrupt(e);
                         log.error("Error handling ADMIN 2FA claim removal: {}", e.getMessage(), e);
                         throw new AuthenticationTranslatableException("error.auth.not_authenticated");
                     }
