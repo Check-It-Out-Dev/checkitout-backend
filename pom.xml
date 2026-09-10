@@ -36,6 +36,11 @@
 		<pitest-junit5-plugin.version>1.2.2</pitest-junit5-plugin.version>
 		<versions-maven-plugin.version>2.16.2</versions-maven-plugin.version>
 		
+		<!-- Spring Boot manages the driver at 42.7.3; GHSA/Dependabot flags everything below
+		     42.7.11 for unbounded PBKDF2 iterations in SCRAM auth (a server-controlled CPU
+		     exhaustion). Overriding the managed property is the supported way to move it. -->
+		<postgresql.version>42.7.11</postgresql.version>
+
 		<!-- Dependency versions to avoid conflicts -->
 		<org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
 		<jjwt.version>0.11.5</jjwt.version>
@@ -147,10 +152,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
+		<!-- No version here: Spring Boot manages it from the postgresql.version property above.
+					 A literal pinned it to 42.7.3 and silently outranked the property, which is the same
+					 way the gRPC set drifted. -->
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>42.7.3</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
