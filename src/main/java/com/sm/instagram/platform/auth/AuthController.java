@@ -110,9 +110,12 @@ public class AuthController {
                 firebaseUid);
 
         // Token exchange requested
-        log.debug("ID token received (first 50 chars): {}",
-            request.getIdToken() != null && request.getIdToken().length() > 50 ?
-            request.getIdToken().substring(0, 50) + "..." : request.getIdToken());
+        // The token's LENGTH only. The first 50 characters are the JWT header and the start of
+        // the payload, and the branch this replaces logged the WHOLE token whenever it was 50
+        // characters or shorter, which is exactly the malformed case someone turns DEBUG on for.
+        log.debug("ID token received: present={}, length={}",
+            request.getIdToken() != null,
+            request.getIdToken() == null ? 0 : request.getIdToken().length());
 
         // Let service throw translatable exceptions - they will be caught by @ControllerAdvice handlers
         TokenExchangeResponse exchangeResponse = tokenExchangeService.exchangeToken(
