@@ -59,8 +59,9 @@ jobs:
   mutation:
     name: Mutation
     uses: ./.github/workflows/mutation.yml
+    # It writes its score to the Pages branch so the dashboard can trend test quality over time.
     permissions:
-      contents: read
+      contents: write
     secrets: inherit
 
   security:

@@ -32,8 +32,9 @@ concurrency:
   # The caller's event, because under workflow_call that is whose event it is.
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+# contents: write because this tier writes its score to the Pages branch for the dashboard.
 permissions:
-  contents: read
+  contents: write
 
 env:
   MAVEN_ARGS: -B -ntp -DskipPmd=true
@@ -73,6 +74,28 @@ jobs:
           node tools/ci/pit-summary.mjs \
             --break "${{ inputs.floor || 40 }}" \
             --json pit-summary.json | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Pages site (previous state)
+        if: always()
+        uses: actions/checkout@v5
+        with:
+          ref: gh-pages
+          path: site
+        continue-on-error: true
+      - name: This tier's number into the site, for the dashboard to trend
+        if: always()
+        run: |
+          rm -rf site/.git
+          mkdir -p site/mutation
+          cp pit-summary.json site/mutation/latest.json
+      - name: Publish
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # A retrying overlay push rather than the action: the night runs this tier and the test tier
+        # at the same time and both publish, so the loser of the race used to drop its result.
+        run: |
+          bash tools/ci/publish-pages.sh site "mutation run ${{ github.run_number }}"
 
       - name: Publish the report
         if: always()

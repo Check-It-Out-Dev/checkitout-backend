@@ -263,11 +263,11 @@ jobs:
             --junit 'results/unit-results/surefire-reports/TEST-*.xml:unit' \
             --junit 'results/integration-results/failsafe-reports/TEST-*.xml:integration' \
             --junit 'results/e2e-results/failsafe-reports/**/TEST-*.xml:e2e' \
-            --jacoco results/unit-results/site/jacoco-unit/jacoco.xml --copy allure=allure-report | tee -a "$GITHUB_STEP_SUMMARY"
+            --jacoco results/unit-results/site/jacoco-unit/jacoco.xml \n            --mutation site/mutation/latest.json --security site/security/latest.json \n            --copy allure=allure-report | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Publish
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: site
-          keep_files: false
-          commit_message: "ci-tests run ${{ github.run_number }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # A retrying overlay push rather than the action: the night runs this tier and the mutation
+        # tier at the same time and both publish, so the loser of the race used to drop its result.
+        run: |
+          bash tools/ci/publish-pages.sh site "ci-tests run ${{ github.run_number }}"
