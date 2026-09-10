@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -56,6 +57,17 @@ public class GeoIpStorageService {
     private int maxVersionsToKeep;
     @Value("${geoip.storage.metadata-prefix:geoip-metadata}")
     private String metadataPrefix;
+    /**
+     * The same property MaxMindDatabaseService reads: both write the same database, so both should
+     * work beside it rather than in the shared system temp directory (java:S5443). The directory is
+     * shared even though the NIO call creates the file owner-only, and a database another local
+     * account can watch appear -- or swap between the download and the read -- is not worth leaving
+     * to the platform. Requesting POSIX permissions instead would throw on Windows, where this is
+     * developed.
+     */
+    @Value("${maxmind.database.path:./geoip/GeoLite2-City.mmdb}")
+    private String databasePath;
+
     @Value("${geoip.storage.database-prefix:geoip}")
     private String databasePrefix;
     @Value("${geoip.storage.max-age-days:7}")
@@ -183,6 +195,14 @@ public class GeoIpStorageService {
         });
     }
 
+    /** A directory this application owns, for files that are only half a database yet. */
+    private Path workDirectory() throws IOException {
+        Path parent = Paths.get(databasePath).toAbsolutePath().getParent();
+        Path work = (parent == null ? Paths.get(".").toAbsolutePath() : parent).resolve("work");
+        Files.createDirectories(work);
+        return work;
+    }
+
     /**
      * Download the latest GeoIP database from Firebase Storage.
      * All application instances can call this on startup or update.
@@ -217,7 +237,7 @@ public class GeoIpStorageService {
                 }
 
                 // Create temp file for download
-                Path tempFile = Files.createTempFile("GeoLite2-City", ".mmdb");
+                Path tempFile = Files.createTempFile(workDirectory(), "GeoLite2-City", ".mmdb");
 
                 // Download to temp file
                 blob.downloadTo(tempFile);
