@@ -393,6 +393,12 @@ public class TotpFirestoreService {
             log.info("All 2FA data deleted for user: {}", userId);
             
         } catch (Exception e) {
+            // A broad catch takes InterruptedException with it, and the interrupt flag goes
+            // too: a pool thread told to stop would carry on as if nothing had happened.
+            // Restore it, then handle the failure exactly as before.
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
             log.error("Failed to delete 2FA data for user {}: {}", userId, e.getMessage());
             throw new BusinessRuleTranslatableException("error.business.data_integrity");
         }
