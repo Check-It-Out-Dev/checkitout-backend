@@ -1,0 +1,23 @@
+12:43:31.730 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - GDPR: Operation=instagramOAuthCallback, DataAccessed=instagram_profile,oauth_tokens, Purpose=social_authentication, LegalBasis=consent, ThirdParty=Instagram
+12:43:31.730 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - Processing Instagram OAuth callback
+12:43:31.732 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - OAUTH_DEBUG [CALLBACK_START]: {
+  "code" : "test-auth-...",
+  "state" : "null"
+}
+12:43:31.733 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - OAUTH_DEBUG [TOKEN_EXCHANGE_SUCCESS]: {
+  "userId" : "12345678",
+  "hasAccessToken" : true,
+  "username" : "testuser"
+}
+12:43:31.733 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - GDPR: InstagramProfileRetrieved, SocialUserID=12345678, Username=testuser, DataAccessed=profile_data,oauth_tokens, Purpose=user_identification
+12:43:31.733 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - Instagram profile retrieved for user: testuser
+12:43:31.733 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - GDPR: ExistingUserAuth, FirebaseUID=firebase-uid-123, UserID=1, DataAccessed=user_profile,social_connection, Purpose=authentication
+12:43:31.733 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - Existing user found via local DB: 1
+12:43:31.733 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - User Firebase UID: firebase-uid-123
+12:43:31.733 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - Updated user profile picture URL: https://instagram.cdninstagram.com/profile.jpg
+12:43:31.733 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - Updated Instagram data in Firestore for existing user
+12:43:31.733 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - Firebase user verified for UID: firebase-uid-123
+12:43:31.733 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - User 1 is ACTIVE but has no Firebase role. Admin sync required.
+12:43:31.733 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - User 1 has no Firebase role - awaiting admin activation
+12:43:31.734 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - Set HMAC-signed OAuth cookies for existing user
+12:43:31.734 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - GDPR: OAuthSuccess, FirebaseUID=firebase-uid-123, UserID=1, DataProcessed=authentication_tokens,session_cookies, Purpose=session_creation
