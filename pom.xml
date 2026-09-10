@@ -78,6 +78,21 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<!-- One gRPC version, chosen once. Dependabot bumped grpc-netty-shaded to 1.75.0 by itself
+					 (#9) while four siblings stayed hand-pinned at 1.59.0. NettyClientHandler then called
+					 GrpcUtil.getFlag, which 1.59 does not declare, and the first transport start threw
+					 NoSuchMethodError inside the channel's SynchronizationContext. A panicked gRPC channel
+					 never recovers, so every Firestore call for the life of that process came back INTERNAL,
+					 which reads as "the emulator is unreachable" and is nothing of the kind. The BOM keeps
+					 the set together; the requireSameVersions rule below is what notices if anything pulls
+					 one back out. -->
+			<dependency>
+				<groupId>io.grpc</groupId>
+				<artifactId>grpc-bom</artifactId>
+				<version>1.75.0</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 			<!-- Override specific versions to avoid conflicts -->
 			<dependency>
 				<groupId>com.google.http-client</groupId>
@@ -185,23 +200,6 @@
 					<groupId>commons-logging</groupId>
 					<artifactId>commons-logging</artifactId>
 				</exclusion>
-				<!-- Exclude gRPC dependencies to avoid version conflicts -->
-				<exclusion>
-					<groupId>io.grpc</groupId>
-					<artifactId>grpc-context</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>io.grpc</groupId>
-					<artifactId>grpc-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>io.grpc</groupId>
-					<artifactId>grpc-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>io.grpc</groupId>
-					<artifactId>grpc-stub</artifactId>
-				</exclusion>
 			</exclusions>
 		</dependency>
 		
@@ -244,31 +242,26 @@
 			</exclusions>
 		</dependency>
 
-		<!-- Explicit gRPC dependencies with specific versions to fix ClassNotFoundException -->
+		<!-- Declared so they stay on the runtime classpath; versions come from grpc-bom above. -->
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-context</artifactId>
-			<version>1.59.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-api</artifactId>
-			<version>1.59.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-core</artifactId>
-			<version>1.59.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-stub</artifactId>
-			<version>1.59.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-netty-shaded</artifactId>
-			<version>1.75.0</version>
 		</dependency>
 		<!-- OpenCensus dependencies to fix tracing issues -->
 		<dependency>
@@ -770,6 +763,15 @@
 								<requireJavaVersion>
 									<version>[21,22)</version>
 								</requireJavaVersion>
+								<!-- gRPC artifacts are one release train and only work as a set. Dependabot bumped
+										 grpc-netty-shaded alone and the four hand-pinned siblings stayed 16 minors behind,
+										 which linked cleanly and then threw NoSuchMethodError on the first transport start.
+										 Maven mediates silently, so the invariant has to be stated rather than assumed. -->
+								<requireSameVersions>
+									<dependencies>
+										<dependency>io.grpc:*</dependency>
+									</dependencies>
+								</requireSameVersions>
 								<bannedDependencies>
 									<excludes>
 										<exclude>commons-logging:commons-logging</exclude>
