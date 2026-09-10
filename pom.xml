@@ -32,6 +32,8 @@
 		<maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
 		<maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
 		<maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
+		<pitest-maven.version>1.19.1</pitest-maven.version>
+		<pitest-junit5-plugin.version>1.2.2</pitest-junit5-plugin.version>
 		<versions-maven-plugin.version>2.16.2</versions-maven-plugin.version>
 		
 		<!-- Dependency versions to avoid conflicts -->
@@ -940,6 +942,77 @@
 
 	<!-- Environment-specific profiles -->
 	<profiles>
+		<!--
+			Mutation testing (PIT). `./mvnw -Pmutation test` — never part of a normal build.
+
+			Coverage says a line executed. It does not say anything checked the result, and a line
+			covered by a test that asserts nothing is indistinguishable from one that is tested. PIT
+			changes the bytecode on purpose, one small edit at a time, and reports which edits the suite
+			failed to notice. Every survivor is a line that could be wrong tomorrow with the build green.
+
+			Scope is deliberate. Mutating the whole backend would take hours and produce a number nobody
+			acts on. These four packages are where a surviving mutant is a real defect rather than a
+			style note — HMAC and hashing, the rate limiter, the security helpers, and the auth services —
+			and, the part that decides everything, they are covered by the UNIT suite. The subscription
+			state machine is the other high-stakes area and is deliberately absent: its tests are
+			Testcontainers integration tests, so under `-Ptest` nothing would execute those mutants and
+			the report would show a wall of NO_COVERAGE that says nothing about the tests at all.
+
+			threshold is left unset on the first runs for the same reason the frontend's was: a threshold
+			has to be measured before it can be enforced, and one nobody meets is one everybody disables.
+		-->
+		<profile>
+			<id>mutation</id>
+			<properties>
+				<skip.unit.tests>false</skip.unit.tests>
+				<skip.integration.tests>true</skip.integration.tests>
+				<jacoco.skip>true</jacoco.skip>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.pitest</groupId>
+						<artifactId>pitest-maven</artifactId>
+						<version>${pitest-maven.version}</version>
+						<dependencies>
+							<dependency>
+								<groupId>org.pitest</groupId>
+								<artifactId>pitest-junit5-plugin</artifactId>
+								<version>${pitest-junit5-plugin.version}</version>
+							</dependency>
+						</dependencies>
+						<configuration>
+							<targetClasses>
+								<param>com.sm.instagram.platform.common.security.*</param>
+								<param>com.sm.instagram.platform.common.ratelimit.*</param>
+								<param>com.sm.instagram.platform.util.*</param>
+								<param>com.sm.instagram.platform.auth.service.*</param>
+							</targetClasses>
+							<targetTests>
+								<param>com.sm.instagram.platform.unit.*</param>
+							</targetTests>
+							<excludedTestClasses>
+								<param>com.sm.instagram.platform.unit.e2e.*</param>
+							</excludedTestClasses>
+							<outputFormats>
+								<param>XML</param>
+								<param>HTML</param>
+							</outputFormats>
+							<timestampedReports>false</timestampedReports>
+							<!-- The runner has two cores that matter; more threads than that just contend. -->
+							<threads>2</threads>
+							<timeoutConstant>8000</timeoutConstant>
+							<!-- Equivalent mutants in generated or trivial members are noise, not signal. -->
+							<avoidCallsTo>
+								<avoidCallsTo>java.util.logging</avoidCallsTo>
+								<avoidCallsTo>org.slf4j</avoidCallsTo>
+							</avoidCallsTo>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
 		<!-- Test Profile - excludes devtools and optimizes for containers -->
 		<profile>
 			<id>test</id>

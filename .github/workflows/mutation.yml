@@ -1,0 +1,85 @@
+# PIT: would the unit tests notice if the code were wrong?
+#
+# Coverage answers a weaker question than most dashboards imply. It says a line executed during a
+# test run -- not that anything checked the result. Mutation testing changes the bytecode on purpose,
+# one small edit at a time, and reports which edits the suite failed to catch. Every survivor is a
+# line that could break tomorrow with every gate still green.
+#
+# It runs at night rather than on pull requests because it is minutes rather than seconds, and
+# because its output is a reading list, not a merge decision. Scope, and why the subscription state
+# machine is deliberately absent from it, are in the `mutation` profile in pom.xml.
+name: mutation
+
+on:
+  workflow_call:
+    inputs:
+      floor:
+        description: Fail below this mutation score. A ratchet - raise it, never lower it.
+        type: number
+        default: 40
+  workflow_dispatch:
+    inputs:
+      floor:
+        description: Fail below this mutation score
+        type: number
+        default: 40
+
+# The group is keyed by the CALLING pipeline as well as the ref. Without `github.workflow` --
+# which under workflow_call is the caller's name -- a push to main starts `pr`, `pr` calls this
+# tier, and it cancels the copy the night is already running.
+concurrency:
+  group: mutation-${{ github.workflow }}-${{ github.ref }}
+  # The caller's event, because under workflow_call that is whose event it is.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+env:
+  MAVEN_ARGS: -B -ntp -DskipPmd=true
+  TZ: UTC
+
+jobs:
+  pit:
+    name: PIT
+    runs-on: ubuntu-latest
+    # Measured at about twenty minutes on the dev box over 2,397 mutants with two threads. The limit
+    # sits well above that so a slow runner reports a score rather than a cancellation.
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      # The goal is invoked directly rather than bound to a phase: PIT is never part of a normal
+      # build, and a profile that silently added twenty minutes to `mvn verify` would be removed.
+      - name: Mutate
+        run: |
+          chmod +x mvnw
+          ./mvnw $MAVEN_ARGS -Pmutation test-compile org.pitest:pitest-maven:mutationCoverage
+
+      # Separate step so the report is published and the survivors are listed even when the score is
+      # under the floor. PIT's own mutationThreshold would fail the build before either happened.
+      - name: What survived
+        if: always()
+        run: |
+          set -o pipefail
+          node tools/ci/pit-summary.mjs \
+            --break "${{ inputs.floor || 40 }}" \
+            --json pit-summary.json | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish the report
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: mutation-${{ github.run_number }}
+          path: |
+            target/pit-reports
+            pit-summary.json
+          retention-days: 90
