@@ -206,10 +206,11 @@ Every uploaded script is sha256-gated and made immutable on the host before it
 runs; images are tagged by version and commit; the target is a hardened VPS
 provisioned by Ansible (15 roles — base system, Docker, PostgreSQL, nginx with
 mTLS, log shipping, backups; runbooks in [`ansible/`](ansible/) and
-[`deployment/`](deployment/)). A reusable rollback workflow
-([`auto-rollback-systemd.yml`](.github/workflows/auto-rollback-systemd.yml):
-restore the backup, restart, nine health attempts) exists and its wiring into
-the chain is in progress. Hosting is Docker Compose and systemd on that one VPS —
+[`deployment/`](deployment/)). **Rollback is automatic.** [`auto-rollback-systemd.yml`](.github/workflows/auto-rollback-systemd.yml)
+— restore the backup, restart the unit, nine health attempts — is wired into both chains as a job
+that fires when the backup succeeded and something after it did not. The condition is narrow on
+purpose: rolling back to a backup that does not exist is worse than staying broken, and a failure in
+config, validation or build never reached the server, so there is nothing there to undo. Hosting is Docker Compose and systemd on that one VPS —
 right-sized for this product, and the reason the documents say no to Kubernetes
 *for hosting*.
 
