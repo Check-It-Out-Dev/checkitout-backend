@@ -18,6 +18,7 @@ import org.springframework.core.env.Environment;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -205,18 +206,19 @@ public class DualDataSourceConfiguration {
      * This is a safety check to ensure Liquibase has created the user
      */
     private void verifyUserExists() {
+        // A user name is a value here, not an identifier -- it is compared against a column rather
+        // than naming one -- so it binds, and the quoting stops being this code's problem.
         try (Connection conn = liquibaseDataSource().getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(
-                 String.format("SELECT 1 FROM pg_user WHERE usename = '%s'", appUsername))) {
-            
-            if (!rs.next()) {
-                log.error("Application user {} does not exist! Liquibase migrations may have failed.", appUsername);
-                throw new IllegalStateException("Application database user not found: " + appUsername);
+             PreparedStatement stmt = conn.prepareStatement("SELECT 1 FROM pg_user WHERE usename = ?")) {
+            stmt.setString(1, appUsername);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (!rs.next()) {
+                    log.error("Application user {} does not exist! Liquibase migrations may have failed.", appUsername);
+                    throw new IllegalStateException("Application database user not found: " + appUsername);
+                }
+
+                log.info("Verified application user {} exists in database", appUsername);
             }
-            
-            log.info("Verified application user {} exists in database", appUsername);
-            
         } catch (Exception e) {
             log.warn("Could not verify application user existence: {}", e.getMessage());
             // Don't fail startup, as the user might exist but we can't check

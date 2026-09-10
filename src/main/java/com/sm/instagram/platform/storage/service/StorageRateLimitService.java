@@ -27,6 +27,16 @@ public class StorageRateLimitService {
     private static final String USER_FIRST_UPLOAD_KEY = "user:first_upload:%s";
 
     /**
+     * An hour, as a literal, so the divisor below is provably non-zero.
+     *
+     * <p>{@code TimeUnit.HOURS.toMillis(1)} is the same number and always was, but it is a method
+     * call, and the dataflow analyser cannot see through it -- it reported the division as a possible
+     * ArithmeticException (javabugs:S3518). Nothing about the arithmetic changes; the constant just
+     * says out loud what the call already guaranteed.
+     */
+    private static final long MILLIS_PER_HOUR = 3_600_000L;
+
+    /**
      * Lua script for atomic storage decrement with bounds checking.
      * Prevents TOCTOU race condition by atomically:
      * 1. Reading current value
@@ -311,7 +321,7 @@ public class StorageRateLimitService {
             updateUserStorage(userId, fileSize);
 
             // Clean up old entries (sliding window maintenance)
-            cleanupOldEntries(hourlyKey, now - TimeUnit.HOURS.toMillis(1));
+            cleanupOldEntries(hourlyKey, now - MILLIS_PER_HOUR);
             cleanupOldEntries(dailyKey, now - TimeUnit.DAYS.toMillis(1));
             cleanupOldEntries(GLOBAL_MINUTE_KEY, now - TimeUnit.MINUTES.toMillis(1));
 
@@ -744,7 +754,7 @@ public class StorageRateLimitService {
 
             if (now - firstUploadTime < gracePeriodMs) {
                 // Still within grace period
-                long hoursRemaining = (gracePeriodMs - (now - firstUploadTime)) / TimeUnit.HOURS.toMillis(1);
+                long hoursRemaining = (gracePeriodMs - (now - firstUploadTime)) / MILLIS_PER_HOUR;
                 log.debug("GDPR: Operation=gracePeriodActive, FirebaseUID={}, HoursRemaining={}, Purpose=new_user_experience",
                         userId, hoursRemaining);
                 return gracePeriod.getLimitMultiplier();

@@ -12,6 +12,7 @@ import org.springframework.util.StreamUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
+import java.util.regex.Pattern;
 import java.util.Properties;
 
 /**
@@ -60,8 +61,46 @@ public class LocalDatabaseInitializer {
     @Value("${local.db.init.force:false}")
     private boolean forceInit;  // For troubleshooting - forces recreation
 
+    /**
+     * A database, role or schema name that is safe to put into a statement.
+     *
+     * <p>PostgreSQL will not take an identifier as a bound parameter -- there is no
+     * {@code DROP USER ?} and never will be -- so the eleven DDL statements below have to build
+     * their identifiers by concatenation, and the only control left is refusing anything that is not
+     * a plain identifier before it gets near a Statement. These names come from configuration rather
+     * than from a request, and this component only exists under the dev and no-redis profiles, so
+     * the realistic failure is a typo in a .env rather than an attack; a typo containing a semicolon
+     * would still be executed, which is reason enough.
+     *
+     * <p>Deliberately narrower than PostgreSQL allows: unquoted identifiers there fold to lower case
+     * and may contain {@code $}, but nothing in this project needs either, and a rule that permits
+     * less is a rule that is easier to be sure about. 63 characters is Postgres's own NAMEDATALEN
+     * limit.
+     */
+    private static final Pattern PLAIN_IDENTIFIER = Pattern.compile("[A-Za-z_][A-Za-z0-9_]{0,62}");
+
+    /**
+     * Fail the whole initialization rather than execute a statement built from something unexpected.
+     * Throwing from {@code @PostConstruct} stops the context, which is the right outcome: a
+     * misconfigured local database is not something to carry on with quietly.
+     */
+    private static String requireIdentifier(String value, String property) {
+        if (value == null || !PLAIN_IDENTIFIER.matcher(value).matches()) {
+            throw new IllegalStateException(
+                    property + " must be a plain SQL identifier (letters, digits and underscore, not "
+                            + "starting with a digit); refusing to build a statement from: " + value);
+        }
+        return value;
+    }
+
     @PostConstruct
     public void initializeDatabase() {
+        // Before anything is concatenated into a statement. Every use of appDatabase and appUser
+        // below this line has been through the pattern above.
+        requireIdentifier(appDatabase, "spring.datasource.database");
+        requireIdentifier(appUser, "spring.datasource.username");
+        requireIdentifier(superUser, "postgres.superuser.username");
+
         if (!initEnabled) {
             log.info("🔧 Local DB initialization disabled via local.db.init.enabled=false");
             return;

@@ -4,6 +4,7 @@ import com.sm.instagram.platform.auth.cache.UserCacheService;
 import com.sm.instagram.platform.auth.dto.RegisterUserRequest;
 import com.sm.instagram.platform.auth.filter.HmacUtils;
 import com.sm.instagram.platform.auth.firebase.FirestoreService;
+import com.sm.instagram.platform.auth.firebase.TotpFirestoreService;
 import com.sm.instagram.platform.auth.sandbox.SandboxPersonaPolicy;
 import com.sm.instagram.platform.common.util.RequestContextUtils;
 import com.sm.instagram.platform.common.jwt.JwtTokenProvider;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -62,6 +64,7 @@ public class TestAuthController {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final SandboxPersonaPolicy sandboxPersonaPolicy;
+    private final TotpFirestoreService totpFirestoreService;
     private final FirestoreService firestoreService;
     private final PlatformRepository platformRepository;
     private final UserSocialConnectionRepository socialConnectionRepository;
@@ -1488,4 +1491,60 @@ public class TestAuthController {
         }
     }
 
+
+    // -- TOTP provisioning ---------------------------------------------------------------------
+
+    /**
+     * Give an actor a known TOTP secret, sealed by whichever cipher this run actually uses.
+     *
+     * <p>Generating a valid code means the suite and the application have to agree on one secret.
+     * The only way to arrange that used to be {@code e2e-tests/scripts/provision-admin-totp.mjs},
+     * which seals the secret with real Cloud KMS against a real Google project - the credential
+     * dependency the emulator work exists to remove. It also left the nightly unable to run those
+     * scenarios at all: its backend is a prebuilt image with no test classpath, so nothing wrote
+     * {@code totpSecrets/{uid}} and every step-up through TOTP answered
+     * {@code error.stepup.invalid_token}.
+     *
+     * <p>This writes it through {@link TotpFirestoreService}, the same call the e2e tier's own
+     * seeder makes, so the ciphertext is produced by whatever {@code TotpEncryptionService} is
+     * configured - Cloud KMS where a credential exists, {@code LocalTotpCipher} where
+     * {@code gcp.kms.enabled=false}. Reimplementing AES-GCM in the seeder would have worked until
+     * the day the application changed its format, which is the kind of drift a test harness should
+     * never be able to have.
+     *
+     * <p>Idempotent on purpose: re-running must not rotate a secret a suite has already read, and a
+     * suite sharing one emulator across runs would fail if it did.
+     *
+     * <p>Refused outright when the public-sandbox guard is on. Everything else here is shaped by
+     * who may sign in; this one would let any visitor plant a second factor on another persona, so
+     * it answers 404 rather than 403 - the endpoint should not appear to exist there at all.
+     */
+    @PostMapping("/provision-totp")
+    public ResponseEntity<?> provisionTotp(@RequestBody ProvisionTotpRequest request) {
+        if (sandboxPersonaPolicy.isEnabled()) {
+            log.warn("[SANDBOX] provision-totp refused");
+            return ResponseEntity.notFound().build();
+        }
+        if (request == null || request.firebaseUid() == null || request.firebaseUid().isBlank()
+                || request.secret() == null || request.secret().isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", "firebaseUid and secret are both required"));
+        }
+
+        String uid = request.firebaseUid().trim();
+        if (totpFirestoreService.totpSecretExists(uid)) {
+            log.info("[E2E] TOTP secret already present for {}, leaving it alone", uid);
+            return ResponseEntity.ok(Map.of("firebaseUid", uid, "provisioned", false, "enabled", true));
+        }
+
+        // Fixed, obviously-synthetic backup codes: a scenario that needs one needs to know it, and
+        // nothing here is a credential for anything real.
+        totpFirestoreService.storeTotpSecret(uid, request.secret().trim(),
+                List.of("11111111", "22222222", "33333333"));
+        totpFirestoreService.enable2FA(uid);
+        log.info("[E2E] Provisioned a TOTP secret for {} and enabled 2FA", uid);
+        return ResponseEntity.ok(Map.of("firebaseUid", uid, "provisioned", true, "enabled", true));
+    }
+
+    public record ProvisionTotpRequest(String firebaseUid, String secret) {}
 }

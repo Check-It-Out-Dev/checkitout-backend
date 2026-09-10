@@ -16,8 +16,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * In-memory implementation of GeoLocationCache using Caffeine.
@@ -37,7 +35,22 @@ public class InMemoryGeoLocationCache implements GeoLocationCache {
     
     private final Map<String, CachedLocation> locationCache = new ConcurrentHashMap<>();
     private final Map<String, List<Map<String, Object>>> travelPatterns = new ConcurrentHashMap<>();
-    private final Map<String, Lock> locks = new ConcurrentHashMap<>();
+    /**
+     * Lock key -> the nanoTime at which the holder's claim lapses.
+     *
+     * <p>Not a {@link java.util.concurrent.locks.ReentrantLock}, which cannot express this. A
+     * ReentrantLock belongs to the thread that took it, so only that thread may unlock, and the TTL
+     * safety net that used to sit here scheduled its unlock on an executor thread where
+     * {@code isHeldByCurrentThread()} is false by construction -- it could never fire once. Worse,
+     * the TTL was being passed to {@code tryLock(timeout, unit)} as an acquisition timeout, so a
+     * second instance finding the lock taken waited ten minutes for it instead of taking the
+     * caller's "another instance is updating" branch.
+     *
+     * <p>An expiry map is what the Redis implementation of this same interface already does --
+     * {@code SET key value NX EX ttl} -- so the two now behave alike: acquire without waiting, lapse
+     * on their own if a holder dies, and release from any thread.
+     */
+    private final Map<String, Long> lockExpiry = new ConcurrentHashMap<>();
     
     @Data
     @AllArgsConstructor
@@ -235,35 +248,27 @@ public class InMemoryGeoLocationCache implements GeoLocationCache {
     
     @Override
     public boolean tryLock(String lockKey, int ttlSeconds) {
-        Lock lock = locks.computeIfAbsent(lockKey, k -> new ReentrantLock());
-        
-        try {
-            boolean acquired = lock.tryLock(ttlSeconds, TimeUnit.SECONDS);
-            if (acquired) {
-                // Schedule automatic unlock after TTL
-                CompletableFuture.delayedExecutor(ttlSeconds, TimeUnit.SECONDS)
-                    .execute(() -> {
-                        if (((ReentrantLock) lock).isHeldByCurrentThread()) {
-                            lock.unlock();
-                        }
-                    });
+        long now = System.nanoTime();
+        long expiresAt = now + TimeUnit.SECONDS.toNanos(Math.max(ttlSeconds, 0));
+        // compute() holds the bin lock, so read-decide-write is atomic against another thread doing
+        // the same thing. A claim whose deadline has passed is treated as free, which is what makes
+        // this survive a holder that died without releasing.
+        boolean[] acquired = { false };
+        lockExpiry.compute(lockKey, (key, current) -> {
+            if (current == null || current - now <= 0) {
+                acquired[0] = true;
+                return expiresAt;
             }
-            return acquired;
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return false;
-        }
+            return current;
+        });
+        return acquired[0];
     }
-    
+
     @Override
     public void releaseLock(String lockKey) {
-        Lock lock = locks.get(lockKey);
-        if (lock != null && lock instanceof ReentrantLock) {
-            ReentrantLock reentrantLock = (ReentrantLock) lock;
-            if (reentrantLock.isHeldByCurrentThread()) {
-                reentrantLock.unlock();
-            }
-        }
+        // Any thread may release, exactly as deleting the Redis key does. The caller releases in a
+        // finally block, so this is the path that actually runs; the TTL is only the net under it.
+        lockExpiry.remove(lockKey);
     }
     
     /**

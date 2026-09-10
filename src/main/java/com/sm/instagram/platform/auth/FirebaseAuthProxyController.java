@@ -184,6 +184,12 @@ public class FirebaseAuthProxyController {
                         // Re-throw business rule exceptions
                         throw e;
                     } catch (Exception e) {
+                        // A broad catch takes InterruptedException with it, and the interrupt flag goes
+                        // too: a pool thread told to stop would carry on as if nothing had happened.
+                        // Restore it, then handle the failure exactly as before.
+                        if (e instanceof InterruptedException) {
+                            Thread.currentThread().interrupt();
+                        }
                         log.error("Error handling ADMIN 2FA claim removal: {}", e.getMessage(), e);
                         throw new AuthenticationTranslatableException("error.auth.not_authenticated");
                     }

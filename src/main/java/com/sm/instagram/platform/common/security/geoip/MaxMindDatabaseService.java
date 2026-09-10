@@ -135,7 +135,7 @@ public class MaxMindDatabaseService {
                     licenseKey
             );
 
-            Path tempFile = Files.createTempFile("GeoLite2-City", ".tar.gz");
+            Path tempFile = Files.createTempFile(workDirectory(), "GeoLite2-City", ".tar.gz");
             downloadFile(url, tempFile);
 
             Path extractedDb = extractDatabase(tempFile);
@@ -239,10 +239,31 @@ public class MaxMindDatabaseService {
     }
 
     /**
+     * A directory this application owns, for the half-downloaded and half-extracted files.
+     *
+     * <p>{@code Files.createTempFile} puts them in the shared system temp directory, which on a
+     * POSIX host is world-writable (java:S5443). The NIO calls do create the file itself
+     * owner-only, so this was never the classic symlink race -- but the *directory* is still shared,
+     * and a GeoIP database that another local account can watch appear, or replace between the
+     * download and the read, is not something to leave to the platform's good manners. Asking for
+     * POSIX permissions explicitly is not the answer either: that call throws on Windows, where this
+     * project is developed.
+     *
+     * <p>So the work happens beside the database itself, in a directory the application already
+     * creates and owns.
+     */
+    private Path workDirectory() throws IOException {
+        Path parent = Paths.get(databasePath).toAbsolutePath().getParent();
+        Path work = (parent == null ? Paths.get(".").toAbsolutePath() : parent).resolve("work");
+        Files.createDirectories(work);
+        return work;
+    }
+
+    /**
      * Extract database from tar.gz file.
      */
     private Path extractDatabase(Path tarGzFile) throws IOException {
-        Path tempDir = Files.createTempDirectory("geolite2");
+        Path tempDir = Files.createTempDirectory(workDirectory(), "geolite2");
 
         try (InputStream fi = Files.newInputStream(tarGzFile);
              GzipCompressorInputStream gzi = new GzipCompressorInputStream(fi);
