@@ -38,7 +38,7 @@ jobs:
         env:
           IN_CONFIG_JSON: ${{ inputs.config-json }}
         run: |
-          CONFIG='${IN_CONFIG_JSON}'
+          CONFIG="$IN_CONFIG_JSON"
           
           # Extract values
           echo "ENVIRONMENT=$(echo "$CONFIG" | jq -r '._flat.environment')" >> $GITHUB_ENV

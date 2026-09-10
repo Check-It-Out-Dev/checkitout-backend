@@ -8,6 +8,7 @@
 #   tests      unit (surefire, -Ptest) and integration (failsafe, -Pintegration, Testcontainers)
 #   sonar      SonarQube Cloud, with the quality gate on NEW code
 #   deps       dependency review, which only exists on a pull request
+#   workflows  the two workflow defects a YAML parser cannot see (see the job)
 #   CodeQL     runs on its own through the organisation's default setup
 #
 # The end-to-end tier, Schemathesis and the security sweep run at night. They are worth ten minutes
@@ -73,9 +74,31 @@ jobs:
           fail-on-severity: high
           comment-summary-in-pr: on-failure
 
+  workflows:
+    # The release chain failed on every push for six hours with zero jobs and no log, because one
+    # env block held the same key three times. A YAML parser keeps the last duplicate silently, so
+    # nothing here could see it; GitHub's validator rejects the file and the run it rejects has
+    # nothing to read. The checker looks at the text rather than at a parse tree, for that reason.
+    # It lives in the frontend repository because all three repositories share it -- the same
+    # sparse checkout the security summary already uses.
+    name: Workflow files
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+        with:
+          repository: Check-It-Out-Dev/checkitout-frontend
+          path: frontend
+          sparse-checkout: tools/ci
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444  # v5
+        with:
+          node-version: 24
+      - run: node frontend/tools/ci/check-workflow-env.mjs .
+
   verdict:
     name: Merge verdict
-    needs: [tests, sonar]
+    needs: [tests, sonar, workflows]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -87,6 +110,7 @@ jobs:
           set -euo pipefail
           tests='${{ needs.tests.result }}'
           sonar='${{ needs.sonar.result }}'
+          wf='${{ needs.workflows.result }}'
           {
             echo "### Pull-request verdict"
             echo
@@ -94,11 +118,12 @@ jobs:
             echo "| --- | --- |"
             echo "| unit + integration | $tests |"
             echo "| quality gate | $sonar |"
+            echo "| workflow files | $wf |"
             echo
             echo "The end-to-end tier, Schemathesis and the security sweep run in \`nightly\`."
             echo "This pipeline is the fast half on purpose."
           } | tee -a "$GITHUB_STEP_SUMMARY"
-          for r in "$tests" "$sonar"; do
+          for r in "$tests" "$sonar" "$wf"; do
             case "$r" in
               success|skipped) ;;
               *) echo "::error::a required check reported '$r'"; exit 1 ;;
