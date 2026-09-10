@@ -44,7 +44,7 @@ jobs:
     env:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
         with:
           # Sonar attributes issues to authors and measures new code against a baseline; a shallow
           # clone leaves it guessing at both.
@@ -60,7 +60,7 @@ jobs:
             echo "It is free for public repositories; see the header of this workflow for the three steps."
           } | tee -a "$GITHUB_STEP_SUMMARY"
 
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961  # v5
         if: env.SONAR_TOKEN != ''
         with:
           distribution: temurin
@@ -77,6 +77,6 @@ jobs:
 
       - name: Analyse
         if: env.SONAR_TOKEN != ''
-        uses: SonarSource/sonarqube-scan-action@v7
+        uses: SonarSource/sonarqube-scan-action@c7ee0f9df90b7aa20e8dcf9695dcfe2e7da5b4f2  # v7
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

@@ -85,8 +85,8 @@ jobs:
           --health-cmd "wget -qO- http://127.0.0.1:8080/api/actuator/health/readiness | grep -q UP"
           --health-interval 10s --health-timeout 5s --health-retries 40 --health-start-period 60s
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6
         with:
           python-version: "3.12"
       - run: python -m pip install --quiet "schemathesis>=4,<5"
@@ -138,7 +138,7 @@ jobs:
         if: steps.fuzz.outcome != 'success'
         run: docker logs ${{ job.services.backend.id }} 2>&1 | tail -120
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6
         if: always()
         with:
           name: api-fuzz-${{ github.run_number }}
