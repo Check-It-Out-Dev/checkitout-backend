@@ -61,7 +61,7 @@ jobs:
           name: unit-results
           path: |
             target/surefire-reports/*.xml
-            target/site/jacoco/jacoco.xml
+            target/site/jacoco-unit/jacoco.xml
           if-no-files-found: warn
           retention-days: 30
 
@@ -92,7 +92,7 @@ jobs:
           name: integration-results
           path: |
             target/failsafe-reports/*.xml
-            target/site/jacoco-integration/jacoco.xml
+            target/site/jacoco-e2e/jacoco.xml
           if-no-files-found: warn
           retention-days: 30
 
@@ -249,7 +249,7 @@ jobs:
             --junit 'results/unit-results/surefire-reports/TEST-*.xml:unit' \
             --junit 'results/integration-results/failsafe-reports/TEST-*.xml:integration' \
             --junit 'results/e2e-results/failsafe-reports/**/TEST-*.xml:e2e' \
-            --jacoco results/unit-results/site/jacoco/jacoco.xml --copy allure=allure-report | tee -a "$GITHUB_STEP_SUMMARY"
+            --jacoco results/unit-results/site/jacoco-unit/jacoco.xml --copy allure=allure-report | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Publish
         uses: peaceiris/actions-gh-pages@v4
         with:

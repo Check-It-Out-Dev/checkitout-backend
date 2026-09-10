@@ -69,7 +69,6 @@ jobs:
         run: |
           chmod +x mvnw
           ./mvnw -B -ntp test -Ptest -DskipITs -Dpmd.skip=true -Dcpd.skip=true -Dcheckstyle.skip=true
-          ./mvnw -B -ntp jacoco:report
 
       - name: Analyse
         if: env.SONAR_TOKEN != ''
