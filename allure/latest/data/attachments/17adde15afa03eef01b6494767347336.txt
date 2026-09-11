@@ -1,0 +1,10 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-641bb600-3dec-4b36-b720-b62a2aa95d18
+  Company: COMPANY-f395b799-faf6-45ec-b494-1db018d70d6a
+  Admin: ADMIN-f0c9619f-c1b6-4ca3-8ec1-f330ba26e01b
+22:54:29.619 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus, FirebaseUID=COMPANY-f395b799-faf6-45ec-b494-1db018d70d6a, OpportunityID=2562, Action=ACCEPT, Purpose=status_management
+22:54:29.619 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=COMPANY-f395b799-faf6-45ec-b494-1db018d70d6a, OpportunityID=2562, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
+22:54:29.651 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus_SUCCESS, FirebaseUID=COMPANY-f395b799-faf6-45ec-b494-1db018d70d6a, OpportunityID=2562, OldStatus=CONTENT_POSTED, NewStatus=TO_BE_PAID
+22:54:29.651 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=COMPANY-f395b799-faf6-45ec-b494-1db018d70d6a, AppliedOpportunityID=2562, StatusChange=CONTENT_POSTED→TO_BE_PAID, Purpose=status_tracking
+22:54:29.653 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=COMPANY-f395b799-faf6-45ec-b494-1db018d70d6a, AppliedOpportunityID=2562, DataAccessed=status,changedBy,reason, Purpose=audit_trail
+22:54:29.653 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2562, CONTENT_POSTED -> TO_BE_PAID, Changed by=COMPANY-f395b799-faf6-45ec-b494-1db018d70d6a, Reason=Status accepted via API (/status/update endpoint)
