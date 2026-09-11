@@ -62,6 +62,24 @@ public final class LogSafe {
      * @param value the caller-supplied string, or null
      * @return a string that is always safe to interpolate into a log line, or null if it was null
      */
+    /**
+     * The same map with every key and value made safe to write, as a new map.
+     * <p>A copy, deliberately. The maps this is called on are the ones that also travel back to the
+     * caller in the response body, and they must keep the caller's own text intact: HTML encoding
+     * is what the response needs, and HTML encoding does not touch a line break. So the response
+     * keeps the encoded original and the log gets this.
+     * @param values the map to render into a log line, or null
+     * @return a new map safe to interpolate, or null if it was null
+     */
+    public static java.util.Map<String, String> map(java.util.Map<String, String> values) {
+        if (values == null) {
+            return null;
+        }
+        java.util.Map<String, String> safe = new java.util.LinkedHashMap<>();
+        values.forEach((k, v) -> safe.put(value(k), value(v)));
+        return safe;
+    }
+
     public static String value(String value) {
         if (value == null) {
             return null;

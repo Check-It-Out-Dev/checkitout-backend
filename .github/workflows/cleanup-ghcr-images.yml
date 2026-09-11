@@ -28,11 +28,22 @@ jobs:
     steps:
       - name: Cleanup GHCR images
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
+        # Through env, not interpolated. `${{ }}` inside a `script:` body is pasted into the
+        # JavaScript before the runner parses it, so the value is not a string the script reads --
+        # it is source code the script is built from, and a value carrying a quote ends the literal
+        # and continues as statements. The choice input only offers 'true' and 'false' today, which
+        # makes this safe by accident rather than by construction, and this job's token can delete
+        # packages.
+        env:
+          DRY_RUN: ${{ inputs.dry-run }}
+          ORGANIZATION: ${{ env.ORGANIZATION }}
+          REGISTRY: ${{ env.REGISTRY }}
+          CUTOFF_DAYS: ${{ env.CUTOFF_DAYS }}
         with:
           script: |
-            const dryRun = '${{ inputs.dry-run }}' === 'true';
-            const org = '${{ env.ORGANIZATION }}';
-            const cutoffDays = ${{ env.CUTOFF_DAYS }};
+            const dryRun = process.env.DRY_RUN === 'true';
+            const org = process.env.ORGANIZATION;
+            const cutoffDays = Number(process.env.CUTOFF_DAYS);
             const cutoffDate = new Date();
             cutoffDate.setDate(cutoffDate.getDate() - cutoffDays);
             
@@ -156,7 +167,7 @@ jobs:
             if (totalFailed > 0) {
               console.log(`❌ Total failed: ${totalFailed} versions`);
             }
-            console.log(`🐳 Registry: ${{ env.REGISTRY }}/${org}`);
+            console.log(`🐳 Registry: ${process.env.REGISTRY}/${org}`);
             console.log('\n✨ Cleanup complete!');
             
             // Exit with error if any deletions failed in live mode

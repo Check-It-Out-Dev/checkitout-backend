@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import com.sm.instagram.platform.common.util.LogSafe;
 
 @Slf4j
 @RestController
@@ -225,11 +226,11 @@ public class FileUploadController {
             // an empty path with ValidationTranslatableException, which is a 400 and was being
             // caught below and relabelled.
             log.warn("GDPR: Operation=confirmUpload_rejected, FirebaseUID={}, UploadID={}, Reason={}",
-                    firebaseUid, uploadId, e.getMessage());
+                    firebaseUid, LogSafe.value(uploadId), LogSafe.value(e.getMessage()));
             throw e;
         } catch (Exception e) {
             log.error("GDPR: Operation=confirmUpload_failed, FirebaseUID={}, UploadID={}, Error={}",
-                    firebaseUid, uploadId, e.getMessage(), e);
+                    firebaseUid, LogSafe.value(uploadId), LogSafe.value(e.getMessage()), e);
 
             // Record failure metrics
             if (metricsService != null) {

@@ -29,6 +29,7 @@ import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+import com.sm.instagram.platform.common.util.LogSafe;
 
 /**
  * Exception handler for validation-related errors.
@@ -80,8 +81,12 @@ public class ValidationExceptionHandler extends ResponseEntityExceptionHandler {
                     HtmlEncoder.encode(String.valueOf(error.getDefaultMessage()))));
         });
 
+        // The map itself goes back to the caller below, so it keeps their text HTML-encoded and
+        // whole; the log gets a copy that cannot forge a line. HTML encoding escapes the four
+        // characters a browser cares about and leaves the newline a log reader splits on
+        // (CWE-117, CodeQL java/log-injection).
         log.warn("VALIDATION_ERROR [{}]: parameterErrors={}",
-                baseHandler.buildDetailedRequestContext(request, traceId), validationErrors);
+                baseHandler.buildDetailedRequestContext(request, traceId), LogSafe.map(validationErrors));
 
         BaseExceptionHandler.ErrorResponse errorResponse = new BaseExceptionHandler.ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
