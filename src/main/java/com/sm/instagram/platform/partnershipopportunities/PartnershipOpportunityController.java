@@ -228,7 +228,6 @@ public class PartnershipOpportunityController extends BaseController<Partnership
      *
      * @return list of compensation type names
      */
-    @CrossOrigin
     @GetMapping(value = "/compensation/type", produces = "application/json")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Get compensation types", description = "Retrieves all available compensation types")

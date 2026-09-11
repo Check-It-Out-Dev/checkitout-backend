@@ -106,6 +106,11 @@ public class DictionaryService {
         log.info("GDPR: Service Operation=createOrUpdateEntry, FirebaseUID={}, Key={}, Category={}, Purpose=translation_management", 
             firebaseUid, entry.getKey(), entry.getCategory());
         
+        // The updater is the record of who changed the row, not an input. This entity is
+        // bound straight from the request body, and save() went in unmodified, so an admin
+        // could attribute their edit to another account. BaseService.updateEntityUpdater does
+        // this for entities that go through it; this service saves directly and did not.
+        entry.setAutoUpdaterId(firebaseUid);
         DictionaryEntry saved = repository.save(entry);
         
         log.info("GDPR: DataCreated=dictionary_entry, FirebaseUID={}, EntryID={}, Purpose=translation_storage", 

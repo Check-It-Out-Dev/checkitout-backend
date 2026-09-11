@@ -40,6 +40,7 @@ public class WebSecurityConfiguration {
     private final org.springframework.context.MessageSource messageSource;
     private final CorsProperties corsProperties;
 
+    @SuppressWarnings("java:S4502")
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
                                            AuthenticationConfiguration authenticationConfiguration)
@@ -68,6 +69,12 @@ public class WebSecurityConfiguration {
                 // fails the build if that happens, and this comment is what it points at. CodeQL
                 // reports the line below as java/spring-disabled-csrf-protection; it cannot see a
                 // cookie attribute set eight files away.
+                // java:S4502, and CodeQL says the same thing. Kept, because the paragraph
+                // above is the review: the session cookie is SameSite and
+                // CookieSameSitePolicyUnitTest fails the build if anyone loosens it. A rule
+                // that cannot see a cookie attribute eight files away should not be the one
+                // deciding this, but it should not be silent either -- hence the annotation
+                // rather than a deleted finding.
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         // =============================================================

@@ -44,7 +44,6 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@CrossOrigin
 @RequestMapping("/activecoop")
 @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('COMPANY') or hasAuthority('INFLUENCER')")
 @RateLimit(profile = RateLimitProfile.STANDARD, keyType = RateLimitKeyType.USER_ENDPOINT)

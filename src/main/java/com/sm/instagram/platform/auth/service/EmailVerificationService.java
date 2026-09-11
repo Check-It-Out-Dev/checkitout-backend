@@ -35,6 +35,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import com.sm.instagram.platform.common.util.LogSafe;
 
 @Service
 @RequiredArgsConstructor
@@ -384,7 +385,7 @@ public class EmailVerificationService {
         String key = OOB_CODE_PREFIX + oobCode;
         String value = firebaseUid + "|" + email;
         redisTemplate.opsForValue().set(key, value, OOB_CODE_TTL);
-        log.debug("Stored verification oobCode mapping for user: {}", firebaseUid);
+        log.debug("Stored verification oobCode mapping for user: {}", LogSafe.value(firebaseUid));
     }
 
     /**

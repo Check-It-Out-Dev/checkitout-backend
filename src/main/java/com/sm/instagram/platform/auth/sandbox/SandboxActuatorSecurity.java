@@ -20,6 +20,11 @@ import org.springframework.security.web.SecurityFilterChain;
 @ConditionalOnProperty(prefix = "checkitout.sandbox", name = "enabled", havingValue = "true")
 public class SandboxActuatorSecurity {
 
+    // java:S4502. This chain matches exactly one path, /actuator/prometheus, which is a GET
+    // that changes nothing. CSRF protects a state-changing request from being made with a
+    // cookie the user did not mean to send; there is no state to change and the chain carries no
+    // session. Leaving CSRF on would only mean the scraper has to fetch a token to read a gauge.
+    @SuppressWarnings("java:S4502")
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain sandboxPrometheusChain(HttpSecurity http) throws Exception {

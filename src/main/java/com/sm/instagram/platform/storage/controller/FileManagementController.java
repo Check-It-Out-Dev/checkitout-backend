@@ -53,7 +53,6 @@ import java.util.*;
 @Slf4j
 @RestController
 @RequestMapping("/files")
-@CrossOrigin
 @RequiredArgsConstructor
 public class FileManagementController {
 
