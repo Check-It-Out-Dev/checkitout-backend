@@ -62,6 +62,13 @@ jobs:
           distribution: temurin
           java-version: 21
           cache: maven
+      # The publisher is a shell script that deletes directories on a branch the whole estate
+      # reads. Two seconds against a local bare repository, every run: it asserts that `latest` is
+      # replaced rather than merged, that retention keeps exactly the newest reports, and that
+      # another tier's directories are still left alone.
+      - name: The Pages publisher still behaves
+        run: bash tools/ci/publish-pages.test.sh tools/ci/publish-pages.sh
+
       - run: chmod +x mvnw && ./mvnw $MAVEN_ARGS test -Ptest -DskipITs
       - uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d  # v6
         if: always()
