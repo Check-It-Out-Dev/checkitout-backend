@@ -69,10 +69,15 @@ jobs:
       # under the floor. PIT's own mutationThreshold would fail the build before either happened.
       - name: What survived
         if: always()
+        # The expressions are bound to env rather than pasted into the script. GitHub expands
+        # `${{ }}` into the shell TEXT before bash ever sees it, so a value carrying a quote or
+        # a backtick becomes syntax rather than an argument. Semgrep's run-shell-injection.
+        env:
+          MUTATION_FLOOR: ${{ inputs.floor || 40 }}
         run: |
           set -o pipefail
           node tools/ci/pit-summary.mjs \
-            --break "${{ inputs.floor || 40 }}" \
+            --break "$MUTATION_FLOOR" \
             --json pit-summary.json | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Pages site (previous state)

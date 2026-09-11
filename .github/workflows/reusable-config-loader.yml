@@ -51,8 +51,14 @@ jobs:
           
       - name: Merge and resolve templates
         id: final
+        # Bound to env rather than pasted into the script: GitHub expands `${{ }}` into the
+        # shell TEXT before bash sees it, so a value carrying a quote, a backtick or a line
+        # reading EOF becomes syntax rather than data. Semgrep's run-shell-injection.
+        env:
+          IN_ENVIRONMENT: ${{ inputs.environment }}
+          IN_CONFIG_PATH: ${{ inputs.config-path }}
         run: |
-          ENV="${{ inputs.environment }}"
+          ENV="$IN_ENVIRONMENT"
           
           echo "🔄 Processing configuration for environment: $ENV"
           
@@ -67,7 +73,7 @@ jobs:
           # Step 1: Merge YAML files
           echo "📋 Merging deployment-defaults.yml and deployment-${ENV}.yml..."
           yq eval-all '. as $item ireduce ({}; . * $item)' \
-            ${{ inputs.config-path }}/deployment-defaults.yml \
+            "$IN_CONFIG_PATH/deployment-defaults.yml" \
             ${{ inputs.config-path }}/deployment-${ENV}.yml \
             > merged.yml
             
@@ -288,12 +294,18 @@ jobs:
           jq -r '._flat | {container_user_name, container_user_id, container_group_name, container_group_id}' final-config.json
           
       - name: Generate summary
+        # Bound to env rather than pasted into the script: GitHub expands `${{ }}` into the
+        # shell TEXT before bash sees it, so a value carrying a quote, a backtick or a line
+        # reading EOF becomes syntax rather than data. Semgrep's run-shell-injection.
+        env:
+          IN_ENVIRONMENT: ${{ inputs.environment }}
+          STEP_CONFIG: ${{ steps.final.outputs.config }}
         run: |
-          CONFIG='${{ steps.final.outputs.config }}'
+          CONFIG="$STEP_CONFIG"
           
           echo "# 📋 Configuration Loaded" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "## 🎯 Environment: ${{ inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "## 🎯 Environment: $IN_ENVIRONMENT" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
           # Extract key values from JSON

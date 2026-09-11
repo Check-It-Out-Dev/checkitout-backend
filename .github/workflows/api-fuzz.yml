@@ -108,13 +108,19 @@ jobs:
 
       - name: Fuzz
         id: fuzz
+        # The expressions are bound to env rather than pasted into the script. GitHub expands
+        # `${{ }}` into the shell TEXT before bash ever sees it, so a value carrying a quote or
+        # a backtick becomes syntax rather than an argument. Semgrep's run-shell-injection.
+        env:
+          SESSION_COOKIES: ${{ steps.session.outputs.cookies }}
+          MAX_EXAMPLES: ${{ inputs.max_examples || '8' }}
         run: |
           set -euo pipefail
           st run http://localhost:8080/api/v3/api-docs \
             --url http://localhost:8080/api \
-            -H "Cookie: ${{ steps.session.outputs.cookies }}" \
+            -H "Cookie: $SESSION_COOKIES" \
             --exclude-path-regex '^/(test|actuator|dev-lite)/' \
-            --max-examples "${{ inputs.max_examples || '8' }}" \
+            --max-examples "$MAX_EXAMPLES" \
             --continue-on-failure \
             --workers 4 \
             --phases examples,coverage,fuzzing \
