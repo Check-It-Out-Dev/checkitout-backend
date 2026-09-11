@@ -1,0 +1,24 @@
+11:21:59.727 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - GDPR: Operation=instagramOAuthCallback, DataAccessed=instagram_profile,oauth_tokens, Purpose=social_authentication, LegalBasis=consent, ThirdParty=Instagram
+11:21:59.727 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - Processing Instagram OAuth callback
+11:21:59.728 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - OAUTH_DEBUG [CALLBACK_START]: {
+  "state" : "null",
+  "code" : "test-auth-..."
+}
+11:21:59.728 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - OAUTH_DEBUG [TOKEN_EXCHANGE_SUCCESS]: {
+  "username" : "testuser",
+  "hasAccessToken" : true,
+  "userId" : "12345678"
+}
+11:21:59.728 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - GDPR: InstagramProfileRetrieved, SocialUserID=12345678, Username=testuser, DataAccessed=profile_data,oauth_tokens, Purpose=user_identification
+11:21:59.728 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - Instagram profile retrieved for user: testuser
+11:21:59.728 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - GDPR: Operation=createNewOAuthUser, DataAccessed=instagram_profile, Purpose=account_creation, LegalBasis=consent, ThirdParty=Instagram
+11:21:59.728 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - Creating new user with clean Firebase architecture (consent cookies validated)
+11:21:59.728 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - Created Firebase user with auto-generated UID: new-firebase-uid
+11:21:59.729 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - Successfully saved Instagram data to Firestore for Firebase UID: new-firebase-uid
+11:21:59.729 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - Set profile picture URL: https://instagram.cdninstagram.com/profile.jpg (permanent: false)
+11:21:59.729 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - GDPR: NewUserCreated, FirebaseUID=new-firebase-uid, UserID=1, DataStored=user_profile,social_connection, Purpose=account_creation, Source=Instagram_OAuth
+11:21:59.729 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - Created user in PostgreSQL with ID: 1 and Firebase UID: new-firebase-uid
+11:21:59.729 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - Saved Instagram connection for user: 1
+11:21:59.729 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - Processed consent records for OAuth user: 1
+11:21:59.729 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - Set HMAC-signed OAuth cookies for new user
+11:21:59.729 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - GDPR: NewUserOAuthComplete, FirebaseUID=new-firebase-uid, UserID=1, DataProcessed=authentication_tokens,session_cookies, Purpose=initial_session_creation

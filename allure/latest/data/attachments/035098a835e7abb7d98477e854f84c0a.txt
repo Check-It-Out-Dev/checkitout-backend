@@ -1,0 +1,8 @@
+11:22:38.212 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.t.c.s.AnnotationConfigContextLoaderUtils&amp#27;[0;39m - Could not detect default configuration classes for test class [com.sm.instagram.platform.integration.service.partnershipopportunity.PartnershipOpportunityService_Patch_IntegrationTest]: PartnershipOpportunityService_Patch_IntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+11:22:38.255 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.b.t.c.SpringBootTestContextBootstrapper&amp#27;[0;39m - Found @SpringBootConfiguration com.sm.instagram.platform.InstagramPlatformApplication for test class com.sm.instagram.platform.integration.service.partnershipopportunity.PartnershipOpportunityService_Patch_IntegrationTest
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-c8d44e8d-cb1f-4504-b2fe-b2b1b9c7f3e1
+  Company: COMPANY-4dd154ff-7379-42f0-a60c-a1bc18071dce
+  Admin: ADMIN-ec61fbc1-ed82-4a7e-a525-4838691e4fd5
+11:22:38.272 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.p.PartnershipOpportunityService&amp#27;[0;39m - GDPR: Service=patchOpportunity, Operation=PARTIAL_UPDATE, UserID=COMPANY-4dd154ff-7379-42f0-a60c-a1bc18071dce, OpportunityID=5001, UpdatedFields=[photos], Purpose=partial_modification
+11:22:38.273 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.p.PartnershipOpportunityService&amp#27;[0;39m - GDPR: Service=findOpportunityById, Operation=RETRIEVE_OPPORTUNITY, UserID=COMPANY-4dd154ff-7379-42f0-a60c-a1bc18071dce, OpportunityID=5001, Purpose=data_retrieval

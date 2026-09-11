@@ -1,0 +1,11 @@
+11:22:49.489 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.t.c.s.AnnotationConfigContextLoaderUtils&amp#27;[0;39m - Could not detect default configuration classes for test class [com.sm.instagram.platform.integration.service.auth.FirebaseAuthProxyService_CompleteVerification_IntegrationTest$SuccessfulVerification]: SuccessfulVerification does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+11:22:49.491 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.b.t.c.SpringBootTestContextBootstrapper&amp#27;[0;39m - Found @SpringBootConfiguration com.sm.instagram.platform.InstagramPlatformApplication for test class com.sm.instagram.platform.integration.service.auth.FirebaseAuthProxyService_CompleteVerification_IntegrationTest$SuccessfulVerification
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-3e7bf5fe-2376-4bd2-84b1-64affd9f4371
+  Company: COMPANY-b7b54fce-c0dc-497f-8147-17ad2c7a85b6
+  Admin: ADMIN-573e35b2-2c3a-4675-bd52-0668f8b7305c
+11:22:49.504 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.FirebaseAuthProxyService&amp#27;[0;39m - Firebase updated for user uid-verify-178862096741: emailVerified=true + password set
+11:22:49.506 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=evictUser, DataDeleted=cached_user_data, Purpose=cache_management
+11:22:49.506 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+11:22:49.507 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+11:22:49.507 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.FirebaseAuthProxyService&amp#27;[0;39m - Email verification completed for user=uid-verify-178862096741, type=INFLUENCER, email=verify-178862115069@test.com
