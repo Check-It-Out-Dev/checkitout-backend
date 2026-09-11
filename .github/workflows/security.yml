@@ -62,13 +62,24 @@ jobs:
       # disabled within a fortnight.
       - name: Scan
         run: |
+          # --exclude-rule, not a `# nosemgrep` comment. The nginx configs already carry the
+          # comment on every flagged line and Semgrep reported them anyway: nosemgrep needs to know
+          # the file's comment syntax, and an nginx config is matched in generic mode, where it does
+          # not. The finding itself is `proxy_set_header Host $host`, which is how an upstream
+          # learns which vhost was asked for; the alternative is a literal per server block, and the
+          # estate's default server already refuses an unknown Host. Reviewed, not unseen.
+          #
+          # The JaCoCo site is generated HTML committed for the docs; scanning it measures the
+          # report generator's choice of link protocol, which is nobody's decision here.
           semgrep scan \
             --config p/owasp-top-ten \
             --config p/secrets \
             --config p/java \
             --sarif --output semgrep.sarif \
             --metrics off \
+            --exclude-rule generic.nginx.security.request-host-used.request-host-used \
             --exclude node_modules --exclude dist --exclude coverage \
+            --exclude 'docs/Tests/JaCoCoSite/**' \
             --exclude 'src/app/api/**' --exclude '*-snapshots' \
             . || true
           python - <<'PY' | tee -a "$GITHUB_STEP_SUMMARY"
