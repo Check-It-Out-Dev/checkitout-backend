@@ -1,5 +1,7 @@
 package com.sm.instagram.platform.unit.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.sm.instagram.platform.common.ratelimit.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -1163,6 +1165,60 @@ class RateLimitInterceptorUnitTest {
             String responseBody = stringWriter.toString();
             assertThat(responseBody).contains("\\\"quotes\\\"");
             assertThat(responseBody).contains("\\\\backslash");
+        }
+
+        @Test
+        @DisplayName("a quote in the request path cannot add fields to the 429 body")
+        void shouldNotLetThePathForgeFields() throws Exception {
+            // The path had its own escape ladder, one rung shorter than the message's. Both are
+            // gone: the body is serialised, so neither can reach the grammar.
+            setupRateLimitAnnotation(100, 60, RateLimitProfile.CUSTOM,
+                    RateLimitKeyType.USER_OR_IP, true, false, 1.0, 1.0, "Rate limit exceeded.", "");
+            setupAnonymousUser();
+
+            StringWriter stringWriter = new StringWriter();
+            PrintWriter writer = new PrintWriter(stringWriter);
+
+            when(request.getMethod()).thenReturn("GET");
+            when(request.getRequestURI()).thenReturn("/api/test\",\"retry_after\":0,\"x\":\"");
+            when(request.getRemoteAddr()).thenReturn("192.168.1.1");
+            when(handlerMethod.getMethodAnnotation(RateLimit.class)).thenReturn(rateLimit);
+            when(response.getWriter()).thenReturn(writer);
+            when(rateLimiterService.checkLimit(anyString(), anyInt(), anyInt()))
+                    .thenReturn(new RateLimiterService.RateLimitResult(false, 100, 0, System.currentTimeMillis() / 1000 + 30));
+
+            interceptor.preHandle(request, response, handlerMethod);
+
+            JsonNode body = new ObjectMapper().readTree(stringWriter.toString());
+            assertThat(body.has("x")).as("the path must not be able to add a field").isFalse();
+            assertThat(body.get("retry_after").asInt()).as("nor overwrite one").isNotZero();
+            assertThat(body.get("error").asText()).isEqualTo("rate_limit_exceeded");
+        }
+
+        @Test
+        @DisplayName("a control character in the message still leaves parseable JSON")
+        void shouldSurviveControlCharactersInTheMessage() throws Exception {
+            // \u0001 is below 0x20 and illegal raw inside a JSON string. The old ladder escaped
+            // \n, \r and \t and let every other control character through.
+            setupRateLimitAnnotation(100, 60, RateLimitProfile.CUSTOM,
+                    RateLimitKeyType.USER_OR_IP, true, false, 1.0, 1.0, "Slow\u0001down\u000Bplease", "");
+            setupAnonymousUser();
+
+            StringWriter stringWriter = new StringWriter();
+            PrintWriter writer = new PrintWriter(stringWriter);
+
+            when(request.getMethod()).thenReturn("GET");
+            when(request.getRequestURI()).thenReturn("/api/test");
+            when(request.getRemoteAddr()).thenReturn("192.168.1.1");
+            when(handlerMethod.getMethodAnnotation(RateLimit.class)).thenReturn(rateLimit);
+            when(response.getWriter()).thenReturn(writer);
+            when(rateLimiterService.checkLimit(anyString(), anyInt(), anyInt()))
+                    .thenReturn(new RateLimiterService.RateLimitResult(false, 100, 0, System.currentTimeMillis() / 1000 + 30));
+
+            interceptor.preHandle(request, response, handlerMethod);
+
+            JsonNode body = new ObjectMapper().readTree(stringWriter.toString());
+            assertThat(body.get("message").asText()).isEqualTo("Slow\u0001down\u000Bplease");
         }
     }
 

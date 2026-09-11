@@ -14,6 +14,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Set;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sm.instagram.platform.common.util.LogSafe;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * On the public sandbox the {@code /test/**} helpers (legal, registry, account status, ensure-user, e-mail
@@ -27,6 +31,8 @@ import java.util.Set;
 @ConditionalOnProperty(prefix = "checkitout.sandbox", name = "enabled", havingValue = "true")
 public class SandboxGuardFilter extends OncePerRequestFilter {
 
+    private static final ObjectMapper JSON = new ObjectMapper();
+
     static final String TEST_PREFIX = "/test/";
     static final Set<String> OPEN_DOORS = Set.of("/test/auth/mock-session", "/test/auth/clear-session");
 
@@ -38,10 +44,17 @@ public class SandboxGuardFilter extends OncePerRequestFilter {
             chain.doFilter(request, response);
             return;
         }
-        log.info("[SANDBOX] Closed test helper {} {}", request.getMethod(), path);
+        log.info("[SANDBOX] Closed test helper {} {}", LogSafe.value(request.getMethod()), LogSafe.value(path));
         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.getWriter().write("{\"status\":404,\"error\":\"Not Found\",\"path\":\"" + request.getRequestURI() + "\"}");
+        // Jackson rather than concatenation: the path is whatever the client asked for, and a
+        // request target carrying a quote or a control character turns a hand-built body into
+        // either invalid JSON or a body with fields the client never sent (CodeQL java/xss).
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("status", HttpServletResponse.SC_NOT_FOUND);
+        body.put("error", "Not Found");
+        body.put("path", request.getRequestURI());
+        response.getWriter().write(JSON.writeValueAsString(body));
     }
 
     static String pathWithinApplication(HttpServletRequest request) {

@@ -23,6 +23,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Production-ready interceptor to handle rate limiting at both class and method levels.
@@ -40,6 +43,9 @@ public class RateLimitInterceptor implements HandlerInterceptor {
      * Matches {header:xxx} where xxx is the header name.
      */
     private static final Pattern HEADER_PATTERN = Pattern.compile("\\{header:([^}]+)\\}");
+
+    /** Thread-safe and stateless; held statically so the constructor signature stays as it is. */
+    private static final ObjectMapper JSON = new ObjectMapper();
 
     private final GdprCompliantRateLimiterService rateLimiterService;
     private final RateLimitProperties rateLimitProperties;
@@ -584,33 +590,22 @@ public class RateLimitInterceptor implements HandlerInterceptor {
         // This allows the message to be displayed in the user's chosen language
         String translatedMessage = translateErrorMessage(errorMessage, retryAfter);
 
-        // SECURITY: Properly escape error message to prevent JSON injection and XSS
-        // Escape backslash first, then quotes and control characters
-        String escapedMessage = translatedMessage
-                .replace("\\", "\\\\")
-                .replace("\"", "\\\"")
-                .replace("\n", "\\n")
-                .replace("\r", "\\r")
-                .replace("\t", "\\t");
+        // SECURITY: the message is translated text and the path is whatever the client asked for,
+        // so both are serialised by Jackson rather than escaped by hand. The ladder that used to
+        // stand here escaped backslash, quote, \n, \r and \t - which is most of the JSON grammar
+        // and not all of it: every other control character below 0x20 is illegal raw inside a JSON
+        // string, and the path's ladder was one rung shorter than the message's. CodeQL reported
+        // the result as java/xss. Same keys, same order, same wire format.
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("error", "rate_limit_exceeded");
+        body.put("message", translatedMessage);
+        body.put("retry_after", retryAfter);
+        body.put("status", 429);
+        body.put("path", requestPath);
+        body.put("requestId", requestId);
+        body.put("timestamp", LocalDateTime.now().toString());
 
-        // Escape path for JSON safety
-        String escapedPath = requestPath
-                .replace("\\", "\\\\")
-                .replace("\"", "\\\"");
-
-        // Unified format with both rate_limit fields AND standard error fields
-        // This ensures frontend can detect rate limiting AND display requestId for support correlation
-        String jsonResponse = String.format(
-            "{\"error\":\"rate_limit_exceeded\",\"message\":\"%s\",\"retry_after\":%d," +
-            "\"status\":429,\"path\":\"%s\",\"requestId\":\"%s\",\"timestamp\":\"%s\"}",
-            escapedMessage,
-            retryAfter,
-            escapedPath,
-            requestId,
-            LocalDateTime.now().toString()
-        );
-
-        response.getWriter().write(jsonResponse);
+        response.getWriter().write(JSON.writeValueAsString(body));
         response.getWriter().flush();
     }
 
