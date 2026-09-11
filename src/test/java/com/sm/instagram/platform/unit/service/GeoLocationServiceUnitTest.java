@@ -959,7 +959,7 @@ class GeoLocationServiceUnitTest {
                 assertThat(summary).containsKey("gdprCompliant");
 
                 assertThat(summary.get("userId")).isEqualTo(userId);
-                assertThat(summary.get("travelPatternRecords")).isEqualTo(8);
+                assertThat(summary.get("travelPatternRecords")).isEqualTo(8L);   // long: a count of Redis list entries is not an int
                 assertThat(summary.get("retentionPeriod")).isEqualTo("30 days");
                 assertThat(summary.get("automaticDeletion")).isEqualTo(true);
                 assertThat(summary.get("gdprCompliant")).isEqualTo(true);
@@ -1000,7 +1000,7 @@ class GeoLocationServiceUnitTest {
                 Map<String, Object> summary = gdprService.getDataRetentionSummary(userId);
 
                 // Then
-                assertThat(summary.get("travelPatternRecords")).isEqualTo(0);
+                assertThat(summary.get("travelPatternRecords")).isEqualTo(0L);
                 assertThat(summary).doesNotContainKey("oldestData");
             }
 
@@ -1019,7 +1019,7 @@ class GeoLocationServiceUnitTest {
                 Map<String, Object> summary = gdprService.getDataRetentionSummary(userId);
 
                 // Then
-                assertThat(summary.get("travelPatternRecords")).isEqualTo(0);
+                assertThat(summary.get("travelPatternRecords")).isEqualTo(0L);
             }
         }
 
