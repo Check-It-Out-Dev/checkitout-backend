@@ -1,0 +1,8 @@
+13:31:24.293 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.t.c.s.AnnotationConfigContextLoaderUtils&amp#27;[0;39m - Could not detect default configuration classes for test class [com.sm.instagram.platform.integration.service.userpreferences.UserPreferencesService_Update_IntegrationTest$UpdateCurrentUserPreferences]: UpdateCurrentUserPreferences does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+13:31:24.294 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.b.t.c.SpringBootTestContextBootstrapper&amp#27;[0;39m - Found @SpringBootConfiguration com.sm.instagram.platform.InstagramPlatformApplication for test class com.sm.instagram.platform.integration.service.userpreferences.UserPreferencesService_Update_IntegrationTest$UpdateCurrentUserPreferences
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-895099de-7895-40f5-9bd1-56ea67b6f168
+  Company: COMPANY-fc85f965-6cde-4dfc-9b33-bbb48fa2adbc
+  Admin: ADMIN-bc6a9cdc-6f44-4096-b08e-ccce182caf76
+13:31:24.306 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=updateCurrentUserPreferences, FirebaseUID=INFLUENCER-895099de-7895-40f5-9bd1-56ea67b6f168, DataModified=user.preferences.*, Purpose=user_settings_update, LegalBasis=consent
+13:31:24.311 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=getCurrentUserPreferences, FirebaseUID=INFLUENCER-895099de-7895-40f5-9bd1-56ea67b6f168, Purpose=user_preference_retrieval, DataAccessed=user.preferences.*

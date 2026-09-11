@@ -1,0 +1,14 @@
+13:29:53.246 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramService&amp#27;[0;39m - InstagramService initialized:
+13:29:53.246 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramService&amp#27;[0;39m -   - OAuth endpoint: https://api.instagram.com
+13:29:53.246 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramService&amp#27;[0;39m -   - Graph API endpoint: https://graph.instagram.com
+13:29:53.246 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramService&amp#27;[0;39m - Meta OAuth Error Response: {
+    "error": {
+        "message": "Invalid OAuth access token",
+        "type": "OAuthException",
+        "code": 190,
+        "error_subcode": 467,
+        "fbtrace_id": "ABC123"
+    }
+}
+
+13:29:53.246 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramService&amp#27;[0;39m - Meta OAuth Error Details - Code: 190, Subcode: 467, Type: OAuthException, Message: Invalid OAuth access token, Trace: ABC123, Transient: false
