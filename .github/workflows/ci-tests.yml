@@ -240,8 +240,6 @@ jobs:
         run: node frontend/tools/ci/junit-collapse-tag-skips.mjs results/e2e-results | tee -a "$GITHUB_STEP_SUMMARY"
         continue-on-error: true
       - name: Allure 3 (JUnit XML from every tier, history from the Pages site)
-        env:
-          HISTORY_RUNS: '20'
         run: |
           mkdir -p allure-results
           find results -name 'TEST-*.xml' -exec cp {} allure-results/ \;
@@ -252,14 +250,8 @@ jobs:
           # Allure 3's CLI takes the results directory from its config or the default ./allure-results,
           # and knows --output and --config only.
           npx --yes allure generate --config .github/allurerc.mjs --output allure-report
-          # Cap the history. Each line is ONE run and carries `knownTestCaseIds`, every test id in
-          # it: on the backend that is 11,000 ids, about 380 KB per line, and the file had reached
-          # 103 MB over ~270 runs. GitHub refuses a file over 100 MB, so the Pages publish started
-          # failing outright -- the report and the dashboard's history both stopped updating, and
-          # the only symptom was a red report job at the end of an otherwise green pipeline. Twenty
-          # runs is more than the trend chart draws or the ten-run flaky window reads.
-          tail -n $HISTORY_RUNS history.jsonl > history.trimmed.jsonl 2>/dev/null || true
-          mv history.trimmed.jsonl history.jsonl 2>/dev/null || true
+          # Bound by size, not by line count; see the note in browser-tiers.yml.
+          node frontend/tools/ci/trim-history.mjs history.jsonl
           mkdir -p site/allure && cp history.jsonl site/allure/history-ci-tests.jsonl
       # upload-artifact roots an artifact at the longest common prefix of its paths, so `target/**` uploads
       # arrive as `surefire-reports/` and `site/jacoco/`, not flattened. Six runs published "0 tests,
