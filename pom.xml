@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.13</version>
+		<version>3.5.16</version>
 		<relativePath/>
 	</parent>
 
@@ -32,14 +32,41 @@
 		<maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
 		<maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
 		<maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
-		<pitest-maven.version>1.19.1</pitest-maven.version>
-		<pitest-junit5-plugin.version>1.2.2</pitest-junit5-plugin.version>
+		<pitest-maven.version>1.30.0</pitest-maven.version>
+		<pitest-junit5-plugin.version>1.2.3</pitest-junit5-plugin.version>
 		<versions-maven-plugin.version>2.16.2</versions-maven-plugin.version>
 		
 		<!-- Spring Boot manages the driver at 42.7.3; GHSA/Dependabot flags everything below
 		     42.7.11 for unbounded PBKDF2 iterations in SCRAM auth (a server-controlled CPU
 		     exhaustion). Overriding the managed property is the supported way to move it. -->
 		<postgresql.version>42.7.12</postgresql.version>
+
+		<!-- Boot 3.5.16 manages snakeyaml at 2.4, but the jackson-dataformat-yaml it also manages
+		     (2.21.4) requires 2.5. requireUpperBoundDeps caught the inversion; this resolves it
+		     upward rather than letting Maven silently pick the lower one. -->
+		<snakeyaml.version>2.5</snakeyaml.version>
+
+		<!-- CVE overrides on top of Spring Boot 3.5.16, each one measured against the published image
+		     by Trivy rather than guessed. Boot's managed version is the version that was current when
+		     the release was cut; the CVE feed does not wait for the next one. Every value here is the
+		     lowest fix on the SAME minor line, so nothing crosses a compatibility boundary:
+		
+		       tomcat        10.1.55 -> 10.1.59   3 critical (the advisory says 10.1.58, which
+		                                        Tomcat never published: 10.1.57 is followed by 10.1.59)
+		       netty         4.1.135 -> 4.1.137   1 critical, 4 high, 8 medium
+		       jackson       2.21.4  -> 2.21.5    3 medium
+		       log4j-api     2.24.3  -> 2.25.5    1 medium
+		       commons-lang3 3.17.0  -> 3.18.0    1 medium
+		       opentelemetry 1.49.0  -> 1.62.0    1 medium
+		
+		     They are deletions waiting to happen: when a Boot release catches up, `mvn
+		     versions:display-property-updates` says so and the line goes. -->
+		<tomcat.version>10.1.59</tomcat.version>
+		<netty.version>4.1.137.Final</netty.version>
+		<jackson-bom.version>2.21.5</jackson-bom.version>
+		<log4j2.version>2.25.5</log4j2.version>
+		<commons-lang3.version>3.18.0</commons-lang3.version>
+		<opentelemetry.version>1.62.0</opentelemetry.version>
 
 		<!-- Dependency versions to avoid conflicts -->
 		<org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
@@ -83,6 +110,17 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<!-- protobuf-java, before the boms, because it has to win against one of them.
+					 The Google libraries-bom manages this artifact directly, so neither a Spring Boot
+					 property nor a later entry moves it: Maven inlines an imported bom at the position it
+					 is declared, and first declaration wins. The bom ships 3.25.3, which carries a HIGH
+					 (CVE-2026-14456's neighbour in the same Trivy report) fixed in 3.25.5. Staying on
+					 3.25.x rather than taking 4.x, which is a different generation. -->
+			<dependency>
+				<groupId>com.google.protobuf</groupId>
+				<artifactId>protobuf-java</artifactId>
+				<version>3.25.5</version>
+			</dependency>
 			<!-- One gRPC version, chosen once. Dependabot bumped grpc-netty-shaded to 1.75.0 by itself
 					 (#9) while four siblings stayed hand-pinned at 1.59.0. NettyClientHandler then called
 					 GrpcUtil.getFlag, which 1.59 does not declare, and the first transport start threw
@@ -418,13 +456,18 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- Spring Dotenv - loads .env file for local dev and tests -->
+		<!-- Spring Dotenv - loads .env file for local dev and tests.
+		     5.x split one artifact into three: `spring-dotenv` is now the plain Spring Framework
+		     module with strict key resolution, and the Boot integration - relaxed binding of both
+		     springdotenv.* and the .env entries themselves - moved to `springboot3-dotenv`. So the
+		     straight 4.0.0 -> 5.1.0 bump of the old coordinate is not this library's upgrade path;
+		     it is a quiet downgrade to the non-Boot module. -->
 		<dependency>
 			<groupId>me.paulschwarz</groupId>
-			<artifactId>spring-dotenv</artifactId>
-			<version>4.0.0</version>
-			<!-- No scope specified = compile scope (available everywhere including tests) -->
-			<!-- Removed optional flag to ensure it's always included -->
+			<artifactId>springboot3-dotenv</artifactId>
+			<version>5.1.0</version>
+			<!-- No scope specified = compile scope (available everywhere including tests).
+			     Not optional: an earlier attempt at that gave NoClassDefFoundError at runtime. -->
 		</dependency>
 
 		<!-- Notification -->
@@ -463,19 +506,19 @@
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>testcontainers</artifactId>
-			<version>2.0.3</version>
+			<version>2.0.5</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>testcontainers-postgresql</artifactId>
-			<version>2.0.3</version>
+			<version>2.0.5</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>testcontainers-junit-jupiter</artifactId>
-			<version>2.0.3</version>
+			<version>2.0.5</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -539,12 +582,14 @@
 		<dependency>
 			<groupId>com.google.zxing</groupId>
 			<artifactId>core</artifactId>
-			<version>3.5.3</version>
+			<!-- Moves with javase below: javase 3.5.4 requires core 3.5.4, and a bump of one alone
+			     leaves Maven resolving core downward to whatever is written here. -->
+			<version>3.5.4</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.zxing</groupId>
 			<artifactId>javase</artifactId>
-			<version>3.5.3</version>
+			<version>3.5.4</version>
 		</dependency>
 		<!-- Embedded Redis for Testing -->
 		<dependency>
@@ -589,19 +634,19 @@
 		<dependency>
 			<groupId>io.cucumber</groupId>
 			<artifactId>cucumber-java</artifactId>
-			<version>7.15.0</version>
+			<version>7.34.8</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.cucumber</groupId>
 			<artifactId>cucumber-spring</artifactId>
-			<version>7.15.0</version>
+			<version>7.34.8</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.cucumber</groupId>
 			<artifactId>cucumber-junit-platform-engine</artifactId>
-			<version>7.15.0</version>
+			<version>7.34.8</version>
 			<scope>test</scope>
 		</dependency>
     </dependencies>
@@ -677,6 +722,14 @@
 				<version>${maven-surefire-plugin.version}</version>
 				<configuration>
 					<skipTests>${skipTests}</skipTests>
+					<!-- Surefire runs unit tests; the Cucumber corpus is failsafe's, through the
+					     Run*IT suites. Surefire was still asking the cucumber engine to discover
+					     tests on every unit run, which found none and cost time - and from Cucumber
+					     7.34 onward fails the build instead of shrugging, which is what broke the
+					     test-tooling bump. The engine the tier does not use is not consulted. -->
+					<excludeJUnit5Engines>
+						<engine>cucumber</engine>
+					</excludeJUnit5Engines>
 					<!-- Suite-level Redis optimization:
 					     forkCount=1 ensures single JVM for all tests,
 					     reuseForks=true keeps the JVM alive,

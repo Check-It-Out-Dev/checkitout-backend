@@ -1,6 +1,20 @@
 # The backend image for the test substrate and the sandbox: `mvnw package` on the runner, the existing
-# Dockerfile with SKIP_MAVEN_BUILD=true, pushed to ghcr.io as <short sha>, <branch> and (on the default
-# branch) latest. The package must be public for the kind cluster and the sandbox host to pull it without
+# Dockerfile with SKIP_MAVEN_BUILD=true, pushed to ghcr.io.
+#
+# Four jobs, and the shape is the point. The immutable `<short sha>` tag is pushed by the build; the
+# MOVING tags -- `<branch>` and, on the default branch, `latest` -- are what the kind cluster and the
+# sandbox actually pull, and they are moved only by `promote`, only after `verify` has booted that
+# exact image against a real Postgres and Redis and asked it whether it is alive.
+#
+# That ordering is the rollback. A build that produces an image which does not boot cannot move a
+# moving tag, so there is nothing to roll back FROM: the previous image is still serving. The
+# outgoing digest is kept as `previous` on every promotion, so the one case the gate cannot catch --
+# an image that boots here and misbehaves somewhere else an hour later -- is one dispatch away from
+# being undone. And if the retag itself half-completes, `promote` puts `previous` back by itself
+# before failing, because a moving tag pointing at a digest nobody verified is the worst of the three
+# states.
+#
+# The package must be public for the kind cluster and the sandbox host to pull it without
 # credentials. When FE_DISPATCH_TOKEN is set, the frontend's contract-check runs against this exact sha.
 name: build-image
 
@@ -11,6 +25,11 @@ on:
       - "docs/**"
       - "**.md"
   workflow_dispatch:
+    inputs:
+      rollback:
+        description: "Restore the moving tags to :previous instead of building anything"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -20,15 +39,51 @@ env:
   IMAGE: ghcr.io/check-it-out-dev/checkitout-backend
 
 jobs:
+  # ----------------------------------------------------------------- the emergency handle
+  rollback:
+    name: Roll the moving tags back to :previous
+    if: ${{ inputs.rollback }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f  # v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Point the branch tag, and latest, at the previous digest
+        env:
+          BRANCH_TAG: ${{ github.ref_name }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+          PREV=$(docker buildx imagetools inspect "$IMAGE:previous" --format '{{.Manifest.Digest}}')
+          echo "restoring $PREV"
+          TAGS=(-t "$IMAGE:$BRANCH_TAG")
+          if [ "$BRANCH_TAG" = "$DEFAULT_BRANCH" ]; then TAGS+=(-t "$IMAGE:latest"); fi
+          docker buildx imagetools create "${TAGS[@]}" "$IMAGE@$PREV"
+          {
+            echo "### Rolled back"
+            echo
+            echo "Moving tags now point at \`$PREV\`."
+            echo
+            echo "There is no \`previous\` behind this one: a second rollback in a row has nothing"
+            echo "to restore. Push a fix, or promote a known-good sha by dispatching this workflow"
+            echo "from that commit."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ----------------------------------------------------------------- build, immutable tag only
   image:
-    name: Package and push
+    name: Package and push the sha tag
+    if: ${{ !inputs.rollback }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     outputs:
       sha: ${{ steps.meta.outputs.version }}
+      digest: ${{ steps.build.outputs.digest }}
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
-      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961  # v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c  # v6.0.0
         with:
           distribution: temurin
           java-version: 21
@@ -41,14 +96,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - id: meta
+        # Only the immutable tag. The branch tag and latest are promote's to give.
         uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302  # v6
         with:
           images: ${{ env.IMAGE }}
           tags: |
             type=sha,prefix=,format=short
-            type=ref,event=branch
-            type=raw,value=latest,enable={{is_default_branch}}
-      - uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a  # v7
+      - id: build
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a  # v7
         with:
           context: .
           file: docker/instagram-platform/Dockerfile
@@ -64,18 +119,192 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      - run: |
+      - env:
+          SHA_TAG: ${{ steps.meta.outputs.version }}
+        run: |
           {
-            echo "### Image"
+            echo "### Built"
+            echo
+            echo "\`$IMAGE:$SHA_TAG\` -- not yet promoted."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ----------------------------------------------------------------- does it actually boot?
+  verify:
+    name: Boot the image and ask it
+    needs: [image]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SHA_TAG: ${{ needs.image.outputs.sha }}
+    steps:
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f  # v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Start Postgres, Redis and the image under dev-lite
+        run: |
+          set -euo pipefail
+          docker network create ci
+          # The same image and superuser the kind manifests use: the dev profile inside dev-lite runs
+          # LocalDatabaseInitializer with the compose superuser to create the app database.
+          docker run -d --name pg --network ci \
+            -e POSTGRES_DB=postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=admin \
+            postgres:17-alpine
+          docker run -d --name redis --network ci redis:7-alpine
+          docker run -d --name app --network ci -p 8080:8080 \
+            -e SPRING_PROFILES_ACTIVE=dev-lite \
+            -e SPRING_DATASOURCE_HOST=pg -e SPRING_DATASOURCE_PORT=5432 \
+            -e SPRING_DATA_REDIS_HOST=redis -e SPRING_DATA_REDIS_PORT=6379 \
+            -e SPRING_LIQUIBASE_CONTEXTS=dev,local,dev-lite \
+            -e SERVER_PORT=8080 \
+            "$IMAGE:$SHA_TAG"
+      - name: Wait for readiness
+        run: |
+          set -euo pipefail
+          # Liquibase seeds the demo world on first boot; five minutes is the same budget the kind
+          # startupProbe gives it. Readiness, not overall health: the overall endpoint also carries
+          # optional components, and one of them (the upload system probing a bucket dev-lite never
+          # uses) held a cluster run at 503 for ten minutes once already.
+          for i in $(seq 1 100); do
+            if curl -fsS --max-time 5 http://localhost:8080/api/actuator/health/readiness | grep -q '"status":"UP"'; then
+              echo "ready after $i checks"
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "never became ready"
+          exit 1
+      - name: Smoke the endpoints that matter
+        env:
+          # The seeded influencer, same as deploy/sandbox/smoke.sh. Every request carries the Origin
+          # a browser would send: dev-lite allows loopback origins only, and without one these checks
+          # cannot see a CORS rejection at all -- which is exactly how the public sandbox once
+          # answered 403 to every browser POST while a smoke script reported ten green checks.
+          INFLUENCER: test.influencer@test.com
+          ORIGIN: http://localhost:8080
+        run: |
+          set -uo pipefail
+          BASE=http://localhost:8080
+          JAR=$(mktemp)
+          fail=0
+          ok()  { printf 'ok    %s\n' "$*"; }
+          bad() { printf 'FAIL  %s\n' "$*"; fail=1; }
+          code() { curl -sS -m 15 -H "Origin: $ORIGIN" -o "${2:-/dev/null}" -w '%{http_code}' -b "$JAR" -c "$JAR" "${@:3}" "$1"; }
+
+          c=$(code "$BASE/api/actuator/health/liveness"); [ "$c" = 200 ] && ok "liveness $c" || bad "liveness $c"
+
+          c=$(code "$BASE/api/v3/api-docs" /tmp/spec)
+          { [ "$c" = 200 ] && grep -q '"openapi"' /tmp/spec; } &&
+            ok "the OpenAPI document the frontend generates from" || bad "api-docs $c"
+
+          c=$(code "$BASE/api/test/auth/mock-session" /tmp/ms -X POST -H 'Content-Type: application/json' \
+                -d "{\"email\":\"$INFLUENCER\",\"role\":\"INFLUENCER\"}")
+          { [ "$c" = 200 ] && grep -q 'session' "$JAR"; } &&
+            ok "persona sign-in (cookies set)" || bad "persona sign-in $c"
+
+          c=$(code "$BASE/api/users/me" /tmp/me)
+          { [ "$c" = 200 ] && grep -q "$INFLUENCER" /tmp/me; } &&
+            ok "/users/me is the persona" || bad "/users/me $c"
+
+          c=$(code "$BASE/api/partnership-opportunity/paged?page=0&size=5&active=true" /tmp/camp)
+          { [ "$c" = 200 ] && grep -q '"content"' /tmp/camp; } &&
+            ok "the seeded campaigns list" || bad "campaigns $c"
+
+          # The other half of the contract: what must NOT be on the web. ActuatorExposureUnitTest
+          # asserts this against the yaml; this asserts it against the running image. The body is
+          # checked as well as the status, because a status alone cannot tell a real refusal from
+          # something upstream answering on the application's behalf.
+          c=$(code "$BASE/api/actuator/prometheus" /tmp/prom)
+          { [ "$c" != 200 ] && ! grep -qE '^# (HELP|TYPE) ' /tmp/prom; } &&
+            ok "actuator/prometheus is not exposed ($c)" || bad "actuator/prometheus reachable: $c"
+          for e in env heapdump beans configprops threaddump; do
+            c=$(code "$BASE/api/actuator/$e")
+            [ "$c" != 200 ] && ok "actuator/$e is not exposed ($c)" || bad "actuator/$e answered 200"
+          done
+
+          rm -f "$JAR"
+          exit $fail
+      - name: What the image said, if any of that failed
+        if: failure()
+        run: |
+          {
+            echo "### The image did not pass, so no moving tag was touched"
             echo
             echo '```'
-            echo "${{ steps.meta.outputs.tags }}"
+            docker logs app 2>&1 | tail -120
             echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ----------------------------------------------------------------- move the tags, or put them back
+  promote:
+    name: Move the moving tags
+    needs: [image, verify]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      promoted: ${{ steps.move.outputs.promoted }}
+    steps:
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f  # v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: move
+        env:
+          SHA_TAG: ${{ needs.image.outputs.sha }}
+          BRANCH_TAG: ${{ github.ref_name }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+          NEW=$(docker buildx imagetools inspect "$IMAGE:$SHA_TAG" --format '{{.Manifest.Digest}}')
+          # The outgoing digest becomes :previous. On the very first run there is nothing there yet,
+          # which is not an error -- it is the one release that cannot be rolled back.
+          PREV=$(docker buildx imagetools inspect "$IMAGE:$BRANCH_TAG" --format '{{.Manifest.Digest}}' 2>/dev/null || echo "")
+          if [ -n "$PREV" ] && [ "$PREV" != "$NEW" ]; then
+            docker buildx imagetools create -t "$IMAGE:previous" "$IMAGE@$PREV"
+            echo "previous=$PREV" >> "$GITHUB_OUTPUT"
+          fi
+
+          TAGS=(-t "$IMAGE:$BRANCH_TAG")
+          if [ "$BRANCH_TAG" = "$DEFAULT_BRANCH" ]; then TAGS+=(-t "$IMAGE:latest"); fi
+          docker buildx imagetools create "${TAGS[@]}" "$IMAGE@$NEW"
+
+          # A retag can half-complete: one tag moved, the next call failed. Read them back rather
+          # than trusting the exit code, and undo the whole thing if they disagree.
+          bad=0
+          for t in "$BRANCH_TAG" $( [ "$BRANCH_TAG" = "$DEFAULT_BRANCH" ] && echo latest ); do
+            GOT=$(docker buildx imagetools inspect "$IMAGE:$t" --format '{{.Manifest.Digest}}')
+            if [ "$GOT" != "$NEW" ]; then echo "$t points at $GOT, wanted $NEW"; bad=1; fi
+          done
+          if [ "$bad" = "1" ]; then
+            if [ -n "$PREV" ]; then
+              echo "restoring $PREV"
+              docker buildx imagetools create "${TAGS[@]}" "$IMAGE@$PREV"
+            fi
+            exit 1
+          fi
+
+          echo "promoted=$NEW" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Promoted"
+            echo
+            echo "| tag | digest |"
+            echo "| --- | --- |"
+            echo "| \`$SHA_TAG\` (immutable) | \`$NEW\` |"
+            echo "| \`$BRANCH_TAG\` | \`$NEW\` |"
+            if [ -n "$PREV" ]; then echo "| \`previous\` | \`$PREV\` |"; fi
+            echo
+            if [ -n "$PREV" ]; then
+              echo "To undo: run this workflow with **rollback** ticked."
+            else
+              echo "First promotion of this tag: there is no \`previous\` to roll back to yet."
+            fi
           } >> "$GITHUB_STEP_SUMMARY"
 
   notify-frontend:
     name: Ask the frontend to check the contract
-    needs: [image]
+    needs: [image, promote]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:

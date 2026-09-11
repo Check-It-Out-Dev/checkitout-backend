@@ -30,7 +30,7 @@ jobs:
     
     steps:
       - name: Checkout
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         
       - name: Install tools
         run: |
@@ -74,7 +74,7 @@ jobs:
           echo "📋 Merging deployment-defaults.yml and deployment-${ENV}.yml..."
           yq eval-all '. as $item ireduce ({}; . * $item)' \
             "$IN_CONFIG_PATH/deployment-defaults.yml" \
-            ${{ inputs.config-path }}/deployment-${ENV}.yml \
+            "$IN_CONFIG_PATH/deployment-${ENV}.yml" \
             > merged.yml
             
           # Step 2: Convert to JSON for easier manipulation

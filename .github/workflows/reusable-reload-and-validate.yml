@@ -65,7 +65,7 @@ jobs:
           echo "  Admin Home: $ADMIN_HOME"
 
       - name: 📥 Checkout repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           sparse-checkout: |
             .github/scripts/remote/
@@ -294,8 +294,11 @@ jobs:
             # Using sudo -H to set HOME=/root for consistent credential storage
             echo "Logging into GitHub Container Registry with PAT..."
 
-            if ! echo "${{ secrets.TOKEN_FOR_DOCKER }}" | sudo -H docker login ghcr.io \
-              --username ${{ github.actor }} \
+            # The token is already in this step's env as SEC_TOKEN_FOR_DOCKER, and GITHUB_ACTOR is
+            # set by the runner. Read as variables rather than interpolated, so neither ends up as
+            # part of the script text this step assembles.
+            if ! printf '%s' "$SEC_TOKEN_FOR_DOCKER" | sudo -H docker login ghcr.io \
+              --username "$GITHUB_ACTOR" \
               --password-stdin; then
               echo "❌ Docker authentication FAILED"
               echo "   Verify that TOKEN_FOR_DOCKER has 'read:packages' and 'write:packages' permissions"

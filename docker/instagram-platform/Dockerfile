@@ -9,7 +9,7 @@ ARG SKIP_MAVEN_BUILD=false
 # =============================================================================
 # STAGE 1: BUILD STAGE (Maven compilation in container)
 # =============================================================================
-FROM eclipse-temurin:21-jdk-alpine AS builder
+FROM eclipse-temurin:25-jdk-alpine AS builder
 
 # Re-declare ARG after FROM
 ARG SKIP_MAVEN_BUILD=false
@@ -101,7 +101,7 @@ RUN rm -rf /context /copy-jars.sh
 # =============================================================================
 # STAGE 2: RUNTIME STAGE (Minimal production image)
 # =============================================================================
-FROM eclipse-temurin:21-jre-alpine AS production
+FROM eclipse-temurin:25-jre-alpine AS production
 
 # Build arguments for container user configuration
 ARG CONTAINER_USER_ID=1002
@@ -112,8 +112,17 @@ ARG HCP_APP_NAME=instagram-platform-test
 ARG BUILD_VERSION=latest
 ARG BUILD_TIMESTAMP=""
 
-# Performance optimization: Install only required packages in single layer
-RUN apk add --no-cache \
+# Performance optimization: Install only required packages in single layer.
+#
+# `apk upgrade` first, and it is not cosmetic. The base is eclipse-temurin:25-jre-alpine, pulled
+# fresh on every build, and it still carries whatever Alpine packages Temurin had when THEY built
+# it — Trivy reported thirty-four OS CVEs against the published image, openssl 3.5.7-r0 needing
+# 3.5.8-r0 among them, none of which is ours to fix upstream and all of which are one `apk upgrade`
+# away. The cost is that two builds of the same commit can ship different package versions; the
+# build-image pipeline boots the image and drives it before any moving tag points at it, which is
+# what makes that an acceptable trade rather than a hope.
+RUN apk upgrade --no-cache \
+    && apk add --no-cache \
     curl \
     tzdata \
     dumb-init \
