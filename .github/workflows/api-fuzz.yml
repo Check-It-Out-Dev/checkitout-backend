@@ -93,11 +93,21 @@ jobs:
 
       # dev-lite mints a session without any credential, which is the whole reason this can run on a
       # public runner. Fuzzing unauthenticated would prove only that 280 paths answer 401.
+      #
+      # The User-Agent is pinned, and it is pinned on BOTH calls. A session is bound to the agent
+      # that minted it (SessionSecurityService, hijack prevention: the UA goes into the JWT as
+      # `sessionUA` and into the fingerprint, and a mismatch is a 401 before any controller runs).
+      # curl signed in as `curl/8.x` while Schemathesis sent `schemathesis/4.x`, so every
+      # authenticated request was rejected and the fuzzer reported "214 operations returned only
+      # 401/403" as a warning rather than as the harness defect it was. Two calls, one agent.
       - name: A session to fuzz with
         id: session
+        env:
+          FUZZ_UA: checkitout-api-fuzz
         run: |
           set -euo pipefail
           curl -sS -D /tmp/h -o /dev/null -X POST http://localhost:8080/api/test/auth/mock-session \
+            -A "$FUZZ_UA" \
             -H "Content-Type: application/json" \
             -d '{"email":"e2e.company@test.com","role":"COMPANY"}'
           COOKIES=$(grep -i '^set-cookie:' /tmp/h | sed 's/^[Ss]et-[Cc]ookie: //' | cut -d';' -f1 | paste -sd'; ' -)
@@ -114,11 +124,13 @@ jobs:
         env:
           SESSION_COOKIES: ${{ steps.session.outputs.cookies }}
           MAX_EXAMPLES: ${{ inputs.max_examples || '8' }}
+          FUZZ_UA: checkitout-api-fuzz
         run: |
           set -euo pipefail
           st run http://localhost:8080/api/v3/api-docs \
             --url http://localhost:8080/api \
             -H "Cookie: $SESSION_COOKIES" \
+            -H "User-Agent: $FUZZ_UA" \
             --exclude-path-regex '^/(test|actuator|dev-lite)/' \
             --max-examples "$MAX_EXAMPLES" \
             --continue-on-failure \
@@ -128,16 +140,35 @@ jobs:
             --report-junit-path reports/junit.xml | tee /tmp/fuzz.txt
         continue-on-error: true
 
-      - name: Summary
+      # node for the verdict tool only; the fuzzer itself is Python.
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020  # v7.0.0
+        if: always()
+        with:
+          node-version: 24
+
+      - name: What it found, and which of it is a defect
+        id: verdict
+        if: always()
+        run: |
+          set -o pipefail
+          node tools/ci/fuzz-verdict.mjs \
+            --report reports/junit.xml \
+            --baseline tools/ci/fuzz-baseline.json \
+            --json reports/fuzz-summary.json | tee -a "$GITHUB_STEP_SUMMARY"
+        continue-on-error: true
+
+      - name: What the fuzzer itself printed
         if: always()
         run: |
           set -o pipefail
           {
-            echo "### Schemathesis"
+            echo "<details><summary>Schemathesis' own summary</summary>"
             echo
             echo '```'
             sed -n '/=* SUMMARY/,$p' /tmp/fuzz.txt || echo "no summary produced"
             echo '```'
+            echo
+            echo "</details>"
           } | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Backend log on failure
@@ -151,13 +182,23 @@ jobs:
           path: reports/
           retention-days: 30
 
-      # The fuzzer's verdict is the job's verdict. It is separated from the run step so the summary
-      # and the artifact are published either way - a red run you cannot read is worth nothing.
+      # The verdict is the TOOL's, not the fuzzer's. Schemathesis exits non-zero if any check of any
+      # kind failed anywhere, which on a cookie-authenticating Spring application means every run
+      # forever: see the header of tools/ci/fuzz-verdict.mjs for the two categories that guarantee
+      # it. A tier that is red every night teaches nobody anything, so the categories that mean the
+      # SERVER is broken gate, and the rest are ratcheted against a committed baseline.
+      #
+      # Separated from the run step so the summary and the artifact are published either way: a red
+      # run you cannot read is worth nothing.
       - name: Verdict
         if: always()
         run: |
-          if [ "${{ steps.fuzz.outcome }}" != "success" ]; then
-            echo "Schemathesis found contract violations - the report is in the artifact." >&2
+          if [ ! -f reports/junit.xml ]; then
+            echo "Schemathesis produced no report, so this tier has no verdict." >&2
             exit 1
           fi
-          echo "the running server matches its own document on every generated case"
+          if [ "${{ steps.verdict.outcome }}" != "success" ]; then
+            echo "See the table in the step summary: a gating category, or a tracked one over budget." >&2
+            exit 1
+          fi
+          echo "no server-side defect, and no tracked category above its budget"
