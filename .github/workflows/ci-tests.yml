@@ -303,7 +303,12 @@ jobs:
           DURATION=$(( $(date +%s) - $(date -d "$STARTED_AT" +%s) ))
           node frontend/tools/ci/quality-metrics.mjs --out site --workflow ci-tests --started-at "$STARTED_AT" --duration-sec "$DURATION" \
             --junit 'results/unit-results/surefire-reports/TEST-*.xml:unit' \
-            --junit 'results/integration-results/failsafe-reports/TEST-*.xml:integration' \
+            # One directory down, like the e2e line below it: the integration tier's failsafe
+            # writes into failsafe-reports/integration, so a glob without ** matched nothing and
+            # the dashboard has been publishing a test count with a whole tier missing from it --
+            # 10,857 where 11,690 ran. The same lesson the junit-report step above already carries
+            # in writing, applied there and not here.
+            --junit 'results/integration-results/failsafe-reports/**/TEST-*.xml:integration' \
             --junit 'results/e2e-results/failsafe-reports/**/TEST-*.xml:e2e' \
             --jacoco results/unit-results/site/jacoco-unit/jacoco.xml \
             --mutation site/mutation/latest.json --security site/security/latest.json \
