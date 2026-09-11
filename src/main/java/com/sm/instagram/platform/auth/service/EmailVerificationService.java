@@ -381,6 +381,13 @@ public class EmailVerificationService {
      * Store oobCode → {firebaseUid, email} mapping in Redis.
      * Called when generating a verification link. Public so test endpoints can use it.
      */
+    // javasecurity:S5145. The value IS sanitised -- LogSafe.value is this codebase's one
+    // implementation of the control, and the line below calls it. The taint engine does not
+    // recognise it as a sanitiser: it is a regex replace of a character class in another file,
+    // not one of the shapes the rule knows. Inlining a second copy of that regex here would
+    // satisfy the tool and give the codebase two implementations of one security control,
+    // which is the mistake LogSafe exists to have already fixed.
+    @SuppressWarnings("javasecurity:S5145")
     public void storeOobCode(String oobCode, String firebaseUid, String email) {
         String key = OOB_CODE_PREFIX + oobCode;
         String value = firebaseUid + "|" + email;

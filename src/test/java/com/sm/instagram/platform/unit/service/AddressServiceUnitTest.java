@@ -867,4 +867,94 @@ class AddressServiceUnitTest {
             assertThat(address.getSourceType()).isEqualTo(AddressSourceType.CUSTOM);
         }
     }
+    @Nested
+    @DisplayName("fixOpportunityPrimaryAddresses - more than one primary")
+    class FixOpportunityPrimaryAddressesTests {
+
+        /**
+         * Package-private code under test lives in another package, so it is reached the way
+         * CommonSafetyUnitTest reaches its own: reflectively, by name.
+         */
+        private void fixOpportunityPrimaryAddresses(PartnershipOpportunity opportunity, Address except) {
+            try {
+                java.lang.reflect.Method m = AddressService.class.getDeclaredMethod(
+                        "fixOpportunityPrimaryAddresses", PartnershipOpportunity.class, Address.class);
+                m.setAccessible(true);
+                m.invoke(service, opportunity, except);
+            } catch (ReflectiveOperationException e) {
+                throw new IllegalStateException("Failed to invoke fixOpportunityPrimaryAddresses", e);
+            }
+        }
+
+        private Address primaryAddress(Long id, LocalDateTime lastUpdate) {
+            Address address = new Address();
+            address.setId(id);
+            address.setPrimary(true);
+            address.setLastUpdateTime(lastUpdate);
+            return address;
+        }
+
+        @Test
+        @DisplayName("keeps the most recently updated one and demotes the rest")
+        void keepsTheMostRecentlyUpdated() {
+            // Given - three rows the database should never have held at once
+            PartnershipOpportunity opportunity = new PartnershipOpportunity();
+            Address older = primaryAddress(1L, LocalDateTime.of(2026, 1, 1, 9, 0));
+            Address newest = primaryAddress(2L, LocalDateTime.of(2026, 6, 1, 9, 0));
+            Address middle = primaryAddress(3L, LocalDateTime.of(2026, 3, 1, 9, 0));
+            when(addressRepository.findByPartnershipOpportunityAndIsPrimaryTrue(opportunity))
+                    .thenReturn(new ArrayList<>(List.of(older, newest, middle)));
+
+            // When - nothing is nominated, so the timestamp decides
+            fixOpportunityPrimaryAddresses(opportunity, null);
+
+            // Then
+            assertThat(newest.isPrimary()).isTrue();
+            assertThat(older.isPrimary()).isFalse();
+            assertThat(middle.isPrimary()).isFalse();
+            verify(addressRepository).save(older);
+            verify(addressRepository).save(middle);
+            verify(addressRepository, never()).save(newest);
+        }
+
+        @Test
+        @DisplayName("survives a row written before lastUpdateTime was populated")
+        void survivesANullTimestamp() {
+            // Given - Comparator.comparing throws NPE inside the comparator on a null key, and a
+            // row old enough to predate the column has exactly that. nullsFirst is why this passes,
+            // and this test is why nobody removes it.
+            PartnershipOpportunity opportunity = new PartnershipOpportunity();
+            Address undated = primaryAddress(1L, null);
+            Address dated = primaryAddress(2L, LocalDateTime.of(2026, 6, 1, 9, 0));
+            when(addressRepository.findByPartnershipOpportunityAndIsPrimaryTrue(opportunity))
+                    .thenReturn(new ArrayList<>(List.of(undated, dated)));
+
+            // When / Then - the dated row wins, and nothing throws
+            fixOpportunityPrimaryAddresses(opportunity, null);
+
+            assertThat(dated.isPrimary()).isTrue();
+            assertThat(undated.isPrimary()).isFalse();
+            verify(addressRepository).save(undated);
+        }
+
+        @Test
+        @DisplayName("keeps the nominated address even when another was updated later")
+        void keepsTheNominatedAddress() {
+            // Given
+            PartnershipOpportunity opportunity = new PartnershipOpportunity();
+            Address nominated = primaryAddress(1L, LocalDateTime.of(2026, 1, 1, 9, 0));
+            Address newer = primaryAddress(2L, LocalDateTime.of(2026, 6, 1, 9, 0));
+            when(addressRepository.findByPartnershipOpportunityAndIsPrimaryTrue(opportunity))
+                    .thenReturn(new ArrayList<>(List.of(nominated, newer)));
+
+            // When - the caller names one, which outranks the timestamp
+            fixOpportunityPrimaryAddresses(opportunity, nominated);
+
+            // Then
+            assertThat(nominated.isPrimary()).isTrue();
+            assertThat(newer.isPrimary()).isFalse();
+            verify(addressRepository).save(newer);
+            verify(addressRepository, never()).save(nominated);
+        }
+    }
 }

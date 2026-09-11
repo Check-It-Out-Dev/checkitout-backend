@@ -107,7 +107,7 @@ job re-runs with `--check` so a stale figure fails the build rather than ageing 
 
 | | | |
 | :-- | --: | :-- |
-| **Test methods** | **9,094** | 8,487 `@Test` + 607 `@ParameterizedTest`, across **292** test classes and the **2,161** `@Nested` groups inside them |
+| **Test methods** | **9,097** | 8,490 `@Test` + 607 `@ParameterizedTest`, across **292** test classes and the **2,162** `@Nested` groups inside them |
 | **Test code : main code** | **2.0 : 1** | ~188k lines of test Java against ~93k of main |
 | **Cucumber** | **34 files** | 148 `Scenario` + 28 `Scenario Outline`, **277 after Examples expansion** |
 | **Domain** | **38 entities** | 50 REST controllers |
