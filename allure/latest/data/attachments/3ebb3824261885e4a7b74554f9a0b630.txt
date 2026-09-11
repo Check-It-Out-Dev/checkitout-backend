@@ -1,0 +1,8 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-51134fd6-8e5d-4526-a11d-c6d209d614d6
+  Company: COMPANY-c02d478e-4de0-4855-9279-3d46f2877162
+  Admin: ADMIN-191f2b8f-b08c-4ad8-80c8-276fb34e3843
+18:08:10.242 [scheduling-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+18:08:10.243 [scheduling-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+18:08:10.249 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.t.s.SupportTicketService&amp#27;[0;39m - GDPR: Operation=addAdminResponse, FirebaseUID=ADMIN-191f2b8f-b08c-4ad8-80c8-276fb34e3843, TicketID=7, AdminName=Admin User, Purpose=support_response, DataCreated=admin.response
+18:08:10.250 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.t.s.SupportTicketService&amp#27;[0;39m - GDPR: Operation=sendSupportNotification, FirebaseUID=ADMIN-191f2b8f-b08c-4ad8-80c8-276fb34e3843, TicketID=7, Purpose=customer_notification, DataProcessed=email.content
