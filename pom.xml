@@ -684,6 +684,14 @@
 				<version>${maven-surefire-plugin.version}</version>
 				<configuration>
 					<skipTests>${skipTests}</skipTests>
+					<!-- Surefire runs unit tests; the Cucumber corpus is failsafe's, through the
+					     Run*IT suites. Surefire was still asking the cucumber engine to discover
+					     tests on every unit run, which found none and cost time - and from Cucumber
+					     7.34 onward fails the build instead of shrugging, which is what broke the
+					     test-tooling bump. The engine the tier does not use is not consulted. -->
+					<excludeJUnit5Engines>
+						<engine>cucumber</engine>
+					</excludeJUnit5Engines>
 					<!-- Suite-level Redis optimization:
 					     forkCount=1 ensures single JVM for all tests,
 					     reuseForks=true keeps the JVM alive,
