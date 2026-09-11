@@ -1,0 +1,10 @@
+16:17:29.063 [scheduling-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-5975ba04-12e5-4b1f-b177-af4810c22a2d
+  Company: COMPANY-6e97d5bb-9dc9-498e-ac33-579dbaa8f24c
+  Admin: ADMIN-53870140-0ad8-4521-95a5-92de0cfbb5aa
+16:17:29.064 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=updateCurrentUserPreferences, FirebaseUID=INFLUENCER-5975ba04-12e5-4b1f-b177-af4810c22a2d, DataModified=user.preferences.*, Purpose=user_settings_update, LegalBasis=consent
+16:17:29.065 [scheduling-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+16:17:29.067 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=getCurrentUserPreferences, FirebaseUID=INFLUENCER-5975ba04-12e5-4b1f-b177-af4810c22a2d, Purpose=user_preference_retrieval, DataAccessed=user.preferences.*
+16:17:29.069 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: CONSENT_CHANGE Operation=updateGdprConsent, FirebaseUID=INFLUENCER-5975ba04-12e5-4b1f-b177-af4810c22a2d, NewConsent=true, PreviousConsent=false, Purpose=marketing_consent_update
+16:17:29.069 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=updateCurrentUserPreferences_SUCCESS, FirebaseUID=INFLUENCER-5975ba04-12e5-4b1f-b177-af4810c22a2d, PreferencesID=86
