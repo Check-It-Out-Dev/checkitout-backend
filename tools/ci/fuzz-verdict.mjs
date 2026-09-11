@@ -63,6 +63,8 @@ const TRACKED = {
     'Validation gap: input the schema forbids was accepted. Triage pending, and these are the ones worth reading first.',
   'API rejected schema-compliant request':
     'Usually a business rule the schema cannot express, such as a referenced row having to exist. Triage pending.',
+  'Invalid Allow header':
+    'The `Allow` header on a 405 lists what the Spring handler mapping accepts at that path; the document lists what is published. Same family as unsupported methods, and closed the same way if at all.',
 };
 
 if (!existsSync(reportPath)) {
@@ -103,7 +105,13 @@ for (const chunk of xml.split('<testcase ').slice(1)) {
   // Each finding inside one operation starts with `N. Test Case ID: xxxxxx`, and the check's title
   // is the first bullet under it.
   for (const block of body.split(/^\s*\d+\. Test Case ID: \S+\s*$/m).slice(1)) {
-    const title = (block.match(/^\s*-\s+(.+?)\s*$/m) || [, null])[1];
+    // `Response violates schema (2 violations)` is the same check as `Response violates schema`;
+    // Schemathesis appends the count when one response breaks the schema in more than one place.
+    // Keyed on the bare title, or the classification table would need a row per arity.
+    const title = (block.match(/^\s*-\s+(.+?)\s*$/m) || [, null])[1]?.replace(
+      / \(\d+ violations?\)$/,
+      ''
+    );
     if (!title) continue;
     if (!findings.has(title)) findings.set(title, { cases: 0, ops: new Set(), examples: [] });
     const rec = findings.get(title);
