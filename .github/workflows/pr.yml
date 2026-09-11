@@ -46,12 +46,18 @@ jobs:
     permissions:
       contents: write
       checks: write
-    secrets: inherit
+    # No `secrets: inherit`. It hands a called workflow EVERY secret the repository and its
+    # environments hold, whether the callee has a use for them or not, and this one has none: the
+    # GITHUB_TOKEN a called workflow needs is passed to it automatically, bounded by the
+    # `permissions` above. Semgrep's yaml.github-actions.security.secrets-inherit reported all
+    # fourteen of these across the two pipelines and the release chain.
 
   sonar:
     name: Quality gate
     uses: ./.github/workflows/sonar.yml
-    secrets: inherit
+    # Named, not inherited: this tier needs exactly one secret and gets exactly one.
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   # Dependency review compares the manifests either side of a pull request and fails when the
   # difference introduces a known advisory. It needs a base and a head, so it cannot run on a push.
@@ -69,7 +75,7 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
-      - uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48  # v4
+      - uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48  # v4.9.0
         with:
           fail-on-severity: high
           comment-summary-in-pr: on-failure

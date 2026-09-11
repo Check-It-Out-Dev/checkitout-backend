@@ -2,6 +2,7 @@ package com.sm.instagram.platform.auth.validator;
 
 import com.sm.instagram.platform.auth.service.ImprovedQRCodeService;
 import com.sm.instagram.platform.auth.service.QRCodeGeneratorService;
+import com.sm.instagram.platform.common.util.OtpAuthUrls;
 import dev.samstevens.totp.code.CodeVerifier;
 import dev.samstevens.totp.code.DefaultCodeVerifier;
 import dev.samstevens.totp.code.DefaultCodeGenerator;
@@ -56,7 +57,7 @@ public class TotpQRCodeStartupValidator {
     );
     
     private static final String TEST_EMAIL = "validator@test.com";
-    
+
     /**
      * Validate TOTP QR code generation after application is ready
      */
@@ -214,13 +215,10 @@ public class TotpQRCodeStartupValidator {
                 return ValidationResult.failure(name, "Invalid otpauth URL format");
             }
             
-            // Debug log the URL for inspection
-            log.debug("Generated OTP Auth URL: {}", otpauthUrl);
-            
             // Validate against RFC 6238 / Google Authenticator spec
             if (!OTPAUTH_PATTERN.matcher(otpauthUrl).matches()) {
                 return ValidationResult.warning(name, 
-                    "URL doesn't match expected pattern: " + otpauthUrl);
+                    "URL doesn't match expected pattern: " + OtpAuthUrls.redactSecret(otpauthUrl));
             }
             
             // Check required parameters
@@ -239,15 +237,14 @@ public class TotpQRCodeStartupValidator {
             
             if (!urlLower.contains(TEST_EMAIL.toLowerCase()) && 
                 !urlLower.contains(emailWithAtEncoded.toLowerCase())) {
-                // Log for debugging
-                log.debug("URL doesn't contain email. URL: {}, Looking for: {} or {}", 
-                    otpauthUrl, TEST_EMAIL, emailWithAtEncoded);
-                return ValidationResult.warning(name, 
-                    "Email not found in URL label");
+                return ValidationResult.warning(name,
+                    "Email not found in URL label (looked for " + TEST_EMAIL + " or "
+                        + emailWithAtEncoded + ")");
             }
             
+            String redacted = OtpAuthUrls.redactSecret(otpauthUrl);
             return ValidationResult.success(name, 
-                "Valid format: " + otpauthUrl.substring(0, Math.min(80, otpauthUrl.length())) + "...");
+                "Valid format: " + redacted.substring(0, Math.min(80, redacted.length())) + "...");
                 
         } catch (Exception e) {
             return ValidationResult.failure(name, e.getMessage());

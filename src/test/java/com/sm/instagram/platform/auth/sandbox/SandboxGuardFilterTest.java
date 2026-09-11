@@ -1,5 +1,7 @@
 package com.sm.instagram.platform.auth.sandbox;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -65,5 +67,27 @@ class SandboxGuardFilterTest {
         assertThat(SandboxGuardFilter.pathWithinApplication(request)).isEqualTo("/test/auth/mock-session");
         MockHttpServletRequest bare = new MockHttpServletRequest("POST", "/test/auth/mock-session");
         assertThat(SandboxGuardFilter.pathWithinApplication(bare)).isEqualTo("/test/auth/mock-session");
+    }
+    @Test
+    @DisplayName("a quote in the request target cannot add fields to the 404 body")
+    void quotedPathCannotForgeFields() throws Exception {
+        // The body used to be built by concatenating the raw request target into a JSON string, so
+        // a target carrying a quote either broke the body or added to it (CodeQL java/xss).
+        MockHttpServletResponse response = run("GET", "/test/email/latest\",\"role\":\"ADMIN");
+
+        JsonNode body = new ObjectMapper().readTree(response.getContentAsString());
+        assertThat(body.get("status").asInt()).isEqualTo(404);
+        assertThat(body.get("path").asText()).isEqualTo("/api/test/email/latest\",\"role\":\"ADMIN");
+        assertThat(body.has("role")).as("the request target must not be able to add a field").isFalse();
+        assertThat(body.size()).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("a control character in the request target still leaves parseable JSON")
+    void controlCharacterInPathStaysParseable() throws Exception {
+        MockHttpServletResponse response = run("GET", "/test/email/latest\n\tx\\y");
+
+        JsonNode body = new ObjectMapper().readTree(response.getContentAsString());
+        assertThat(body.get("path").asText()).isEqualTo("/api/test/email/latest\n\tx\\y");
     }
 }

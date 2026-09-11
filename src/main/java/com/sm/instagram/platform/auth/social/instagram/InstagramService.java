@@ -9,6 +9,7 @@ import com.sm.instagram.platform.common.exceptions.ResourceNotFoundException;
 import com.sm.instagram.platform.common.exceptions.ValidationTranslatableException;
 import com.sm.instagram.platform.platform.Platform;
 import com.sm.instagram.platform.platform.PlatformRepository;
+import com.sm.instagram.platform.common.util.PiiMaskingUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
@@ -656,26 +657,19 @@ public class InstagramService implements SocialPlatformService {
     }
     
     /**
-     * Anonymize Instagram user ID for GDPR-compliant logging
+     * Anonymize Instagram user ID for GDPR-compliant logging.
+     *
+     * <p>The rule lives in {@link PiiMaskingUtils} because TokenExchangeService needed the same one
+     * and did not have it, so it logged the id in the clear five times instead.
      */
     private String anonymizeId(String id) {
-        if (id == null || id.isEmpty()) {
-            return "unknown";
-        }
-        // Return first 8 chars of hash
-        return "ig_" + Integer.toHexString(id.hashCode()).substring(0, Math.min(8, Integer.toHexString(id.hashCode()).length()));
+        return PiiMaskingUtils.pseudonymousId(id, "ig");
     }
-    
+
     /**
-     * Mask Instagram username for privacy
+     * Mask Instagram username for privacy. See {@link PiiMaskingUtils#maskUsername}.
      */
     private String maskUsername(String username) {
-        if (username == null || username.isEmpty()) {
-            return "unknown";
-        }
-        if (username.length() <= 3) {
-            return "***";
-        }
-        return username.substring(0, 2) + "***";
+        return PiiMaskingUtils.maskUsername(username);
     }
 }

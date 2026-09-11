@@ -36,11 +36,13 @@ jobs:
     steps:
       - name: 📋 Parse Configuration
         id: config
+        env:
+          IN_CONFIG_JSON: ${{ inputs.config-json }}
         run: |
-          # Store config in a file to avoid shell escaping issues
-          cat > /tmp/config.json << 'EOF'
-          ${{ inputs.config-json }}
-          EOF
+          # printf rather than a heredoc: the heredoc was quoted so bash would not expand the JSON,
+          # but GitHub substitutes the workflow expression into the text first, so a config whose
+          # content held a line reading EOF ended the heredoc early and the rest became script.
+          printf '%s' "$IN_CONFIG_JSON" > /tmp/config.json
           
           # Validate JSON
           if ! jq empty /tmp/config.json 2>/dev/null; then

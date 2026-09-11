@@ -137,7 +137,12 @@ public class ImprovedQRCodeService {
                 period
             );
             
-            log.debug("Generated otpauth URL: {}", otpauthUrl);
+            // NEVER the URL itself. `secret=` in it is the user's TOTP seed and the label is
+            // their email address: anyone who can read this log could mint valid second factors
+            // for that account for as long as the secret lives, and would know whose. What is
+            // actually useful when this needs debugging is the shape, which carries neither.
+            log.debug("Generated otpauth URL: issuer={}, digits={}, period={}, length={}",
+                issuer, digits, period, otpauthUrl.length());
             
             return otpauthUrl;
             

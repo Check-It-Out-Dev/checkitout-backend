@@ -8,26 +8,25 @@ management:
   endpoints:
     web:
       exposure:
-        # Expose all monitoring endpoints
-        include: 
-          - health
-          - metrics
-          - prometheus
-          - info
-          - env
-          - configprops
-          - beans
-          - threaddump
-          - heapdump
+        # The four the estate actually reads: Alloy scrapes prometheus, the probes use the health
+        # groups below, and metrics and info are what a dashboard asks for. env, configprops,
+        # beans, threaddump and heapdump used to be here too -- heapdump hands a caller the entire
+        # JVM heap, which is every secret the process holds, and env and configprops print the
+        # configuration around it. Nothing in this repository reads any of the five; Semgrep's
+        # spring-actuator-dangerous-endpoints-enabled-yaml reported them. They stay on JMX.
+        include: health,info,metrics,prometheus
       base-path: /actuator
-      cors:
-        allowed-origins: "*"
-        allowed-methods: GET,POST
+      # No CORS. This allowed "*" for GET and POST, which invites any page on the internet to read
+      # the actuator from a visitor's browser. Prometheus and Alloy scrape server to server.
         
   endpoint:
     health:
-      show-details: always
-      show-components: always
+      # `always` shows every component and its detail to anyone who can reach
+      # /actuator/health, and that path is deliberately public so probes and smoke checks
+      # can use it. The default profile has said `when-authorized` since it was written.
+      show-details: when-authorized
+      show-components: when-authorized
+      roles: SCOPE_ADMIN
       probes:
         enabled: true
       group:

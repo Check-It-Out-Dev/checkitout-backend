@@ -46,7 +46,11 @@ jobs:
     permissions:
       contents: write
       checks: write
-    secrets: inherit
+    # No `secrets: inherit`. It hands a called workflow EVERY secret the repository and its
+    # environments hold, whether the callee has a use for them or not, and this one has none: the
+    # GITHUB_TOKEN a called workflow needs is passed to it automatically, bounded by the
+    # `permissions` above. Semgrep's yaml.github-actions.security.secrets-inherit reported all
+    # fourteen of these across the two pipelines and the release chain.
 
   api-fuzz:
     name: Schemathesis
@@ -54,7 +58,7 @@ jobs:
     uses: ./.github/workflows/api-fuzz.yml
     permissions:
       contents: read
-    secrets: inherit
+    # No `secrets: inherit`, and nothing to pass: see the note on the first tier above.
 
   mutation:
     name: Mutation
@@ -62,7 +66,7 @@ jobs:
     # It writes its score to the Pages branch so the dashboard can trend test quality over time.
     permissions:
       contents: write
-    secrets: inherit
+    # No `secrets: inherit`, and nothing to pass: see the note on the first tier above.
 
   security:
     name: Security
@@ -70,7 +74,7 @@ jobs:
     permissions:
       contents: read
       security-events: write
-    secrets: inherit
+    # No `secrets: inherit`, and nothing to pass: see the note on the first tier above.
 
   verdict:
     name: One night, one verdict
