@@ -21,6 +21,8 @@ production with real users; the frontend's mocked build is the open demo today.
 [![nightly pipeline](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/nightly.yml/badge.svg)](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/nightly.yml)
 [![image](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/build-image.yml/badge.svg)](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/build-image.yml)
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=Check-It-Out-Dev_checkitout-backend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Check-It-Out-Dev_checkitout-backend)
+[![Reliability](https://sonarcloud.io/api/project_badges/measure?project=Check-It-Out-Dev_checkitout-backend&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=Check-It-Out-Dev_checkitout-backend)
+[![Security](https://sonarcloud.io/api/project_badges/measure?project=Check-It-Out-Dev_checkitout-backend&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=Check-It-Out-Dev_checkitout-backend)
 
 <sub>The test, flaky, mutation and security badges are read live from the <a href="https://check-it-out-dev.github.io/checkitout-backend/">quality dashboard</a>, which every run republishes.</sub>
 
@@ -241,7 +243,7 @@ while you work on it, never firing by itself — and each pipeline ends in one l
 | [`mutation.yml`](.github/workflows/mutation.yml) | PIT over the security, rate-limit and auth services: **43.35 %**, or **69.22 %** on the code the unit suite actually reaches, across 2,397 mutants. Coverage says a line ran; this says whether anything checked the result. The report names the seventeen classes with no unit test at all rather than hiding them in an average. |
 | [`api-fuzz.yml`](.github/workflows/api-fuzz.yml) | Schemathesis generates requests from the OpenAPI document and sends them at a running instance, checking every response against the schema it claims. |
 | [`security.yml`](.github/workflows/security.yml) | Semgrep over the OWASP, secrets and Java rule sets; Checkov on the Dockerfiles and workflows; Trivy on the tree and the published image, with an SBOM of each. Every scanner writes SARIF into code scanning. |
-| [`sonar.yml`](.github/workflows/sonar.yml) | SonarQube Cloud, fed the JaCoCo coverage the unit tier writes. |
+| [`sonar.yml`](.github/workflows/sonar.yml) | SonarQube Cloud, fed the JaCoCo coverage the unit tier writes **and the dependency classpath Maven resolves**. The second half is not a detail: the CLI scanner has no view of the reactor, and without `sonar.java.libraries` every rule that needs a resolved type quietly degrades. It was reporting fourteen inner test classes as missing `@Nested` when the annotation was on the line above, and missing fifteen real defects — a guaranteed NPE, three `@Transactional` annotations on private methods, two methods that only looked like overrides — because it could not resolve the types to see them. |
 
 | | Trigger | What runs |
 | :--- | :--- | :--- |
