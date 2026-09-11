@@ -140,7 +140,13 @@ const measured = {
   openApiSchemas: schemas,
   openApiVersion: spec.openapi,
 };
-measured.testToMainRatio = Number((measured.testJavaLines / measured.mainJavaLines).toFixed(1));
+// Published rounded, and gated rounded. An exact line count is not the same kind of number as a
+// count of tests: it moves when anyone adds a comment, and a gate that fails on every commit that
+// touches a test file is a gate people learn to ignore. The exact figures stay in this file for
+// anyone who wants them; what the README publishes is the ratio and the thousands.
+measured.testToMainRatio = (measured.testJavaLines / measured.mainJavaLines).toFixed(1);
+measured.testJavaLinesK = Math.round(measured.testJavaLines / 1000);
+measured.mainJavaLinesK = Math.round(measured.mainJavaLines / 1000);
 
 // ---- what the README says ---------------------------------------------------------------------
 
@@ -155,8 +161,8 @@ const CLAIMS = [
   { row: /\*\*Test methods\*\*.*$/m, key: 'testClasses' },
   { row: /\*\*Test methods\*\*.*$/m, key: 'nestedGroups' },
   { row: /`@Disabled` appears zero times\*\*[\s\S]{0,80}/m, key: 'testFiles' },
-  { row: /\*\*Test code : main code\*\*.*$/m, key: 'testJavaLines' },
-  { row: /\*\*Test code : main code\*\*.*$/m, key: 'mainJavaLines' },
+  { row: /\*\*Test code : main code\*\*.*$/m, key: 'testJavaLinesK' },
+  { row: /\*\*Test code : main code\*\*.*$/m, key: 'mainJavaLinesK' },
   { row: /\*\*Cucumber\*\*.*$/m, key: 'featureFiles' },
   { row: /\*\*Cucumber\*\*.*$/m, key: 'scenarios' },
   { row: /\*\*Cucumber\*\*.*$/m, key: 'scenarioOutlines' },
@@ -207,6 +213,13 @@ if (mode === 'check') {
         `${claim.key}: the code says ${group(expected)}, and the row does not: ${row[0].trim().slice(0, 120)}`
       );
     }
+  }
+
+  const ratioRow = readme.match(/\*\*Test code : main code\*\*.*$/m);
+  if (ratioRow && !ratioRow[0].includes(`${measured.testToMainRatio} : 1`)) {
+    missing.push(
+      `the test-to-main ratio is ${measured.testToMainRatio} : 1, and the row does not say so`
+    );
   }
 
   if (measured.disabledAnnotations !== 0) {
