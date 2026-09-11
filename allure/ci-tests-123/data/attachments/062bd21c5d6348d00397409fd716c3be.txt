@@ -1,0 +1,10 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-14282c2c-d772-45c6-8c61-52dad1912ca8
+  Company: COMPANY-ed3c3931-6e3b-4a2d-9b6f-49bfe28811b2
+  Admin: ADMIN-537a3073-571b-4256-96a8-daea9d9ca774
+22:15:21.932 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus, FirebaseUID=INFLUENCER-14282c2c-d772-45c6-8c61-52dad1912ca8, OpportunityID=2552, Action=ACCEPT, Purpose=status_management
+22:15:21.932 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=INFLUENCER-14282c2c-d772-45c6-8c61-52dad1912ca8, OpportunityID=2552, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
+22:15:21.966 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus_SUCCESS, FirebaseUID=INFLUENCER-14282c2c-d772-45c6-8c61-52dad1912ca8, OpportunityID=2552, OldStatus=CONTENT_APPROVED, NewStatus=CONTENT_POSTED
+22:15:21.966 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=INFLUENCER-14282c2c-d772-45c6-8c61-52dad1912ca8, AppliedOpportunityID=2552, StatusChange=CONTENT_APPROVED→CONTENT_POSTED, Purpose=status_tracking
+22:15:21.968 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=INFLUENCER-14282c2c-d772-45c6-8c61-52dad1912ca8, AppliedOpportunityID=2552, DataAccessed=status,changedBy,reason, Purpose=audit_trail
+22:15:21.968 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2552, CONTENT_APPROVED -> CONTENT_POSTED, Changed by=INFLUENCER-14282c2c-d772-45c6-8c61-52dad1912ca8, Reason=Status accepted via API (/status/update endpoint)
