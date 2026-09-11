@@ -1,0 +1,8 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-a08c3df2-b649-42e9-a993-aa012fcda64b
+  Company: COMPANY-dcceb0b3-b1ec-469c-b605-dae9be798d54
+  Admin: ADMIN-29f22d76-2816-405a-b34d-868e772d6bfa
+19:36:25.243 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=getCurrentUserPreferences, FirebaseUID=INFLUENCER-a08c3df2-b649-42e9-a993-aa012fcda64b, Purpose=user_preference_retrieval, DataAccessed=user.preferences.*
+19:36:25.243 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=getCurrentUserPreferences_CREATE_NEW, FirebaseUID=INFLUENCER-a08c3df2-b649-42e9-a993-aa012fcda64b, Reason=no_existing_preferences
+19:36:25.243 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=createDefaultPreferences, FirebaseUID=INFLUENCER-a08c3df2-b649-42e9-a993-aa012fcda64b, DataCreated=user.preferences.*, Purpose=initial_setup, LegalBasis=contract
+19:36:25.244 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=createDefaultPreferences_SUCCESS, FirebaseUID=INFLUENCER-a08c3df2-b649-42e9-a993-aa012fcda64b, PreferencesID=99, DefaultsApplied=true
