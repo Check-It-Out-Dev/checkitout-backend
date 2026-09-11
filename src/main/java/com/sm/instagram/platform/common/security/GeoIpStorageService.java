@@ -31,6 +31,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import com.sm.instagram.platform.common.util.Interrupts;
 
 /**
  * Service for managing GeoIP database storage in Firebase Storage.
@@ -596,6 +597,9 @@ public class GeoIpStorageService {
             return true;
 
         } catch (Exception e) {
+            if (Interrupts.isInterrupt(e)) {
+                Thread.currentThread().interrupt();
+            }
             log.error("Failed to acquire download lock", e);
             return false;
         }
@@ -621,6 +625,9 @@ public class GeoIpStorageService {
                 }
             }
         } catch (Exception e) {
+            if (Interrupts.isInterrupt(e)) {
+                Thread.currentThread().interrupt();
+            }
             log.error("Failed to release download lock", e);
         }
     }

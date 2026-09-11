@@ -185,8 +185,9 @@ public class FirebaseAuthProxyController {
                         // Re-throw business rule exceptions
                         throw e;
                     } catch (Exception e) {
-                        // A broad catch swallows the interrupt too; put the flag back before handling the failure.
-                        Interrupts.preserveInterrupt(e);
+                        if (Interrupts.isInterrupt(e)) {
+                            Thread.currentThread().interrupt();
+                        }
                         log.error("Error handling ADMIN 2FA claim removal: {}", e.getMessage(), e);
                         throw new AuthenticationTranslatableException("error.auth.not_authenticated");
                     }

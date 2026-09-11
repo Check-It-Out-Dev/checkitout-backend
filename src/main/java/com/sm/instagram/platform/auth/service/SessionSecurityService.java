@@ -288,8 +288,9 @@ public class SessionSecurityService {
             log.debug("Impossible travel check timed out, failing open (failures={})", failures);
             return false;
         } catch (Exception e) {
-            // A broad catch swallows the interrupt too; put the flag back before handling the failure.
-            Interrupts.preserveInterrupt(e);
+            if (Interrupts.isInterrupt(e)) {
+                Thread.currentThread().interrupt();
+            }
             int failures = geoIpConsecutiveFailures.incrementAndGet();
             if (failures >= geoIpCircuitBreakerThreshold && isHighPrivilegeRole(role)) {
                 log.warn("GeoIP circuit breaker open ({} consecutive failures), failing closed for role={}",

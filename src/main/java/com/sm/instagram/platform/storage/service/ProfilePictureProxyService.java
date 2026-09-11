@@ -117,8 +117,9 @@ public class ProfilePictureProxyService {
             return publicUrl;
 
         } catch (Exception e) {
-            // A broad catch swallows the interrupt too; put the flag back before handling the failure.
-            Interrupts.preserveInterrupt(e);
+            if (Interrupts.isInterrupt(e)) {
+                Thread.currentThread().interrupt();
+            }
             log.error("Failed to proxy profile picture to Firebase Storage: {}", e.getMessage());
             return null; // Graceful fallback - continue with original URL or null
         }
