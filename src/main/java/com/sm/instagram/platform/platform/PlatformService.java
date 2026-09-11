@@ -4,6 +4,7 @@ import com.sm.instagram.platform.common.base.BaseRepository;
 import com.sm.instagram.platform.common.base.BaseService;
 import com.sm.instagram.platform.common.util.RepositoryResolver;
 import com.sm.instagram.platform.common.util.filtering.SpecificationBuilder;
+import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
@@ -34,10 +35,18 @@ public class PlatformService extends BaseService<Platform, Long, PlatformDto> {
     }
 
     /**
-     * Map a {@link Platform} entity to its outbound DTO. Returns {@code null}
-     * for a {@code null} entity so callers can chain through optional
-     * lookups. Must execute inside a transaction so lazy associations resolve
-     * before the proxy goes cold.
+     * Map a {@link Platform} entity to its outbound DTO. Returns {@code null} for a {@code null}
+     * entity so callers can chain through optional lookups.
+     *
+     * <p>{@code contentTypes} is resolved explicitly first, and a transaction is not enough on its
+     * own to make that happen. {@code ModelMapperConfig} sets a property condition that SKIPS any
+     * source which is an uninitialized Hibernate {@code PersistentCollection} -- deliberately, so
+     * that a cold proxy cannot throw mid-mapping -- and the condition avoids touching the
+     * collection, which is exactly what would have initialized it. A lazy {@code @ManyToMany} is
+     * therefore silently dropped rather than loaded, the serializer omits the resulting null, and
+     * the field vanishes from the response. It is {@code @NotNull}, so the document says it is
+     * required, and {@code GET /platform/paged} spent every fuzz run returning bodies its own
+     * contract called invalid.
      */
     @Override
     @Transactional(readOnly = true)
@@ -45,6 +54,7 @@ public class PlatformService extends BaseService<Platform, Long, PlatformDto> {
         if (entity == null) {
             return null;
         }
+        Hibernate.initialize(entity.getContentTypes());
         @SuppressWarnings("unchecked")
         DTOOUT result = (DTOOUT) modelMapper.map(entity, PlatformDto.class);
         return result;
@@ -81,8 +91,10 @@ public class PlatformService extends BaseService<Platform, Long, PlatformDto> {
      * — so the association the projection was written to avoid is still never
      * touched. Resolving {@code contentTypes} costs one query per row, which
      * this reference table (a handful of platforms, and a page size capped by
-     * the controller) can carry; the {@code readOnly} transaction is what lets
-     * the lazy set resolve at all.
+     * the controller) can carry; the {@code readOnly} transaction here is what
+     * lets {@link #toDto(Platform)} resolve it at all, because a method
+     * reference on {@code this} does not go through the proxy that would
+     * otherwise start one.
      */
     @Override
     @Transactional(readOnly = true)
