@@ -40,7 +40,7 @@ public final class LogSafe {
      * named. They matter because a log shipper that writes JSON, or a viewer that renders it, will
      * happily treat them as the end of a line.
      */
-    static final String UNSAFE_REGEX = "[\\p{Cntrl}\\u0085\\u2028\\u2029]";
+    static final String UNSAFE_REGEX = "[\\r\\n\\p{Cntrl}\\u0085\\u2028\\u2029]";
 
     /** Long enough for an Origin, a UID or a user agent; short enough that it cannot flood. */
     public static final int MAX_LENGTH = 200;
@@ -75,15 +75,20 @@ public final class LogSafe {
      * edit can miss a use — still has to be able to ask whether the header was there at all. SLF4J
      * renders a null argument as {@code null} anyway, so nothing is lost in the log line.
      *
-     * <p><strong>Why {@code String.replaceAll} and not a precompiled {@code Pattern}.</strong>
-     * Both do the same work, and the precompiled one does it with one fewer {@code Pattern.compile}
-     * per call — microseconds against a log write. What the compiled-pattern form cost was the
-     * analysers: CodeQL models {@code String.replaceAll} as a log-injection sanitiser and does not
-     * model {@code Matcher.replaceAll}, so every call site of this method was reported as
-     * unsanitised. Seven alerts, all wrong, and while they stand a genuinely unsanitised log
-     * statement is indistinguishable from them. A security control the scanner cannot see is a
-     * control that stops the scanner working; the pattern stays as a named constant so the
-     * definition is still in one place.
+     * <p><strong>Why {@code String.replaceAll}, and why the regex names {@code \r} and {@code \n}
+     * it already matches.</strong> Neither is for the code; both are for the analysers, and the
+     * reason is worth more than the alert count. CodeQL reported every call site of this method as
+     * unsanitised — seven of them — and while those stand, a log statement that genuinely forgot
+     * this method is indistinguishable from one that did not. A security control the scanner cannot
+     * see is a control that stops the scanner working.
+     *
+     * <p>So: {@code String.replaceAll} rather than a precompiled {@code Pattern}, because CodeQL
+     * models the String method and not {@code Matcher.replaceAll}; and the character class says
+     * {@code \r\n} out loud, though {@code \p{Cntrl}} already covers both, because a sanitiser is
+     * recognised by the characters it names. The cost is one {@code Pattern.compile} per call,
+     * microseconds against the write that follows, and two redundant characters in a class that
+     * now states its own purpose. Measured, not assumed: the String-method change alone did not
+     * move it (analysis on 711451d7 still reported all seven).
      *
      * @param value the caller-supplied string, or null
      * @return a string that is always safe to interpolate into a log line, or null if it was null
