@@ -6,6 +6,7 @@ import com.google.firebase.auth.UserRecord;
 import com.sm.instagram.platform.auth.cache.UserCacheService;
 import com.sm.instagram.platform.auth.firebase.TotpFirestoreService;
 import com.sm.instagram.platform.auth.dto.TotpVerifyRequest;
+import com.sm.instagram.platform.auth.dto.TwoFactorResponses;
 import com.sm.instagram.platform.auth.dto.TotpSetupResponse;
 import com.sm.instagram.platform.auth.service.TokenExchangeService;
 import com.sm.instagram.platform.common.exceptions.AuthenticationTranslatableException;
@@ -67,7 +68,7 @@ public class TwoFactorStatusController {
      */
     @GetMapping("/status")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> check2FAStatus(Principal principal) {
+    public ResponseEntity<TwoFactorResponses.Status> check2FAStatus(Principal principal) {
         String firebaseUserId = principal.getName();
         log.info("GDPR: Operation=check2FAStatus, FirebaseUID={}, DataAccessed=2fa_status,user_role, Purpose=security_verification", firebaseUserId);
         
@@ -80,30 +81,26 @@ public class TwoFactorStatusController {
             // Check actual 2FA configuration in Firestore
             boolean has2FA = totpFirestoreService.is2FAEnabled(firebaseUserId);
 
-            Map<String, Object> response = new HashMap<>();
-            response.put("role", role);
-            response.put("has2FA", has2FA);
-            response.put("requires2FASetup", "PENDING_ADMIN".equals(role));
-            response.put("canAccessAdmin", "ADMIN".equals(role));
+            TwoFactorResponses.Status response = TwoFactorResponses.Status.of(role, has2FA);
 
             // Enhanced integrity checking for role/2FA mismatches
             if ("PENDING_ADMIN".equals(role) && has2FA) {
                 // User completed 2FA setup but role wasn't upgraded - needs sync
-                response.put("warning", "Role mismatch detected - user has 2FA but role is PENDING_ADMIN");
-                response.put("integrityIssue", "role_not_upgraded");
+                response = response.withIntegrityIssue(
+                        "Role mismatch detected - user has 2FA but role is PENDING_ADMIN", "role_not_upgraded");
                 log.warn("INTEGRITY: User {} has 2FA enabled but role is still PENDING_ADMIN - role upgrade may have failed", firebaseUserId);
             } else if ("ADMIN".equals(role) && !has2FA) {
                 // CRITICAL: Admin without 2FA - check if document exists at all
                 boolean totpDocExists = totpFirestoreService.totpSecretExists(firebaseUserId);
                 if (totpDocExists) {
                     // Document exists but enabled=false - setup was interrupted or corrupted
-                    response.put("warning", "Role mismatch detected - user is ADMIN but 2FA not enabled");
-                    response.put("integrityIssue", "totp_not_enabled");
+                    response = response.withIntegrityIssue(
+                            "Role mismatch detected - user is ADMIN but 2FA not enabled", "totp_not_enabled");
                     log.warn("INTEGRITY: Admin {} has TOTP document but enabled=false - setup may have been interrupted", firebaseUserId);
                 } else {
                     // No document at all - critical data integrity issue
-                    response.put("warning", "Critical: ADMIN user has no 2FA configuration");
-                    response.put("integrityIssue", "no_totp_document");
+                    response = response.withIntegrityIssue(
+                            "Critical: ADMIN user has no 2FA configuration", "no_totp_document");
                     log.error("CRITICAL INTEGRITY: Admin {} has no TOTP document at all! User may have been promoted incorrectly or data was deleted", firebaseUserId);
                 }
             }
@@ -122,7 +119,7 @@ public class TwoFactorStatusController {
      */
     @PostMapping("/setup")
     @PreAuthorize("hasAuthority('PENDING_ADMIN')")
-    public ResponseEntity<?> setup2FA(Principal principal) {
+    public ResponseEntity<TotpSetupResponse> setup2FA(Principal principal) {
         String firebaseUserId = principal.getName();
         log.info("GDPR: Operation=setup2FA, FirebaseUID={}, DataAccessed=none, Purpose=security_enhancement", firebaseUserId);
 
@@ -148,7 +145,7 @@ public class TwoFactorStatusController {
     @PostMapping("/verify-setup")
     @PreAuthorize("hasAuthority('PENDING_ADMIN')")
     @Transactional
-    public ResponseEntity<?> verifySetup2FA(@RequestBody TotpVerifyRequest request, 
+    public ResponseEntity<TwoFactorResponses.SetupVerified> verifySetup2FA(@RequestBody TotpVerifyRequest request, 
                                            Principal principal,
                                            HttpServletRequest httpRequest,
                                            HttpServletResponse httpResponse) {
@@ -191,14 +188,14 @@ public class TwoFactorStatusController {
 
             log.info("Auto-login after 2FA setup - user has full ADMIN access immediately");
 
-            return ResponseEntity.ok(Map.of(
-                "success", true,
-                "message", "2FA has been successfully enabled. You now have full admin access!",
-                "newRole", "ADMIN",
-                "requiresRelogin", false,  // No re-login needed!
-                "autoLoggedIn", true,
-                "twoFactorVerified", true,
-                "canAccessAdmin", true
+            return ResponseEntity.ok(new TwoFactorResponses.SetupVerified(
+                true,
+                "2FA has been successfully enabled. You now have full admin access!",
+                "ADMIN",
+                false,  // No re-login needed!
+                true,
+                true,
+                true
             ));
             
         } catch (FirebaseAuthException e) {
@@ -222,7 +219,7 @@ public class TwoFactorStatusController {
      */
     @PostMapping("/verify")
     @PreAuthorize("isAuthenticated() or hasAuthority('PARTIAL_AUTH') or hasAuthority('PENDING_2FA')")
-    public ResponseEntity<?> verify2FA(@RequestBody TotpVerifyRequest request, 
+    public ResponseEntity<TwoFactorResponses.Verified> verify2FA(@RequestBody TotpVerifyRequest request, 
                                       Principal principal,
                                       HttpServletRequest httpRequest,
                                       HttpServletResponse httpResponse) {
@@ -295,13 +292,13 @@ public class TwoFactorStatusController {
             log.info("Firebase claims updated with timestamp - valid for 2 minutes");
             log.info("The exchange-token endpoint will check Firebase for the updated claims");
 
-            return ResponseEntity.ok(Map.of(
-                "success", true,
-                "reuseIdToken", true,  // Tell frontend to reuse the original ID token
-                "verified", true,
-                "message", "2FA verification successful - reuse your original ID token",
-                "twoFactorVerified", true,
-                "canAccessAdmin", true
+            return ResponseEntity.ok(new TwoFactorResponses.Verified(
+                true,
+                true,  // Tell frontend to reuse the original ID token
+                true,
+                "2FA verification successful - reuse your original ID token",
+                true,
+                true
             ));
             
         } catch (FirebaseAuthException e) {
@@ -317,7 +314,7 @@ public class TwoFactorStatusController {
      */
     @PostMapping("/disable")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> disable2FA(@RequestBody TotpVerifyRequest request, Principal principal) {
+    public ResponseEntity<TwoFactorResponses.Disabled> disable2FA(@RequestBody TotpVerifyRequest request, Principal principal) {
         String firebaseUserId = principal.getName();
         log.warn("GDPR: Operation=disable2FA, FirebaseUID={}, DataAccessed=2fa_settings,user_role, Purpose=security_downgrade", firebaseUserId);
 
@@ -357,11 +354,11 @@ public class TwoFactorStatusController {
             log.warn("GDPR: Operation=downgradeUserRole, FirebaseUID={}, DataAccessed=user.role,user.userType, Purpose=role_reduction", firebaseUserId);
             log.info("GDPR: Operation=updateDatabaseUserType, FirebaseUID={}, DataAccessed=user.userType, Purpose=data_consistency", firebaseUserId);
 
-            return ResponseEntity.ok(Map.of(
-                "success", true,
-                "message", "2FA has been disabled. You will need to set it up again to access admin features.",
-                "newRole", "PENDING_ADMIN",
-                "requiresRelogin", true
+            return ResponseEntity.ok(new TwoFactorResponses.Disabled(
+                true,
+                "2FA has been disabled. You will need to set it up again to access admin features.",
+                "PENDING_ADMIN",
+                true
             ));
             
         } catch (FirebaseAuthException e) {
@@ -376,7 +373,7 @@ public class TwoFactorStatusController {
      */
     @PostMapping("/backup-codes")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> generateBackupCodes(@RequestBody TotpVerifyRequest request, Principal principal) {
+    public ResponseEntity<TwoFactorResponses.BackupCodes> generateBackupCodes(@RequestBody TotpVerifyRequest request, Principal principal) {
         String firebaseUserId = principal.getName();
         log.info("GDPR: Operation=generateBackupCodes, FirebaseUID={}, DataAccessed=2fa_backup_codes, Purpose=account_recovery", firebaseUserId);
 
@@ -393,10 +390,10 @@ public class TwoFactorStatusController {
 
         log.info("Generated {} backup codes for user: {}", backupCodes.size(), firebaseUserId);
 
-        return ResponseEntity.ok(Map.of(
-            "success", true,
-            "backupCodes", backupCodes,
-            "message", "Please save these backup codes in a secure location"
+        return ResponseEntity.ok(new TwoFactorResponses.BackupCodes(
+            true,
+            backupCodes,
+            "Please save these backup codes in a secure location"
         ));
     }
 }

@@ -11,6 +11,7 @@ import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Set;
 import java.util.Map;
 
 /**
@@ -124,8 +125,38 @@ public class ErrorEnvelopeResponsesCustomizer {
         }
     }
 
+    /**
+     * The few error bodies that are deliberately not the envelope, by the name of their schema.
+     *
+     * <p>Overwriting is the right default and the reason this customiser exists: springdoc
+     * inherits a method's return type onto its 4xx responses, so a 404 on an address endpoint was
+     * published as an address. Those have to be replaced, and they carry a schema, so "it already
+     * has one" cannot be the test.
+     *
+     * <p>What is left is a short list. {@code GET /auth/social/callback/instagram} answers a caller
+     * it cannot redirect with {@code {success, error}} -- a shape older than the envelope, and the
+     * one the mobile clients read. Declaring it on the operation had no effect until this existed:
+     * the declaration was made and then replaced with a promise the endpoint does not keep.
+     */
+    private static final Set<String> OWN_ERROR_SHAPES = Set.of("OAuthCallbackFailure");
+
     private void describeAsEnvelope(ApiResponse response) {
+        if (declaresItsOwnShape(response)) {
+            return;
+        }
         response.setContent(envelopeContent());
+    }
+
+    private static boolean declaresItsOwnShape(ApiResponse response) {
+        Content content = response.getContent();
+        if (content == null) {
+            return false;
+        }
+        return content.values().stream()
+                .map(MediaType::getSchema)
+                .filter(schema -> schema != null && schema.get$ref() != null)
+                .map(schema -> schema.get$ref().substring(schema.get$ref().lastIndexOf('/') + 1))
+                .anyMatch(OWN_ERROR_SHAPES::contains);
     }
 
     /**
