@@ -71,6 +71,15 @@ to a real vendor at each stage, what it unlocks, what breaks without it.
 
 ## Testing
 
+> **The results, live** — [quality dashboard](https://check-it-out-dev.github.io/checkitout-backend/) ·
+> [Allure with history](https://check-it-out-dev.github.io/checkitout-backend/allure/latest/) ·
+> [k6 against the sandbox](https://checkitoutapp.grafana.net/public-dashboards/f48c40b8b3244bdfa019117fa9fdcbbe)
+>
+> Everything below is the design. The dashboard is the same thing after it has run: pass rate and
+> its trend, mutation score, the security finding count, the list of every test that failed or
+> flaked in the last ten runs, and links to the reports themselves. The badges at the top of this
+> file are read from it, which is why they can be red.
+
 Three tiers, all runnable locally, shaped by one rule — **simulate what you are
 not testing, never what you are**:
 
