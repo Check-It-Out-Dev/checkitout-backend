@@ -561,11 +561,7 @@
             "type" : "integer"
           },
           "influencer" : {
-            "oneOf" : [ {
-              "$ref" : "#/components/schemas/CompanyPublicProfileDto"
-            }, {
-              "$ref" : "#/components/schemas/InfluencerPublicProfileDto"
-            } ]
+            "$ref" : "#/components/schemas/PublicProfileDto"
           },
           "lastUpdateTime" : {
             "description" : "Local date and time, ISO-8601, with no UTC offset. Not an RFC 3339 date-time: this value names no time zone.",
@@ -1079,6 +1075,22 @@
         },
         "type" : "object"
       },
+      "CleanupOutcome" : {
+        "description" : "The outcome of a manual orphaned-upload cleanup",
+        "properties" : {
+          "message" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string"
+          },
+          "timestamp" : {
+            "format" : "date-time",
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
       "CollectionMethodDtoOut" : {
         "properties" : {
           "description" : {
@@ -1247,10 +1259,15 @@
           "profilePicture" : {
             "type" : "string"
           },
+          "profileType" : {
+            "enum" : [ "COMPANY" ],
+            "type" : "string"
+          },
           "website" : {
             "type" : "string"
           }
         },
+        "required" : [ "profileType" ],
         "type" : "object"
       },
       "CompanyType" : {
@@ -2283,6 +2300,73 @@
         },
         "type" : "object"
       },
+      "FileUpload" : {
+        "properties" : {
+          "altText" : {
+            "maxLength" : 500,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "confirmedAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "contentType" : {
+            "maxLength" : 100,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "createdAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "filePath" : {
+            "maxLength" : 1000,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "fileSize" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "filename" : {
+            "maxLength" : 255,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "id" : {
+            "maxLength" : 36,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "publicUrl" : {
+            "maxLength" : 1000,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/UploadStatus"
+          },
+          "updatedAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "uploadTime" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "userId" : {
+            "maxLength" : 255,
+            "minLength" : 0,
+            "type" : "string"
+          }
+        },
+        "required" : [ "createdAt", "fileSize", "status", "uploadTime" ],
+        "type" : "object"
+      },
       "FileUploadRequest" : {
         "properties" : {
           "altText" : {
@@ -2307,7 +2391,7 @@
             "type" : "integer"
           },
           "filename" : {
-            "maxLength" : 255,
+            "maxLength" : 240,
             "minLength" : 0,
             "pattern" : "^[a-zA-Z0-9._-]+$",
             "type" : "string"
@@ -2514,47 +2598,48 @@
         "type" : "object"
       },
       "InfluencerPublicProfileDto" : {
-        "allOf" : [ {
-          "$ref" : "#/components/schemas/PublicProfileDto"
-        }, {
-          "properties" : {
-            "accountStatus" : {
-              "$ref" : "#/components/schemas/AccountStatusDtoOut"
-            },
-            "createdTime" : {
-              "description" : "Local date and time, ISO-8601, with no UTC offset. Not an RFC 3339 date-time: this value names no time zone.",
-              "example" : "2026-09-11T09:05:26.114536",
-              "type" : "string"
-            },
-            "displayName" : {
-              "type" : "string"
-            },
-            "followersCount" : {
-              "format" : "int32",
-              "type" : "integer"
-            },
-            "id" : {
-              "format" : "int64",
-              "type" : "integer"
-            },
-            "name" : {
-              "type" : "string"
-            },
-            "platformName" : {
-              "type" : "string"
-            },
-            "premium" : {
-              "type" : "boolean"
-            },
-            "profilePicture" : {
-              "type" : "string"
-            },
-            "profileUrl" : {
-              "type" : "string"
-            }
+        "properties" : {
+          "accountStatus" : {
+            "$ref" : "#/components/schemas/AccountStatusDtoOut"
           },
-          "type" : "object"
-        } ]
+          "createdTime" : {
+            "description" : "Local date and time, ISO-8601, with no UTC offset. Not an RFC 3339 date-time: this value names no time zone.",
+            "example" : "2026-09-11T09:05:26.114536",
+            "type" : "string"
+          },
+          "displayName" : {
+            "type" : "string"
+          },
+          "followersCount" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "id" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "platformName" : {
+            "type" : "string"
+          },
+          "premium" : {
+            "type" : "boolean"
+          },
+          "profilePicture" : {
+            "type" : "string"
+          },
+          "profileType" : {
+            "enum" : [ "INFLUENCER" ],
+            "type" : "string"
+          },
+          "profileUrl" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "profileType" ],
+        "type" : "object"
       },
       "LegalBasisDtoOut" : {
         "properties" : {
@@ -3503,11 +3588,7 @@
         "properties" : {
           "content" : {
             "items" : {
-              "oneOf" : [ {
-                "$ref" : "#/components/schemas/CompanyPublicProfileDto"
-              }, {
-                "$ref" : "#/components/schemas/InfluencerPublicProfileDto"
-              } ]
+              "$ref" : "#/components/schemas/PublicProfileDto"
             },
             "type" : "array"
           },
@@ -4305,6 +4386,14 @@
         "type" : "object"
       },
       "PublicProfileDto" : {
+        "discriminator" : {
+          "propertyName" : "profileType"
+        },
+        "oneOf" : [ {
+          "$ref" : "#/components/schemas/CompanyPublicProfileDto"
+        }, {
+          "$ref" : "#/components/schemas/InfluencerPublicProfileDto"
+        } ],
         "type" : "object"
       },
       "RateLimitInfo" : {
@@ -4464,6 +4553,24 @@
           "userType" : {
             "description" : "UserType enum name",
             "enum" : [ "ADMIN", "PENDING_ADMIN", "INFLUENCER", "COMPANY" ],
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "ReportPeriod" : {
+        "description" : "The window a report covers",
+        "properties" : {
+          "days" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "periodEnd" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "periodStart" : {
+            "format" : "date-time",
             "type" : "string"
           }
         },
@@ -4783,6 +4890,40 @@
         },
         "type" : "object"
       },
+      "SystemStats" : {
+        "description" : "Counts and storage totals across every user",
+        "properties" : {
+          "pendingUploads" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "timestamp" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "totalStorageBytes" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "totalStorageMB" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "totalUploads" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "uploadsLast24Hours" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "uploadsLastHour" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
       "SystemStatus" : {
         "enum" : [ "PENDING", "SUCCESS", "FAILED", "SKIPPED" ],
         "type" : "string"
@@ -5010,6 +5151,33 @@
       "UploadStatus" : {
         "enum" : [ "PENDING", "CONFIRMED", "WEBHOOK", "FAILED", "DELETED" ],
         "type" : "string"
+      },
+      "UploadsByStatus" : {
+        "description" : "A page of uploads in one status",
+        "properties" : {
+          "page" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "size" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/UploadStatus"
+          },
+          "totalCount" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "uploads" : {
+            "items" : {
+              "$ref" : "#/components/schemas/FileUpload"
+            },
+            "type" : "array"
+          }
+        },
+        "type" : "object"
       },
       "UserConsentDtoIn" : {
         "properties" : {
@@ -5413,6 +5581,36 @@
         },
         "type" : "object"
       },
+      "UserRateLimits" : {
+        "description" : "How much of the user's hourly, daily and storage quota is spent",
+        "properties" : {
+          "dailyLimit" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "dailyUsed" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "hourlyLimit" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "hourlyUsed" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "storageLimitMB" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "storageUsedMB" : {
+            "format" : "double",
+            "type" : "number"
+          }
+        },
+        "type" : "object"
+      },
       "UserSocialConnectionDtoIn" : {
         "properties" : {
           "connectionStatus" : {
@@ -5524,6 +5722,28 @@
         },
         "type" : "object"
       },
+      "UserStatistics" : {
+        "description" : "Upload counts for one user",
+        "properties" : {
+          "filesUploadedThisHour" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "filesUploadedToday" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "totalFiles" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "totalSizeBytes" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
       "UserType" : {
         "enum" : [ "ADMIN", "PENDING_ADMIN", "INFLUENCER", "COMPANY" ],
         "type" : "string"
@@ -5542,11 +5762,75 @@
         },
         "type" : "object"
       },
+      "UserUploads" : {
+        "description" : "One user's uploads, with the quota they count against",
+        "properties" : {
+          "rateLimits" : {
+            "$ref" : "#/components/schemas/UserRateLimits"
+          },
+          "statistics" : {
+            "$ref" : "#/components/schemas/UserStatistics"
+          },
+          "uploads" : {
+            "items" : {
+              "$ref" : "#/components/schemas/FileUpload"
+            },
+            "type" : "array"
+          }
+        },
+        "type" : "object"
+      },
       "VerifyResetCodeRequest" : {
         "properties" : {
           "oobCode" : {
             "minLength" : 1,
             "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "WeeklyReport" : {
+        "description" : "Seven days of upload activity",
+        "properties" : {
+          "byContentType" : {
+            "additionalProperties" : {
+              "format" : "int64",
+              "type" : "integer"
+            },
+            "description" : "Uploads in the period, counted per content type",
+            "type" : "object"
+          },
+          "generatedAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "period" : {
+            "$ref" : "#/components/schemas/ReportPeriod"
+          },
+          "summary" : {
+            "$ref" : "#/components/schemas/WeeklySummary"
+          }
+        },
+        "type" : "object"
+      },
+      "WeeklySummary" : {
+        "description" : "Totals over the reporting window",
+        "properties" : {
+          "averageFilesPerDay" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "totalFiles" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "totalSizeBytes" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "totalSizeMB" : {
+            "format" : "double",
+            "type" : "number"
           }
         },
         "type" : "object"
@@ -8686,7 +8970,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "type" : "object"
+                  "$ref" : "#/components/schemas/CleanupOutcome"
                 }
               }
             },
@@ -8726,7 +9010,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "type" : "object"
+                  "$ref" : "#/components/schemas/WeeklyReport"
                 }
               }
             },
@@ -8766,7 +9050,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "type" : "object"
+                  "$ref" : "#/components/schemas/SystemStats"
                 }
               }
             },
@@ -8832,7 +9116,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "type" : "object"
+                  "$ref" : "#/components/schemas/UploadsByStatus"
                 }
               }
             },
@@ -8908,7 +9192,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "type" : "object"
+                  "$ref" : "#/components/schemas/UserUploads"
                 }
               }
             },

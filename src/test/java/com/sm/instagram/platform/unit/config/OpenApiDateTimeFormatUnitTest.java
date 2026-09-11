@@ -40,7 +40,10 @@ class OpenApiDateTimeFormatUnitTest {
      * that is the point -- the alternative is a list nobody maintains and a format nobody checks.
      */
     private static final Set<String> OFFSET_BACKED = Set.of(
-            "confirmedAt", "createdAt", "expiresAt", "snapshotTime", "updatedAt", "uploadTime");
+            "confirmedAt", "createdAt", "expiresAt", "snapshotTime", "updatedAt", "uploadTime",
+            // The upload-admin responses, which stopped being untyped maps and became records
+            // whose Instant components the document can now describe.
+            "generatedAt", "periodEnd", "periodStart", "timestamp");
 
     private static JsonNode spec;
 

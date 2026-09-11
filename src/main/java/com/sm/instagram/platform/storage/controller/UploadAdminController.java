@@ -2,6 +2,7 @@ package com.sm.instagram.platform.storage.controller;
 
 import com.sm.instagram.platform.common.exceptions.ValidationTranslatableException;
 import com.sm.instagram.platform.storage.entity.FileUpload;
+import com.sm.instagram.platform.storage.model.UploadAdminResponses;
 import com.sm.instagram.platform.storage.repository.FileUploadRepository;
 import com.sm.instagram.platform.storage.service.FileTrackingService;
 import com.sm.instagram.platform.storage.service.StorageRateLimitService;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +48,7 @@ public class UploadAdminController {
     @GetMapping("/stats/system")
     @Operation(summary = "Get system upload statistics",
             description = "Returns overall system upload metrics and health")
-    public ResponseEntity<?> getSystemStats() {
+    public ResponseEntity<UploadAdminResponses.SystemStats> getSystemStats() {
         String firebaseUid = SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal().toString();
 
@@ -84,16 +84,14 @@ public class UploadAdminController {
         Long totalStorage = uploadRepository.getTotalStorageByUser("");
         if (totalStorage == null) totalStorage = 0L;
 
-        Map<String, Object> stats = new HashMap<>();
-        stats.put("totalUploads", totalUploads);
-        stats.put("pendingUploads", pendingUploads);
-        stats.put("uploadsLast24Hours", uploadsLast24h);
-        stats.put("uploadsLastHour", uploadsLastHour);
-        stats.put("totalStorageBytes", totalStorage);
-        stats.put("totalStorageMB", totalStorage / (1024.0 * 1024.0));
-        stats.put("timestamp", Instant.now());
-
-        return ResponseEntity.ok(stats);
+        return ResponseEntity.ok(new UploadAdminResponses.SystemStats(
+                totalUploads,
+                pendingUploads,
+                uploadsLast24h,
+                uploadsLastHour,
+                totalStorage,
+                totalStorage / (1024.0 * 1024.0),
+                Instant.now()));
     }
 
     /**
@@ -102,7 +100,7 @@ public class UploadAdminController {
     @GetMapping("/user/{userId}")
     @Operation(summary = "Get user uploads",
             description = "Returns all uploads for a specific user")
-    public ResponseEntity<?> getUserUploads(
+    public ResponseEntity<UploadAdminResponses.UserUploads> getUserUploads(
             @PathVariable String userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
@@ -135,24 +133,20 @@ public class UploadAdminController {
         FileTrackingService.UserUploadStats stats = trackingService.getUserStats(userId);
         StorageRateLimitService.RateLimitStatus rateLimits = rateLimiterService.getUserStatus(userId);
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("uploads", uploads);
-        response.put("statistics", Map.of(
-                "totalFiles", stats.getTotalFiles(),
-                "totalSizeBytes", stats.getTotalSize(),
-                "filesUploadedToday", stats.getFilesUploadedToday(),
-                "filesUploadedThisHour", stats.getFilesUploadedThisHour()
-        ));
-        response.put("rateLimits", Map.of(
-                "hourlyUsed", rateLimits.getHourlyUsed(),
-                "hourlyLimit", rateLimits.getHourlyLimit(),
-                "dailyUsed", rateLimits.getDailyUsed(),
-                "dailyLimit", rateLimits.getDailyLimit(),
-                "storageUsedMB", rateLimits.getStorageUsedMB(),
-                "storageLimitMB", rateLimits.getStorageLimitMB()
-        ));
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new UploadAdminResponses.UserUploads(
+                uploads,
+                new UploadAdminResponses.UserStatistics(
+                        stats.getTotalFiles(),
+                        stats.getTotalSize(),
+                        stats.getFilesUploadedToday(),
+                        stats.getFilesUploadedThisHour()),
+                new UploadAdminResponses.UserRateLimits(
+                        rateLimits.getHourlyUsed(),
+                        rateLimits.getHourlyLimit(),
+                        rateLimits.getDailyUsed(),
+                        rateLimits.getDailyLimit(),
+                        rateLimits.getStorageUsedMB(),
+                        rateLimits.getStorageLimitMB())));
     }
 
     /**
@@ -161,7 +155,7 @@ public class UploadAdminController {
     @PostMapping("/cleanup/orphaned")
     @Operation(summary = "Clean up orphaned uploads",
             description = "Manually trigger cleanup of old pending uploads")
-    public ResponseEntity<?> cleanupOrphanedUploads() {
+    public ResponseEntity<UploadAdminResponses.CleanupOutcome> cleanupOrphanedUploads() {
         String firebaseUid = SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal().toString();
 
@@ -171,10 +165,8 @@ public class UploadAdminController {
 
         trackingService.cleanupOrphanedUploads();
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", "success");
-        response.put("message", "Orphaned upload cleanup completed");
-        response.put("timestamp", Instant.now());
+        UploadAdminResponses.CleanupOutcome response = new UploadAdminResponses.CleanupOutcome(
+                "success", "Orphaned upload cleanup completed", Instant.now());
 
         return ResponseEntity.ok(response);
     }
@@ -185,7 +177,7 @@ public class UploadAdminController {
     @GetMapping("/status/{status}")
     @Operation(summary = "Get uploads by status",
             description = "Returns all uploads with the specified status")
-    public ResponseEntity<?> getUploadsByStatus(
+    public ResponseEntity<UploadAdminResponses.UploadsByStatus> getUploadsByStatus(
             @PathVariable FileUpload.UploadStatus status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "50") int size) {
@@ -219,12 +211,8 @@ public class UploadAdminController {
                 Instant.now().plus(1, ChronoUnit.DAYS) // Get all up to tomorrow
         );
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("uploads", uploads);
-        response.put("totalCount", uploads.size());
-        response.put("status", status);
-        response.put("page", page);
-        response.put("size", size);
+        UploadAdminResponses.UploadsByStatus response = new UploadAdminResponses.UploadsByStatus(
+                uploads, uploads.size(), status, page, size);
 
         return ResponseEntity.ok(response);
     }
@@ -235,7 +223,7 @@ public class UploadAdminController {
     @GetMapping("/reports/weekly")
     @Operation(summary = "Generate weekly report",
             description = "Creates a weekly summary of upload activity")
-    public ResponseEntity<?> generateWeeklyReport() {
+    public ResponseEntity<UploadAdminResponses.WeeklyReport> generateWeeklyReport() {
         String firebaseUid = SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal().toString();
 
@@ -263,20 +251,15 @@ public class UploadAdminController {
                         java.util.stream.Collectors.counting()
                 ));
 
-        Map<String, Object> report = new HashMap<>();
-        report.put("period", Map.of(
-                "start", weekAgo,
-                "end", Instant.now(),
-                "days", 7
-        ));
-        report.put("summary", Map.of(
-                "totalFiles", totalFiles,
-                "totalSizeBytes", totalSize,
-                "totalSizeMB", totalSize / (1024.0 * 1024.0),
-                "averageFilesPerDay", totalFiles / 7.0
-        ));
-        report.put("byContentType", byContentType);
-        report.put("generatedAt", Instant.now());
+        UploadAdminResponses.WeeklyReport report = new UploadAdminResponses.WeeklyReport(
+                new UploadAdminResponses.ReportPeriod(weekAgo, Instant.now(), 7),
+                new UploadAdminResponses.WeeklySummary(
+                        totalFiles,
+                        totalSize,
+                        totalSize / (1024.0 * 1024.0),
+                        totalFiles / 7.0),
+                byContentType,
+                Instant.now());
 
         return ResponseEntity.ok(report);
     }
