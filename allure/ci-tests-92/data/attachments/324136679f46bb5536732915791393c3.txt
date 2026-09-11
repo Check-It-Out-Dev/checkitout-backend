@@ -1,0 +1,8 @@
+09:50:42.062 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.t.c.s.AnnotationConfigContextLoaderUtils&amp#27;[0;39m - Could not detect default configuration classes for test class [com.sm.instagram.platform.integration.service.userpreferences.UserPreferencesService_AdminPatch_IntegrationTest$AdminPatchUserPreferences]: AdminPatchUserPreferences does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+09:50:42.063 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.b.t.c.SpringBootTestContextBootstrapper&amp#27;[0;39m - Found @SpringBootConfiguration com.sm.instagram.platform.InstagramPlatformApplication for test class com.sm.instagram.platform.integration.service.userpreferences.UserPreferencesService_AdminPatch_IntegrationTest$AdminPatchUserPreferences
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-e0aeae82-a5a2-4f55-947d-b02859f0f0f8
+  Company: COMPANY-23f65d05-56d6-4242-91e9-7da05e81f13d
+  Admin: ADMIN-f51d0ee4-35ca-4d95-bc49-4a669f152bf1
+09:50:42.068 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: ADMIN_MODIFICATION Operation=patchUserPreferences, AdminFirebaseUID=ADMIN-f51d0ee4-35ca-4d95-bc49-4a669f152bf1, TargetUserID=9230, FieldsModified=[darkModeEnabled], Purpose=admin_support, LegalBasis=legitimate_interest
+09:50:42.073 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: ADMIN_MODIFICATION_SUCCESS Operation=patchUserPreferences_SUCCESS, AdminFirebaseUID=ADMIN-f51d0ee4-35ca-4d95-bc49-4a669f152bf1, TargetUserID=9230, PreferencesID=65

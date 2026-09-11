@@ -1,9 +1,0 @@
-[Integration Test] Test users created:
-  Influencer: INFLUENCER-8cb9902e-cbce-478a-a68c-b13b2ece4d3d
-  Company: COMPANY-d4dc6e31-bcec-4be3-a002-a0eecab52a4a
-  Admin: ADMIN-73c1e557-d15a-41fd-a9b5-b3c83f822c33
-09:37:17.608 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=createAppliedOpportunity, FirebaseUID=ADMIN-73c1e557-d15a-41fd-a9b5-b3c83f822c33, PartnershipOpportunityID=2554, Purpose=opportunity_application, DataCreated=application.details, LegalBasis=contract
-09:37:17.618 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=createAppliedOpportunity_SUCCESS, FirebaseUID=ADMIN-73c1e557-d15a-41fd-a9b5-b3c83f822c33, AppliedOpportunityID=2531, Status=APPLIED
-09:37:17.618 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=ADMIN-73c1e557-d15a-41fd-a9b5-b3c83f822c33, AppliedOpportunityID=2531, StatusChange=null→APPLIED, Purpose=status_tracking
-09:37:17.620 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=ADMIN-73c1e557-d15a-41fd-a9b5-b3c83f822c33, AppliedOpportunityID=2531, DataAccessed=status,changedBy,reason, Purpose=audit_trail
-09:37:17.620 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2531, null -> APPLIED, Changed by=ADMIN-73c1e557-d15a-41fd-a9b5-b3c83f822c33, Reason=Applied opportunity created

@@ -1,0 +1,11 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-1cc3efcf-b51d-4a54-b537-59aef0d3163a
+  Company: COMPANY-96feb4eb-0dbd-42d8-a93b-9ac96680a6a1
+  Admin: ADMIN-fceef8e8-75b3-4dbc-bc3a-646c240f7771
+09:50:06.033 [scheduling-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+09:50:06.036 [scheduling-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+09:50:06.038 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=createAppliedOpportunity, FirebaseUID=INFLUENCER-1cc3efcf-b51d-4a54-b537-59aef0d3163a, PartnershipOpportunityID=2553, Purpose=opportunity_application, DataCreated=application.details, LegalBasis=contract
+09:50:06.048 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=createAppliedOpportunity_SUCCESS, FirebaseUID=INFLUENCER-1cc3efcf-b51d-4a54-b537-59aef0d3163a, AppliedOpportunityID=2530, Status=APPLIED
+09:50:06.048 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=INFLUENCER-1cc3efcf-b51d-4a54-b537-59aef0d3163a, AppliedOpportunityID=2530, StatusChange=null→APPLIED, Purpose=status_tracking
+09:50:06.050 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=INFLUENCER-1cc3efcf-b51d-4a54-b537-59aef0d3163a, AppliedOpportunityID=2530, DataAccessed=status,changedBy,reason, Purpose=audit_trail
+09:50:06.050 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2530, null -> APPLIED, Changed by=INFLUENCER-1cc3efcf-b51d-4a54-b537-59aef0d3163a, Reason=Applied opportunity created
