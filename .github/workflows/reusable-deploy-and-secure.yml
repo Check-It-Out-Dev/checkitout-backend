@@ -560,6 +560,10 @@ jobs:
         id: deploy
         env:
           GH_RUN_ID: ${{ github.run_id }}
+          # Through env, and named the way the other two steps in this file already name it. A JSON
+          # document single-quoted into a shell command ends its own quoting at the first
+          # apostrophe, and everything after it is read as shell.
+          IN_CONFIG_JSON: ${{ inputs.config-json }}
         run: |
           echo "🚀 Executing secure deployment..."
           
@@ -594,7 +598,7 @@ jobs:
           fi
           
           # Export required environment
-          export DEPLOYMENT_PATH=$(echo '${{ inputs.config-json }}' | jq -r '._flat.deployment_path')
+          export DEPLOYMENT_PATH=$(printf '%s' "$IN_CONFIG_JSON" | jq -r '._flat.deployment_path')
           echo "DEPLOYMENT_PATH=$DEPLOYMENT_PATH"
           
           # Execute with sudo matching the sudoers pattern exactly

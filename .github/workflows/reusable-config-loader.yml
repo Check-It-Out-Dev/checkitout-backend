@@ -74,7 +74,7 @@ jobs:
           echo "📋 Merging deployment-defaults.yml and deployment-${ENV}.yml..."
           yq eval-all '. as $item ireduce ({}; . * $item)' \
             "$IN_CONFIG_PATH/deployment-defaults.yml" \
-            ${{ inputs.config-path }}/deployment-${ENV}.yml \
+            "$IN_CONFIG_PATH/deployment-${ENV}.yml" \
             > merged.yml
             
           # Step 2: Convert to JSON for easier manipulation
