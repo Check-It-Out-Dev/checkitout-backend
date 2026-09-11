@@ -217,6 +217,14 @@ public class FileUploadController {
 
         } catch (ResourceNotFoundException e) {
             throw e;
+        } catch (IllegalArgumentException e) {
+            // A path the caller typed. 507 Insufficient Storage is a specific claim -- the server
+            // cannot store the representation -- and saying it about a malformed filePath sends the
+            // caller looking for a quota problem that does not exist. `?filePath=` reached here and
+            // came back 507; it is a 400, which is what the handler for this exception returns.
+            log.warn("GDPR: Operation=confirmUpload_rejected, FirebaseUID={}, UploadID={}, Reason={}",
+                    firebaseUid, uploadId, e.getMessage());
+            throw e;
         } catch (Exception e) {
             log.error("GDPR: Operation=confirmUpload_failed, FirebaseUID={}, UploadID={}, Error={}",
                     firebaseUid, uploadId, e.getMessage(), e);
