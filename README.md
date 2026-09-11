@@ -16,12 +16,13 @@ production with real users; the frontend's mocked build is the open demo today.
 [![Tests](https://img.shields.io/endpoint?url=https://check-it-out-dev.github.io/checkitout-backend/badges/tests.json)](https://check-it-out-dev.github.io/checkitout-backend/)
 [![Flaky](https://img.shields.io/endpoint?url=https://check-it-out-dev.github.io/checkitout-backend/badges/flaky.json)](https://check-it-out-dev.github.io/checkitout-backend/)
 [![Mutation](https://img.shields.io/endpoint?url=https://check-it-out-dev.github.io/checkitout-backend/badges/mutation.json)](https://check-it-out-dev.github.io/checkitout-backend/#quality)
+[![Security](https://img.shields.io/endpoint?url=https://check-it-out-dev.github.io/checkitout-backend/badges/security.json)](https://check-it-out-dev.github.io/checkitout-backend/#quality)
 [![pull-request pipeline](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/pr.yml/badge.svg)](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/pr.yml)
 [![nightly pipeline](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/nightly.yml/badge.svg)](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/nightly.yml)
 [![image](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/build-image.yml/badge.svg)](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/build-image.yml)
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=Check-It-Out-Dev_checkitout-backend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Check-It-Out-Dev_checkitout-backend)
 
-<sub>The test and flaky badges are read live from the <a href="https://check-it-out-dev.github.io/checkitout-backend/">quality dashboard</a>, which every run republishes.</sub>
+<sub>The test, flaky, mutation and security badges are read live from the <a href="https://check-it-out-dev.github.io/checkitout-backend/">quality dashboard</a>, which every run republishes.</sub>
 
 ▶ **[checkitout.app](https://checkitout.app)** — the live demo (the frontend's
 FE-only build, every `/api` call mocked in the browser) ·
