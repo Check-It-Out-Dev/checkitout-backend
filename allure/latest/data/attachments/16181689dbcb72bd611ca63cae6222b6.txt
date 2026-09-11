@@ -1,0 +1,8 @@
+11:13:42.453 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.t.c.s.AnnotationConfigContextLoaderUtils&amp#27;[0;39m - Could not detect default configuration classes for test class [com.sm.instagram.platform.integration.service.activecooperation.ActiveCooperationService_Query_IntegrationTest$GetInfluencersToRateWithPermission]: GetInfluencersToRateWithPermission does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+11:13:42.455 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.b.t.c.SpringBootTestContextBootstrapper&amp#27;[0;39m - Found @SpringBootConfiguration com.sm.instagram.platform.InstagramPlatformApplication for test class com.sm.instagram.platform.integration.service.activecooperation.ActiveCooperationService_Query_IntegrationTest$GetInfluencersToRateWithPermission
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-d3460a9d-66d2-4e8a-a093-b6e8c6356452
+  Company: COMPANY-481ec066-a874-4234-a93e-5be56dde8529
+  Admin: ADMIN-2b2cc9d9-bb64-46d4-9505-7236c3f3502e
+11:13:42.464 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.ActiveCooperationService&amp#27;[0;39m - GDPR: Service=getInfluencersToRateWithPermission, FirebaseUID=COMPANY-481ec066-a874-4234-a93e-5be56dde8529, FilterStatus=ALL, Purpose=permission_check
+11:13:42.464 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.ActiveCooperationService&amp#27;[0;39m - GDPR: ACCESS_DENIED Service=getInfluencersToRateWithPermission, FirebaseUID=COMPANY-481ec066-a874-4234-a93e-5be56dde8529, Reason=not_admin

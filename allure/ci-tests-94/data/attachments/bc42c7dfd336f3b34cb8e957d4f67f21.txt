@@ -1,0 +1,31 @@
+11:13:04.611 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - ==========================================
+11:13:04.611 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - 🔐 TOTP (2FA) VALIDATION
+11:13:04.611 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - ==========================================
+11:13:04.611 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - GDPR: Operation=startTotpValidation, FirebaseUID=SYSTEM, DataAccessed=config_validation, Purpose=system_initialization
+11:13:04.611 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - 📋 TOTP Configuration:
+11:13:04.611 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    Issuer: CheckItOut
+11:13:04.611 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    Key Ring: instagram-tokens
+11:13:04.611 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    TOTP Key: totp-secrets-key
+11:13:04.611 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    Status: ENABLED
+11:13:04.611 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - 
+🔑 Testing TOTP KMS Encryption:
+11:13:04.611 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✓ TOTP secret encrypted
+11:13:04.611 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✓ TOTP secret decrypted
+11:13:04.612 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✗ TOTP KMS validation failed: error.validation.failed
+11:13:04.612 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    → Check if totp-secrets-key exists in instagram-tokens
+11:13:04.612 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - 
+📚 Testing Firestore TOTP Collection:
+11:13:04.612 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✓ Firestore TOTP collection accessible
+11:13:04.612 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - 
+🔢 Testing TOTP Generation:
+11:13:04.612 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✓ TOTP secret generated: JBSW...
+11:13:04.612 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✓ TOTP code generated: 123456
+11:13:04.612 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✓ TOTP generation and verification working
+11:13:04.612 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    Testing time window tolerance (configured in application.yml)...
+11:13:04.612 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✓ TOTP time window tolerance working
+11:13:04.612 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - 
+❌ TOTP Service: DEGRADED
+11:13:04.612 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    Some checks failed - 2FA may not work properly
+11:13:04.612 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    Check the logs above for details
+11:13:04.612 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - GDPR: Operation=completeTotpValidation, FirebaseUID=SYSTEM, DataAccessed=system_health, Purpose=startup_validation, Result=FAILED
+11:13:04.612 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - ==========================================

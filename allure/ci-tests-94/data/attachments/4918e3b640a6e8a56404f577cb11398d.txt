@@ -1,0 +1,8 @@
+11:13:35.885 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.t.c.s.AnnotationConfigContextLoaderUtils&amp#27;[0;39m - Could not detect default configuration classes for test class [com.sm.instagram.platform.integration.service.address.AddressService_UserAddresses_IntegrationTest$FindAddressesByUserIdAsDto]: FindAddressesByUserIdAsDto does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+11:13:35.887 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.b.t.c.SpringBootTestContextBootstrapper&amp#27;[0;39m - Found @SpringBootConfiguration com.sm.instagram.platform.InstagramPlatformApplication for test class com.sm.instagram.platform.integration.service.address.AddressService_UserAddresses_IntegrationTest$FindAddressesByUserIdAsDto
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-4aa7b95e-37d3-410f-a330-4a67cb8d30ee
+  Company: COMPANY-85de5181-b526-4012-ac23-a33c94b28c6a
+  Admin: ADMIN-4e6ecb5a-fb7b-43bc-8c18-d717ebc99eb3
+11:13:35.897 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.address.AddressService&amp#27;[0;39m - GDPR: Operation=findAddressesByUserId, FirebaseUID=COMPANY-85de5181-b526-4012-ac23-a33c94b28c6a, UserID=7702, Purpose=user_addresses_retrieval
+11:13:35.903 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.address.AddressService&amp#27;[0;39m - GDPR: DataAccessed=user.addresses[], FirebaseUID=COMPANY-85de5181-b526-4012-ac23-a33c94b28c6a, UserID=7702, RecordCount=1, Purpose=list_retrieval

@@ -1,0 +1,8 @@
+11:14:08.714 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.t.c.s.AnnotationConfigContextLoaderUtils&amp#27;[0;39m - Could not detect default configuration classes for test class [com.sm.instagram.platform.integration.service.user.UserService_Save_IntegrationTest$SaveAdminVsNonAdmin]: SaveAdminVsNonAdmin does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+11:14:08.715 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.b.t.c.SpringBootTestContextBootstrapper&amp#27;[0;39m - Found @SpringBootConfiguration com.sm.instagram.platform.InstagramPlatformApplication for test class com.sm.instagram.platform.integration.service.user.UserService_Save_IntegrationTest$SaveAdminVsNonAdmin
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-d66b80ca-7103-41bc-9dd4-40bbc6250d27
+  Company: COMPANY-02504484-639b-483d-98d4-9bab847663dd
+  Admin: ADMIN-4caa8e0c-aec9-4921-a8c2-df98ac67faef
+11:14:08.719 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=createUser, FirebaseUID=ADMIN-4caa8e0c-aec9-4921-a8c2-df98ac67faef, Email=test-1789125248719@example.com, UserType=INFLUENCER, Purpose=account_creation, LegalBasis=contract, DataCreated=user.profile,user.addresses
+11:14:08.719 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=createUser_SUCCESS, FirebaseUID=ADMIN-4caa8e0c-aec9-4921-a8c2-df98ac67faef, UserID=12763, AccountStatus=ACTIVE

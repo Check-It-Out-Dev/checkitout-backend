@@ -1,9 +1,0 @@
-10:26:57.496 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.t.c.s.AnnotationConfigContextLoaderUtils&amp#27;[0;39m - Could not detect default configuration classes for test class [com.sm.instagram.platform.integration.service.user.UserService_Patch_IntegrationTest$PatchAdminOnlyFields]: PatchAdminOnlyFields does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-10:26:57.497 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.b.t.c.SpringBootTestContextBootstrapper&amp#27;[0;39m - Found @SpringBootConfiguration com.sm.instagram.platform.InstagramPlatformApplication for test class com.sm.instagram.platform.integration.service.user.UserService_Patch_IntegrationTest$PatchAdminOnlyFields
-[Integration Test] Test users created:
-  Influencer: INFLUENCER-a082c340-099a-4803-9eba-cb802b53076c
-  Company: COMPANY-33ccd2b3-cf58-4cbc-8a72-9b1b43872eb2
-  Admin: ADMIN-8e4bc8b1-b478-46cc-bb4c-b01d2c423ef3
-10:26:57.505 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=patchUser, UpdaterFirebaseUID=INFLUENCER-a082c340-099a-4803-9eba-cb802b53076c, TargetUserID=12881, FieldsModified=[profilePicture, noteFromAdmin], Purpose=partial_profile_update, LegalBasis=consent
-10:26:57.505 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - User 12881 editing own profile - no status transition (fields validated by DTO validators)
-10:26:57.506 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - Patched user with ID: 12881 (critical changes: false)
