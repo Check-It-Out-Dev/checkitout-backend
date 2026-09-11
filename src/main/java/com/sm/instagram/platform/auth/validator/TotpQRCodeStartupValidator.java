@@ -215,12 +215,6 @@ public class TotpQRCodeStartupValidator {
                 return ValidationResult.failure(name, "Invalid otpauth URL format");
             }
             
-            // Debug log the URL for inspection
-            // Redacted: `secret=` in an otpauth URL is a TOTP seed. This validator runs on a
-            // generated throwaway one, but the details it produces are logged at INFO on every
-            // start, and a line that prints a seed teaches the pattern to whoever copies it.
-            log.debug("Generated OTP Auth URL: {}", OtpAuthUrls.redactSecret(otpauthUrl));
-            
             // Validate against RFC 6238 / Google Authenticator spec
             if (!OTPAUTH_PATTERN.matcher(otpauthUrl).matches()) {
                 return ValidationResult.warning(name, 
@@ -243,11 +237,9 @@ public class TotpQRCodeStartupValidator {
             
             if (!urlLower.contains(TEST_EMAIL.toLowerCase()) && 
                 !urlLower.contains(emailWithAtEncoded.toLowerCase())) {
-                // Log for debugging
-                log.debug("URL doesn't contain email. URL: {}, Looking for: {} or {}", 
-                    OtpAuthUrls.redactSecret(otpauthUrl), TEST_EMAIL, emailWithAtEncoded);
-                return ValidationResult.warning(name, 
-                    "Email not found in URL label");
+                return ValidationResult.warning(name,
+                    "Email not found in URL label (looked for " + TEST_EMAIL + " or "
+                        + emailWithAtEncoded + ")");
             }
             
             String redacted = OtpAuthUrls.redactSecret(otpauthUrl);

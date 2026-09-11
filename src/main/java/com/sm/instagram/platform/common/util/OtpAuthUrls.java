@@ -15,6 +15,11 @@ import java.util.regex.Pattern;
  * logged it three times plus quoted its first 80 characters into a result that is printed at INFO
  * on every start. Both were reported by CodeQL's {@code java/sensitive-log}. A redaction rule that
  * lives in one tested place is harder to get subtly wrong than the same regex written twice.
+ *
+ * <p>The enrolment path no longer logs the URL at all, and the validator's two remaining callers
+ * are strings it hands back to the startup summary rather than log calls of its own: a format
+ * mismatch is unreadable without the shape of the URL that failed, and the shape is exactly what
+ * survives redaction.
  */
 public final class OtpAuthUrls {
 
