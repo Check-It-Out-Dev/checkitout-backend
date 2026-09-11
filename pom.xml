@@ -423,13 +423,18 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- Spring Dotenv - loads .env file for local dev and tests -->
+		<!-- Spring Dotenv - loads .env file for local dev and tests.
+		     5.x split one artifact into three: `spring-dotenv` is now the plain Spring Framework
+		     module with strict key resolution, and the Boot integration - relaxed binding of both
+		     springdotenv.* and the .env entries themselves - moved to `springboot3-dotenv`. So the
+		     straight 4.0.0 -> 5.1.0 bump of the old coordinate is not this library's upgrade path;
+		     it is a quiet downgrade to the non-Boot module. -->
 		<dependency>
 			<groupId>me.paulschwarz</groupId>
-			<artifactId>spring-dotenv</artifactId>
-			<version>4.0.0</version>
-			<!-- No scope specified = compile scope (available everywhere including tests) -->
-			<!-- Removed optional flag to ensure it's always included -->
+			<artifactId>springboot3-dotenv</artifactId>
+			<version>5.1.0</version>
+			<!-- No scope specified = compile scope (available everywhere including tests).
+			     Not optional: an earlier attempt at that gave NoClassDefFoundError at runtime. -->
 		</dependency>
 
 		<!-- Notification -->
