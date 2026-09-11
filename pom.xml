@@ -544,7 +544,9 @@
 		<dependency>
 			<groupId>com.google.zxing</groupId>
 			<artifactId>core</artifactId>
-			<version>3.5.3</version>
+			<!-- Moves with javase below: javase 3.5.4 requires core 3.5.4, and a bump of one alone
+			     leaves Maven resolving core downward to whatever is written here. -->
+			<version>3.5.4</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.zxing</groupId>
