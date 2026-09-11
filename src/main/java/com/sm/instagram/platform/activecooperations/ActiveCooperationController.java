@@ -1,6 +1,10 @@
 package com.sm.instagram.platform.activecooperations;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import com.sm.instagram.platform.appliedopportunities.OpportunityStatus;
 import com.sm.instagram.platform.appliedopportunities.RateStatus;
 import com.sm.instagram.platform.common.ratelimit.RateLimit;
@@ -113,6 +117,8 @@ public class ActiveCooperationController {
      * by the service).
      */
     @GetMapping("/inprogress")
+    @ApiResponse(responseCode = "200", description = "Cooperations currently in progress",
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = CoopDto.class))))
     public ResponseEntity<MappingJacksonValue> getOpportunitiesInProgress(
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "12") Integer size,
@@ -135,6 +141,8 @@ public class ActiveCooperationController {
      * Set the company-side rating on an applied opportunity.
      */
     @PutMapping("/{id}/company-rating")
+    @ApiResponse(responseCode = "200", description = "The cooperation with the company rating applied",
+            content = @Content(schema = @Schema(implementation = CoopDto.class)))
     public ResponseEntity<MappingJacksonValue> updateCompanyRating(
             @PathVariable Long id,
             @RequestParam RateStatus rating) {
@@ -150,6 +158,8 @@ public class ActiveCooperationController {
      * Set the influencer-side rating on an applied opportunity.
      */
     @PutMapping("/{id}/influencer-rating")
+    @ApiResponse(responseCode = "200", description = "The cooperation with the influencer rating applied",
+            content = @Content(schema = @Schema(implementation = CoopDto.class)))
     public ResponseEntity<MappingJacksonValue> updateInfluencerRating(
             @PathVariable Long id,
             @RequestParam RateStatus rating) {

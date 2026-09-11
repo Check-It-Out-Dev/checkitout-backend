@@ -1731,6 +1731,67 @@
         },
         "type" : "object"
       },
+      "CoopDto" : {
+        "properties" : {
+          "appliedOpportunityId" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "appliedOpportunityNote" : {
+            "type" : "string"
+          },
+          "appliedOpportunityStatus" : {
+            "$ref" : "#/components/schemas/OpportunityStatus"
+          },
+          "companyAvatarUrl" : {
+            "type" : "string"
+          },
+          "companyName" : {
+            "type" : "string"
+          },
+          "companyRateStatus" : {
+            "$ref" : "#/components/schemas/RateStatus"
+          },
+          "followersAmount" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "id" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "influencerAvatarUrl" : {
+            "type" : "string"
+          },
+          "influencerEmail" : {
+            "type" : "string"
+          },
+          "influencerFirstName" : {
+            "type" : "string"
+          },
+          "influencerInstagramId" : {
+            "type" : "string"
+          },
+          "influencerLastName" : {
+            "type" : "string"
+          },
+          "influencerRateStatus" : {
+            "$ref" : "#/components/schemas/RateStatus"
+          },
+          "negativeRatesAmount" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "partnershipOpportunityTitle" : {
+            "type" : "string"
+          },
+          "positiveRatesAmount" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
       "CoopDto_Ratings" : {
         "properties" : {
           "appliedOpportunityId" : {
@@ -2295,9 +2356,6 @@
         },
         "type" : "object"
       },
-      "FilterProvider" : {
-        "type" : "object"
-      },
       "FirebaseAuthRequest" : {
         "properties" : {
           "email" : {
@@ -2548,17 +2606,6 @@
         "enum" : [ "COOKIE_POLICY", "TERMS_OF_SERVICE", "PRIVACY_POLICY", "SUBSCRIPTION_ACTIVATION_CONSENT", "DATA_RETENTION_POLICY" ],
         "type" : "string"
       },
-      "MappingJacksonValue" : {
-        "properties" : {
-          "filters" : {
-            "$ref" : "#/components/schemas/FilterProvider"
-          },
-          "value" : {
-            "type" : "object"
-          }
-        },
-        "type" : "object"
-      },
       "MarkAllReadResponse" : {
         "properties" : {
           "count" : {
@@ -2762,7 +2809,6 @@
         "type" : "string"
       },
       "OpportunityStatus" : {
-        "description" : "OpportunityStatus enum name",
         "enum" : [ "APPLIED", "ACCEPTED_BY_COMPANY", "REJECTED_BY_COMPANY", "ACCEPTED_BY_INFLUENCER", "REJECTED_BY_INFLUENCER", "CONTENT_SEND_TO_ACCEPT", "CONTENT_APPROVED", "CONTENT_REJECTED", "CONTENT_POSTED", "CONTENT_POSTED_REJECTED", "TO_BE_PAID", "DONE" ],
         "type" : "string"
       },
@@ -5222,7 +5268,8 @@
             "type" : "array"
           },
           "profilePicture" : {
-            "type" : "string"
+            "description" : "Avatar URL; null when the user has no picture set",
+            "type" : [ "string", "null" ]
           },
           "socialConnections" : {
             "items" : {
@@ -5655,11 +5702,14 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/MappingJacksonValue"
+                  "items" : {
+                    "$ref" : "#/components/schemas/CoopDto"
+                  },
+                  "type" : "array"
                 }
               }
             },
-            "description" : "OK"
+            "description" : "Cooperations currently in progress"
           },
           "400" : {
             "content" : {
@@ -5796,11 +5846,11 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/MappingJacksonValue"
+                  "$ref" : "#/components/schemas/CoopDto"
                 }
               }
             },
-            "description" : "OK"
+            "description" : "The cooperation with the company rating applied"
           },
           "400" : {
             "content" : {
@@ -5860,11 +5910,11 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/MappingJacksonValue"
+                  "$ref" : "#/components/schemas/CoopDto"
                 }
               }
             },
-            "description" : "OK"
+            "description" : "The cooperation with the influencer rating applied"
           },
           "400" : {
             "content" : {
@@ -5979,7 +6029,10 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/AddressDtoOut"
+                  "items" : {
+                    "$ref" : "#/components/schemas/AddressDtoOut"
+                  },
+                  "type" : "array"
                 }
               }
             },
@@ -6205,7 +6258,10 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/AddressDtoOut"
+                  "items" : {
+                    "$ref" : "#/components/schemas/AddressDtoOut"
+                  },
+                  "type" : "array"
                 }
               }
             },
@@ -6376,7 +6432,10 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/AddressDtoOut"
+                  "items" : {
+                    "$ref" : "#/components/schemas/AddressDtoOut"
+                  },
+                  "type" : "array"
                 }
               }
             },
@@ -6479,7 +6538,10 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/AddressDtoOut"
+                  "items" : {
+                    "$ref" : "#/components/schemas/AddressDtoOut"
+                  },
+                  "type" : "array"
                 }
               }
             },
@@ -6705,7 +6767,10 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/AddressDtoOut"
+                  "items" : {
+                    "$ref" : "#/components/schemas/AddressDtoOut"
+                  },
+                  "type" : "array"
                 }
               }
             },
@@ -6895,9 +6960,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "additionalProperties" : {
-                  "type" : "object"
-                },
+                "additionalProperties" : true,
                 "type" : "object"
               }
             }
@@ -8305,9 +8368,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "additionalProperties" : {
-                    "type" : "object"
-                  },
+                  "additionalProperties" : true,
                   "type" : "object"
                 }
               }
@@ -8348,9 +8409,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "additionalProperties" : {
-                    "type" : "object"
-                  },
+                  "additionalProperties" : true,
                   "type" : "object"
                 }
               }
@@ -8420,9 +8479,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "additionalProperties" : {
-                    "type" : "object"
-                  },
+                  "additionalProperties" : true,
                   "type" : "object"
                 }
               }
@@ -9825,9 +9882,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "additionalProperties" : {
-                  "type" : "object"
-                },
+                "additionalProperties" : true,
                 "type" : "object"
               }
             }
@@ -10271,9 +10326,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "additionalProperties" : {
-                  "type" : "object"
-                },
+                "additionalProperties" : true,
                 "type" : "object"
               }
             }
@@ -11158,9 +11211,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "additionalProperties" : {
-                    "type" : "object"
-                  },
+                  "additionalProperties" : true,
                   "type" : "object"
                 }
               }
@@ -11338,9 +11389,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "additionalProperties" : {
-                    "type" : "object"
-                  },
+                  "additionalProperties" : true,
                   "type" : "object"
                 }
               }
@@ -11359,9 +11408,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "additionalProperties" : {
-                    "type" : "object"
-                  },
+                  "additionalProperties" : true,
                   "type" : "object"
                 }
               }
@@ -11735,9 +11782,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "additionalProperties" : {
-                  "type" : "object"
-                },
+                "additionalProperties" : true,
                 "type" : "object"
               }
             }
@@ -12310,9 +12355,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "additionalProperties" : {
-                  "type" : "object"
-                },
+                "additionalProperties" : true,
                 "type" : "object"
               }
             }
@@ -12729,9 +12772,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "additionalProperties" : {
-                  "type" : "object"
-                },
+                "additionalProperties" : true,
                 "type" : "object"
               }
             }
@@ -13370,9 +13411,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "additionalProperties" : {
-                    "type" : "object"
-                  },
+                  "additionalProperties" : true,
                   "type" : "object"
                 }
               }
@@ -13421,9 +13460,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "additionalProperties" : {
-                    "type" : "object"
-                  },
+                  "additionalProperties" : true,
                   "type" : "object"
                 }
               }
@@ -13471,9 +13508,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "additionalProperties" : {
-                    "type" : "object"
-                  },
+                  "additionalProperties" : true,
                   "type" : "object"
                 }
               }
@@ -13530,9 +13565,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "additionalProperties" : {
-                    "type" : "object"
-                  },
+                  "additionalProperties" : true,
                   "type" : "object"
                 }
               }
@@ -13590,9 +13623,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "additionalProperties" : {
-                    "type" : "object"
-                  },
+                  "additionalProperties" : true,
                   "type" : "object"
                 }
               }
@@ -13650,9 +13681,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "additionalProperties" : {
-                    "type" : "object"
-                  },
+                  "additionalProperties" : true,
                   "type" : "object"
                 }
               }
@@ -15172,9 +15201,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "additionalProperties" : {
-                  "type" : "object"
-                },
+                "additionalProperties" : true,
                 "type" : "object"
               }
             }
@@ -15591,9 +15618,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "additionalProperties" : {
-                  "type" : "object"
-                },
+                "additionalProperties" : true,
                 "type" : "object"
               }
             }
@@ -15782,9 +15807,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "additionalProperties" : {
-                    "type" : "object"
-                  },
+                  "additionalProperties" : true,
                   "type" : "object"
                 }
               }
@@ -15823,9 +15846,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "additionalProperties" : {
-                    "type" : "object"
-                  },
+                  "additionalProperties" : true,
                   "type" : "object"
                 }
               }
@@ -15864,9 +15885,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "additionalProperties" : {
-                    "type" : "object"
-                  },
+                  "additionalProperties" : true,
                   "type" : "object"
                 }
               }
@@ -16503,9 +16522,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "additionalProperties" : {
-                  "type" : "object"
-                },
+                "additionalProperties" : true,
                 "type" : "object"
               }
             }
@@ -16719,9 +16736,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "additionalProperties" : {
-                    "type" : "object"
-                  },
+                  "additionalProperties" : true,
                   "type" : "object"
                 }
               }
@@ -17219,9 +17234,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "additionalProperties" : {
-                  "type" : "object"
-                },
+                "additionalProperties" : true,
                 "type" : "object"
               }
             }
@@ -17712,9 +17725,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "additionalProperties" : {
-                  "type" : "object"
-                },
+                "additionalProperties" : true,
                 "type" : "object"
               }
             }
@@ -18592,9 +18603,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "additionalProperties" : {
-                    "type" : "object"
-                  },
+                  "additionalProperties" : true,
                   "type" : "object"
                 }
               }
@@ -18613,9 +18622,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "additionalProperties" : {
-                    "type" : "object"
-                  },
+                  "additionalProperties" : true,
                   "type" : "object"
                 }
               }
@@ -19325,9 +19332,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "additionalProperties" : {
-                  "type" : "object"
-                },
+                "additionalProperties" : true,
                 "type" : "object"
               }
             }
@@ -19584,9 +19589,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "additionalProperties" : {
-                  "type" : "object"
-                },
+                "additionalProperties" : true,
                 "type" : "object"
               }
             }
@@ -19777,9 +19780,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "additionalProperties" : {
-                  "type" : "object"
-                },
+                "additionalProperties" : true,
                 "type" : "object"
               }
             }
@@ -20196,9 +20197,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "additionalProperties" : {
-                  "type" : "object"
-                },
+                "additionalProperties" : true,
                 "type" : "object"
               }
             }
@@ -21062,9 +21061,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "additionalProperties" : {
-                  "type" : "object"
-                },
+                "additionalProperties" : true,
                 "type" : "object"
               }
             }
@@ -21340,9 +21337,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "additionalProperties" : {
-                  "type" : "object"
-                },
+                "additionalProperties" : true,
                 "type" : "object"
               }
             }

@@ -65,29 +65,34 @@ public class PlatformService extends BaseService<Platform, Long, PlatformDto> {
     }
 
     /**
-     * Page over platforms applying repository-level filters and project the
-     * result into outbound DTOs. The mapping is hand-rolled (rather than
-     * deferring to ModelMapper) so the projection only carries scalar fields
-     * — heavy associations like {@code partnershipOpportunities} stay on the
-     * server side.
+     * Page over platforms applying repository-level filters and map each row
+     * through {@link #toDto(Platform)}.
+     *
+     * <p>This used to be a hand-rolled scalar projection that skipped
+     * {@code contentTypes} to keep the query cheap, which left the listing
+     * returning a body the published contract said was invalid:
+     * {@code contentTypes} is {@code @NotNull}, so it is a required property
+     * of {@code PlatformDto}, and the serializer drops nulls — the field was
+     * simply absent. The generated clients typed it as always present, so
+     * they were wrong at runtime on this route and only on this route.
+     *
+     * <p>ModelMapper reads only the source properties the destination
+     * declares, and {@code PlatformDto} has no {@code partnershipOpportunities}
+     * — so the association the projection was written to avoid is still never
+     * touched. Resolving {@code contentTypes} costs one query per row, which
+     * this reference table (a handful of platforms, and a page size capped by
+     * the controller) can carry; the {@code readOnly} transaction is what lets
+     * the lazy set resolve at all.
      */
     @Override
+    @Transactional(readOnly = true)
     public <DTOOUT> Page<DTOOUT> getDataPagedAndFilteredAsDtos(Pageable pageable,
                                                                Map<String, String> filters) {
         Page<Platform> page = getDataPagedAndFiltered(pageable, filters);
-        Page<PlatformDto> dtoPage = page.map(PlatformService::projectScalar);
+        Page<PlatformDto> dtoPage = page.map(this::toDto);
 
         @SuppressWarnings("unchecked")
         Page<DTOOUT> result = (Page<DTOOUT>) dtoPage;
         return result;
-    }
-
-    private static PlatformDto projectScalar(Platform entity) {
-        PlatformDto dto = new PlatformDto();
-        dto.setId(entity.getId());
-        dto.setName(entity.getName());
-        dto.setLogoUrl(entity.getLogoUrl());
-        dto.setActive(entity.getActive());
-        return dto;
     }
 }
