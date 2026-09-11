@@ -76,6 +76,12 @@ jobs:
       - name: The fuzz verdict still behaves
         run: node tools/ci/fuzz-verdict.test.mjs
 
+      # The README publishes five rows of figures on a page the estate links to. They had drifted
+      # -- 8,908 test methods against 9,089 actual, 256 test classes against 292 -- because nobody
+      # typed a wrong number, the repository just kept growing. Each figure has one home now.
+      - name: The published numbers are still the measured ones
+        run: node tools/ci/measure-counts.mjs --check
+
       - run: chmod +x mvnw && ./mvnw $MAVEN_ARGS test -Ptest -DskipITs
       - uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d  # v6
         if: always()

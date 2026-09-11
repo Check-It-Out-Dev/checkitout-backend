@@ -102,18 +102,19 @@ Every build also passes six gates: Enforcer (Java 21), Spotless, PMD, SpotBugs +
 FindSecBugs at maximum effort, OWASP dependency-check (fails at CVSS ≥ 7) and
 JaCoCo. If a gate blocks a change, the cause is fixed — never the gate.
 
-**The numbers**, measured 2026-09-08 on this tree, with commands you can run:
+**The numbers**, measured on this tree by `node tools/ci/measure-counts.mjs`, which the unit
+job re-runs with `--check` so a stale figure fails the build rather than ageing in public:
 
 | | | |
 | :-- | --: | :-- |
-| **Test methods** | **8,908** | 8,312 `@Test` + 596 `@ParameterizedTest`, across **256** test classes and the **2,152** `@Nested` groups inside them |
-| **Test code : main code** | **2.0 : 1** | 182,241 lines of test Java against 90,195 of main |
+| **Test methods** | **9,089** | 8,482 `@Test` + 607 `@ParameterizedTest`, across **292** test classes and the **2,161** `@Nested` groups inside them |
+| **Test code : main code** | **2.0 : 1** | 187,609 lines of test Java against 92,941 of main |
 | **Cucumber** | **34 files** | 148 `Scenario` + 28 `Scenario Outline`, **277 after Examples expansion** |
 | **Domain** | **38 entities** | 50 REST controllers |
-| **Contract** | **234 paths** | 279 operations · 182 schemas · OpenAPI 3.1 |
+| **Contract** | **233 paths** | 272 operations · 198 schemas · OpenAPI 3.1 |
 
 And one number worth more than any of them: **`@Disabled` appears zero times**
-across all 325 test files. Nothing is quarantined, skipped-and-forgotten, or
+across all 363 test files. Nothing is quarantined, skipped-and-forgotten, or
 commented out waiting for someone to come back to it.
 
 > [!NOTE]
