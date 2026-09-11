@@ -6,21 +6,24 @@
     "red run green. The gating categories are not listed here and are allowed nothing.",
     "",
     "Schemathesis generates from a fresh seed every run, so these counts move by a few either way.",
-    "Observed on 2026-09-11 across three runs of the same code, after the /error and paged fixes:",
-    "  unsupported methods            223, 218",
-    "  rejected schema-compliant      106, 104",
-    "  undocumented status code       101, 96",
-    "  accepted schema-violating       61, 57",
-    "  invalid Allow header            40, 38",
+    "Observed on 2026-09-11 across five runs, the last two after ValidationFailureResponsesCustomizer",
+    "declared the 400 that 221 operations can actually return:",
+    "  unsupported methods            223, 218, 218",
+    "  rejected schema-compliant      106, 104, 131, 132   (rose when two 500s became the 400s they",
+    "                                 always were: the same cases, correctly classified)",
+    "  undocumented status code       101, 96, 158, 38     (158 was the same move, before the document",
+    "                                 caught up; 38 is what is left, and it is the real number)",
+    "  accepted schema-violating       61, 57, 63",
+    "  invalid Allow header            40, 38, 51",
     "The budgets sit about 15% above the highest of those: tight enough that closing a real batch",
     "shows up as headroom to give back, loose enough that a new seed alone cannot turn the tier red."
   ],
   "measuredAt": "2026-09-11",
   "tracked": {
     "Unsupported methods": 256,
-    "API rejected schema-compliant request": 122,
-    "Undocumented HTTP status code": 116,
-    "API accepted schema-violating request": 70,
-    "Invalid Allow header": 46
+    "API rejected schema-compliant request": 152,
+    "Undocumented HTTP status code": 46,
+    "API accepted schema-violating request": 72,
+    "Invalid Allow header": 59
   }
 }
