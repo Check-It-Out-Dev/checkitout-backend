@@ -301,13 +301,15 @@ jobs:
           mkdir -p site && rm -rf site/.git
           STARTED_AT=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" --jq .run_started_at)
           DURATION=$(( $(date +%s) - $(date -d "$STARTED_AT" +%s) ))
+          # The integration glob needs the `**`, like the e2e one below it: that tier's failsafe
+          # writes into failsafe-reports/integration, one directory down, so a flat pattern
+          # matched nothing and the dashboard published a test count with the whole 833-test tier
+          # missing -- 10,857 where 11,690 ran. quality-metrics.mjs now refuses a --junit spec
+          # that matches nothing while the directory it names is present, so the next one cannot
+          # be silent. (And a comment does NOT go inside the command: a # between two
+          # backslash-continued lines ends the continuation, and the step exits 127.)
           node frontend/tools/ci/quality-metrics.mjs --out site --workflow ci-tests --started-at "$STARTED_AT" --duration-sec "$DURATION" \
             --junit 'results/unit-results/surefire-reports/TEST-*.xml:unit' \
-            # One directory down, like the e2e line below it: the integration tier's failsafe
-            # writes into failsafe-reports/integration, so a glob without ** matched nothing and
-            # the dashboard has been publishing a test count with a whole tier missing from it --
-            # 10,857 where 11,690 ran. The same lesson the junit-report step above already carries
-            # in writing, applied there and not here.
             --junit 'results/integration-results/failsafe-reports/**/TEST-*.xml:integration' \
             --junit 'results/e2e-results/failsafe-reports/**/TEST-*.xml:e2e' \
             --jacoco results/unit-results/site/jacoco-unit/jacoco.xml \
