@@ -70,10 +70,13 @@ public class AuthFailureResponsesCustomizer {
                         if (responses == null) {
                             return;
                         }
-                        responses.computeIfAbsent("401", key -> new ApiResponse().description(
-                                "No valid session: the request carried no credentials, or they had expired."));
-                        responses.computeIfAbsent("403", key -> new ApiResponse().description(
-                                "Authenticated, but not allowed to perform this operation."));
+                        responses.computeIfAbsent("401", key -> new ApiResponse()
+                                .description("No valid session: the request carried no credentials, "
+                                        + "or they had expired.")
+                                .content(ErrorEnvelopeResponsesCustomizer.envelopeContent()));
+                        responses.computeIfAbsent("403", key -> new ApiResponse()
+                                .description("Authenticated, but not allowed to perform this operation.")
+                                .content(ErrorEnvelopeResponsesCustomizer.envelopeContent()));
                     }));
         };
     }

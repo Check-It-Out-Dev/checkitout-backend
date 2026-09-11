@@ -4,6 +4,7 @@ import com.sm.instagram.platform.common.exceptions.*;
 import com.sm.instagram.platform.subscription.exception.PaymentsDisabledException;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.MappingException;
+import org.modelmapper.spi.ErrorMessage;
 import org.springframework.context.MessageSource;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -15,6 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Exception handler for business logic and domain exceptions.
@@ -285,7 +289,22 @@ public class BusinessExceptionHandler {
     }
 
     /**
-     * Handle mapping exceptions
+     * Handle a ModelMapper failure by the converter failure underneath it.
+     *
+     * <p>{@link MappingException} carries no cause: its only constructor takes a list of
+     * {@link ErrorMessage}, and each of those holds the throwable a converter raised. So walking
+     * {@code getCause()} finds nothing however deep it goes, and this handler answered 500 to
+     * every converter failure -- {@code POST /user-social-connection} with {@code "platform": 0}
+     * came back as a server fault when the caller had simply named a platform that does not exist.
+     *
+     * <p>Seven converters signal a missing reference this way ({@code Currency not found: 99},
+     * {@code Platforms not found: [...]}, and so on), so the shape of the answer is one decision,
+     * not seven: a {@link TranslatableException} is a 404 with its own message, an
+     * {@link IllegalArgumentException} is a 400, and anything else really is ours to own as a 500.
+     *
+     * <p>Neither 400 nor 404 echoes the converter's message. It names the entity and the id the
+     * lookup missed -- "Platform not found for id: 0" -- which answers a probe for what exists
+     * with what exists.
      */
     @ExceptionHandler(MappingException.class)
     public ResponseEntity<BaseExceptionHandler.ErrorResponse> handleMappingException(
@@ -293,18 +312,7 @@ public class BusinessExceptionHandler {
 
         String traceId = baseHandler.generateTraceId();
 
-        // Check if the underlying cause is an ItemNotFoundException.
-        // ModelMapper aggregates converter failures, so getCause() may be
-        // null (errors live in getErrorMessages() instead) — an unguarded
-        // cause.getCause() here used to NPE inside the handler itself,
-        // turning every unmapped MappingException into a raw 500.
-        Throwable cause = ex.getCause();
-        TranslatableException translatable = null;
-        if (cause instanceof TranslatableException te) {
-            translatable = te;
-        } else if (cause != null && cause.getCause() instanceof TranslatableException te) {
-            translatable = te;
-        }
+        TranslatableException translatable = firstCause(ex, TranslatableException.class);
         if (translatable != null) {
             baseHandler.logException(ex, HttpStatus.NOT_FOUND, request, traceId);
 
@@ -321,11 +329,8 @@ public class BusinessExceptionHandler {
             return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
         }
 
-        // Check if the underlying cause is an IllegalArgumentException
-        // (directly or nested — converters throw inside ModelMapper's own
-        // wrapper, e.g. "Currency not found: 99").
-        if (cause instanceof IllegalArgumentException
-                || (cause != null && cause.getCause() instanceof IllegalArgumentException)) {
+        // A converter refusing an id the caller supplied, e.g. "Currency not found: 99".
+        if (firstCause(ex, IllegalArgumentException.class) != null) {
             baseHandler.logException(ex, HttpStatus.BAD_REQUEST, request, traceId);
 
             String messageKey = "error.business.invalid_argument";
@@ -357,6 +362,30 @@ public class BusinessExceptionHandler {
         errorResponse.setRequestId(traceId);
 
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /** How deep a wrapped converter failure is worth following before giving up. */
+    private static final int MAX_CAUSE_DEPTH = 10;
+
+    /**
+     * The first throwable of the given type anywhere under a mapping failure: in the exception's
+     * own cause chain, or in the chain of any of the converter errors it aggregates.
+     */
+    static <T extends Throwable> T firstCause(MappingException ex, Class<T> type) {
+        List<Throwable> roots = new ArrayList<>();
+        roots.add(ex.getCause());
+        if (ex.getErrorMessages() != null) {
+            ex.getErrorMessages().forEach(error -> roots.add(error.getCause()));
+        }
+        for (Throwable root : roots) {
+            for (int depth = 0; root != null && depth < MAX_CAUSE_DEPTH; depth++) {
+                if (type.isInstance(root)) {
+                    return type.cast(root);
+                }
+                root = root.getCause() == root ? null : root.getCause();
+            }
+        }
+        return null;
     }
 
     /**

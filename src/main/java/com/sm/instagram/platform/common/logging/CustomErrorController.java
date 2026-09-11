@@ -2,6 +2,7 @@ package com.sm.instagram.platform.common.logging;
 
 import com.sm.instagram.platform.common.ratelimit.RateLimit;
 import com.sm.instagram.platform.common.ratelimit.RateLimitProfile;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,16 @@ import java.util.UUID;
 /**
  * Custom error controller to handle and log servlet-level errors that don't reach application controllers.
  * This captures errors like 404s, method not allowed, etc.
+ *
+ * <p>{@code @Hidden} because this is a servlet forward target, not an operation any client calls.
+ * springdoc published it anyway, so {@code /error} was in the OpenAPI document, the frontend
+ * generated a CustomErrorControllerApi nothing has ever called, and a caller reading the contract
+ * would conclude the API has an endpoint that reports errors on request. It does not: the status
+ * comes from the {@code jakarta.servlet.error.status_code} request attribute the container sets
+ * during a forward, and a direct call arrives without it, so every direct call is a 500 by
+ * construction. Schemathesis dutifully tried all six methods and reported six server errors.
  */
+@Hidden
 @Slf4j
 @RestController
 @RequiredArgsConstructor

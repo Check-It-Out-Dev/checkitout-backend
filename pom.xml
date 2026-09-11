@@ -1301,6 +1301,14 @@
 								<goals>
 									<goal>verify</goal>
 								</goals>
+								<configuration>
+									<!-- This profile sets the PROPERTY skipTests=true so surefire stays out of the
+									     way, and the integration-test execution above overrides it locally. Without
+									     the same override here, failsafe:verify reads the property, logs "Tests are
+									     skipped" and checks nothing: `mvn verify -Pintegration` then printed BUILD
+									     SUCCESS over a run with three failures, which is what CI was asking. -->
+									<skipTests>false</skipTests>
+								</configuration>
 							</execution>
 						</executions>
 					</plugin>
@@ -1848,6 +1856,11 @@
 								<goals>
 									<goal>verify</goal>
 								</goals>
+								<configuration>
+									<!-- Same as the integration profile: without this, the property skipTests=true
+									     reaches failsafe:verify and the whole end-to-end tier cannot fail a build. -->
+									<skipTests>false</skipTests>
+								</configuration>
 								<!-- Uses default summaryFile: target/failsafe-reports/failsafe-summary.xml -->
 								<!-- Failsafe aggregates results from all executions into one file -->
 							</execution>

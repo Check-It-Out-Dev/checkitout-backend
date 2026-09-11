@@ -13,9 +13,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.web.firewall.RequestRejectedException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -46,6 +48,53 @@ public class ValidationExceptionHandler extends ResponseEntityExceptionHandler {
         this.baseHandler = new BaseExceptionHandler(messageSource) {};
     }
     
+    /**
+     * A constraint on a controller METHOD parameter, rather than on a body.
+     *
+     * <p>{@code @RequestParam @Min(1) int limit} raises {@link HandlerMethodValidationException} in
+     * Spring 6.1 and later, and {@link ResponseEntityExceptionHandler} renders that as an RFC 7807
+     * {@code application/problem+json}. Everything else this application returns is the envelope in
+     * {@link BaseExceptionHandler.ErrorResponse}, so the API had two error shapes and the document
+     * could only describe one of them: {@code GET /admin/cascade-delete/orphans?limit=0} came back
+     * as problem+json and Schemathesis reported an undocumented content type.
+     *
+     * <p>The shape a caller has to parse should not depend on which annotation the constraint was
+     * written on. This override is the whole difference.
+     */
+    @Override
+    public ResponseEntity<Object> handleHandlerMethodValidationException(
+            HandlerMethodValidationException ex,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request) {
+
+        String traceId = baseHandler.generateTraceId();
+
+        // The parameter name and the message the constraint carries, both encoded: a rejected value
+        // is the caller's own text and travels back to them.
+        Map<String, String> validationErrors = new HashMap<>();
+        ex.getAllValidationResults().forEach(result -> {
+            String name = result.getMethodParameter().getParameterName();
+            result.getResolvableErrors().forEach(error -> validationErrors.put(
+                    HtmlEncoder.encode(name != null ? name : "parameter"),
+                    HtmlEncoder.encode(String.valueOf(error.getDefaultMessage()))));
+        });
+
+        log.warn("VALIDATION_ERROR [{}]: parameterErrors={}",
+                baseHandler.buildDetailedRequestContext(request, traceId), validationErrors);
+
+        BaseExceptionHandler.ErrorResponse errorResponse = new BaseExceptionHandler.ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                BaseExceptionHandler.BAD_REQUEST,
+                baseHandler.getLocalizedMessage("error.validation.failed", null, request),
+                baseHandler.getPath(request)
+        );
+        errorResponse.setValidationErrors(validationErrors);
+        errorResponse.setRequestId(traceId);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
     /**
      * Handle validation errors from @Valid annotation
      */
@@ -268,6 +317,40 @@ public class ValidationExceptionHandler extends ResponseEntityExceptionHandler {
                 HttpStatus.BAD_REQUEST.value(),
                 BaseExceptionHandler.BAD_REQUEST,
                 localizedMessage,
+                baseHandler.getPath(request)
+        );
+        errorResponse.setRequestId(traceId);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Handle a request Spring Security's {@code StrictHttpFirewall} refused to let through.
+     *
+     * <p>The firewall rejects a URL or a parameter name containing control characters, and it
+     * throws from inside parameter binding -- so the same thirteen {@code /paged} endpoints that
+     * inherit {@code findPaginated(Pageable, Map<String, String>)} met it, because binding the
+     * filter map is the first thing that asks the container to parse every parameter name. The
+     * catch-all read the resulting {@link RequestRejectedException} as a server fault and answered
+     * 500; a request the server refused to parse is the caller's fault, and 400 is what the
+     * document already promises for every operation that takes a parameter.
+     *
+     * <p>Nothing from the request is echoed. The rejected name is by definition the part that
+     * contained the control characters, it reaches the log through
+     * {@link BaseExceptionHandler#logException}, and reflecting it would put an attacker's bytes
+     * back into a response body.
+     */
+    @ExceptionHandler(RequestRejectedException.class)
+    public ResponseEntity<BaseExceptionHandler.ErrorResponse> handleRequestRejectedException(
+            RequestRejectedException ex, WebRequest request) {
+
+        String traceId = baseHandler.generateTraceId();
+        baseHandler.logException(ex, HttpStatus.BAD_REQUEST, request, traceId);
+
+        BaseExceptionHandler.ErrorResponse errorResponse = new BaseExceptionHandler.ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                BaseExceptionHandler.BAD_REQUEST,
+                baseHandler.getLocalizedMessage("error.validation.malformed_request", null, request),
                 baseHandler.getPath(request)
         );
         errorResponse.setRequestId(traceId);

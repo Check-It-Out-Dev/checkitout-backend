@@ -89,7 +89,7 @@ const unescape = (s) =>
 // One flat list of <testcase name="OP"><failure>...</failure></testcase>; a hand parse for the same
 // reason pit-summary.mjs hand-parses PIT's XML: one attribute and one text node do not justify a
 // dependency in a Java repository.
-const findings = new Map(); // title -> { cases, ops:Set, examples:[] }
+const findings = new Map(); // title -> { cases, ops:Set, byOp:Map, examples:[] }
 let operations = 0;
 let failedOperations = 0;
 
@@ -113,10 +113,12 @@ for (const chunk of xml.split('<testcase ').slice(1)) {
       ''
     );
     if (!title) continue;
-    if (!findings.has(title)) findings.set(title, { cases: 0, ops: new Set(), examples: [] });
+    if (!findings.has(title))
+      findings.set(title, { cases: 0, ops: new Set(), byOp: new Map(), examples: [] });
     const rec = findings.get(title);
     rec.cases++;
     rec.ops.add(op);
+    rec.byOp.set(op, (rec.byOp.get(op) || 0) + 1);
     if (rec.examples.length < top) {
       const detail = (block.match(/^ {2,}(\S.*?)\s*$/m) || [, ''])[1];
       const repro = (block.match(/Reproduce with:[\s\S]*?(curl [^\n]+)/) || [, ''])[1];
@@ -127,12 +129,22 @@ for (const chunk of xml.split('<testcase ').slice(1)) {
 
 const baseline = existsSync(baselinePath) ? JSON.parse(readFileSync(baselinePath, 'utf8')) : {};
 const budget = baseline.tracked || {};
+// Findings that are properties of the environment this tier runs in rather than of the server.
+// Keyed by check title, then by operation, with the reason as the value -- written down and
+// printed, because the difference between "this cannot be tested here" and "we stopped looking"
+// is whether anyone can read which one it is.
+const environment = baseline.environment || {};
+const exemptionsFor = (title) => environment[title] || {};
 
 const rows = [...findings.entries()]
   .map(([title, r]) => ({
     title,
     cases: r.cases,
     ops: r.ops.size,
+    // Cases the environment is known to cause, and what is left once they are set aside. Only the
+    // remainder can gate; the exempt ones are reported in their own section.
+    exempt: [...r.byOp].reduce((n, [op, k]) => n + (op in exemptionsFor(title) ? k : 0), 0),
+    seenExemptOps: [...r.byOp.keys()].filter((op) => op in exemptionsFor(title)),
     examples: r.examples,
     gating: title in GATING,
     known: title in GATING || title in TRACKED,
@@ -140,12 +152,15 @@ const rows = [...findings.entries()]
     // somebody has written the figure into the baseline; until then it gates.
     allowed: title in GATING ? 0 : (budget[title] ?? 0),
   }))
+  .map((r) => ({ ...r, chargeable: r.cases - r.exempt }))
   .sort((a, b) => b.cases - a.cases);
 
 // A category nobody has classified is treated as gating. A new check appearing in a new
 // Schemathesis release must land in front of a person, not be silently absorbed into the debt.
-const breaches = rows.filter((r) => r.gating || !r.known || r.cases > r.allowed);
-const improved = rows.filter((r) => !r.gating && r.known && r.cases < r.allowed);
+const breaches = rows.filter(
+  (r) => (r.gating && r.chargeable > 0) || !r.known || r.chargeable > r.allowed
+);
+const improved = rows.filter((r) => !r.gating && r.known && r.chargeable < r.allowed);
 
 const out = [];
 out.push('### Schemathesis');
@@ -160,12 +175,16 @@ out.push('| finding | cases | operations | |');
 out.push('| --- | ---: | ---: | --- |');
 for (const r of rows) {
   const verdict = r.gating
-    ? '**gates**'
+    ? r.chargeable > 0
+      ? r.exempt
+        ? `**gates** (${r.exempt} of them the environment's, see below)`
+        : '**gates**'
+      : `the environment's, all ${r.exempt} of them — see below`
     : !r.known
       ? '**new, unclassified, gates until someone reads it**'
-      : r.cases > r.allowed
+      : r.chargeable > r.allowed
         ? `**over budget** (${r.allowed} allowed)`
-        : r.cases < r.allowed
+        : r.chargeable < r.allowed
           ? `tracked, down from ${r.allowed}`
           : `tracked (${r.allowed} allowed)`;
   out.push(`| ${r.title} | ${r.cases} | ${r.ops} | ${verdict} |`);
@@ -178,12 +197,15 @@ for (const r of rows) {
 }
 out.push('');
 
-const interesting = rows.filter((r) => r.gating || !r.known);
+// A gating category whose every case is the environment's has nothing to show here; it is
+// reported in full in the section below, and an empty <details> is just noise.
+const interesting = rows.filter((r) => (r.gating && r.chargeable > 0) || !r.known);
 for (const r of interesting) {
-  if (!r.examples.length) continue;
+  if (!r.examples.some((e) => !(e.op in exemptionsFor(r.title)))) continue;
   out.push(`<details><summary>${r.title}: ${Math.min(top, r.cases)} of ${r.cases}</summary>`);
   out.push('');
   for (const e of r.examples) {
+    if (e.op in exemptionsFor(r.title)) continue;
     out.push(`\`${e.op}\`${e.detail ? ` — ${e.detail}` : ''}`);
     if (e.repro) out.push(['', '```', e.repro, '```'].join('\n'));
     out.push('');
@@ -192,11 +214,33 @@ for (const r of interesting) {
   out.push('');
 }
 
+const declared = Object.entries(environment).flatMap(([title, ops]) =>
+  Object.entries(ops).map(([op, reason]) => ({
+    title,
+    op,
+    reason,
+    seen: rows.some((r) => r.title === title && r.seenExemptOps.includes(op)),
+  }))
+);
+if (declared.length) {
+  out.push('<details><summary>' + declared.length + ' finding(s) the environment causes, not the server</summary>');
+  out.push('');
+  for (const d of declared) {
+    out.push(`\`${d.op}\` — ${d.title}${d.seen ? '' : ' (not produced this run)'}`);
+    out.push('');
+    out.push(`  ${d.reason}`);
+    out.push('');
+  }
+  out.push('</details>');
+  out.push('');
+}
+
 if (improved.length) {
   out.push(
-    '_Below budget, so the baseline in `tools/ci/fuzz-baseline.json` can be lowered in the same ' +
-      'commit that earned it: ' +
-      improved.map((r) => `${r.title} ${r.allowed} → ${r.cases}`).join(', ') +
+    '_Below budget this run. Schemathesis reseeds every run and these counts swing by a third, so ' +
+      'ratchet to a figure above the highest of several runs rather than to this one -- see the ' +
+      'note in `tools/ci/fuzz-baseline.json`. This run: ' +
+      improved.map((r) => `${r.title} ${r.allowed} → ${r.chargeable}`).join(', ') +
       '._'
   );
   out.push('');
@@ -207,7 +251,9 @@ out.push(
     ? '**Red.** ' +
         breaches
           .map((r) =>
-            r.gating || !r.known ? `${r.cases} × ${r.title}` : `${r.title} ${r.cases} > ${r.allowed}`
+            r.gating || !r.known
+              ? `${r.chargeable} × ${r.title}`
+              : `${r.title} ${r.chargeable} > ${r.allowed}`
           )
           .join('; ') +
         '.'
@@ -229,8 +275,11 @@ writeFileSync(
       failedOperations,
       findings: totalCases,
       // The nightly verdict and the dashboard read these by name; keep the keys stable.
-      gating: Object.fromEntries(rows.filter((r) => r.gating).map((r) => [r.title, r.cases])),
-      tracked: Object.fromEntries(rows.filter((r) => !r.gating).map((r) => [r.title, r.cases])),
+      gating: Object.fromEntries(rows.filter((r) => r.gating).map((r) => [r.title, r.chargeable])),
+      tracked: Object.fromEntries(rows.filter((r) => !r.gating).map((r) => [r.title, r.chargeable])),
+      environment: Object.fromEntries(
+        rows.filter((r) => r.exempt).map((r) => [r.title, r.exempt])
+      ),
       budget,
       breaches: breaches.map((r) => r.title),
     },
@@ -241,9 +290,11 @@ writeFileSync(
 
 if (writeBaseline) {
   const tracked = Object.fromEntries(
-    rows.filter((r) => !r.gating && r.known).map((r) => [r.title, r.cases])
+    rows.filter((r) => !r.gating && r.known).map((r) => [r.title, r.chargeable])
   );
-  writeFileSync(baselinePath, JSON.stringify({ tracked }, null, 2) + '\n');
+  // Everything else in the file is prose a person wrote -- the note, the date, the environment
+  // exemptions and their reasons. Rewriting it from the run's counts alone would delete all of it.
+  writeFileSync(baselinePath, JSON.stringify({ ...baseline, tracked }, null, 2) + '\n');
   console.error(`baseline written to ${baselinePath}`);
 }
 

@@ -12,6 +12,7 @@ import com.sm.instagram.platform.storage.controller.FileManagementController;
 import com.sm.instagram.platform.storage.controller.UploadAdminController;
 import com.sm.instagram.platform.storage.controller.WebhookController;
 import com.sm.instagram.platform.storage.entity.FileUpload;
+import com.sm.instagram.platform.storage.model.UploadAdminResponses;
 import com.sm.instagram.platform.storage.model.DeleteFilesRequest;
 import com.sm.instagram.platform.storage.model.FileOperationResponse;
 import com.sm.instagram.platform.storage.repository.FileUploadRepository;
@@ -678,14 +679,13 @@ class FileManagementControllerUnitTest {
                 when(uploadRepository.getTotalStorageByUser(eq(""))).thenReturn(1024000L);
 
                 // When
-                ResponseEntity<?> response = controller.getSystemStats();
+                ResponseEntity<UploadAdminResponses.SystemStats> response = controller.getSystemStats();
 
                 // Then
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-                @SuppressWarnings("unchecked")
-                Map<String, Object> stats = (Map<String, Object>) response.getBody();
-                assertThat(stats.get("totalUploads")).isEqualTo(100L);
-                assertThat(stats.get("pendingUploads")).isEqualTo(2L);
+                assertThat(response.getBody()).isNotNull();
+                assertThat(response.getBody().totalUploads()).isEqualTo(100L);
+                assertThat(response.getBody().pendingUploads()).isEqualTo(2L);
             }
 
             @Test
@@ -698,13 +698,12 @@ class FileManagementControllerUnitTest {
                 when(uploadRepository.getTotalStorageByUser(anyString())).thenReturn(null);
 
                 // When
-                ResponseEntity<?> response = controller.getSystemStats();
+                ResponseEntity<UploadAdminResponses.SystemStats> response = controller.getSystemStats();
 
                 // Then
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-                @SuppressWarnings("unchecked")
-                Map<String, Object> stats = (Map<String, Object>) response.getBody();
-                assertThat(stats.get("totalStorageBytes")).isEqualTo(0L);
+                assertThat(response.getBody()).isNotNull();
+                assertThat(response.getBody().totalStorageBytes()).isEqualTo(0L);
             }
         }
 
@@ -793,14 +792,13 @@ class FileManagementControllerUnitTest {
                 doNothing().when(trackingService).cleanupOrphanedUploads();
 
                 // When
-                ResponseEntity<?> response = controller.cleanupOrphanedUploads();
+                ResponseEntity<UploadAdminResponses.CleanupOutcome> response = controller.cleanupOrphanedUploads();
 
                 // Then
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
                 verify(trackingService).cleanupOrphanedUploads();
-                @SuppressWarnings("unchecked")
-                Map<String, Object> body = (Map<String, Object>) response.getBody();
-                assertThat(body.get("status")).isEqualTo("success");
+                assertThat(response.getBody()).isNotNull();
+                assertThat(response.getBody().status()).isEqualTo("success");
             }
         }
 
@@ -817,13 +815,13 @@ class FileManagementControllerUnitTest {
                     .thenReturn(uploads);
 
                 // When
-                ResponseEntity<?> response = controller.getUploadsByStatus(FileUpload.UploadStatus.PENDING, 0, 50);
+                ResponseEntity<UploadAdminResponses.UploadsByStatus> response =
+                        controller.getUploadsByStatus(FileUpload.UploadStatus.PENDING, 0, 50);
 
                 // Then
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-                @SuppressWarnings("unchecked")
-                Map<String, Object> body = (Map<String, Object>) response.getBody();
-                assertThat(body.get("totalCount")).isEqualTo(5);
+                assertThat(response.getBody()).isNotNull();
+                assertThat(response.getBody().totalCount()).isEqualTo(5);
             }
 
             @Test
@@ -871,13 +869,17 @@ class FileManagementControllerUnitTest {
                 when(uploadRepository.findByUserIdAndStatusIn(eq(""), anyList())).thenReturn(uploads);
 
                 // When
-                ResponseEntity<?> response = controller.generateWeeklyReport();
+                ResponseEntity<UploadAdminResponses.WeeklyReport> response = controller.generateWeeklyReport();
 
                 // Then
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-                @SuppressWarnings("unchecked")
-                Map<String, Object> report = (Map<String, Object>) response.getBody();
-                assertThat(report).containsKeys("period", "summary", "byContentType", "generatedAt");
+                // The body was an untyped map and this asserted its four keys; it is a record now,
+                // so the compiler asserts the keys and the test can assert the values instead.
+                assertThat(response.getBody()).isNotNull();
+                assertThat(response.getBody().period().days()).isEqualTo(7);
+                assertThat(response.getBody().summary().totalFiles()).isEqualTo(10);
+                assertThat(response.getBody().byContentType()).isNotNull();
+                assertThat(response.getBody().generatedAt()).isNotNull();
             }
 
             @Test
@@ -887,7 +889,7 @@ class FileManagementControllerUnitTest {
                 when(uploadRepository.findByUserIdAndStatusIn(eq(""), anyList())).thenReturn(Collections.emptyList());
 
                 // When
-                ResponseEntity<?> response = controller.generateWeeklyReport();
+                ResponseEntity<UploadAdminResponses.WeeklyReport> response = controller.generateWeeklyReport();
 
                 // Then
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

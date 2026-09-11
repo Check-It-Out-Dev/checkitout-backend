@@ -16,9 +16,9 @@ on:
   workflow_call:
     inputs:
       backend_tag:
-        description: Backend image tag on ghcr.io
+        description: Backend image tag on ghcr.io; empty means the commit under test
         type: string
-        default: main
+        default: ""
       max_examples:
         description: Generated cases per operation
         type: string
@@ -26,9 +26,9 @@ on:
   workflow_dispatch:
     inputs:
       backend_tag:
-        description: Backend image tag on ghcr.io
+        description: Backend image tag on ghcr.io; empty means the commit under test
         type: string
-        default: main
+        default: ""
       max_examples:
         description: Generated cases per operation
         type: string
@@ -48,8 +48,50 @@ permissions:
   contents: read
 
 jobs:
+  # Which code is being fuzzed has to be answerable, and it was not: the job pulled `:main`,
+  # whichever build happened to hold that tag when the runner started. Dispatching this tier
+  # right after a push fuzzed the PREVIOUS commit, because build-image had not finished
+  # publishing yet -- and the report said nothing about it, so eight closed findings came back
+  # looking untouched. The tag is the commit's own short sha, and this waits for it.
+  image:
+    name: The image under test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      tag: ${{ steps.resolve.outputs.tag }}
+    steps:
+      - id: resolve
+        env:
+          # Under workflow_call this is the calling pipeline's commit, which is the one whose
+          # image the night wants.
+          REQUESTED_TAG: ${{ inputs.backend_tag }}
+          COMMIT: ${{ github.sha }}
+          REPOSITORY: check-it-out-dev/checkitout-backend
+        run: |
+          set -euo pipefail
+          TAG="${REQUESTED_TAG:-${COMMIT:0:7}}"   # build-image tags type=sha,format=short
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+          # The package is public, so this needs no credential -- and asking anonymously is also
+          # the proof that the image a reader of this log could pull is the one that was fuzzed.
+          ACCEPT='application/vnd.oci.image.index.v1+json, application/vnd.docker.distribution.manifest.v2+json'
+          for attempt in $(seq 1 60); do
+            token=$(curl -sS "https://ghcr.io/token?scope=repository:${REPOSITORY}:pull" \
+              | python3 -c 'import json,sys; print(json.load(sys.stdin)["token"])')
+            if curl -sSf -o /dev/null -H "Authorization: Bearer $token" -H "Accept: $ACCEPT" \
+                "https://ghcr.io/v2/${REPOSITORY}/manifests/${TAG}"; then
+              echo "Fuzzing ghcr.io/${REPOSITORY}:${TAG}" | tee -a "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            echo "waiting for ghcr.io/${REPOSITORY}:${TAG} ($attempt/60)"
+            sleep 15
+          done
+          echo "::error::ghcr.io/${REPOSITORY}:${TAG} was never published; build-image must finish first"
+          exit 1
+
   fuzz:
     name: Schemathesis against a running backend
+    needs: image
     runs-on: ubuntu-latest
     timeout-minutes: 30
     services:
@@ -67,7 +109,7 @@ jobs:
           --health-cmd "redis-cli ping" --health-interval 5s
           --health-timeout 3s --health-retries 20
       backend:
-        image: ghcr.io/check-it-out-dev/checkitout-backend:${{ inputs.backend_tag || 'main' }}
+        image: ghcr.io/check-it-out-dev/checkitout-backend:${{ needs.image.outputs.tag }}
         env:
           SPRING_PROFILES_ACTIVE: dev-lite
           SPRING_DATASOURCE_HOST: postgres

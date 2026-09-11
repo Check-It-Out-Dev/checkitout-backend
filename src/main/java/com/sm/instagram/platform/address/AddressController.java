@@ -9,6 +9,7 @@ import com.sm.instagram.platform.common.ratelimit.RateLimitKeyType;
 import com.sm.instagram.platform.common.ratelimit.RateLimitProfile;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -190,7 +191,7 @@ public class AddressController extends BaseController<Address, Long, AddressDtoI
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Get addresses by user ID", description = "Returns all addresses for a specific user")
     @ApiResponse(responseCode = "200", description = "Addresses returned successfully",
-            content = @Content(schema = @Schema(implementation = AddressDtoOut.class)))
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = AddressDtoOut.class))))
     @ApiResponse(responseCode = "404", description = "User not found")
     @ApiResponse(responseCode = "403", description = "User not authorized to view these addresses")
     public ResponseEntity<List<AddressDtoOut>> getAddressesByUserId(
@@ -235,7 +236,7 @@ public class AddressController extends BaseController<Address, Long, AddressDtoI
     @Operation(summary = "Get addresses by opportunity ID",
             description = "Returns all addresses for a specific partnership opportunity")
     @ApiResponse(responseCode = "200", description = "Addresses returned successfully",
-            content = @Content(schema = @Schema(implementation = AddressDtoOut.class)))
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = AddressDtoOut.class))))
     @ApiResponse(responseCode = "404", description = "Partnership opportunity not found")
     @ApiResponse(responseCode = "403", description = "User not authorized to view these addresses")
     public ResponseEntity<List<AddressDtoOut>> getAddressesByOpportunityId(
@@ -277,7 +278,7 @@ public class AddressController extends BaseController<Address, Long, AddressDtoI
             description = "Finds existing addresses that match the given criteria and can be reused for new opportunities. " +
                     "All parameters are optional and support partial matching (case-insensitive).")
     @ApiResponse(responseCode = "200", description = "Addresses found successfully",
-            content = @Content(schema = @Schema(implementation = AddressDtoOut.class)))
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = AddressDtoOut.class))))
     public ResponseEntity<List<AddressDtoOut>> searchReusableAddresses(
             @Parameter(description = "Street name (optional, partial match)", required = false)
             @RequestParam(required = false) String street,
@@ -508,7 +509,7 @@ public class AddressController extends BaseController<Address, Long, AddressDtoI
     @Operation(summary = "Get user addresses by type",
             description = "Returns all addresses of a specific type for a user")
     @ApiResponse(responseCode = "200", description = "Addresses returned successfully",
-            content = @Content(schema = @Schema(implementation = AddressDtoOut.class)))
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = AddressDtoOut.class))))
     @ApiResponse(responseCode = "404", description = "User not found")
     @ApiResponse(responseCode = "403", description = "User not authorized to view these addresses")
     public ResponseEntity<List<AddressDtoOut>> getAddressesByUserIdAndType(
@@ -547,7 +548,7 @@ public class AddressController extends BaseController<Address, Long, AddressDtoI
     @Operation(summary = "Get opportunity addresses by type",
             description = "Returns all addresses of a specific type for a partnership opportunity")
     @ApiResponse(responseCode = "200", description = "Addresses returned successfully",
-            content = @Content(schema = @Schema(implementation = AddressDtoOut.class)))
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = AddressDtoOut.class))))
     @ApiResponse(responseCode = "404", description = "Partnership opportunity not found")
     @ApiResponse(responseCode = "403", description = "User not authorized to view these addresses")
     public ResponseEntity<List<AddressDtoOut>> getAddressesByOpportunityIdAndType(

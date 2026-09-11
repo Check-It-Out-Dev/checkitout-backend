@@ -26,8 +26,16 @@ public class ConsentPrepareRequest {
     @NotNull(message = "{validation.consent.version.required}")
     private Integer version;
 
+    /** Hash of the document the visitor actually agreed to; it is signed into the cookie. */
+    @NotBlank(message = "{validation.consent.documentHash.required}")
     private String documentHash;
 
+    /**
+     * {@code @NotNull} as well as {@code @Valid}: cascading validation has nothing to say about a
+     * null, so `{"proof": null}` passed the boundary and the service dereferenced it. Schemathesis
+     * found it on the first authenticated run.
+     */
+    @NotNull(message = "{validation.consent.proof.required}")
     @Valid
     private ConsentProofDtoIn proof;
 }

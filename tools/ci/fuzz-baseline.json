@@ -1,0 +1,34 @@
+{
+  "note": [
+    "What the fuzz tier is allowed to find in the categories that are not server-side defects.",
+    "See the header of tools/ci/fuzz-verdict.mjs for why each of these is tracked rather than gating.",
+    "A budget is a ratchet: lower it in the same commit that earns the drop, never raise it to make a",
+    "red run green. The gating categories are not listed here and are allowed nothing.",
+    "",
+    "Schemathesis generates from a fresh seed every run, and the spread is wide enough that one run's",
+    "count is not a number to ratchet to. Observed on 2026-09-11 across the four runs that closed the",
+    "schema violations and the firewall 500s:",
+    "  unsupported methods            218, 218, 218, 218   (stable: it is one finding per secured path)",
+    "  rejected schema-compliant      104, 132, 105, 133",
+    "  accepted schema-violating       57,  65,  59,  65",
+    "  invalid Allow header            38,  51,  38,  51",
+    "  undocumented status code        19,  37,  18,  37",
+    "Each budget sits about 15% above the HIGHEST of those, not above the last one. Two moved on this",
+    "evidence: unsupported methods 256 -> 250 and undocumented status 46 -> 44. The other three have",
+    "not actually dropped -- their low readings are a lucky seed, and lowering to them would make the",
+    "tier red on the next unlucky one, which is how a ratchet turns into a flake."
+  ],
+  "measuredAt": "2026-09-11",
+  "tracked": {
+    "Unsupported methods": 250,
+    "API rejected schema-compliant request": 152,
+    "Undocumented HTTP status code": 44,
+    "API accepted schema-violating request": 72,
+    "Invalid Allow header": 59
+  },
+  "environment": {
+    "Server error": {
+      "POST /auth/firebase/verify-reset-code": "dev-lite carries no Firebase credential, so FirebaseAuthProxyService cannot obtain an OAuth access token for the Identity Toolkit and answers 503 -- which is the correct answer for an upstream that is not there, and the same answer production would give if Firebase were down. The fuzzer cannot tell those apart; a reader of this file can. These flows ARE tested for real: the e2e tier signs in, mints oobCodes and verifies them against the Firebase emulator suite, with no credential either. Remove this exemption by running the emulators beside the backend in api-fuzz.yml, which needs the backend out of a service container so it can reach them."
+    }
+  }
+}

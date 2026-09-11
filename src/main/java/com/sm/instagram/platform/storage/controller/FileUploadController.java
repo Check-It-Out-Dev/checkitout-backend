@@ -3,12 +3,14 @@ package com.sm.instagram.platform.storage.controller;
 import com.sm.instagram.platform.common.authorization.PermissionUtils;
 import com.sm.instagram.platform.common.exceptions.RateLimitTranslatableException;
 import com.sm.instagram.platform.common.exceptions.ResourceNotFoundException;
+import com.sm.instagram.platform.common.exceptions.TranslatableException;
 import com.sm.instagram.platform.common.exceptions.StorageTranslatableException;
 import com.sm.instagram.platform.common.exceptions.ValidationTranslatableException;
 import com.sm.instagram.platform.common.ratelimit.RateLimit;
 import com.sm.instagram.platform.common.ratelimit.RateLimitKeyType;
 import com.sm.instagram.platform.common.ratelimit.RateLimitProfile;
 import com.sm.instagram.platform.storage.model.FileUploadRequest;
+import com.sm.instagram.platform.storage.model.UploadResponses;
 import com.sm.instagram.platform.storage.model.FileUploadResponse;
 import com.sm.instagram.platform.storage.service.FileTrackingService;
 import com.sm.instagram.platform.storage.service.SignedUrlService;
@@ -135,7 +137,11 @@ public class FileUploadController {
                     firebaseUid, response.getUploadId());
             return ResponseEntity.ok(response);
 
-        } catch (StorageTranslatableException | RateLimitTranslatableException | ValidationTranslatableException e) {
+        } catch (TranslatableException e) {
+            // Every domain exception in this project already carries the status it means, and the
+            // handlers already map it. Naming three of them here left the rest to the catch-all
+            // below, which relabels anything at all as 507 Insufficient Storage -- a specific claim
+            // about the server's disk, made about a request the server had simply refused.
             throw e;
         } catch (Exception e) {
             log.error("GDPR: Operation=generateSignedUrl_failed, FirebaseUID={}, Error={}",
@@ -150,7 +156,7 @@ public class FileUploadController {
                 }
             }
 
-            throw new StorageTranslatableException("error.storage.upload_failed", "Upload confirmation failed");
+            throw new StorageTranslatableException("error.storage.upload_failed", "Upload operation failed");
         }
     }
 
@@ -167,7 +173,8 @@ public class FileUploadController {
             @ApiResponse(responseCode = "404", description = "Upload ID not found"),
             @ApiResponse(responseCode = "409", description = "Upload already confirmed")
     })
-    public ResponseEntity<?> confirmUpload(@PathVariable String uploadId, @RequestParam String filePath) {
+    public ResponseEntity<UploadResponses.UploadConfirmation> confirmUpload(
+            @PathVariable String uploadId, @RequestParam String filePath) {
 
         String userId = permissionUtils.getUserId();
         String firebaseUid = userId;
@@ -207,15 +214,18 @@ public class FileUploadController {
                 }
             }
 
-            Map<String, Object> response = new HashMap<>();
-            response.put("status", "confirmed");
-            response.put("uploadId", uploadId);
-            response.put("filePath", filePath);
-            response.put("message", "Upload confirmed successfully");
+            return ResponseEntity.ok(new UploadResponses.UploadConfirmation(
+                    "confirmed", uploadId, filePath, "Upload confirmed successfully"));
 
-            return ResponseEntity.ok(response);
-
-        } catch (ResourceNotFoundException e) {
+        } catch (TranslatableException | IllegalArgumentException e) {
+            // What the caller typed. 507 Insufficient Storage is a specific claim -- the server
+            // cannot store the representation -- and saying it about a malformed filePath sends the
+            // caller looking for a quota problem that does not exist. `?filePath=` came back 507
+            // even after IllegalArgumentException was let through here, because the service refuses
+            // an empty path with ValidationTranslatableException, which is a 400 and was being
+            // caught below and relabelled.
+            log.warn("GDPR: Operation=confirmUpload_rejected, FirebaseUID={}, UploadID={}, Reason={}",
+                    firebaseUid, uploadId, e.getMessage());
             throw e;
         } catch (Exception e) {
             log.error("GDPR: Operation=confirmUpload_failed, FirebaseUID={}, UploadID={}, Error={}",
@@ -244,30 +254,13 @@ public class FileUploadController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Rate limit status retrieved")
     })
-    public ResponseEntity<?> getRateLimitStatus() {
+    public ResponseEntity<UploadResponses.RateLimits> getRateLimitStatus() {
         String userId = permissionUtils.getUserId();
         log.debug("Fetching rate limit status for user: {}", userId);
 
         var status = rateLimiterService.getUserStatus(userId);
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("hourly", Map.of(
-                "used", status.getHourlyUsed(),
-                "limit", status.getHourlyLimit(),
-                "remaining", status.getHourlyLimit() - status.getHourlyUsed()
-        ));
-        response.put("daily", Map.of(
-                "used", status.getDailyUsed(),
-                "limit", status.getDailyLimit(),
-                "remaining", status.getDailyLimit() - status.getDailyUsed()
-        ));
-        response.put("storage", Map.of(
-                "usedMB", status.getStorageUsedMB(),
-                "limitMB", status.getStorageLimitMB(),
-                "usedPercentage", (status.getStorageUsedMB() * 100.0) / status.getStorageLimitMB()
-        ));
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(UploadResponses.RateLimits.from(status));
     }
 
     /**
@@ -297,43 +290,25 @@ public class FileUploadController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Statistics retrieved successfully")
     })
-    public ResponseEntity<?> getUserUploadStats() {
+    public ResponseEntity<UploadResponses.UploadStats> getUserUploadStats() {
         String userId = permissionUtils.getUserId();
         log.debug("Fetching upload statistics for user: {}", userId);
 
-        Map<String, Object> response = new HashMap<>();
+        UploadResponses.RateLimits rateLimits =
+                UploadResponses.RateLimits.from(rateLimiterService.getUserStatus(userId));
 
-        // Get rate limit status
-        var rateLimitStatus = rateLimiterService.getUserStatus(userId);
-        response.put("rateLimits", Map.of(
-                "hourly", Map.of(
-                        "used", rateLimitStatus.getHourlyUsed(),
-                        "limit", rateLimitStatus.getHourlyLimit(),
-                        "remaining", rateLimitStatus.getHourlyLimit() - rateLimitStatus.getHourlyUsed()
-                ),
-                "daily", Map.of(
-                        "used", rateLimitStatus.getDailyUsed(),
-                        "limit", rateLimitStatus.getDailyLimit(),
-                        "remaining", rateLimitStatus.getDailyLimit() - rateLimitStatus.getDailyUsed()
-                ),
-                "storage", Map.of(
-                        "usedMB", rateLimitStatus.getStorageUsedMB(),
-                        "limitMB", rateLimitStatus.getStorageLimitMB(),
-                        "usedPercentage", (rateLimitStatus.getStorageUsedMB() * 100.0) / rateLimitStatus.getStorageLimitMB()
-                )
-        ));
-
-        // Get detailed tracking stats if available
+        // Absent rather than empty when the tracking service is not configured; the serializer
+        // drops the null, which is what the map did by never putting the key.
+        UploadResponses.UploadHistory history = null;
         if (trackingService != null) {
             var uploadStats = trackingService.getUserStats(userId);
-            response.put("uploadHistory", Map.of(
-                    "totalFiles", uploadStats.getTotalFiles(),
-                    "totalSizeBytes", uploadStats.getTotalSize(),
-                    "filesUploadedToday", uploadStats.getFilesUploadedToday(),
-                    "filesUploadedThisHour", uploadStats.getFilesUploadedThisHour()
-            ));
+            history = new UploadResponses.UploadHistory(
+                    uploadStats.getTotalFiles(),
+                    uploadStats.getTotalSize(),
+                    uploadStats.getFilesUploadedToday(),
+                    uploadStats.getFilesUploadedThisHour());
         }
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new UploadResponses.UploadStats(rateLimits, history));
     }
 }
