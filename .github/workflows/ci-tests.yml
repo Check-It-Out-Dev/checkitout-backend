@@ -285,7 +285,7 @@ jobs:
           cp site/allure/history-ci-tests.jsonl history.jsonl 2>/dev/null || true
           # Allure 3's CLI takes the results directory from its config or the default ./allure-results,
           # and knows --output and --config only.
-          npx --yes allure generate --config .github/allurerc.mjs --output allure-report
+          npx --yes allure@3.17.0 generate --config .github/allurerc.mjs --output allure-report
           # Bound by size, not by line count; see the note in browser-tiers.yml.
           node frontend/tools/ci/trim-history.mjs history.jsonl
           mkdir -p site/allure && cp history.jsonl site/allure/history-ci-tests.jsonl
