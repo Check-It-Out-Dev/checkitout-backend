@@ -74,7 +74,16 @@ import java.util.UUID;
  * @see ServiceIntegrationTestConfig
  * @see com.sm.instagram.platform.common.authorization.PermissionUtils
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+// classes = ... names the configuration instead of letting Spring search for it. The search walks
+// up from the test's package looking for @SpringBootConfiguration, and partway through a full run
+// it starts coming back empty: seventeen classes in the last four packages died with "Unable to
+// find a @SpringBootConfiguration", every one of them green when run on its own. Whatever exhausts
+// that scan after ~570 tests, a test suite does not need to discover where its own application
+// class is -- and CI could not see any of it, because failsafe:verify was inheriting skipTests
+// from the profile and checking nothing.
+@SpringBootTest(
+        classes = com.sm.instagram.platform.InstagramPlatformApplication.class,
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integration")
 @Import(ServiceIntegrationTestConfig.class)
 @Transactional  // Rollback after each test for isolation

@@ -81,6 +81,10 @@ jobs:
         if: always()
         with:
           report_paths: target/surefire-reports/TEST-*.xml
+          # The action does not fail a job by default, and Maven is not the only thing that can be
+          # wrong: `require_tests` is what catches a tier that ran nothing and said so quietly.
+          fail_on_failure: true
+          require_tests: true
           check_name: unit tests
           detailed_summary: true
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
@@ -115,6 +119,11 @@ jobs:
           # the flat glob matched nothing and the check run said "No test results found!" over a
           # tier that had just passed. The artifact glob below already knew; this one did not.
           report_paths: target/failsafe-reports/**/TEST-*.xml
+          # failsafe:verify was inheriting skipTests=true from the profile property and checking
+          # nothing, so this action was the only thing standing between a failed tier and a green
+          # job -- and it does not fail a job by default either. Both halves are closed now.
+          fail_on_failure: true
+          require_tests: true
           check_name: integration tests
           detailed_summary: true
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
@@ -187,6 +196,8 @@ jobs:
           # See the note on the integration tier: the reports are one directory down. This check
           # run reported nothing for a tier that ran fifteen suites and 2,778 green steps.
           report_paths: target/failsafe-reports/**/TEST-*.xml
+          fail_on_failure: true
+          require_tests: true
           check_name: e2e scenarios
           detailed_summary: true
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
