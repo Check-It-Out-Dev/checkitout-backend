@@ -1,0 +1,29 @@
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - ==========================================
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - 🔐 TOTP QR CODE STARTUP VALIDATION
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - ==========================================
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - 
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - 📊 VALIDATION SUMMARY:
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - ------------------------------------------
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    ✅ Configuration - PASS
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -       └─ Issuer: CheckItOut | Status: ENABLED
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    ❌ Secret Generation - FAIL
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -       └─ Secret is not valid Base32
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - ------------------------------------------
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    Total: 1 passed | 0 warnings | 1 failed
+15:47:10.352 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - ❌ TOTP QR CODE VALIDATION FAILED
+15:47:10.352 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    QR codes may not work with authenticator apps!
+15:47:10.352 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    Users may need to manually enter secrets
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - 
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - 🎯 RECOMMENDATIONS:
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    1. Use ImprovedQRCodeService for primary QR generation
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    2. Provide Google Charts URL as fallback option
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    3. Always show manual entry option for users
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    4. Test with real authenticator apps before production
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - 
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - 🔧 CONFIGURATION:
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    Issuer: CheckItOut
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    Algorithm: SHA1 (max compatibility)
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    Digits: 6
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    Period: 30 seconds
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    Status: 🟢 ENABLED
+15:47:10.352 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - ==========================================

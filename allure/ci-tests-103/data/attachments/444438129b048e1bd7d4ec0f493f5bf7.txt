@@ -1,0 +1,24 @@
+15:46:26.160 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - GDPR: Operation=validateRedisAccess, Purpose=system_startup_validation, DataAccessed=none
+15:46:26.160 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - ==========================================
+15:46:26.160 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - 🚀 REDIS VALIDATION SERVICE
+15:46:26.160 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - ==========================================
+15:46:26.160 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - 📍 Redis Configuration:
+15:46:26.160 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Storage Mode: redis
+15:46:26.160 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Host: localhost
+15:46:26.160 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Port: 6379
+15:46:26.160 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Database: 0
+15:46:26.160 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Timeout: 2000ms
+15:46:26.160 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - 
+🧪 Testing Redis Connection:
+15:46:26.160 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Testing PING...
+15:46:26.160 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - 
+❌ REDIS VALIDATION FAILED!
+15:46:26.160 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Error: Ping failed
+15:46:26.160 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - 
+   Troubleshooting steps:
+15:46:26.160 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    1. Check if Redis server is running
+15:46:26.160 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    2. Verify connection settings: localhost:6379
+15:46:26.160 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    3. Check firewall/network settings
+15:46:26.160 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    4. Verify Redis password if authentication is enabled
+15:46:26.160 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - ⚠️⚠️ CONTINUING WITHOUT REDIS - FALLING BACK TO IN-MEMORY! ⚠️⚠️
+15:46:26.160 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - ==========================================
