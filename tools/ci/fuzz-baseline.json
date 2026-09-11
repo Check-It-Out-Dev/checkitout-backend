@@ -1,0 +1,26 @@
+{
+  "note": [
+    "What the fuzz tier is allowed to find in the categories that are not server-side defects.",
+    "See the header of tools/ci/fuzz-verdict.mjs for why each of these is tracked rather than gating.",
+    "A budget is a ratchet: lower it in the same commit that earns the drop, never raise it to make a",
+    "red run green. The gating categories are not listed here and are allowed nothing.",
+    "",
+    "Schemathesis generates from a fresh seed every run, so these counts move by a few either way.",
+    "Observed on 2026-09-11 across three runs of the same code, after the /error and paged fixes:",
+    "  unsupported methods            223, 218",
+    "  rejected schema-compliant      106, 104",
+    "  undocumented status code       101, 96",
+    "  accepted schema-violating       61, 57",
+    "  invalid Allow header            40, 38",
+    "The budgets sit about 15% above the highest of those: tight enough that closing a real batch",
+    "shows up as headroom to give back, loose enough that a new seed alone cannot turn the tier red."
+  ],
+  "measuredAt": "2026-09-11",
+  "tracked": {
+    "Unsupported methods": 256,
+    "API rejected schema-compliant request": 122,
+    "Undocumented HTTP status code": 116,
+    "API accepted schema-violating request": 70,
+    "Invalid Allow header": 46
+  }
+}
