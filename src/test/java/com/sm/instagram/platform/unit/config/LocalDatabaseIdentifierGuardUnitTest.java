@@ -71,6 +71,41 @@ class LocalDatabaseIdentifierGuardUnitTest {
                 .doesNotThrowAnyException();
     }
 
+    /**
+     * The one value here that cannot be refused for not being an identifier: a password may
+     * legitimately contain a quote, and {@code CREATE USER … WITH PASSWORD} takes a literal that
+     * PostgreSQL offers no way to bind. It used to be interpolated between two quotes, so a
+     * password containing one ended the literal early and whatever followed was SQL.
+     */
+    @Test
+    @DisplayName("a quote in the password stays inside the literal")
+    void escapesTheQuoteInAPassword() {
+        String literal = ReflectionTestUtils.invokeMethod(
+                LocalDatabaseInitializer.class, "sqlStringLiteral", "pa'ssword");
+
+        assertThat(literal).isEqualTo("'pa''ssword'");
+    }
+
+    @Test
+    @DisplayName("a password trying to close the statement stays one literal")
+    void escapesAnInjectedPassword() {
+        String literal = ReflectionTestUtils.invokeMethod(
+                LocalDatabaseInitializer.class, "sqlStringLiteral", "x'; DROP DATABASE checkitout_local_db; --");
+
+        assertThat(literal)
+                .startsWith("'")
+                .endsWith("'")
+                .isEqualTo("'x''; DROP DATABASE checkitout_local_db; --'");
+    }
+
+    @Test
+    @DisplayName("an ordinary password is unchanged inside its quotes")
+    void leavesAnOrdinaryPasswordAlone() {
+        assertThat((String) ReflectionTestUtils.invokeMethod(
+                LocalDatabaseInitializer.class, "sqlStringLiteral", "local_dev_password"))
+                .isEqualTo("'local_dev_password'");
+    }
+
     @Test
     @DisplayName("63 characters is Postgres's own limit, and 64 is not an identifier")
     void refusesOverlongIdentifier() {
