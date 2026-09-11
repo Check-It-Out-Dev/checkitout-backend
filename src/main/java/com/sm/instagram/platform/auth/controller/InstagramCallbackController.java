@@ -52,6 +52,10 @@ public class InstagramCallbackController {
      * Called when a user requests deletion of their data via Facebook/Instagram settings.
      * Must return { url, confirmation_code } JSON.
      */
+    // java:S6863 -- 200 on the failure path is deliberate and is not ours to choose: Meta retires
+    // a deletion callback that answers anything else, and the caller is Meta's crawler, not a
+    // client that could act on a 5xx. The failure is logged and answered with a traceable code.
+    @SuppressWarnings("java:S6863")
     @PostMapping(value = "/data-deletion", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<DataDeletionResponse> handleDataDeletion(
             @RequestParam("signed_request") String signedRequest) {
