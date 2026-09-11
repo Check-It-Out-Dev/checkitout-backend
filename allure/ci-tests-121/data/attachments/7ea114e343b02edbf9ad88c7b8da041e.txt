@@ -1,0 +1,7 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-aa2d4efa-0da0-42ad-af1a-7b617f94a003
+  Company: COMPANY-ad4027c2-22be-4bde-b6d5-0fbf1d428dbf
+  Admin: ADMIN-e60744f7-309f-4e10-9ee3-9c8df9909432
+21:21:08.356 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=patchCurrentUserPreferences, FirebaseUID=INFLUENCER-aa2d4efa-0da0-42ad-af1a-7b617f94a003, FieldsModified=[twoFactorAuthenticationEnabled], Purpose=partial_settings_update, LegalBasis=consent
+21:21:08.359 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=getCurrentUserPreferences, FirebaseUID=INFLUENCER-aa2d4efa-0da0-42ad-af1a-7b617f94a003, Purpose=user_preference_retrieval, DataAccessed=user.preferences.*
+21:21:08.360 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=patchCurrentUserPreferences_SUCCESS, FirebaseUID=INFLUENCER-aa2d4efa-0da0-42ad-af1a-7b617f94a003, ModifiedFields=[twoFactorAuthenticationEnabled]
