@@ -84,6 +84,14 @@ public class SessionSecurityService {
             return true;
         }
 
+        // No claims is no fingerprint, and the fingerprint path below rejects that. Said here
+        // because extractFirebaseUid already treats null claims as reachable and the next line
+        // dereferences them: one of the two was wrong, and the strict reading is the safe one.
+        if (claims == null) {
+            log.warn("GDPR: Operation=session_rejected, FirebaseUID=unknown, Reason=no_claims, Purpose=security_enforcement");
+            return false;
+        }
+
         // Extract Firebase UID if available
         String firebaseUid = extractFirebaseUid(claims);
         

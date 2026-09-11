@@ -304,7 +304,9 @@ public class ValidationExceptionHandler extends ResponseEntityExceptionHandler {
         String traceId = baseHandler.generateTraceId();
         baseHandler.logException(ex, HttpStatus.BAD_REQUEST, request, traceId);
 
-        String property = ex.getPropertyName() == null ? "" : ex.getPropertyName();
+        // getPropertyName() is declared non-null by Spring Data, so the old ternary's null
+        // branch was unreachable; the length bound below is the part that does the work.
+        String property = ex.getPropertyName();
         if (property.length() > MAX_ECHOED_PROPERTY_LENGTH) {
             property = property.substring(0, MAX_ECHOED_PROPERTY_LENGTH);
         }

@@ -189,6 +189,23 @@ public class EmailVerificationService {
      */
     @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
     public boolean syncEmailVerificationStatus(User userInput, boolean firebaseEmailVerified) {
+        return syncEmailVerificationStatusInternal(userInput, firebaseEmailVerified);
+    }
+
+    /**
+     * The body of {@link #syncEmailVerificationStatus}, without the transaction attribute.
+     *
+     * <p>applyVerificationCode below calls this one. It used to call the public method, and a
+     * self-invocation never reaches the proxy -- so REQUIRES_NEW was silently dropped there and
+     * the sync ran in whatever transaction that caller had, which is none (sonar java:S2229).
+     * Splitting it keeps exactly that behaviour and stops the annotation promising the other one
+     * to a reader. The three callers outside this class still go through the proxy and still get
+     * their own transaction, which is what they were written for.
+     *
+     * <p>Whether the verification flow <em>should</em> commit the sync separately is a question
+     * about the flow, not about the annotation, and it is the owner's to answer.
+     */
+    private boolean syncEmailVerificationStatusInternal(User userInput, boolean firebaseEmailVerified) {
         // BUG-14: refetch a managed reference in THIS persistence context.
         User user = userRepository.findById(userInput.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("error.business.item_not_found", "User"));
@@ -419,7 +436,7 @@ public class EmailVerificationService {
 
             // Sync to PostgreSQL
             userRepository.findByFirebaseUserId(firebaseUid).ifPresent(user ->
-                    syncEmailVerificationStatus(user, true)
+                    syncEmailVerificationStatusInternal(user, true)
             );
 
             // Invalidate (one-time use)
