@@ -97,6 +97,40 @@ jobs:
         run: |
           ./mvnw -B -ntp verify -Pintegration -Dpmd.skip=true -Dcpd.skip=true -Dcheckstyle.skip=true
 
+      # Sonar's Java analyser resolves types through a classpath, and the CLI scanner -- unlike the
+      # Maven one -- knows nothing about the reactor's dependencies. The 09-10 run said so in as
+      # many words: "Missing 'sonar.java.libraries' property. You might end up with less precise
+      # analysis results", then "Unresolved imports/types have been detected during analysis".
+      #
+      # Less precise was generous. Every rule that needs a resolved type was degraded, and the two
+      # that reported this project's only twenty-two bugs both need one:
+      #
+      #   * S5790 ("Add @Nested to this inner test class") fired on fourteen inner classes that
+      #     carry @Nested on the line above their declaration. The annotation is
+      #     org.junit.jupiter.api.Nested; with no JUnit jar on the classpath the analyser cannot
+      #     tell it from any other unknown annotation.
+      #   * S2142 fired on eight catch blocks that do restore the interrupt. That rule follows a
+      #     called method three frames deep looking for Thread.interrupt(), which is exactly how
+      #     Interrupts.preserveInterrupt satisfies it -- when the call resolves.
+      #
+      # So hand it the classpath Maven already knows. `includeScope=test` covers both properties,
+      # which is what makes the test sources resolve as well as the main ones.
+      - name: Resolve the dependency classpath for the analyser
+        if: env.SONAR_TOKEN != ''
+        run: |
+          ./mvnw -B -ntp -q \
+            org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath \
+            -Dmdep.includeScope=test \
+            -Dmdep.pathSeparator=, \
+            -Dmdep.outputFile=target/sonar-classpath.txt
+          {
+            echo "SONAR_JAVA_LIBRARIES<<SONAR_CP_EOF"
+            cat target/sonar-classpath.txt
+            echo
+            echo "SONAR_CP_EOF"
+          } >> "$GITHUB_ENV"
+          echo "Resolved $(tr ',' '\n' < target/sonar-classpath.txt | wc -l) jars for the analyser."
+
       # `qualitygate.wait` is what makes this a gate rather than an upload. Without it the action
       # submits the analysis and exits 0, so the job was green whatever SonarCloud then decided --
       # including the condition this pipeline exists to enforce, coverage on NEW code. The gate's
@@ -107,4 +141,8 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
-          args: -Dsonar.qualitygate.wait=true -Dsonar.qualitygate.timeout=600
+          args: >
+            -Dsonar.java.libraries=${{ env.SONAR_JAVA_LIBRARIES }}
+            -Dsonar.java.test.libraries=${{ env.SONAR_JAVA_LIBRARIES }}
+            -Dsonar.qualitygate.wait=true
+            -Dsonar.qualitygate.timeout=600
