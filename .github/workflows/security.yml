@@ -52,8 +52,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
         with:
           python-version: "3.12"
       - run: python -m pip install --quiet "semgrep==${SEMGREP_VERSION}"
@@ -84,7 +84,7 @@ jobs:
           category: semgrep
       # Also kept as an artifact. upload-sarif tells the Security tab; the summary job below counts
       # what every scanner found and puts one number on the dashboard, and it can only read files.
-      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         if: always() && hashFiles('semgrep.sarif') != ''
         with:
           name: sarif-semgrep
@@ -96,8 +96,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
         with:
           python-version: "3.12"
       - run: python -m pip install --quiet "checkov==${CHECKOV_VERSION}"
@@ -122,7 +122,7 @@ jobs:
         with:
           sarif_file: checkov.sarif
           category: checkov
-      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         if: always() && hashFiles('checkov.sarif') != ''
         with:
           name: sarif-checkov
@@ -134,7 +134,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
       - name: Install Trivy
         run: |
           set -euo pipefail
@@ -162,7 +162,7 @@ jobs:
         with:
           sarif_file: trivy.sarif
           category: trivy
-      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         if: always() && hashFiles('trivy.sarif') != ''
         with:
           name: sarif-trivy
@@ -185,13 +185,13 @@ jobs:
         with:
           sarif_file: trivy-image.sarif
           category: trivy-image
-      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         if: always() && hashFiles('trivy-image.sarif') != ''
         with:
           name: sarif-trivy-image
           path: trivy-image.sarif
           retention-days: 7
-      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         with:
           name: sbom-${{ github.run_number }}
           path: sbom*.cdx.json
@@ -209,10 +209,10 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
       # sarif-summary.mjs and the dashboard live in the frontend repository (docs/ci/METRICS.md
       # there); the backend runs the same tool on its own scanners' output.
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           repository: Check-It-Out-Dev/checkitout-frontend
           path: frontend
@@ -221,12 +221,12 @@ jobs:
           sparse-checkout: |
             tools/ci
             tools/lib
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444  # v5
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020  # v7.0.0
         with:
           node-version: 24
 
       - name: Collect the SARIF every tool produced
-        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131  # v7
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
         with:
           pattern: sarif-*
           path: sarif
@@ -239,7 +239,7 @@ jobs:
           node frontend/tools/ci/sarif-summary.mjs "sarif/*.sarif" --json security-summary.json | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Pages site (previous state)
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           ref: gh-pages
           path: site
@@ -257,7 +257,7 @@ jobs:
         run: |
           bash tools/ci/publish-pages.sh site "security run ${{ github.run_number }}"
 
-      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         if: always()
         with:
           name: security-summary-${{ github.run_number }}
