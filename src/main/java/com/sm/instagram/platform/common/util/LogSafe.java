@@ -1,5 +1,7 @@
 package com.sm.instagram.platform.common.util;
 
+import java.util.regex.Pattern;
+
 /**
  * One place that knows how to make a caller-supplied string safe to write into a log line.
  *
@@ -40,7 +42,7 @@ public final class LogSafe {
      * named. They matter because a log shipper that writes JSON, or a viewer that renders it, will
      * happily treat them as the end of a line.
      */
-    static final String UNSAFE_REGEX = "[\\r\\n\\p{Cntrl}\\u0085\\u2028\\u2029]";
+    private static final Pattern UNSAFE = Pattern.compile("[\\r\\n\\p{Cntrl}\\u0085\\u2028\\u2029]");
 
     /** Long enough for an Origin, a UID or a user agent; short enough that it cannot flood. */
     public static final int MAX_LENGTH = 200;
@@ -75,20 +77,19 @@ public final class LogSafe {
      * edit can miss a use — still has to be able to ask whether the header was there at all. SLF4J
      * renders a null argument as {@code null} anyway, so nothing is lost in the log line.
      *
-     * <p><strong>Why {@code String.replaceAll}, and why the regex names {@code \r} and {@code \n}
-     * it already matches.</strong> Neither is for the code; both are for the analysers, and the
-     * reason is worth more than the alert count. CodeQL reported every call site of this method as
-     * unsanitised — seven of them — and while those stand, a log statement that genuinely forgot
-     * this method is indistinguishable from one that did not. A security control the scanner cannot
-     * see is a control that stops the scanner working.
+     * <p><strong>CodeQL does not recognise this method as a sanitiser, and two attempts to make it
+     * did not change that.</strong> It reports all seven call sites as {@code java/log-injection}.
+     * The first attempt swapped the precompiled {@code Pattern} for {@code String.replaceAll},
+     * which CodeQL does model — analysis on 711451d7, unchanged. The second named {@code \r} and
+     * {@code \n} explicitly in the class, on the theory that a sanitiser is recognised by the
+     * characters it names — analysis on 56913103, unchanged. The compiled pattern is back, because
+     * it was the better implementation and the change bought nothing; {@code \r\n} stays in the
+     * class, because it costs nothing and tells a reader what this is about.
      *
-     * <p>So: {@code String.replaceAll} rather than a precompiled {@code Pattern}, because CodeQL
-     * models the String method and not {@code Matcher.replaceAll}; and the character class says
-     * {@code \r\n} out loud, though {@code \p{Cntrl}} already covers both, because a sanitiser is
-     * recognised by the characters it names. The cost is one {@code Pattern.compile} per call,
-     * microseconds against the write that follows, and two redundant characters in a class that
-     * now states its own purpose. Measured, not assumed: the String-method change alone did not
-     * move it (analysis on 711451d7 still reported all seven).
+     * <p>The seven alerts are dismissed as false positives, naming this method. That is a real
+     * cost, not a tidy-up: while they stood, a log statement that genuinely forgot LogSafe looked
+     * exactly like one that did not. Dismissing them individually is what keeps the eighth
+     * visible.
      *
      * @param value the caller-supplied string, or null
      * @return a string that is always safe to interpolate into a log line, or null if it was null
@@ -97,7 +98,7 @@ public final class LogSafe {
         if (value == null) {
             return null;
         }
-        String cleaned = value.replaceAll(UNSAFE_REGEX, "?");
+        String cleaned = UNSAFE.matcher(value).replaceAll("?");
         if (cleaned.length() > MAX_LENGTH) {
             return cleaned.substring(0, MAX_LENGTH) + "…(truncated, " + cleaned.length() + " chars)";
         }
