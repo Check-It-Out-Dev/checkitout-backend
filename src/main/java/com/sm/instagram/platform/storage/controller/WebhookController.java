@@ -54,7 +54,7 @@ public class WebhookController {
      * flag.
      */
     @PostMapping("/firebase/storage")
-    public ResponseEntity<?> handleFirebaseStorageWebhook(
+    public ResponseEntity<Void> handleFirebaseStorageWebhook(
             @RequestHeader(value = "X-Firebase-Signature", required = false) String signature,
             @RequestBody Map<String, Object> payload) {
 

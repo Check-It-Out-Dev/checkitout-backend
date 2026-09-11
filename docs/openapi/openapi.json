@@ -4417,6 +4417,21 @@
         },
         "type" : "object"
       },
+      "RateLimits" : {
+        "description" : "Every limit an upload counts against",
+        "properties" : {
+          "daily" : {
+            "$ref" : "#/components/schemas/Window"
+          },
+          "hourly" : {
+            "$ref" : "#/components/schemas/Window"
+          },
+          "storage" : {
+            "$ref" : "#/components/schemas/Storage"
+          }
+        },
+        "type" : "object"
+      },
       "RateStatus" : {
         "enum" : [ "DEFAULT", "POSITIVE", "NEGATIVE" ],
         "type" : "string"
@@ -4792,6 +4807,24 @@
         "required" : [ "actionType" ],
         "type" : "object"
       },
+      "Storage" : {
+        "description" : "Storage against the account's allowance, in megabytes",
+        "properties" : {
+          "limitMB" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "usedMB" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "usedPercentage" : {
+            "format" : "double",
+            "type" : "number"
+          }
+        },
+        "type" : "object"
+      },
       "SupportTicketDtoIn" : {
         "properties" : {
           "category" : {
@@ -5122,6 +5155,46 @@
         },
         "type" : "object"
       },
+      "UploadConfirmation" : {
+        "description" : "An upload the server has verified and counted against the quota",
+        "properties" : {
+          "filePath" : {
+            "type" : "string"
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string"
+          },
+          "uploadId" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "UploadHistory" : {
+        "description" : "What this user has uploaded",
+        "properties" : {
+          "filesUploadedThisHour" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "filesUploadedToday" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "totalFiles" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "totalSizeBytes" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
       "UploadInstructions" : {
         "properties" : {
           "doNotSetHeaders" : {
@@ -5144,6 +5217,18 @@
           },
           "signatureVersion" : {
             "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "UploadStats" : {
+        "description" : "Quotas, and the upload history behind them",
+        "properties" : {
+          "rateLimits" : {
+            "$ref" : "#/components/schemas/RateLimits"
+          },
+          "uploadHistory" : {
+            "$ref" : "#/components/schemas/UploadHistory"
           }
         },
         "type" : "object"
@@ -5831,6 +5916,24 @@
           "totalSizeMB" : {
             "format" : "double",
             "type" : "number"
+          }
+        },
+        "type" : "object"
+      },
+      "Window" : {
+        "description" : "How much of one quota window is spent",
+        "properties" : {
+          "limit" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "remaining" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "used" : {
+            "format" : "int32",
+            "type" : "integer"
           }
         },
         "type" : "object"
@@ -19244,7 +19347,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "type" : "object"
+                  "$ref" : "#/components/schemas/UploadConfirmation"
                 }
               }
             },
@@ -19357,7 +19460,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "type" : "object"
+                  "$ref" : "#/components/schemas/RateLimits"
                 }
               }
             },
@@ -19477,7 +19580,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "type" : "object"
+                  "$ref" : "#/components/schemas/UploadStats"
                 }
               }
             },
@@ -21625,13 +21728,6 @@
         },
         "responses" : {
           "200" : {
-            "content" : {
-              "*/*" : {
-                "schema" : {
-                  "type" : "object"
-                }
-              }
-            },
             "description" : "OK"
           },
           "400" : {
