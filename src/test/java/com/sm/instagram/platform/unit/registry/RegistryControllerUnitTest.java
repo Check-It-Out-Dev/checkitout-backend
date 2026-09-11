@@ -132,14 +132,19 @@ class RegistryControllerUnitTest {
             assertThat(response.getBody().getNip()).isEqualTo(TEST_NIP);
         }
 
+        /**
+         * A 200 with a null body is a 200 with no body and no Content-Type, and a client that
+         * reads it as JSON fails at character zero -- which is how the fuzzer found it. 204 is the
+         * status for "nothing to send", and it reaches a consumer as the same absence.
+         */
         @Test
-        @DisplayName("should return null body when no company data")
-        void shouldReturnNullWhenNoCompanyData() {
+        @DisplayName("should answer 204 when the user has confirmed no company data")
+        void shouldAnswerNoContentWhenNoCompanyData() {
             when(registryLookupService.getCompanyDataForUser(TEST_FIREBASE_UID)).thenReturn(null);
 
             ResponseEntity<CompanyDataDtoOut> response = controller.getCompanyData();
 
-            assertThat(response.getStatusCode().value()).isEqualTo(200);
+            assertThat(response.getStatusCode().value()).isEqualTo(204);
             assertThat(response.getBody()).isNull();
         }
     }

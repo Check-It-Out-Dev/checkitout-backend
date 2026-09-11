@@ -15997,7 +15997,7 @@
         "tags" : [ "Registry" ]
       },
       "get" : {
-        "description" : "Returns the current user's confirmed company data, or null if not yet confirmed.",
+        "description" : "Returns the current user's confirmed company data, or 204 if none is confirmed yet.",
         "operationId" : "getCompanyData",
         "responses" : {
           "200" : {
@@ -16008,7 +16008,10 @@
                 }
               }
             },
-            "description" : "Company data returned (may be null)"
+            "description" : "Company data returned"
+          },
+          "204" : {
+            "description" : "This user has not confirmed company data yet"
           },
           "401" : {
             "content" : {

@@ -6,6 +6,7 @@ import com.sm.instagram.platform.common.ratelimit.RateLimitKeyType;
 import com.sm.instagram.platform.common.ratelimit.RateLimitProfile;
 import com.sm.instagram.platform.registry.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -62,14 +63,30 @@ public class RegistryController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Get company data", description = "Returns the current user's confirmed company data, or null if not yet confirmed.")
-    @ApiResponse(responseCode = "200", description = "Company data returned (may be null)")
+    /**
+     * The company data this user has confirmed, or 204 when they have not confirmed any.
+     *
+     * <p>It used to answer {@code ResponseEntity.ok(data)} with {@code data} null, which is a 200
+     * carrying no body and no {@code Content-Type} -- a client that reads the response as JSON gets
+     * a parse error at character zero, which is what the fuzzer found. "200, may be null" is not a
+     * thing HTTP can say; 204 is exactly the thing it can. Consumers see the same absence either
+     * way, because an empty 200 body and a 204 both arrive as null.
+     */
+    @Operation(summary = "Get company data",
+            description = "Returns the current user's confirmed company data, or 204 if none is confirmed yet.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Company data returned"),
+            // An empty @Content, or springdoc fills the 204 with the method's return type and the
+            // document promises a body on the one status that is defined as having none.
+            @ApiResponse(responseCode = "204", description = "This user has not confirmed company data yet",
+                    content = @Content)
+    })
     @GetMapping("/company-data")
     @RateLimit(profile = RateLimitProfile.STANDARD, keyType = RateLimitKeyType.USER_ENDPOINT)
     public ResponseEntity<CompanyDataDtoOut> getCompanyData() {
         String firebaseUid = permissionUtils.getUserId();
         CompanyDataDtoOut data = registryLookupService.getCompanyDataForUser(firebaseUid);
-        return ResponseEntity.ok(data);
+        return data == null ? ResponseEntity.noContent().build() : ResponseEntity.ok(data);
     }
 
     @Operation(summary = "Reset company data", description = "Deletes the company data so user can enter a different NIP. Reverts account to IN_VALIDATION.")
