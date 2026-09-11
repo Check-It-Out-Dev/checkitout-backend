@@ -5,7 +5,10 @@ management:
     web:
       base-path: /actuator
       exposure:
-        include: health,info,metrics,prometheus,env,loggers,threaddump,heapdump,conditions
+        # env, loggers, threaddump, heapdump and conditions were exposed over the web here.
+        # heapdump alone hands a caller the whole JVM heap. Nothing reads them; they remain
+        # on JMX.
+        include: health,info,metrics,prometheus
       path-mapping:
         health: health
         info: info
