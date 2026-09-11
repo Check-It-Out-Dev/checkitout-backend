@@ -197,9 +197,11 @@ for (const r of rows) {
 }
 out.push('');
 
-const interesting = rows.filter((r) => r.gating || !r.known);
+// A gating category whose every case is the environment's has nothing to show here; it is
+// reported in full in the section below, and an empty <details> is just noise.
+const interesting = rows.filter((r) => (r.gating && r.chargeable > 0) || !r.known);
 for (const r of interesting) {
-  if (!r.examples.length) continue;
+  if (!r.examples.some((e) => !(e.op in exemptionsFor(r.title)))) continue;
   out.push(`<details><summary>${r.title}: ${Math.min(top, r.cases)} of ${r.cases}</summary>`);
   out.push('');
   for (const e of r.examples) {
@@ -235,8 +237,9 @@ if (declared.length) {
 
 if (improved.length) {
   out.push(
-    '_Below budget, so the baseline in `tools/ci/fuzz-baseline.json` can be lowered in the same ' +
-      'commit that earned it: ' +
+    '_Below budget this run. Schemathesis reseeds every run and these counts swing by a third, so ' +
+      'ratchet to a figure above the highest of several runs rather than to this one -- see the ' +
+      'note in `tools/ci/fuzz-baseline.json`. This run: ' +
       improved.map((r) => `${r.title} ${r.allowed} → ${r.chargeable}`).join(', ') +
       '._'
   );
