@@ -1,0 +1,6 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-245dcbe6-21ce-4904-81e8-01ff1df9b58a
+  Company: COMPANY-2be69323-469a-43fc-85b7-25f8b47e15b3
+  Admin: ADMIN-2958e56d-245d-4483-a1d4-f6a1800538f8
+21:00:00.777 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=patchUser, UpdaterFirebaseUID=INFLUENCER-245dcbe6-21ce-4904-81e8-01ff1df9b58a, TargetUserID=12887, FieldsModified=[userType], Purpose=partial_profile_update, LegalBasis=consent
+21:00:00.778 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - SECURITY: Non-admin attempted to change userType for user 12887
