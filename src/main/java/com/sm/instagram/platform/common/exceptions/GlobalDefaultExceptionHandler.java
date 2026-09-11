@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -231,9 +232,50 @@ public class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandle
             return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+        // A page number whose offset does not fit in an int. Spring binds ?page= without bound,
+        // the persistence layer multiplies it by the page size, and Spring Data JPA refuses the
+        // result -- long after anything on the stack remembers that a stranger chose the number.
+        // GET /api/notifications?page=2147483647 answered 500 until this existed.
+        if (isPageOffsetOverflow(ex)) {
+            String traceId = baseHandler.generateTraceId();
+            baseHandler.logException(ex, HttpStatus.BAD_REQUEST, request, traceId);
+
+            BaseExceptionHandler.ErrorResponse errorResponse = new BaseExceptionHandler.ErrorResponse(
+                    HttpStatus.BAD_REQUEST.value(),
+                    BaseExceptionHandler.BAD_REQUEST,
+                    baseHandler.getLocalizedMessage("error.validation.page_out_of_range", null, request),
+                    baseHandler.getPath(request)
+            );
+            errorResponse.setRequestId(traceId);
+
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        }
+
         // Log and handle as general exception
         log.error("Unexpected runtime exception: {}", ex.getMessage(), ex);
         return handleGeneralException(ex, request);
+    }
+
+    /** The one frame in Spring Data JPA that a caller's page number can reach. */
+    static final String PAGEABLE_UTILS = "org.springframework.data.jpa.support.PageableUtils";
+
+    /**
+     * True when the exception was raised converting a caller's page offset to an {@code int}.
+     *
+     * <p>Keyed on the throwing frame rather than on the message, and deliberately narrow.
+     * {@code InvalidDataAccessApiUsageException} is the general "this code used the data API
+     * wrongly" exception, and most of what it can mean genuinely IS a server fault that has to
+     * keep its 500. Matching its wording instead would be one Spring release away from either
+     * silently missing this case or silently dressing real defects as 400s.
+     */
+    public static boolean isPageOffsetOverflow(Throwable ex) {
+        if (!(ex instanceof InvalidDataAccessApiUsageException)) {
+            return false;
+        }
+        StackTraceElement[] frames = ex.getStackTrace();
+        return frames.length > 0
+                && PAGEABLE_UTILS.equals(frames[0].getClassName())
+                && "getOffsetAsInteger".equals(frames[0].getMethodName());
     }
 
     /**

@@ -71,8 +71,13 @@ jobs:
   security:
     name: Security
     uses: ./.github/workflows/security.yml
+    # contents: write, not read -- the tier's `summary` job pushes the security count to the Pages
+    # branch so the dashboard can trend it. A job inside a called workflow may not hold more than
+    # the job that calls it, and the whole run is refused with `startup_failure` and NO LOG when it
+    # asks: the permission is checked before any job is scheduled, so there is nothing to read
+    # afterwards except the absence of jobs. That is what killed every night run from 09-10 on.
     permissions:
-      contents: read
+      contents: write
       security-events: write
     # No `secrets: inherit`, and nothing to pass: see the note on the first tier above.
 

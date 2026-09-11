@@ -7,6 +7,7 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.core.annotation.Order;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -36,6 +37,9 @@ import java.util.stream.Collectors;
 @Order(2)
 public class ValidationExceptionHandler extends ResponseEntityExceptionHandler {
     
+    /** A rejected property name is echoed back, so it is bounded before it is. */
+    public static final int MAX_ECHOED_PROPERTY_LENGTH = 64;
+
     private final BaseExceptionHandler baseHandler;
     
     public ValidationExceptionHandler(MessageSource messageSource) {
@@ -228,6 +232,49 @@ public class ValidationExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
     
+    /**
+     * Handle a {@code sort} (or any Spring Data property path) naming a property that does not
+     * exist on the entity.
+     *
+     * <p>Every {@code /paged} endpoint inherits {@code findPaginated(Pageable, Map)} from
+     * {@code BaseController}, and Spring binds {@code ?sort=<anything>} into that Pageable without
+     * checking it against the entity. The check happens later, when Spring Data derives the query,
+     * and a bad name arrives as {@link PropertyReferenceException} from deep inside the repository
+     * -- which the default handler reads as a server fault. Thirteen paged endpoints answered 500
+     * to {@code ?sort=AAA} until this existed; Schemathesis found all thirteen in one run.
+     *
+     * <p>It is a 400: the caller named a column that is not there. What comes back is the caller's
+     * own value and nothing else. The exception's message carries the entity type and a
+     * "Did you mean 'id'" suggestion built from the entity's fields, and echoing that would turn a
+     * validation error into a schema oracle for anyone probing the API.
+     */
+    @ExceptionHandler(PropertyReferenceException.class)
+    public ResponseEntity<BaseExceptionHandler.ErrorResponse> handlePropertyReferenceException(
+            PropertyReferenceException ex, WebRequest request) {
+
+        String traceId = baseHandler.generateTraceId();
+        baseHandler.logException(ex, HttpStatus.BAD_REQUEST, request, traceId);
+
+        String property = ex.getPropertyName() == null ? "" : ex.getPropertyName();
+        if (property.length() > MAX_ECHOED_PROPERTY_LENGTH) {
+            property = property.substring(0, MAX_ECHOED_PROPERTY_LENGTH);
+        }
+        String localizedMessage = baseHandler.getLocalizedMessage(
+                "error.validation.unknown_sort_property",
+                new Object[]{HtmlEncoder.encode(property)},
+                request);
+
+        BaseExceptionHandler.ErrorResponse errorResponse = new BaseExceptionHandler.ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                BaseExceptionHandler.BAD_REQUEST,
+                localizedMessage,
+                baseHandler.getPath(request)
+        );
+        errorResponse.setRequestId(traceId);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
     /**
      * Handle date/time parsing exceptions
      */
