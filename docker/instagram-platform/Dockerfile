@@ -9,7 +9,7 @@ ARG SKIP_MAVEN_BUILD=false
 # =============================================================================
 # STAGE 1: BUILD STAGE (Maven compilation in container)
 # =============================================================================
-FROM eclipse-temurin:21-jdk-alpine AS builder
+FROM eclipse-temurin:25-jdk-alpine AS builder
 
 # Re-declare ARG after FROM
 ARG SKIP_MAVEN_BUILD=false
@@ -101,7 +101,7 @@ RUN rm -rf /context /copy-jars.sh
 # =============================================================================
 # STAGE 2: RUNTIME STAGE (Minimal production image)
 # =============================================================================
-FROM eclipse-temurin:21-jre-alpine AS production
+FROM eclipse-temurin:25-jre-alpine AS production
 
 # Build arguments for container user configuration
 ARG CONTAINER_USER_ID=1002
