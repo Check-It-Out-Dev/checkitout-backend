@@ -4,7 +4,7 @@
 # Best practices applied for reliable CI/CD execution
 # =============================================================================
 
-FROM alpine:3.19 AS builder
+FROM alpine:3.24 AS builder
 
 # =============================================================================
 # BUILD ARGUMENTS FROM SPRING PROPERTIES
@@ -41,7 +41,7 @@ RUN mkdir -p /app/scripts /app/logs && \
 # FINAL STAGE - SECURITY HARDENED
 # =============================================================================
 
-FROM alpine:3.19
+FROM alpine:3.24
 
 # Copy from builder
 COPY --from=builder / /
