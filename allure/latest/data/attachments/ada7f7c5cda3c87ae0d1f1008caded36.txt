@@ -1,0 +1,36 @@
+21:52:40.721 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - GDPR: Operation=validateRedisAccess, Purpose=system_startup_validation, DataAccessed=none
+21:52:40.721 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - ==========================================
+21:52:40.721 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - 🚀 REDIS VALIDATION SERVICE
+21:52:40.721 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - ==========================================
+21:52:40.721 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - 📍 Redis Configuration:
+21:52:40.721 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Storage Mode: redis
+21:52:40.721 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Host: localhost
+21:52:40.721 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Port: 6379
+21:52:40.721 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Database: 0
+21:52:40.721 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Timeout: 2000ms
+21:52:40.721 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - 
+🧪 Testing Redis Connection:
+21:52:40.721 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Testing PING...
+21:52:40.721 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ PING successful
+21:52:40.721 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Retrieving server info...
+21:52:40.721 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Server Info Retrieved:
+21:52:40.721 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -      - Version: 7.0.0
+21:52:40.721 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -      - Mode: standalone
+21:52:40.721 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -      - Connected Clients: 10
+21:52:40.721 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -      - Memory Used: 100 MB
+21:52:40.721 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -      - Memory Limit: 1024 MB
+21:52:40.721 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -      - Memory Usage: {:.2f}%
+21:52:40.721 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Checking database size...
+21:52:40.721 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Database contains 100 keys
+21:52:40.721 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Testing write/read operations...
+21:52:40.721 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - 
+❌ REDIS VALIDATION FAILED!
+21:52:40.721 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Error: error.validation.failed
+21:52:40.721 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - 
+   Troubleshooting steps:
+21:52:40.721 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    1. Check if Redis server is running
+21:52:40.721 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    2. Verify connection settings: localhost:6379
+21:52:40.721 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    3. Check firewall/network settings
+21:52:40.721 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    4. Verify Redis password if authentication is enabled
+21:52:40.721 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - ⚠️⚠️ CONTINUING WITHOUT REDIS - FALLING BACK TO IN-MEMORY! ⚠️⚠️
+21:52:40.721 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - ==========================================

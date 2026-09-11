@@ -1,0 +1,10 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-9f5eed08-bb34-4b81-8655-2f733bbd3f30
+  Company: COMPANY-8c340d2f-d5c2-417a-8825-15cc5dc3f3f5
+  Admin: ADMIN-f6be5fb4-1562-439e-b757-61873cca6ed1
+21:53:22.402 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus, FirebaseUID=COMPANY-8c340d2f-d5c2-417a-8825-15cc5dc3f3f5, OpportunityID=2559, Action=REJECT, Purpose=status_management
+21:53:22.403 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=COMPANY-8c340d2f-d5c2-417a-8825-15cc5dc3f3f5, OpportunityID=2559, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
+21:53:22.436 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus_SUCCESS, FirebaseUID=COMPANY-8c340d2f-d5c2-417a-8825-15cc5dc3f3f5, OpportunityID=2559, OldStatus=CONTENT_SEND_TO_ACCEPT, NewStatus=CONTENT_REJECTED
+21:53:22.436 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=COMPANY-8c340d2f-d5c2-417a-8825-15cc5dc3f3f5, AppliedOpportunityID=2559, StatusChange=CONTENT_SEND_TO_ACCEPT→CONTENT_REJECTED, Purpose=status_tracking
+21:53:22.438 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=COMPANY-8c340d2f-d5c2-417a-8825-15cc5dc3f3f5, AppliedOpportunityID=2559, DataAccessed=status,changedBy,reason, Purpose=audit_trail
+21:53:22.438 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2559, CONTENT_SEND_TO_ACCEPT -> CONTENT_REJECTED, Changed by=COMPANY-8c340d2f-d5c2-417a-8825-15cc5dc3f3f5, Reason=Status rejected via API (/status/update endpoint)
