@@ -1,0 +1,10 @@
+14:14:45.499 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.t.c.s.AnnotationConfigContextLoaderUtils&amp#27;[0;39m - Could not detect default configuration classes for test class [com.sm.instagram.platform.integration.service.userpreferences.UserPreferencesService_GetAndCreate_IntegrationTest$GetCurrentUserPreferences]: GetCurrentUserPreferences does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+14:14:45.500 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.b.t.c.SpringBootTestContextBootstrapper&amp#27;[0;39m - Found @SpringBootConfiguration com.sm.instagram.platform.InstagramPlatformApplication for test class com.sm.instagram.platform.integration.service.userpreferences.UserPreferencesService_GetAndCreate_IntegrationTest$GetCurrentUserPreferences
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-eb25301f-a750-4a9d-bb54-59f1823c0576
+  Company: COMPANY-52db4646-6ba4-4008-a483-700c1c99647a
+  Admin: ADMIN-0dc86ffe-24df-447b-87be-e0935404777d
+14:14:45.508 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=getCurrentUserPreferences, FirebaseUID=COMPANY-52db4646-6ba4-4008-a483-700c1c99647a, Purpose=user_preference_retrieval, DataAccessed=user.preferences.*
+14:14:45.509 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=getCurrentUserPreferences_CREATE_NEW, FirebaseUID=COMPANY-52db4646-6ba4-4008-a483-700c1c99647a, Reason=no_existing_preferences
+14:14:45.509 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=createDefaultPreferences, FirebaseUID=COMPANY-52db4646-6ba4-4008-a483-700c1c99647a, DataCreated=user.preferences.*, Purpose=initial_setup, LegalBasis=contract
+14:14:45.509 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=createDefaultPreferences_SUCCESS, FirebaseUID=COMPANY-52db4646-6ba4-4008-a483-700c1c99647a, PreferencesID=95, DefaultsApplied=true

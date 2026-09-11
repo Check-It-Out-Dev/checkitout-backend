@@ -1,0 +1,16 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-ca099b9a-c244-47d2-b104-aebf46bd4841
+  Company: COMPANY-c40d22ac-8be3-4e49-869f-a9c9215d2f05
+  Admin: ADMIN-7785a661-c61d-4178-96fd-e7ea6ecf431b
+14:14:42.710 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: PERMANENT_DELETION Operation=deletePermanently, AdminFirebaseUID=ADMIN-7785a661-c61d-4178-96fd-e7ea6ecf431b, TargetUserID=12520, Purpose=permanent_removal, LegalBasis=legal_requirement
+14:14:42.710 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=findUserById, AccessorFirebaseUID=ADMIN-7785a661-c61d-4178-96fd-e7ea6ecf431b, TargetUserID=12520, Purpose=user_data_retrieval, DataAccessed=user.profile,user.addresses,user.socialConnections
+14:14:42.718 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=evictUser, DataDeleted=cached_user_data, Purpose=cache_management
+14:14:42.719 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+14:14:42.720 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+14:14:42.720 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - SECURITY: Cache evicted for user 12520 before permanent deletion
+14:14:42.741 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.firebase.FirebaseService&amp#27;[0;39m - GDPR: DELETION Service=deleteUserGraceful, Operation=DELETE_USER, FirebaseUID=perm-delete-1789136082710, Purpose=cascade_delete
+14:14:42.807 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.firebase.FirebaseService&amp#27;[0;39m - Failed to delete Firebase user [uid=perm-delete-1789136082710, errorCode=UNKNOWN]: Unknown error while making a remote service call: Error getting access token for service account: 400 Bad Request
+POST https://oauth2.googleapis.com/token
+{"error":"invalid_grant","error_description":"Invalid grant: account not found"}, iss: synthetic-tests@check-it-out-47c50.iam.gserviceaccount.com
+14:14:42.807 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Firebase user deleted for permanent deletion - uid: perm-delete-1789136082710
+14:14:42.807 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: PERMANENT_DELETION_COMPLETE Operation=deletePermanently_SUCCESS, AdminFirebaseUID=ADMIN-7785a661-c61d-4178-96fd-e7ea6ecf431b, DeletedUserID=12520, DeletedFirebaseUID=perm-delete-1789136082710, DataRemoved=ALL_USER_DATA

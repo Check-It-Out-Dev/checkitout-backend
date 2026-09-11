@@ -1,0 +1,10 @@
+14:13:58.392 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.t.c.s.AnnotationConfigContextLoaderUtils&amp#27;[0;39m - Could not detect default configuration classes for test class [com.sm.instagram.platform.integration.service.address.AddressService_AddressType_IntegrationTest$AddressTypeManagementOnUpdate]: AddressTypeManagementOnUpdate does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+14:13:58.394 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.b.t.c.SpringBootTestContextBootstrapper&amp#27;[0;39m - Found @SpringBootConfiguration com.sm.instagram.platform.InstagramPlatformApplication for test class com.sm.instagram.platform.integration.service.address.AddressService_AddressType_IntegrationTest$AddressTypeManagementOnUpdate
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-2fcaf3cc-8499-48be-a6ae-e850d9f55410
+  Company: COMPANY-1d1a0196-d2bf-411a-bf81-037cf889ea36
+  Admin: ADMIN-a0965cb7-2609-4683-a5c0-0b22dc8a143f
+14:13:58.411 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.address.AddressService&amp#27;[0;39m - GDPR: Operation=updateAddress, FirebaseUID=COMPANY-1d1a0196-d2bf-411a-bf81-037cf889ea36, AddressID=2527, Purpose=address_modification
+14:13:58.411 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.address.AddressService&amp#27;[0;39m - GDPR: Operation=findAddressById, FirebaseUID=COMPANY-1d1a0196-d2bf-411a-bf81-037cf889ea36, AddressID=2527, Purpose=address_retrieval
+14:13:58.412 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.address.AddressService&amp#27;[0;39m - GDPR: DataAccessed=address.all_fields, FirebaseUID=COMPANY-1d1a0196-d2bf-411a-bf81-037cf889ea36, AddressID=2527, Purpose=service_processing
+14:13:58.424 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.address.AddressService&amp#27;[0;39m - GDPR: DataModified=address.all_fields, FirebaseUID=COMPANY-1d1a0196-d2bf-411a-bf81-037cf889ea36, AddressID=2527, Purpose=user_update_complete

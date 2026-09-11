@@ -1,0 +1,40 @@
+14:13:50.362 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m - GDPR: Operation=testSignedUrlLifecycle, Purpose=system_validation, DataAccessed=test_data_only
+14:13:50.362 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m - 
+🔬 SIGNED URL LIFECYCLE VALIDATION:
+14:13:50.362 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m - 
+   Test 1: Service Account for URL Signing
+14:13:50.362 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    ✓ PASSED: Service account loaded
+14:13:50.362 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    → Email: test@test-project.iam.gserviceaccount.com
+14:13:50.362 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m - 
+   Test 2: Target Bucket Access
+14:13:50.363 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    ✓ PASSED: Bucket 'test-bucket.firebasestorage.app' exists
+14:13:50.363 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m - 
+   Test 3: Generate Upload URL
+14:13:50.363 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    → Test file path: _validation/test_61f2a238-5fbf-48ba-96ca-ceb4128b2e53.png
+14:13:50.366 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    ✓ PASSED: Upload URL generated
+14:13:50.366 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    → URL contains signature: true
+14:13:50.366 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    → URL expires in 5 minutes
+14:13:50.366 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m - 
+   Test 4: ACTUAL FILE UPLOAD
+14:13:50.366 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    → Method: PUT
+14:13:50.366 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    → Content: 1x1 PNG (67 bytes)
+14:13:50.366 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    → Auth: Signed URL (no JWT/cookies)
+14:13:50.366 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    → Image size: 70 bytes
+14:13:50.371 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    → Uploading to Firebase Storage...
+14:13:50.438 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    → Response code: 400
+14:13:50.438 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    ❌ UPLOAD FAILED with status: 400
+14:13:50.439 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    → Error response: <?xml version='1.0' encoding='UTF-8'?><Error><Code>MissingSecurityHeader</Code><Message>Invalid argument.</Message><Details>Your request was missing a required header. Missing headers: x-goog-algorithm</Details></Error>
+14:13:50.441 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m - 
+   Test 5: Verify Uploaded File
+14:13:51.441 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    ❌ FILE NOT FOUND in storage after upload
+14:13:51.441 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    → Upload may have failed silently
+14:13:51.441 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m - 
+📊 SIGNED URL LIFECYCLE SUMMARY:
+14:13:51.441 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    ════════════════════════════════
+14:13:51.441 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    Complete lifecycle test performed
+14:13:51.441 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    Check logs above for results
+14:13:51.441 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m - 
+   ⚠️ IMPORTANT:
+14:13:51.441 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    Signed URLs do NOT require JWT tokens!
+14:13:51.441 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    Authentication is via URL signature only
+14:13:51.441 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    No user login needed for signed URL uploads
