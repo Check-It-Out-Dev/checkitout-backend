@@ -28,7 +28,7 @@ jobs:
     steps:
       - name: Cleanup GHCR images
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
-        # Through env, not interpolated. `${{ }}` inside a `script:` body is pasted into the
+        # Through env, not interpolated. An expression inside a `script:` body is pasted into the
         # JavaScript before the runner parses it, so the value is not a string the script reads --
         # it is source code the script is built from, and a value carrying a quote ends the literal
         # and continues as statements. The choice input only offers 'true' and 'false' today, which
