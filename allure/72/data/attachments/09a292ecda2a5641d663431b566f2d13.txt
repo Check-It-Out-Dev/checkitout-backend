@@ -1,0 +1,18 @@
+03:54:47.722 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramService&amp#27;[0;39m - InstagramService initialized:
+03:54:47.722 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramService&amp#27;[0;39m -   - OAuth endpoint: https://api.instagram.com
+03:54:47.722 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramService&amp#27;[0;39m -   - Graph API endpoint: https://graph.instagram.com
+03:54:47.722 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramService&amp#27;[0;39m - Meta OAuth Error Response: {
+    "error": {
+        "message": "Technical error",
+        "type": "OAuthException",
+        "code": 100,
+        "fbtrace_id": "ABC123",
+        "error_user_title": "Login Failed",
+        "error_user_msg": "Please try again later"
+    }
+}
+
+03:54:47.722 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramService&amp#27;[0;39m - Meta OAuth Error Details - Code: 100, Subcode: 0, Type: OAuthException, Message: Technical error, Trace: ABC123, Transient: false
+03:54:47.722 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramService&amp#27;[0;39m - User Title: Login Failed
+03:54:47.722 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramService&amp#27;[0;39m - User Message: Please try again later
+03:54:47.722 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramService&amp#27;[0;39m - Unhandled Meta error. Code: 100, Subcode: 0, Message: Technical error
