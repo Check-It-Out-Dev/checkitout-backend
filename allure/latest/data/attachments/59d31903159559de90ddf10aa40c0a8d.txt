@@ -1,0 +1,4 @@
+17:39:48.238 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.TwoFactorStatusController&amp#27;[0;39m - GDPR: Operation=disable2FA, FirebaseUID=test-firebase-uid-123, DataAccessed=2fa_settings,user_role, Purpose=security_downgrade
+17:39:48.238 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.TwoFactorStatusController&amp#27;[0;39m - Failed to update Firebase during 2FA disable for user: test-firebase-uid-123
+Mock for FirebaseAuthException, hashCode: 365367522
+17:39:48.239 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.e.h.BaseExceptionHandler&amp#27;[0;39m - CLIENT_ERROR - AuthenticationTranslatableException [trace=ERR-8dbc13fb, path=/twofactor/disable, method=POST, user=test-firebase-uid-123, ip=127.0.0.1]: error.auth.firebase_account_not_found

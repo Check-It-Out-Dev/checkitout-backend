@@ -1,0 +1,7 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-56977ff1-90f3-4705-b5d7-e385f773f79b
+  Company: COMPANY-8b7aeaeb-9ed0-49db-8e8e-479ed45de8a4
+  Admin: ADMIN-94b256ae-e803-42e3-9163-4641e641a780
+17:41:41.481 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=patchCurrentUserPreferences, FirebaseUID=INFLUENCER-56977ff1-90f3-4705-b5d7-e385f773f79b, FieldsModified=[notificationPushEnabled, notificationSmsEnabled, notificationEmailEnabled], Purpose=partial_settings_update, LegalBasis=consent
+17:41:41.485 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=getCurrentUserPreferences, FirebaseUID=INFLUENCER-56977ff1-90f3-4705-b5d7-e385f773f79b, Purpose=user_preference_retrieval, DataAccessed=user.preferences.*
+17:41:41.486 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=patchCurrentUserPreferences_SUCCESS, FirebaseUID=INFLUENCER-56977ff1-90f3-4705-b5d7-e385f773f79b, ModifiedFields=[notificationPushEnabled, notificationSmsEnabled, notificationEmailEnabled]
