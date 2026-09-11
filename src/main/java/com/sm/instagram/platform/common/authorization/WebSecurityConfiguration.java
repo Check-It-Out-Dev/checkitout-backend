@@ -43,6 +43,29 @@ public class WebSecurityConfiguration {
                                            AuthenticationConfiguration authenticationConfiguration)
             throws Exception {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                // CSRF tokens are off, and the reason is SameSite rather than "it's an API".
+                //
+                // This application authenticates with cookies, so "stateless, therefore no CSRF"
+                // does not apply to it - a cookie is attached by the browser whether the request
+                // came from our page or somebody else's. What makes the attack impossible here is
+                // that every cookie carrying authentication is set SameSite=Strict, which means a
+                // cross-site request carries no credential at all: AuthController's Firebase id
+                // token and its signature, the same pair in FirebaseAuthProxyController, and all
+                // three setters in TokenExchangeService. CORS with an explicit allow-list sits in
+                // front of that as a second refusal for anything preflighted.
+                //
+                // The only Lax cookies are the three OAuth handshake cookies in
+                // OAuthCallbackService, and they have to be: SameSite=Strict is not sent on a
+                // top-level cross-site navigation either, which is exactly what an OAuth redirect
+                // is. They live for 120 seconds, carry a one-time token and its HMAC rather than a
+                // session, and are cleared when the flow ends.
+                //
+                // What would invalidate this: any authentication cookie moving to Lax or None - the
+                // obvious way for that to happen is someone fixing a redirect by loosening the
+                // session cookie rather than the handshake cookie. CookieSameSitePolicyUnitTest
+                // fails the build if that happens, and this comment is what it points at. CodeQL
+                // reports the line below as java/spring-disabled-csrf-protection; it cannot see a
+                // cookie attribute set eight files away.
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         // =============================================================
