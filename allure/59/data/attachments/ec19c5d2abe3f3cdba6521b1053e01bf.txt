@@ -1,0 +1,15 @@
+02:16:57.034 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramService&amp#27;[0;39m - InstagramService initialized:
+02:16:57.034 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramService&amp#27;[0;39m -   - OAuth endpoint: https://api.instagram.com
+02:16:57.034 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramService&amp#27;[0;39m -   - Graph API endpoint: https://graph.instagram.com
+02:16:57.034 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramService&amp#27;[0;39m - Meta OAuth Error Response: {
+    "error": {
+        "message": "Temporary service issue",
+        "type": "OAuthException",
+        "code": 2,
+        "fbtrace_id": "ABC123",
+        "is_transient": true
+    }
+}
+
+02:16:57.034 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramService&amp#27;[0;39m - Meta OAuth Error Details - Code: 2, Subcode: 0, Type: OAuthException, Message: Temporary service issue, Trace: ABC123, Transient: true
+02:16:57.034 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramService&amp#27;[0;39m - Transient Meta error. Code: 2, Message: Temporary service issue
