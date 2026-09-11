@@ -1,5 +1,6 @@
 package com.sm.instagram.platform.unit.config;
 
+import com.sm.instagram.platform.config.ErrorEnvelopeResponsesCustomizer;
 import com.sm.instagram.platform.config.ValidationFailureResponsesCustomizer;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -59,6 +60,11 @@ class ValidationFailureResponsesCustomizerUnitTest {
         assertThat(operation.getResponses()).containsKey("400");
         assertThat(operation.getResponses().get("400").getDescription())
                 .isEqualTo(ValidationFailureResponsesCustomizer.DESCRIPTION);
+        // Described where it is created, rather than relying on ErrorEnvelopeResponsesCustomizer to
+        // come along afterwards: springdoc applies these beans in alphabetical order, so it does not.
+        assertThat(operation.getResponses().get("400").getContent().values().iterator().next()
+                .getSchema().get$ref())
+                .isEqualTo("#/components/schemas/" + ErrorEnvelopeResponsesCustomizer.SCHEMA_NAME);
     }
 
     @Test

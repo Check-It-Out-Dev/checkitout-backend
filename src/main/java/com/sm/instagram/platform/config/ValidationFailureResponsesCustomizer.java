@@ -48,8 +48,9 @@ public class ValidationFailureResponsesCustomizer {
                         if (responses == null) {
                             return;
                         }
-                        responses.computeIfAbsent("400",
-                                key -> new ApiResponse().description(DESCRIPTION));
+                        responses.computeIfAbsent("400", key -> new ApiResponse()
+                                .description(DESCRIPTION)
+                                .content(ErrorEnvelopeResponsesCustomizer.envelopeContent()));
                     }));
         };
     }
