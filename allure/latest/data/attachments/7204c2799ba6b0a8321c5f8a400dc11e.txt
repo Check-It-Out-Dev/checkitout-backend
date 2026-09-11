@@ -1,0 +1,9 @@
+10:26:56.946 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.t.c.s.AnnotationConfigContextLoaderUtils&amp#27;[0;39m - Could not detect default configuration classes for test class [com.sm.instagram.platform.integration.service.user.UserService_Save_IntegrationTest$SaveStatusSetting]: SaveStatusSetting does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+10:26:56.947 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.b.t.c.SpringBootTestContextBootstrapper&amp#27;[0;39m - Found @SpringBootConfiguration com.sm.instagram.platform.InstagramPlatformApplication for test class com.sm.instagram.platform.integration.service.user.UserService_Save_IntegrationTest$SaveStatusSetting
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-9ff9e772-c263-49fc-91c6-7fd96c3cc358
+  Company: COMPANY-97930817-f797-4192-aead-7328cbd530ad
+  Admin: ADMIN-3811af48-4351-44a6-ae4f-6b90bfbfeb1a
+10:26:56.954 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=createUser, FirebaseUID=INFLUENCER-9ff9e772-c263-49fc-91c6-7fd96c3cc358, Email=test-1789122416954@example.com, UserType=INFLUENCER, Purpose=account_creation, LegalBasis=contract, DataCreated=user.profile,user.addresses
+10:26:56.954 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - User null editing own profile - no status transition (fields validated by DTO validators)
+10:26:56.954 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=createUser_SUCCESS, FirebaseUID=INFLUENCER-9ff9e772-c263-49fc-91c6-7fd96c3cc358, UserID=12779, AccountStatus=IN_VALIDATION

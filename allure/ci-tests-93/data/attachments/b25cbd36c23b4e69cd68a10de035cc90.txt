@@ -1,0 +1,29 @@
+10:25:15.471 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - ==========================================
+10:25:15.471 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - 🔐 TOTP (2FA) VALIDATION
+10:25:15.471 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - ==========================================
+10:25:15.471 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - GDPR: Operation=startTotpValidation, FirebaseUID=SYSTEM, DataAccessed=config_validation, Purpose=system_initialization
+10:25:15.471 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - 📋 TOTP Configuration:
+10:25:15.471 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    Issuer: CheckItOut
+10:25:15.471 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    Key Ring: instagram-tokens
+10:25:15.471 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    TOTP Key: totp-secrets-key
+10:25:15.471 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    Status: ENABLED
+10:25:15.471 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - 
+🔑 Testing TOTP KMS Encryption:
+10:25:15.471 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✗ TOTP KMS validation failed: KMS failed
+10:25:15.471 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    → Check if totp-secrets-key exists in instagram-tokens
+10:25:15.471 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - 
+📚 Testing Firestore TOTP Collection:
+10:25:15.471 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✓ Firestore TOTP collection accessible
+10:25:15.471 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - 
+🔢 Testing TOTP Generation:
+10:25:15.471 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✓ TOTP secret generated: JBSW...
+10:25:15.471 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✓ TOTP code generated: 123456
+10:25:15.471 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✓ TOTP generation and verification working
+10:25:15.471 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    Testing time window tolerance (configured in application.yml)...
+10:25:15.471 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✓ TOTP time window tolerance working
+10:25:15.471 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - 
+❌ TOTP Service: DEGRADED
+10:25:15.471 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    Some checks failed - 2FA may not work properly
+10:25:15.471 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    Check the logs above for details
+10:25:15.471 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - GDPR: Operation=completeTotpValidation, FirebaseUID=SYSTEM, DataAccessed=system_health, Purpose=startup_validation, Result=FAILED
+10:25:15.471 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - ==========================================
