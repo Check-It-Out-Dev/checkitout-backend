@@ -2,6 +2,8 @@ package com.sm.instagram.platform.unit.logging;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
@@ -84,14 +86,53 @@ class LogForgeryUnitTest {
 
   @Test
   @DisplayName("a value that looks like JSON cannot break out of its field")
-  void jsonInAValueStaysInsideItsField() {
-    // If the message were concatenated rather than encoded, this would add a top-level field.
-    String encoded = encode("plain\",\"log.level\":\"ERROR\",\"forged\":\"yes");
+  void jsonInAValueStaysInsideItsField() throws Exception {
+    // If the message were concatenated rather than encoded, this would add two top-level fields and
+    // overwrite the level with ERROR.
+    String hostile = "plain\",\"log.level\":\"ERROR\",\"forged\":\"yes";
+
+    String encoded = encode(hostile);
 
     assertThat(encoded.strip().lines()).hasSize(1);
     // The quotes are escaped, so the injected key never becomes a key.
     assertThat(encoded).contains("\\\"");
-    // ECS writes the real level as log.level; the forged one must not have replaced it.
-    assertThat(encoded).contains("\"log.level\":\"INFO\"");
+
+    JsonNode record = new ObjectMapper().readTree(encoded);
+    assertThat(record.has("forged")).as("the message must not be able to add a field").isFalse();
+    assertThat(record.get("message").asText()).as("it stays a value, verbatim").isEqualTo(hostile);
+    assertThat(level(record)).as("nor overwrite the real level").isEqualTo("INFO");
+  }
+
+  /**
+   * The level, whichever shape the formatter is writing this year.
+   *
+   * <p>Spring Boot 3.4 wrote ECS as flat dotted keys, {@code "log.level":"INFO"}. 3.5 writes the
+   * same data nested, {@code "log":{"level":"INFO"}}. Both are valid ECS and the security property
+   * under test is the same either way, so the assertion above should not depend on which one is in
+   * front of it. The next test is the one that does.
+   */
+  private String level(JsonNode record) {
+    JsonNode nested = record.at("/log/level");
+    return nested.isMissingNode() ? record.path("log.level").asText() : nested.asText();
+  }
+
+  @Test
+  @DisplayName("the ECS field shape is what the sandbox log pipeline parses")
+  void ecsShapeMatchesTheAlloyPipeline() throws Exception {
+    // This one exists to fail loudly, because the consumer is in another repository and cannot.
+    // `deploy/sandbox/alloy/config.alloy` in checkitout-frontend lifts `level` and `logger` out of
+    // every backend line and turns `level` into a Loki label. When Spring Boot 3.5 moved these from
+    // "log.level" to log.level, that config silently stopped matching and the Grafana level filter
+    // silently went empty - no error anywhere, just a dashboard that quietly says nothing.
+    JsonNode record = new ObjectMapper().readTree(encode("anything"));
+
+    assertThat(record.at("/log/level").asText())
+        .as("alloy: level = \"log.level\"")
+        .isEqualTo("INFO");
+    assertThat(record.at("/log/logger").asText())
+        .as("alloy: logger = \"log.logger\"")
+        .isEqualTo("com.sm.instagram.platform.Forgery");
+    assertThat(record.has("@timestamp")).isTrue();
+    assertThat(record.has("message")).isTrue();
   }
 }

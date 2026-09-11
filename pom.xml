@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.13</version>
+		<version>3.5.16</version>
 		<relativePath/>
 	</parent>
 
@@ -40,6 +40,11 @@
 		     42.7.11 for unbounded PBKDF2 iterations in SCRAM auth (a server-controlled CPU
 		     exhaustion). Overriding the managed property is the supported way to move it. -->
 		<postgresql.version>42.7.12</postgresql.version>
+
+		<!-- Boot 3.5.16 manages snakeyaml at 2.4, but the jackson-dataformat-yaml it also manages
+		     (2.21.4) requires 2.5. requireUpperBoundDeps caught the inversion; this resolves it
+		     upward rather than letting Maven silently pick the lower one. -->
+		<snakeyaml.version>2.5</snakeyaml.version>
 
 		<!-- Dependency versions to avoid conflicts -->
 		<org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
