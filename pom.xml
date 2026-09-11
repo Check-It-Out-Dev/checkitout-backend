@@ -110,6 +110,17 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<!-- protobuf-java, before the boms, because it has to win against one of them.
+					 The Google libraries-bom manages this artifact directly, so neither a Spring Boot
+					 property nor a later entry moves it: Maven inlines an imported bom at the position it
+					 is declared, and first declaration wins. The bom ships 3.25.3, which carries a HIGH
+					 (CVE-2026-14456's neighbour in the same Trivy report) fixed in 3.25.5. Staying on
+					 3.25.x rather than taking 4.x, which is a different generation. -->
+			<dependency>
+				<groupId>com.google.protobuf</groupId>
+				<artifactId>protobuf-java</artifactId>
+				<version>3.25.5</version>
+			</dependency>
 			<!-- One gRPC version, chosen once. Dependabot bumped grpc-netty-shaded to 1.75.0 by itself
 					 (#9) while four siblings stayed hand-pinned at 1.59.0. NettyClientHandler then called
 					 GrpcUtil.getFlag, which 1.59 does not declare, and the first transport start threw
