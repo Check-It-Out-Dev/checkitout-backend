@@ -1,0 +1,10 @@
+15:36:29.564 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.TokenExchangeService&amp#27;[0;39m - GDPR: Operation=exchangeToken_entry, Purpose=authentication, DataAccessed=firebase_token
+15:36:29.564 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.TokenExchangeService&amp#27;[0;39m - GDPR: Operation=firebase_token_verified, FirebaseUID=firebase-uid-123, DataAccessed=uid,email, Purpose=authentication
+15:36:29.564 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.TokenExchangeService&amp#27;[0;39m - GDPR: Operation=ROLE_VALIDATION, FirebaseUID=firebase-uid-123, Role=ADMIN, Source=FIREBASE_ADMIN_SDK
+15:36:29.564 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.TokenExchangeService&amp#27;[0;39m - GDPR: Operation=2FA_CHALLENGE_VALIDATED, FirebaseUID=firebase-uid-123, ChallengeAge=1ms, Result=VALID
+15:36:29.564 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.TokenExchangeService&amp#27;[0;39m - Enhanced token verification passed for privileged role: ADMIN
+15:36:29.564 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.TokenExchangeService&amp#27;[0;39m - Firebase role validation complete - Role: ADMIN, 2FA Required: false, 2FA Verified: true
+15:36:29.564 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.TokenExchangeService&amp#27;[0;39m - GDPR: DatabaseQuery=findByFirebaseUserId, FirebaseUID=firebase-uid-123, Table=users, DataAccessed=user.id,user.email,user.userType, Purpose=session_creation
+15:36:29.564 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.TokenExchangeService&amp#27;[0;39m - GDPR: Operation=ADMIN_2FA_CHALLENGE_CHECK, FirebaseUID=firebase-uid-123, ChallengeAge=1ms, Valid=true
+15:36:29.565 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.TokenExchangeService&amp#27;[0;39m - ADMIN has valid 2FA challenge - issuing full session with challengeAge: 1ms
+15:36:29.565 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.TokenExchangeService&amp#27;[0;39m - GDPR: Operation=exchangeToken_success, FirebaseUID=firebase-uid-123, SessionType=FULL, Purpose=authentication_complete
