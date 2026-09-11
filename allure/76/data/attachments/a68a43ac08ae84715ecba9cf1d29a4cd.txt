@@ -1,0 +1,1293 @@
+04:37:07.321 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.t.c.s.AnnotationConfigContextLoaderUtils&amp#27;[0;39m - Could not detect default configuration classes for test class [com.sm.instagram.platform.openapi.OpenApiSpecGeneratorTest]: OpenApiSpecGeneratorTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+04:37:07.423 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.b.t.c.SpringBootTestContextBootstrapper&amp#27;[0;39m - Found @SpringBootConfiguration com.sm.instagram.platform.InstagramPlatformApplication for test class com.sm.instagram.platform.openapi.OpenApiSpecGeneratorTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::               (v3.5.16)
+
+04:37:07.494 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.o.OpenApiSpecGeneratorTest&amp#27;[0;39m - Starting OpenApiSpecGeneratorTest using Java 21.0.12.1 with PID 2424 (started by runner in /home/runner/work/checkitout-backend/checkitout-backend)
+04:37:07.494 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.o.OpenApiSpecGeneratorTest&amp#27;[0;39m - The following 1 profile is active: "integration"
+04:37:09.587 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.testcontainers.images.PullPolicy&amp#27;[0;39m - Image pull policy will be performed by: DefaultPullPolicy()
+04:37:09.590 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.t.utility.ImageNameSubstitutor&amp#27;[0;39m - Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+[E2E Dotenv] Loaded 119 variables from .env
+[E2E Dotenv]   FIREBASE_SERVICE_ACCOUNT_JSON: MISSING
+[E2E Dotenv]   JWT_SECRET: MISSING
+[E2E Dotenv]   COOKIE_HMAC_SECRET: MISSING
+04:37:09.603 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.testcontainers.DockerClientFactory&amp#27;[0;39m - Testcontainers version: 2.0.5
+04:37:10.895 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.t.d.DockerClientProviderStrategy&amp#27;[0;39m - Found Docker environment with local Unix socket (unix:///var/run/docker.sock)
+04:37:10.898 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.testcontainers.DockerClientFactory&amp#27;[0;39m - Docker host IP address is localhost
+04:37:10.916 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.testcontainers.DockerClientFactory&amp#27;[0;39m - Connected to docker: 
+  Server Version: 28.0.4
+  API Version: 1.48
+  Operating System: Ubuntu 24.04.5 LTS
+  Total Memory: 15992 MB
+04:37:12.892 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.t.utility.RyukResourceReaper&amp#27;[0;39m - Ryuk started - will monitor and terminate Testcontainers containers on JVM exit
+04:37:12.892 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.testcontainers.DockerClientFactory&amp#27;[0;39m - Checking the system...
+04:37:12.893 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.testcontainers.DockerClientFactory&amp#27;[0;39m - ✔︎ Docker server version should be at least 1.6.0
+[E2E TestContainers] Containers started and properties configured:
+  PostgreSQL: jdbc:postgresql://localhost:32769/checkitout_e2e?loggerLevel=OFF
+  Redis: localhost:32770
+[E2E TestContainers] Containers started and properties configured:
+  PostgreSQL: jdbc:postgresql://localhost:32769/checkitout_e2e?loggerLevel=OFF
+  Redis: localhost:32770
+[Integration Test] Containers started via ServiceIntegrationTestConfig
+04:37:21.057 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EarlyRequestLoggingFilter initialized - this should run before Spring Security
+04:37:21.327 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.config.RedisConfiguration&amp#27;[0;39m - Redis configuration initialized for standalone mode with storage.mode=redis
+04:37:21.331 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.config.RedisConfiguration&amp#27;[0;39m - Configuring Redis connection factory in standalone mode
+04:37:21.667 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.DualDataSourceConfiguration&amp#27;[0;39m - Creating Liquibase DataSource with user: test
+04:37:21.667 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.DualDataSourceConfiguration&amp#27;[0;39m - GDPR: Operation=database_authentication, User=test, Purpose=schema_migration, LegalBasis=legitimate_interest
+04:37:21.680 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mcom.zaxxer.hikari.HikariDataSource&amp#27;[0;39m - Liquibase-Pool - Starting...
+04:37:21.884 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mcom.zaxxer.hikari.pool.HikariPool&amp#27;[0;39m - Liquibase-Pool - Added connection org.postgresql.jdbc.PgConnection@1cfe3135
+04:37:21.886 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mcom.zaxxer.hikari.HikariDataSource&amp#27;[0;39m - Liquibase-Pool - Start completed.
+04:37:21.914 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.DualDataSourceConfiguration&amp#27;[0;39m - Configuring Liquibase with admin credentials
+04:37:21.957 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.DualDataSourceConfiguration&amp#27;[0;39m - Liquibase configured with changelog: classpath:db/changelog/changelog.xml
+04:37:22.629 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.snapshot&amp#27;[0;39m - Creating snapshot
+04:37:22.651 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Creating database history table with name: public.databasechangelog
+04:37:23.078 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.snapshot&amp#27;[0;39m - Creating snapshot
+04:37:23.191 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.lockservice&amp#27;[0;39m - Successfully acquired change log lock
+04:37:23.192 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.command&amp#27;[0;39m - Using deploymentId: 9101441957
+04:37:23.195 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Reading from public.databasechangelog
+04:37:23.290 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/common/001-schema/001-sequences.sql::raw::includeAll
+04:37:23.372 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:23.375 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/common/001-schema/001-sequences.sql::raw::includeAll ran successfully in 83ms
+04:37:23.386 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/common/001-schema/002-tables.sql::raw::includeAll
+04:37:23.575 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mliquibase.executor&amp#27;[0;39m - schema "public" already exists, skipping
+04:37:23.575 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:23.577 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/common/001-schema/002-tables.sql::raw::includeAll ran successfully in 190ms
+04:37:23.580 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/common/001-schema/003-constraints.sql::raw::includeAll
+04:37:23.659 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:23.661 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/common/001-schema/003-constraints.sql::raw::includeAll ran successfully in 81ms
+04:37:23.665 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/common/001-schema/004-triggers.sql::raw::includeAll
+04:37:23.687 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:23.688 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/common/001-schema/004-triggers.sql::raw::includeAll ran successfully in 23ms
+04:37:23.691 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/common/001-schema/005-file-uploads-table.sql::raw::includeAll
+04:37:23.703 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:23.704 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/common/001-schema/005-file-uploads-table.sql::raw::includeAll ran successfully in 13ms
+04:37:23.707 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/common/001-schema/006-consent-management-tables.sql::raw::includeAll
+04:37:23.729 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:23.730 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/common/001-schema/006-consent-management-tables.sql::raw::includeAll ran successfully in 23ms
+04:37:23.733 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/common/001-schema/007-password-reset-timestamp.sql::add-password-reset-timestamp::norbert
+04:37:23.737 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:23.737 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/common/001-schema/007-password-reset-timestamp.sql::add-password-reset-timestamp::norbert ran successfully in 4ms
+04:37:23.740 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/common/002-data/001-reference-data.sql::raw::includeAll
+04:37:23.770 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:23.771 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/common/002-data/001-reference-data.sql::raw::includeAll ran successfully in 30ms
+04:37:23.774 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/common/002-data/002-comprehensive-translations.sql::comprehensive-translations::system
+04:37:23.834 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:23.835 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/common/002-data/002-comprehensive-translations.sql::comprehensive-translations::system ran successfully in 60ms
+04:37:23.837 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/dev-test/002-data/003-admin-users-test.sql::003-admin-users-test::system
+04:37:23.847 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:23.848 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/dev-test/002-data/003-admin-users-test.sql::003-admin-users-test::system ran successfully in 10ms
+04:37:23.850 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/common/002-data/004-consent-initial-data.sql::consent-initial-data::system
+04:37:23.858 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:23.858 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/common/002-data/004-consent-initial-data.sql::consent-initial-data::system ran successfully in 8ms
+04:37:23.862 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/dev-test/002-data/002-test-data.sql::002-test-data::system
+04:37:23.942 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:23.942 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/dev-test/002-data/002-test-data.sql::002-test-data::system ran successfully in 80ms
+04:37:23.945 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/dev-test/002-data/004-demo-company-data.sql::demo-company-data::liquibase
+04:37:23.965 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:23.966 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/dev-test/002-data/004-demo-company-data.sql::demo-company-data::liquibase ran successfully in 21ms
+04:37:23.969 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/dev-test/002-data/005-demo-influencer-data.sql::demo-influencer-data::liquibase
+04:37:23.976 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:23.976 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/dev-test/002-data/005-demo-influencer-data.sql::demo-influencer-data::liquibase ran successfully in 7ms
+04:37:23.979 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/dev-test/002-data/006-demo-extended-data.sql::demo-extended-data::Jakub Sadowski
+04:37:24.044 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.045 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/dev-test/002-data/006-demo-extended-data.sql::demo-extended-data::Jakub Sadowski ran successfully in 66ms
+04:37:24.047 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2025/12/19-12-2025-add-token-version-column.sql::add-token-version-column::system
+04:37:24.051 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.051 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2025/12/19-12-2025-add-token-version-column.sql::add-token-version-column::system ran successfully in 4ms
+04:37:24.053 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2025/12/19-12-2025-add-banned-status-to-constraint.sql::add-banned-status-to-constraint::system
+04:37:24.058 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.058 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2025/12/19-12-2025-add-banned-status-to-constraint.sql::add-banned-status-to-constraint::system ran successfully in 5ms
+04:37:24.061 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2025/12/20-12-2025-add-version-to-user.sql::add-version-to-user-table::norbert
+04:37:24.065 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.065 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2025/12/20-12-2025-add-version-to-user.sql::add-version-to-user-table::norbert ran successfully in 4ms
+04:37:24.067 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2025/12/20-12-2025-add-version-to-applied-opportunity.sql::add-version-to-applied-opportunity-table::norbert
+04:37:24.069 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.070 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2025/12/20-12-2025-add-version-to-applied-opportunity.sql::add-version-to-applied-opportunity-table::norbert ran successfully in 3ms
+04:37:24.072 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2025/12/20-12-2025-add-version-to-partnership-opportunity.sql::add-version-to-partnership-opportunity-table::norbert
+04:37:24.075 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.075 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2025/12/20-12-2025-add-version-to-partnership-opportunity.sql::add-version-to-partnership-opportunity-table::norbert ran successfully in 3ms
+04:37:24.077 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2025/12/28-12-2025-add-share-phone-for-payments.sql::add-share-phone-for-payments::system
+04:37:24.081 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.081 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2025/12/28-12-2025-add-share-phone-for-payments.sql::add-share-phone-for-payments::system ran successfully in 4ms
+04:37:24.084 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/01/2026-01-create-notifications-table.sql::2026-01-create-notifications-table::notification
+04:37:24.099 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.100 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/01/2026-01-create-notifications-table.sql::2026-01-create-notifications-table::notification ran successfully in 16ms
+04:37:24.103 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/01/2026-01-notification-translations.sql::raw::includeAll
+04:37:24.128 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.130 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/01/2026-01-notification-translations.sql::raw::includeAll ran successfully in 26ms
+04:37:24.133 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/01/2026-01-notifications-indexes.sql::raw::includeAll
+04:37:24.141 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.141 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/01/2026-01-notifications-indexes.sql::raw::includeAll ran successfully in 8ms
+04:37:24.143 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/01/2026-01-userpreferences-notification-fields.sql::raw::includeAll
+04:37:24.150 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.151 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/01/2026-01-userpreferences-notification-fields.sql::raw::includeAll ran successfully in 7ms
+04:37:24.153 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/01/2026-01-create-shedLock.sql::raw::includeAll
+04:37:24.159 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.160 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/01/2026-01-create-shedLock.sql::raw::includeAll ran successfully in 6ms
+04:37:24.162 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2025/01/15-01-2025-cio-395-content-type-translations.sql::cio-395-content-type-translations::system
+04:37:24.174 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.174 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2025/01/15-01-2025-cio-395-content-type-translations.sql::cio-395-content-type-translations::system ran successfully in 12ms
+04:37:24.178 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/01/24-01-2026-cascade-delete-task-table.sql::create-cascade-delete-task-table::system
+04:37:24.206 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.206 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/01/24-01-2026-cascade-delete-task-table.sql::create-cascade-delete-task-table::system ran successfully in 28ms
+04:37:24.209 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/01/26-01-2026-add-email-verification-tracking.sql::add-email-verification-tracking::system
+04:37:24.213 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.214 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/01/26-01-2026-add-email-verification-tracking.sql::add-email-verification-tracking::system ran successfully in 5ms
+04:37:24.216 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/01/26-01-2026-add-email-verification-tracking.sql::add-email-verification-index::system
+04:37:24.219 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.219 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/01/26-01-2026-add-email-verification-tracking.sql::add-email-verification-index::system ran successfully in 3ms
+04:37:24.221 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/01/31-01-2026-email-case-insensitive-unique.sql::email-case-insensitive-unique::system
+04:37:24.226 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.227 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/01/31-01-2026-email-case-insensitive-unique.sql::email-case-insensitive-unique::system ran successfully in 5ms
+04:37:24.229 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/02/20-02-2026-migrate-communication-frequency-to-email-frequency.sql::20-02-2026-migrate-communication-frequency-to-email-frequency::migration
+04:37:24.236 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.236 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/02/20-02-2026-migrate-communication-frequency-to-email-frequency.sql::20-02-2026-migrate-communication-frequency-to-email-frequency::migration ran successfully in 7ms
+04:37:24.238 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/02/20-02-2026-fix-consent-type-uppercase.sql::fix-consent-type-uppercase::system
+04:37:24.241 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.241 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/02/20-02-2026-fix-consent-type-uppercase.sql::fix-consent-type-uppercase::system ran successfully in 3ms
+04:37:24.242 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/02/22-02-2026-fix-notification-defaults-to-false.sql::22-02-2026-fix-notification-defaults-to-false::migration
+04:37:24.253 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.254 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/02/22-02-2026-fix-notification-defaults-to-false.sql::22-02-2026-fix-notification-defaults-to-false::migration ran successfully in 12ms
+04:37:24.256 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/01-03-2026-unique-influencer-opportunity.sql::add-unique-influencer-opportunity::owasp-p2
+04:37:24.259 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.261 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/01-03-2026-unique-influencer-opportunity.sql::add-unique-influencer-opportunity::owasp-p2 ran successfully in 4ms
+04:37:24.263 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/01-03-2026-add-version-to-content.sql::add-version-to-applied-opportunity-content::owasp-p2
+04:37:24.265 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.265 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/01-03-2026-add-version-to-content.sql::add-version-to-applied-opportunity-content::owasp-p2 ran successfully in 2ms
+04:37:24.267 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/09-03-2026-consent-module-tables.sql::consent-module-tables::system
+04:37:24.287 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.287 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/09-03-2026-consent-module-tables.sql::consent-module-tables::system ran successfully in 20ms
+04:37:24.290 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/09-03-2026-add-newest-consents-accepted.sql::add-newest-consents-accepted::system
+04:37:24.295 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.295 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/09-03-2026-add-newest-consents-accepted.sql::add-newest-consents-accepted::system ran successfully in 5ms
+04:37:24.298 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/09-03-2026-add-blocked-terms-status.sql::add-blocked-terms-status-to-constraint::system
+04:37:24.302 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.302 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/09-03-2026-add-blocked-terms-status.sql::add-blocked-terms-status-to-constraint::system ran successfully in 4ms
+04:37:24.305 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/09-03-2026-widen-account-status-column.sql::widen-account-status-column::system
+04:37:24.308 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.309 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/09-03-2026-widen-account-status-column.sql::widen-account-status-column::system ran successfully in 4ms
+04:37:24.311 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/09-03-2026-seed-legal-documents.sql::seed-legal-documents-v1::system
+04:37:24.315 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.315 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/09-03-2026-seed-legal-documents.sql::seed-legal-documents-v1::system ran successfully in 4ms
+04:37:24.317 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/10-03-2026-update-v1-document-hashes.sql::update-v1-document-hashes::system
+04:37:24.323 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.324 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/10-03-2026-update-v1-document-hashes.sql::update-v1-document-hashes::system ran successfully in 6ms
+04:37:24.326 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/10-03-2026-seed-legal-documents-v2.sql::seed-legal-documents-v2::system
+04:37:24.330 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.330 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/10-03-2026-seed-legal-documents-v2.sql::seed-legal-documents-v2::system ran successfully in 4ms
+04:37:24.332 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/10-03-2026-reset-consent-for-v2.sql::reset-consent-for-v2::system
+04:37:24.335 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.335 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/10-03-2026-reset-consent-for-v2.sql::reset-consent-for-v2::system ran successfully in 3ms
+04:37:24.337 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/11-03-2026-create-company-data-table.sql::create-company-data-table::system
+04:37:24.354 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.354 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/11-03-2026-create-company-data-table.sql::create-company-data-table::system ran successfully in 17ms
+04:37:24.356 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/11-03-2026-add-consent-source-company-data-form.sql::add-consent-source-company-data-form::system
+04:37:24.360 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.360 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/11-03-2026-add-consent-source-company-data-form.sql::add-consent-source-company-data-form::system ran successfully in 4ms
+04:37:24.362 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/11-03-2026-seed-professional-character-declaration.sql::seed-professional-character-declaration-v1::system
+04:37:24.365 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.365 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/11-03-2026-seed-professional-character-declaration.sql::seed-professional-character-declaration-v1::system ran successfully in 3ms
+04:37:24.367 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/11-03-2026-deactivate-all-company-users.sql::deactivate-all-company-users::system
+04:37:24.370 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.370 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/11-03-2026-deactivate-all-company-users.sql::deactivate-all-company-users::system ran successfully in 3ms
+04:37:24.372 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/11-03-2026-replace-pcd-with-subscription-consent.sql::replace-pcd-with-subscription-consent::system
+04:37:24.379 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.379 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/11-03-2026-replace-pcd-with-subscription-consent.sql::replace-pcd-with-subscription-consent::system ran successfully in 7ms
+04:37:24.382 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/11-03-2026-create-pending-data-deletion-request.sql::instagram-pending-data-deletion-request::norbert
+04:37:24.393 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.394 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/11-03-2026-create-pending-data-deletion-request.sql::instagram-pending-data-deletion-request::norbert ran successfully in 11ms
+04:37:24.396 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/12-03-2026-deactivate-influencers-for-password-setup.sql::deactivate-influencers-for-password-setup::system
+04:37:24.399 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.399 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/12-03-2026-deactivate-influencers-for-password-setup.sql::deactivate-influencers-for-password-setup::system ran successfully in 3ms
+04:37:24.401 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/13-03-2026-enable-notifications-hide-phone.sql::enable-notifications-hide-phone::system
+04:37:24.414 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.415 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/13-03-2026-enable-notifications-hide-phone.sql::enable-notifications-hide-phone::system ran successfully in 14ms
+04:37:24.417 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/16-03-2026-add-initial-account-setup-completed.sql::add-initial-account-setup-completed::system
+04:37:24.421 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.421 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/16-03-2026-add-initial-account-setup-completed.sql::add-initial-account-setup-completed::system ran successfully in 4ms
+04:37:24.423 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/17-03-2026-add-last-verified-email.sql::add-last-verified-email::system
+04:37:24.426 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.427 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/17-03-2026-add-last-verified-email.sql::add-last-verified-email::system ran successfully in 4ms
+04:37:24.428 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/21-03-2026-add-display-order-to-consent-definition.sql::add-display-order-to-consent-definition::system
+04:37:24.432 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.433 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/21-03-2026-add-display-order-to-consent-definition.sql::add-display-order-to-consent-definition::system ran successfully in 5ms
+04:37:24.434 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/22-03-2026-admin-notification-translations.sql::raw::includeAll
+04:37:24.439 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.439 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/22-03-2026-admin-notification-translations.sql::raw::includeAll ran successfully in 4ms
+04:37:24.441 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/22-03-2026-subscription-tables.sql::subscription-tables::system
+04:37:24.505 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.506 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/22-03-2026-subscription-tables.sql::subscription-tables::system ran successfully in 65ms
+04:37:24.508 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/22-03-2026-update-notification-type-constraint.sql::update-notification-type-constraint::system
+04:37:24.512 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.513 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/22-03-2026-update-notification-type-constraint.sql::update-notification-type-constraint::system ran successfully in 5ms
+04:37:24.515 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/23-03-2026-subscription-notification-translations.sql::subscription-notification-translations::system
+04:37:24.525 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.525 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/23-03-2026-subscription-notification-translations.sql::subscription-notification-translations::system ran successfully in 10ms
+04:37:24.527 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/03/23-03-2026-backfill-free-subscriptions.sql::backfill-free-subscriptions::system
+04:37:24.537 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.538 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/03/23-03-2026-backfill-free-subscriptions.sql::backfill-free-subscriptions::system ran successfully in 11ms
+04:37:24.540 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/04/09-04-2026-update-free-plan-campaign-limit.sql::update-free-plan-campaign-limit::system
+04:37:24.542 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.542 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/04/09-04-2026-update-free-plan-campaign-limit.sql::update-free-plan-campaign-limit::system ran successfully in 2ms
+04:37:24.544 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/04/09-04-2026-downgrade-all-to-free-for-rollout.sql::downgrade-all-to-free-for-rollout::system
+04:37:24.551 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.551 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/04/09-04-2026-downgrade-all-to-free-for-rollout.sql::downgrade-all-to-free-for-rollout::system ran successfully in 7ms
+04:37:24.553 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/04/25-04-2026-fix-legal-document-urls.sql::fix-legal-document-urls::system
+04:37:24.562 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.562 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/04/25-04-2026-fix-legal-document-urls.sql::fix-legal-document-urls::system ran successfully in 9ms
+04:37:24.565 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/04/25-04-2026-bump-legal-document-content-hashes.sql::bump-legal-document-content-hashes::system
+04:37:24.578 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.578 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/04/25-04-2026-bump-legal-document-content-hashes.sql::bump-legal-document-content-hashes::system ran successfully in 13ms
+04:37:24.581 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Running Changeset: db/changelog/2026/09/02-09-2026-widen-ticket-reference-column.sql::widen-ticket-reference-column::system
+04:37:24.585 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - Custom SQL executed
+04:37:24.585 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.changelog&amp#27;[0;39m - ChangeSet db/changelog/2026/09/02-09-2026-widen-ticket-reference-column.sql::widen-ticket-reference-column::system ran successfully in 4ms
+04:37:24.595 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.util&amp#27;[0;39m - UPDATE SUMMARY
+04:37:24.595 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.util&amp#27;[0;39m - Run:                         65
+04:37:24.595 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.util&amp#27;[0;39m - Previously run:               0
+04:37:24.595 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.util&amp#27;[0;39m - Filtered out:                 4
+04:37:24.595 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.util&amp#27;[0;39m - -------------------------------
+04:37:24.595 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.util&amp#27;[0;39m - Total change sets:           69
+04:37:24.595 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.util&amp#27;[0;39m - FILTERED CHANGE SETS SUMMARY
+04:37:24.595 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.util&amp#27;[0;39m - Context mismatch:             4
+04:37:24.597 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.util&amp#27;[0;39m - Update summary generated
+04:37:24.602 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.command&amp#27;[0;39m - Update command completed successfully.
+04:37:24.602 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.ui&amp#27;[0;39m - Liquibase: Update has been successful. Rows affected: 1011
+04:37:24.604 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.lockservice&amp#27;[0;39m - Successfully released change log lock
+04:37:24.605 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mliquibase.command&amp#27;[0;39m - Command execution complete
+04:37:24.939 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.DualDataSourceConfiguration&amp#27;[0;39m - Creating Application DataSource with user: test
+04:37:24.939 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.DualDataSourceConfiguration&amp#27;[0;39m - GDPR: Operation=database_authentication, User=test, Purpose=application_data_access, LegalBasis=contract
+04:37:24.939 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mcom.zaxxer.hikari.HikariDataSource&amp#27;[0;39m - CheckItOut-Test-Pool - Starting...
+04:37:24.950 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mcom.zaxxer.hikari.pool.HikariPool&amp#27;[0;39m - CheckItOut-Test-Pool - Added connection org.postgresql.jdbc.PgConnection@149f821
+04:37:24.951 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mcom.zaxxer.hikari.HikariDataSource&amp#27;[0;39m - CheckItOut-Test-Pool - Start completed.
+04:37:24.951 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.DualDataSourceConfiguration&amp#27;[0;39m - Application DataSource created successfully with pool: CheckItOut-Test-Pool
+04:37:25.558 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36morg.hibernate.orm.deprecation&amp#27;[0;39m - HHH90000021: Encountered deprecated setting [hibernate.temp.use_jdbc_metadata_defaults], use [hibernate.boot.allow_jdbc_metadata_access] instead
+04:37:25.583 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36morg.hibernate.orm.deprecation&amp#27;[0;39m - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+04:37:29.569 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.s.g.MaxMindDatabaseService&amp#27;[0;39m - Initializing MaxMind Database Service
+04:37:29.569 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.s.g.MaxMindDatabaseService&amp#27;[0;39m - Created GeoIP directory: /home/runner/work/checkitout-backend/checkitout-backend/./geoip
+04:37:29.569 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.s.g.MaxMindDatabaseService&amp#27;[0;39m - GeoLite2 database not found at ./geoip/GeoLite2-City.mmdb. Downloading...
+04:37:29.569 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.c.s.g.MaxMindDatabaseService&amp#27;[0;39m - Failed to initialize MaxMind database — GeoIP runs in degraded mode (all lookups return unknown) until a database is available
+com.sm.instagram.platform.common.exceptions.ValidationTranslatableException: error.validation.required_field
+	at com.sm.instagram.platform.common.security.geoip.MaxMindDatabaseService.downloadDatabase(MaxMindDatabaseService.java:128)
+	at com.sm.instagram.platform.common.security.geoip.MaxMindDatabaseService.init(MaxMindDatabaseService.java:84)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMethod.invoke(InitDestroyAnnotationBeanPostProcessor.java:457)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMetadata.invokeInitMethods(InitDestroyAnnotationBeanPostProcessor.java:401)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:219)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsBeforeInitialization(AbstractAutowireCapableBeanFactory.java:429)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1816)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:607)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1777)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1660)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:240)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1393)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1230)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:569)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1715)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1660)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:784)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:767)
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:146)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:509)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1457)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:606)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1715)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1660)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:240)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1393)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1230)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:569)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.getOrderedBeansOfType(ServletContextInitializerBeans.java:230)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:184)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:179)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAdaptableBeans(ServletContextInitializerBeans.java:164)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.<init>(ServletContextInitializerBeans.java:96)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.getServletContextInitializerBeans(ServletWebServerApplicationContext.java:271)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.selfInitialize(ServletWebServerApplicationContext.java:245)
+	at org.springframework.boot.web.embedded.tomcat.TomcatStarter.onStartup(TomcatStarter.java:52)
+	at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:4641)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:170)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1243)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1233)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:92)
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:145)
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:765)
+	at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:797)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:170)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1243)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1233)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:92)
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:145)
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:765)
+	at org.apache.catalina.core.StandardEngine.startInternal(StandardEngine.java:201)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:170)
+	at org.apache.catalina.core.StandardService.startInternal(StandardService.java:433)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:170)
+	at org.apache.catalina.core.StandardServer.startInternal(StandardServer.java:875)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:170)
+	at org.apache.catalina.startup.Tomcat.start(Tomcat.java:453)
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.initialize(TomcatWebServer.java:128)
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.<init>(TomcatWebServer.java:107)
+	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getTomcatWebServer(TomcatServletWebServerFactory.java:517)
+	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getWebServer(TomcatServletWebServerFactory.java:219)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.createWebServer(ServletWebServerApplicationContext.java:193)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:167)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:622)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318)
+	at org.springframework.boot.test.context.SpringBootContextLoader.lambda$loadContext$3(SpringBootContextLoader.java:151)
+	at org.springframework.util.function.ThrowingSupplier.get(ThrowingSupplier.java:58)
+	at org.springframework.util.function.ThrowingSupplier.get(ThrowingSupplier.java:46)
+	at org.springframework.boot.SpringApplication.withHook(SpringApplication.java:1461)
+	at org.springframework.boot.test.context.SpringBootContextLoader$ContextLoaderHook.run(SpringBootContextLoader.java:590)
+	at org.springframework.boot.test.context.SpringBootContextLoader.loadContext(SpringBootContextLoader.java:151)
+	at org.springframework.boot.test.context.SpringBootContextLoader.loadContext(SpringBootContextLoader.java:110)
+	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContextInternal(DefaultCacheAwareContextLoaderDelegate.java:225)
+	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContext(DefaultCacheAwareContextLoaderDelegate.java:152)
+	at org.springframework.test.context.support.DefaultTestContext.getApplicationContext(DefaultTestContext.java:130)
+	at org.springframework.test.context.support.DependencyInjectionTestExecutionListener.injectDependencies(DependencyInjectionTestExecutionListener.java:155)
+	at org.springframework.test.context.support.DependencyInjectionTestExecutionListener.prepareTestInstance(DependencyInjectionTestExecutionListener.java:111)
+	at org.springframework.test.context.TestContextManager.prepareTestInstance(TestContextManager.java:260)
+	at org.springframework.test.context.junit.jupiter.SpringExtension.postProcessTestInstance(SpringExtension.java:159)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$invokeTestInstancePostProcessors$10(ClassBasedTestDescriptor.java:383)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.executeAndMaskThrowable(ClassBasedTestDescriptor.java:388)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$invokeTestInstancePostProcessors$11(ClassBasedTestDescriptor.java:382)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:179)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1708)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:151)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:174)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:596)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.invokeTestInstancePostProcessors(ClassBasedTestDescriptor.java:382)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$instantiateAndPostProcessTestInstance$6(ClassBasedTestDescriptor.java:293)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.instantiateAndPostProcessTestInstance(ClassBasedTestDescriptor.java:292)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$testInstancesProvider$4(ClassBasedTestDescriptor.java:281)
+	at java.base/java.util.Optional.orElseGet(Optional.java:364)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$testInstancesProvider$5(ClassBasedTestDescriptor.java:280)
+	at org.junit.jupiter.engine.execution.TestInstancesProvider.getTestInstances(TestInstancesProvider.java:27)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$prepare$0(TestMethodTestDescriptor.java:112)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.prepare(TestMethodTestDescriptor.java:111)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.prepare(TestMethodTestDescriptor.java:69)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$prepare$2(NodeTestTask.java:128)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.prepare(NodeTestTask.java:128)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:160)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:146)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:144)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:143)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:100)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:160)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:146)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:144)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:143)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:100)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:201)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:170)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:94)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:59)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:142)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:58)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:103)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:85)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47)
+	at org.junit.platform.launcher.core.InterceptingLauncher.lambda$execute$1(InterceptingLauncher.java:39)
+	at org.junit.platform.launcher.core.ClasspathAlignmentCheckingLauncherInterceptor.intercept(ClasspathAlignmentCheckingLauncherInterceptor.java:25)
+	at org.junit.platform.launcher.core.InterceptingLauncher.execute(InterceptingLauncher.java:38)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47)
+	at org.apache.maven.surefire.junitplatform.LazyLauncher.execute(LazyLauncher.java:56)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:184)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:148)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:122)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
+	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
+04:37:29.620 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.c.GoogleCredentialsProvider&amp#27;[0;39m - ==========================================
+04:37:29.620 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.c.GoogleCredentialsProvider&amp#27;[0;39m - 🔐 GOOGLE CREDENTIALS PROVIDER INITIALIZATION
+04:37:29.620 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.c.GoogleCredentialsProvider&amp#27;[0;39m - ==========================================
+04:37:29.620 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.c.GoogleCredentialsProvider&amp#27;[0;39m - Environment: INTEGRATION_TEST
+04:37:29.620 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.c.GoogleCredentialsProvider&amp#27;[0;39m - Configured Project ID: check-it-out-47c50
+04:37:29.620 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.c.GoogleCredentialsProvider&amp#27;[0;39m - 🔍 Loading Google credentials...
+04:37:29.620 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.c.GoogleCredentialsProvider&amp#27;[0;39m - ☁️ Attempting to use Application Default Credentials
+04:37:29.620 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.c.GoogleCredentialsProvider&amp#27;[0;39m - ⚠️ No Google credentials found — using SYNTHETIC offline credentials (non-production only). Firebase network calls will fail; tests mock them.
+04:37:29.801 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.c.GoogleCredentialsProvider&amp#27;[0;39m - Service Account: synthetic-tests@check-it-out-47c50.iam.gserviceaccount.com
+04:37:29.801 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.c.GoogleCredentialsProvider&amp#27;[0;39m - 
+📊 CREDENTIAL SUMMARY:
+04:37:29.801 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.c.GoogleCredentialsProvider&amp#27;[0;39m -    Project ID: check-it-out-47c50
+04:37:29.801 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.c.GoogleCredentialsProvider&amp#27;[0;39m -    Instance Type: 🟢 TEST
+04:37:29.801 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.c.GoogleCredentialsProvider&amp#27;[0;39m -    Service Account: s***@check-it-out-47c50.iam.gserviceaccount.com
+04:37:29.801 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.c.GoogleCredentialsProvider&amp#27;[0;39m -    Is Production: false
+04:37:29.801 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.c.GoogleCredentialsProvider&amp#27;[0;39m -    Environment: INTEGRATION_TEST
+04:37:29.801 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.c.GoogleCredentialsProvider&amp#27;[0;39m - ✅ Environment and credentials match
+04:37:29.801 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.c.GoogleCredentialsProvider&amp#27;[0;39m - ==========================================
+04:37:29.812 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.c.UnifiedStorageConfiguration&amp#27;[0;39m - ==========================================
+04:37:29.812 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.c.UnifiedStorageConfiguration&amp#27;[0;39m - ☁️ UNIFIED GOOGLE CLOUD STORAGE CONFIGURATION
+04:37:29.812 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.c.UnifiedStorageConfiguration&amp#27;[0;39m - ==========================================
+04:37:29.812 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.c.UnifiedStorageConfiguration&amp#27;[0;39m - 📍 Storage Configuration:
+04:37:29.812 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.c.UnifiedStorageConfiguration&amp#27;[0;39m -    Project ID: check-it-out-47c50
+04:37:29.812 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.c.UnifiedStorageConfiguration&amp#27;[0;39m -    Instance Type: 🟢 TEST
+04:37:29.812 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.c.UnifiedStorageConfiguration&amp#27;[0;39m -    Default Bucket: check-it-out-47c50.firebasestorage.app
+04:37:29.812 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.c.UnifiedStorageConfiguration&amp#27;[0;39m -    GeoIP Bucket: check-it-out-47c50-geoip-private
+04:37:29.812 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.c.UnifiedStorageConfiguration&amp#27;[0;39m -    Service Account: synthetic-tests@check-it-out-47c50.iam.gserviceaccount.com
+04:37:29.939 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.c.UnifiedStorageConfiguration&amp#27;[0;39m -    ⚠️ Could not verify Default bucket access: Error getting access token for service account: 400 Bad Request
+POST https://oauth2.googleapis.com/token
+{"error":"invalid_grant","error_description":"Invalid grant: account not found"}, iss: synthetic-tests@check-it-out-47c50.iam.gserviceaccount.com
+04:37:29.962 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.c.UnifiedStorageConfiguration&amp#27;[0;39m -    ⚠️ Could not verify GeoIP bucket access: Error getting access token for service account: 400 Bad Request
+POST https://oauth2.googleapis.com/token
+{"error":"invalid_grant","error_description":"Invalid grant: account not found"}, iss: synthetic-tests@check-it-out-47c50.iam.gserviceaccount.com
+04:37:29.962 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.c.UnifiedStorageConfiguration&amp#27;[0;39m - ✅ Unified Google Cloud Storage client initialized successfully
+04:37:29.962 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.c.UnifiedStorageConfiguration&amp#27;[0;39m -    Single client instance will be used for all storage operations
+04:37:29.962 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.c.UnifiedStorageConfiguration&amp#27;[0;39m -    Memory savings: ~30MB (compared to multiple instances)
+04:37:29.962 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.c.UnifiedStorageConfiguration&amp#27;[0;39m - ==========================================
+04:37:30.032 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.a.FirebaseAuthConfig&amp#27;[0;39m - =========================================
+04:37:30.032 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.a.FirebaseAuthConfig&amp#27;[0;39m - 🔥 FIREBASE AUTHENTICATION INITIALIZATION
+04:37:30.032 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.a.FirebaseAuthConfig&amp#27;[0;39m - =========================================
+04:37:30.032 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.a.FirebaseAuthConfig&amp#27;[0;39m - Environment: INTEGRATION_TEST
+04:37:30.032 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.a.FirebaseAuthConfig&amp#27;[0;39m - Using Project ID: check-it-out-47c50
+04:37:30.032 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.a.FirebaseAuthConfig&amp#27;[0;39m - Instance Type: 🟢 TEST
+04:37:30.046 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.a.FirebaseAuthConfig&amp#27;[0;39m - ✅ Firebase connection SUCCESSFUL
+04:37:30.046 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.a.FirebaseAuthConfig&amp#27;[0;39m - 📍 Connected to project: check-it-out-47c50
+04:37:30.046 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.a.FirebaseAuthConfig&amp#27;[0;39m -    Instance type: 🟢 TEST
+04:37:30.046 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.a.FirebaseAuthConfig&amp#27;[0;39m - ✓ Environment and credentials match appropriately
+04:37:30.046 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.a.FirebaseAuthConfig&amp#27;[0;39m - =========================================
+04:37:30.068 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.a.FirebaseAuthConfig&amp#27;[0;39m - Initializing Firestore client
+04:37:30.086 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.a.FirebaseAuthConfig&amp#27;[0;39m - ✅ Firestore client initialized successfully
+04:37:30.132 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.c.s.GeoIpStorageService&amp#27;[0;39m - Failed to initialize storage bucket
+com.google.cloud.storage.StorageException: Error getting access token for service account: 400 Bad Request
+POST https://oauth2.googleapis.com/token
+{"error":"invalid_grant","error_description":"Invalid grant: account not found"}, iss: synthetic-tests@check-it-out-47c50.iam.gserviceaccount.com
+	at com.google.cloud.storage.StorageException.translate(StorageException.java:179)
+	at com.google.cloud.storage.spi.v1.HttpStorageRpc.translate(HttpStorageRpc.java:330)
+	at com.google.cloud.storage.spi.v1.HttpStorageRpc.get(HttpStorageRpc.java:524)
+	at com.google.cloud.storage.StorageImpl.lambda$internalBucketGet$67(StorageImpl.java:1641)
+	at com.google.api.gax.retrying.DirectRetryingExecutor.submit(DirectRetryingExecutor.java:102)
+	at com.google.cloud.RetryHelper.run(RetryHelper.java:76)
+	at com.google.cloud.RetryHelper.runWithRetries(RetryHelper.java:50)
+	at com.google.cloud.storage.Retrying.run(Retrying.java:65)
+	at com.google.cloud.storage.StorageImpl.run(StorageImpl.java:1557)
+	at com.google.cloud.storage.StorageImpl.internalBucketGet(StorageImpl.java:1639)
+	at com.google.cloud.storage.StorageImpl.get(StorageImpl.java:330)
+	at com.sm.instagram.platform.common.security.GeoIpStorageService.init(GeoIpStorageService.java:89)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMethod.invoke(InitDestroyAnnotationBeanPostProcessor.java:457)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMetadata.invokeInitMethods(InitDestroyAnnotationBeanPostProcessor.java:401)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:219)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsBeforeInitialization(AbstractAutowireCapableBeanFactory.java:429)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1816)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:607)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1777)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1660)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:784)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:767)
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:146)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:509)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1457)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:606)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1715)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1660)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:784)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:767)
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:146)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:509)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1457)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:606)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1715)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1660)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:240)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1393)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1230)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:569)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.getOrderedBeansOfType(ServletContextInitializerBeans.java:230)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:184)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:179)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAdaptableBeans(ServletContextInitializerBeans.java:164)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.<init>(ServletContextInitializerBeans.java:96)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.getServletContextInitializerBeans(ServletWebServerApplicationContext.java:271)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.selfInitialize(ServletWebServerApplicationContext.java:245)
+	at org.springframework.boot.web.embedded.tomcat.TomcatStarter.onStartup(TomcatStarter.java:52)
+	at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:4641)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:170)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1243)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1233)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:92)
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:145)
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:765)
+	at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:797)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:170)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1243)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1233)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:92)
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:145)
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:765)
+	at org.apache.catalina.core.StandardEngine.startInternal(StandardEngine.java:201)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:170)
+	at org.apache.catalina.core.StandardService.startInternal(StandardService.java:433)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:170)
+	at org.apache.catalina.core.StandardServer.startInternal(StandardServer.java:875)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:170)
+	at org.apache.catalina.startup.Tomcat.start(Tomcat.java:453)
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.initialize(TomcatWebServer.java:128)
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.<init>(TomcatWebServer.java:107)
+	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getTomcatWebServer(TomcatServletWebServerFactory.java:517)
+	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getWebServer(TomcatServletWebServerFactory.java:219)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.createWebServer(ServletWebServerApplicationContext.java:193)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:167)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:622)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318)
+	at org.springframework.boot.test.context.SpringBootContextLoader.lambda$loadContext$3(SpringBootContextLoader.java:151)
+	at org.springframework.util.function.ThrowingSupplier.get(ThrowingSupplier.java:58)
+	at org.springframework.util.function.ThrowingSupplier.get(ThrowingSupplier.java:46)
+	at org.springframework.boot.SpringApplication.withHook(SpringApplication.java:1461)
+	at org.springframework.boot.test.context.SpringBootContextLoader$ContextLoaderHook.run(SpringBootContextLoader.java:590)
+	at org.springframework.boot.test.context.SpringBootContextLoader.loadContext(SpringBootContextLoader.java:151)
+	at org.springframework.boot.test.context.SpringBootContextLoader.loadContext(SpringBootContextLoader.java:110)
+	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContextInternal(DefaultCacheAwareContextLoaderDelegate.java:225)
+	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContext(DefaultCacheAwareContextLoaderDelegate.java:152)
+	at org.springframework.test.context.support.DefaultTestContext.getApplicationContext(DefaultTestContext.java:130)
+	at org.springframework.test.context.support.DependencyInjectionTestExecutionListener.injectDependencies(DependencyInjectionTestExecutionListener.java:155)
+	at org.springframework.test.context.support.DependencyInjectionTestExecutionListener.prepareTestInstance(DependencyInjectionTestExecutionListener.java:111)
+	at org.springframework.test.context.TestContextManager.prepareTestInstance(TestContextManager.java:260)
+	at org.springframework.test.context.junit.jupiter.SpringExtension.postProcessTestInstance(SpringExtension.java:159)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$invokeTestInstancePostProcessors$10(ClassBasedTestDescriptor.java:383)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.executeAndMaskThrowable(ClassBasedTestDescriptor.java:388)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$invokeTestInstancePostProcessors$11(ClassBasedTestDescriptor.java:382)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:179)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1708)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:151)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:174)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:596)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.invokeTestInstancePostProcessors(ClassBasedTestDescriptor.java:382)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$instantiateAndPostProcessTestInstance$6(ClassBasedTestDescriptor.java:293)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.instantiateAndPostProcessTestInstance(ClassBasedTestDescriptor.java:292)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$testInstancesProvider$4(ClassBasedTestDescriptor.java:281)
+	at java.base/java.util.Optional.orElseGet(Optional.java:364)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$testInstancesProvider$5(ClassBasedTestDescriptor.java:280)
+	at org.junit.jupiter.engine.execution.TestInstancesProvider.getTestInstances(TestInstancesProvider.java:27)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$prepare$0(TestMethodTestDescriptor.java:112)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.prepare(TestMethodTestDescriptor.java:111)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.prepare(TestMethodTestDescriptor.java:69)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$prepare$2(NodeTestTask.java:128)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.prepare(NodeTestTask.java:128)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:160)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:146)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:144)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:143)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:100)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:160)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:146)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:144)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:143)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:100)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:201)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:170)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:94)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:59)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:142)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:58)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:103)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:85)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47)
+	at org.junit.platform.launcher.core.InterceptingLauncher.lambda$execute$1(InterceptingLauncher.java:39)
+	at org.junit.platform.launcher.core.ClasspathAlignmentCheckingLauncherInterceptor.intercept(ClasspathAlignmentCheckingLauncherInterceptor.java:25)
+	at org.junit.platform.launcher.core.InterceptingLauncher.execute(InterceptingLauncher.java:38)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47)
+	at org.apache.maven.surefire.junitplatform.LazyLauncher.execute(LazyLauncher.java:56)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:184)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:148)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:122)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
+	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
+Caused by: com.google.auth.oauth2.GoogleAuthException: Error getting access token for service account: 400 Bad Request
+POST https://oauth2.googleapis.com/token
+{"error":"invalid_grant","error_description":"Invalid grant: account not found"}, iss: synthetic-tests@check-it-out-47c50.iam.gserviceaccount.com
+	at com.google.auth.oauth2.GoogleAuthException.createWithTokenEndpointResponseException(GoogleAuthException.java:129)
+	at com.google.auth.oauth2.ServiceAccountCredentials.refreshAccessToken(ServiceAccountCredentials.java:538)
+	at com.google.auth.oauth2.OAuth2Credentials$1.call(OAuth2Credentials.java:270)
+	at com.google.auth.oauth2.OAuth2Credentials$1.call(OAuth2Credentials.java:267)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at com.google.auth.oauth2.OAuth2Credentials$RefreshTask.run(OAuth2Credentials.java:635)
+	at com.google.common.util.concurrent.DirectExecutor.execute(DirectExecutor.java:30)
+	at com.google.auth.oauth2.OAuth2Credentials$AsyncRefreshResult.executeIfNew(OAuth2Credentials.java:582)
+	at com.google.auth.oauth2.OAuth2Credentials.asyncFetch(OAuth2Credentials.java:233)
+	at com.google.auth.oauth2.OAuth2Credentials.getRequestMetadata(OAuth2Credentials.java:183)
+	at com.google.auth.oauth2.ServiceAccountCredentials.getRequestMetadataForGdu(ServiceAccountCredentials.java:947)
+	at com.google.auth.oauth2.ServiceAccountCredentials.getRequestMetadata(ServiceAccountCredentials.java:936)
+	at com.google.auth.http.HttpCredentialsAdapter.initialize(HttpCredentialsAdapter.java:96)
+	at com.google.cloud.http.HttpTransportOptions$1.initialize(HttpTransportOptions.java:199)
+	at com.google.cloud.http.CensusHttpModule$CensusHttpRequestInitializer.initialize(CensusHttpModule.java:109)
+	at com.google.cloud.storage.spi.v1.HttpStorageRpc$InvocationIdInitializer.initialize(HttpStorageRpc.java:169)
+	at com.google.api.client.http.HttpRequestFactory.buildRequest(HttpRequestFactory.java:91)
+	at com.google.api.client.googleapis.services.AbstractGoogleClientRequest.buildHttpRequest(AbstractGoogleClientRequest.java:455)
+	at com.google.api.client.googleapis.services.AbstractGoogleClientRequest.executeUnparsed(AbstractGoogleClientRequest.java:565)
+	at com.google.api.client.googleapis.services.AbstractGoogleClientRequest.executeUnparsed(AbstractGoogleClientRequest.java:506)
+	at com.google.api.client.googleapis.services.AbstractGoogleClientRequest.execute(AbstractGoogleClientRequest.java:616)
+	at com.google.cloud.storage.spi.v1.HttpStorageRpc.get(HttpStorageRpc.java:521)
+	... 192 common frames omitted
+Caused by: com.google.api.client.http.HttpResponseException: 400 Bad Request
+POST https://oauth2.googleapis.com/token
+{"error":"invalid_grant","error_description":"Invalid grant: account not found"}
+	at com.google.api.client.http.HttpResponseException$Builder.build(HttpResponseException.java:293)
+	at com.google.api.client.http.HttpRequest.execute(HttpRequest.java:1118)
+	at com.google.auth.oauth2.ServiceAccountCredentials.refreshAccessToken(ServiceAccountCredentials.java:535)
+	... 212 common frames omitted
+04:37:30.143 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.SessionSecurityService&amp#27;[0;39m - SessionSecurityService initialized
+04:37:30.305 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.s.KMSValidationService&amp#27;[0;39m - ==========================================
+04:37:30.305 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.s.KMSValidationService&amp#27;[0;39m - 🔐 KMS (KEY MANAGEMENT SERVICE) VALIDATION
+04:37:30.305 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.s.KMSValidationService&amp#27;[0;39m - ==========================================
+04:37:30.305 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.s.KMSValidationService&amp#27;[0;39m - ⚠️ KMS is DISABLED in configuration (gcp.kms.enabled=false)
+04:37:30.305 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.s.KMSValidationService&amp#27;[0;39m -    Instagram tokens will NOT be encrypted at rest!
+04:37:30.309 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.s.TotpEncryptionService&amp#27;[0;39m - GDPR: Operation=initializeTotpEncryption, Purpose=system_startup, DataAccessed=none
+04:37:30.309 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.s.TotpEncryptionService&amp#27;[0;39m - TotpEncryptionService initialized with BCrypt strength 12, cipher=local key (gcp.kms.enabled=false)
+04:37:30.318 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.e.support.TotpCodeGenerator&amp#27;[0;39m - [E2E] TotpCodeGenerator initialized with windowSize=1, codeDigits=6, timeStep=30s
+04:37:32.623 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.service.SignedUrlService&amp#27;[0;39m - SignedUrlService initialized with service account credentials for URL signing
+04:37:32.887 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.GoogleAuthenticatorConfig&amp#27;[0;39m - Configuring GoogleAuthenticator:
+04:37:32.887 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.GoogleAuthenticatorConfig&amp#27;[0;39m -   Window Size: 1 (±30 seconds tolerance)
+04:37:32.887 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.GoogleAuthenticatorConfig&amp#27;[0;39m -   Code Digits: 6
+04:37:32.887 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.GoogleAuthenticatorConfig&amp#27;[0;39m -   Time Step: 30 seconds
+04:37:32.887 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.c.GoogleAuthenticatorConfig&amp#27;[0;39m -   Key Format: BASE32
+04:37:32.899 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m - ╔══════════════════════════════════════════════════════════════════╗
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m - ║         📷 INSTAGRAM BUSINESS LOGIN API VALIDATION              ║
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m - ╚══════════════════════════════════════════════════════════════════╝
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m - 
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m - 🔍 CONFIGURATION VALIDATION:
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m -    ✅ Instagram Client ID: synthetic-instagram-client-id
+04:37:32.900 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m -       ⚠️  Unknown Instagram App ID
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m -    ✅ Instagram Client Secret configured (33 chars)
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m -    ✅ Instagram Redirect URI: http://localhost:8080/api/auth/social/callback/instagram
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m - 
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m - ✅ Configuration validation PASSED
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m - 
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m - 🌐 API ENDPOINTS (Instagram Business Login API):
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m -    OAuth Authorization: https://www.instagram.com/oauth/authorize
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m -    Token Exchange:      https://api.instagram.com/oauth/access_token
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m -    Graph API Base:      https://graph.instagram.com
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m -    ✅ Using current Instagram Business Login API endpoints
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m -    ⚠️  Note: Basic Display API was deprecated on Dec 4, 2024
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m - 
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m - 📝 META DASHBOARD REQUIREMENTS:
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m -    1. Go to: https://developers.facebook.com/apps/synthetic-instagram-client-id/instagram-platform-setup
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m -    2. Ensure Instagram Business Login is configured
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m -    3. Add 'http://localhost:8080/api/auth/social/callback/instagram' to Valid OAuth Redirect URIs
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m -    4. Required Permissions:
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m -       • instagram_business_basic (MVP - basic profile access only)
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m -    5. App must be in Live mode for production
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m -    6. Users must have Business/Creator accounts
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m - 
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m - ⚠️  API CONNECTION TEST:
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m -    Instagram Graph API requires user access token
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m -    Cannot validate API connectivity without user authentication
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m -    Connection will be tested when first user logs in
+04:37:32.900 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramConfig&amp#27;[0;39m - ════════════════════════════════════════════════════════════════════
+04:37:32.902 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramService&amp#27;[0;39m - InstagramService initialized:
+04:37:32.902 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramService&amp#27;[0;39m -   - OAuth endpoint: https://api.instagram.com
+04:37:32.902 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramService&amp#27;[0;39m -   - Graph API endpoint: https://graph.instagram.com
+04:37:32.974 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisRateLimiterService&amp#27;[0;39m - Redis Rate Limiter Configuration:
+04:37:32.974 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisRateLimiterService&amp#27;[0;39m -   - Sliding window: false
+04:37:32.974 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisRateLimiterService&amp#27;[0;39m -   - Circuit breaker: false
+04:37:32.974 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisRateLimiterService&amp#27;[0;39m -   - Fallback to memory: true
+04:37:32.974 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisRateLimiterService&amp#27;[0;39m -   - Key prefix: test:rl:
+04:37:32.978 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.StorageModeConfiguration&amp#27;[0;39m - ==========================================
+04:37:32.978 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.StorageModeConfiguration&amp#27;[0;39m - 🗄️  STORAGE MODE CONFIGURATION
+04:37:32.978 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.StorageModeConfiguration&amp#27;[0;39m - ==========================================
+04:37:32.978 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.StorageModeConfiguration&amp#27;[0;39m - Storage Mode: redis - Redis-based storage (distributed, persistent)
+04:37:32.978 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.StorageModeConfiguration&amp#27;[0;39m - 
+04:37:32.978 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.StorageModeConfiguration&amp#27;[0;39m - This affects:
+04:37:32.978 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.StorageModeConfiguration&amp#27;[0;39m -   • User cache (authentication)
+04:37:32.978 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.StorageModeConfiguration&amp#27;[0;39m -   • Rate limiting
+04:37:32.978 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.StorageModeConfiguration&amp#27;[0;39m -   • Session storage
+04:37:32.978 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.StorageModeConfiguration&amp#27;[0;39m -   • Application cache
+04:37:32.978 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.StorageModeConfiguration&amp#27;[0;39m -   • Upload tracking
+04:37:32.978 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.StorageModeConfiguration&amp#27;[0;39m - ✅ REDIS MODE ACTIVE
+04:37:32.978 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.StorageModeConfiguration&amp#27;[0;39m -   • Data persists across restarts
+04:37:32.978 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.StorageModeConfiguration&amp#27;[0;39m -   • Supports distributed deployments
+04:37:32.978 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.StorageModeConfiguration&amp#27;[0;39m -   • Production ready
+04:37:32.978 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.StorageModeConfiguration&amp#27;[0;39m - ==========================================
+04:37:32.981 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.GdprCompliantRateLimiterService&amp#27;[0;39m - GdprCompliantRateLimiterService using RedisRateLimiterService
+04:37:32.982 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.GdprCompliantRateLimiterService&amp#27;[0;39m - GDPR Rate Limiting Configuration:
+04:37:32.982 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.GdprCompliantRateLimiterService&amp#27;[0;39m -   - Storage mode: redis
+04:37:32.982 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.GdprCompliantRateLimiterService&amp#27;[0;39m -   - Active implementation: RedisRateLimiterService
+04:37:32.982 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.GdprCompliantRateLimiterService&amp#27;[0;39m -   - GDPR enabled: true
+04:37:32.982 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.GdprCompliantRateLimiterService&amp#27;[0;39m -   - Data retention: 24 hours
+04:37:32.982 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.GdprCompliantRateLimiterService&amp#27;[0;39m -   - Anonymize keys: false
+04:37:32.982 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.GdprCompliantRateLimiterService&amp#27;[0;39m -   - Audit violations: true
+04:37:33.072 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.service.RecaptchaService&amp#27;[0;39m - reCAPTCHA is disabled, skipping client initialization
+04:37:33.291 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RateLimitInterceptor&amp#27;[0;39m - [RATE LIMIT] System initialized - Enabled: true, Skip for admin: true
+04:37:33.291 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RateLimitInterceptor&amp#27;[0;39m - [RATE LIMIT] Profile limits - STANDARD: 10000/3600s, STRICT: 10000/3600s, RELAXED: 10000/3600s
+04:37:33.305 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - GDPR: Operation=validateRedisAccess, Purpose=system_startup_validation, DataAccessed=none
+04:37:33.305 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - ==========================================
+04:37:33.305 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - 🚀 REDIS VALIDATION SERVICE
+04:37:33.306 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - ==========================================
+04:37:33.306 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - 📍 Redis Configuration:
+04:37:33.306 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Storage Mode: redis
+04:37:33.306 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Host: localhost
+04:37:33.306 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Port: 32770
+04:37:33.306 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Database: 0
+04:37:33.306 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Timeout: 2000ms
+04:37:33.846 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - 
+🧪 Testing Redis Connection:
+04:37:33.846 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Testing PING...
+04:37:33.854 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ PING successful
+04:37:33.854 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Retrieving server info...
+04:37:33.861 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Server Info Retrieved:
+04:37:33.861 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -      - Version: 7.4.11
+04:37:33.861 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -      - Mode: standalone
+04:37:33.861 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -      - Connected Clients: 1
+04:37:33.861 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -      - Memory Used: 1 MB
+04:37:33.861 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -      - Memory Limit: 64 MB
+04:37:33.861 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -      - Memory Usage: {:.2f}%
+04:37:33.861 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Checking database size...
+04:37:33.862 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Database contains 0 keys
+04:37:33.862 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Testing write/read operations...
+04:37:33.865 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.886 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.886 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.888 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.888 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.889 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.890 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Write/Read test successful
+04:37:33.890 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    Counting rate limit keys...
+04:37:33.895 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Found 0 rate limit keys
+04:37:33.895 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - 
+🧪 Testing Redis Data Types:
+04:37:33.895 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.896 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.896 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.896 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.896 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ String ops: Stored and retrieved 'Hello Redis!'
+04:37:33.897 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.898 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.898 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.898 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.898 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.899 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.899 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.900 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.901 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.902 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.902 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ List ops: Created list with 3 items
+04:37:33.903 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.904 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.904 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.905 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.905 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.905 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.905 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Set ops: Created set with 3 unique items
+04:37:33.906 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.907 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.907 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.907 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.907 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.908 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.908 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.909 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.909 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.910 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.910 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Hash ops: Created hash with 3 fields
+04:37:33.911 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.915 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.915 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.916 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.916 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.916 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.916 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.917 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.917 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.918 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.918 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ ZSet ops: Created sorted set with 3 items
+04:37:33.918 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - 
+🧪 Testing Rate Limiting Simulation:
+04:37:33.918 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.920 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.920 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.920 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.920 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.921 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.922 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.923 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.923 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.923 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.924 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Created 5 rate limit test entries (with hashed IDs)
+04:37:33.924 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Rate limiting keys will expire in 1 minute
+04:37:33.924 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.926 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.926 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.927 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.927 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Counter increment test: value = 1
+04:37:33.927 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - 
+🧪 Testing Key Expiration:
+04:37:33.927 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.928 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.928 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.929 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.929 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Set key with 3 second TTL, remaining: 3 seconds
+04:37:33.929 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.930 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.930 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.931 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.931 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.932 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.932 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Removed expiration from key, TTL: -1 (should be -1)
+04:37:33.932 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.933 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.933 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.934 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.935 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:33.937 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:33.937 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Atomic increment by 5: result = 5
+04:37:33.937 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Response time: 631ms
+04:37:33.937 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - 
+✅ REDIS VALIDATION SUCCESSFUL
+04:37:33.937 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Connection established
+04:37:33.937 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Server responding
+04:37:33.937 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Read/Write operations working
+04:37:33.937 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m -    ✓ Ready for rate limiting!
+04:37:33.937 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RedisValidationService&amp#27;[0;39m - ==========================================
+04:37:33.993 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.config.PageableConfiguration&amp#27;[0;39m - =============================================================================
+04:37:33.993 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.config.PageableConfiguration&amp#27;[0;39m - PAGEABLE CONFIGURATION INITIALIZED
+04:37:33.993 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.config.PageableConfiguration&amp#27;[0;39m - =============================================================================
+04:37:33.993 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.config.PageableConfiguration&amp#27;[0;39m - Default page size: 20
+04:37:33.993 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.config.PageableConfiguration&amp#27;[0;39m - Maximum page size: 100
+04:37:33.993 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.config.PageableConfiguration&amp#27;[0;39m - Any request exceeding 100 items per page will be automatically limited
+04:37:33.993 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.config.PageableConfiguration&amp#27;[0;39m - =============================================================================
+04:37:34.001 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.RateLimitConfiguration&amp#27;[0;39m - Rate limiting configuration initialized:
+04:37:34.001 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.RateLimitConfiguration&amp#27;[0;39m -   - Enabled: true
+04:37:34.001 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.RateLimitConfiguration&amp#27;[0;39m -   - Storage type: redis (from storage.mode: redis)
+04:37:34.001 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.RateLimitConfiguration&amp#27;[0;39m -   - Cleanup enabled: true
+04:37:34.001 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.RateLimitConfiguration&amp#27;[0;39m -   - Cleanup interval: 300000ms
+04:37:34.001 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.RateLimitConfiguration&amp#27;[0;39m -   - Excluded paths: [/health, /actuator/**, /swagger-ui/**, /v3/api-docs/**]
+04:37:34.001 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.RateLimitConfiguration&amp#27;[0;39m -   - Metrics enabled: true
+04:37:34.001 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.RateLimitConfiguration&amp#27;[0;39m -   - GDPR enabled: true
+04:37:34.001 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.RateLimitConfiguration&amp#27;[0;39m -   - Rate limiter implementation: GdprCompliantRateLimiterService
+04:37:34.011 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - 
+04:37:34.011 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - ╔════════════════════════════════════════╗
+04:37:34.011 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - ║     UNIFIED STORAGE CONFIGURATION      ║
+04:37:34.011 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - ╠════════════════════════════════════════╣
+04:37:34.011 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - ║ Single Property: storage.mode = redis      ║
+04:37:34.011 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - ╠════════════════════════════════════════╣
+04:37:34.011 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - ║ This controls:                         ║
+04:37:34.011 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - ║   ✓ User authentication cache          ║
+04:37:34.011 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - ║   ✓ Rate limiting storage              ║
+04:37:34.011 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - ║   ✓ Session management                 ║
+04:37:34.011 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - ║   ✓ GeoLocation cache                  ║
+04:37:34.011 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - ║   ✓ Application cache                  ║
+04:37:34.011 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - ║   ✓ Upload tracking                    ║
+04:37:34.011 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - ╠════════════════════════════════════════╣
+04:37:34.011 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - ║ Mode: REDIS (Production Ready)         ║
+04:37:34.011 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - ║   • Distributed & Persistent           ║
+04:37:34.011 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - ║   • Supports clustering                ║
+04:37:34.011 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - ║   • GDPR compliant with TTL            ║
+04:37:34.011 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - ╚════════════════════════════════════════╝
+04:37:34.011 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - 
+04:37:34.339 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m - GDPR: Operation=initializeSignedUrlValidation, Purpose=system_startup_validation, DataAccessed=none
+04:37:34.339 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m - ==========================================
+04:37:34.339 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m - 🔐 SIGNED URL VALIDATION SERVICE
+04:37:34.339 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m - ==========================================
+04:37:34.339 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m - ❌ Failed to initialize Signed URL Service
+java.io.IOException: Your default credentials were not found. To set up Application Default Credentials for your environment, see https://cloud.google.com/docs/authentication/external/set-up-adc.
+	at com.google.auth.oauth2.DefaultCredentialsProvider.getDefaultCredentials(DefaultCredentialsProvider.java:127)
+	at com.google.auth.oauth2.GoogleCredentials.getApplicationDefault(GoogleCredentials.java:152)
+	at com.google.auth.oauth2.GoogleCredentials.getApplicationDefault(GoogleCredentials.java:124)
+	at com.sm.instagram.platform.storage.service.SignedUrlValidationService.getCredentials(SignedUrlValidationService.java:352)
+	at com.sm.instagram.platform.storage.service.SignedUrlValidationService.initialize(SignedUrlValidationService.java:77)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMethod.invoke(InitDestroyAnnotationBeanPostProcessor.java:457)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMetadata.invokeInitMethods(InitDestroyAnnotationBeanPostProcessor.java:401)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:219)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsBeforeInitialization(AbstractAutowireCapableBeanFactory.java:429)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1816)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:607)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.instantiateSingleton(DefaultListableBeanFactory.java:1235)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingleton(DefaultListableBeanFactory.java:1201)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:1130)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:991)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:628)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318)
+	at org.springframework.boot.test.context.SpringBootContextLoader.lambda$loadContext$3(SpringBootContextLoader.java:151)
+	at org.springframework.util.function.ThrowingSupplier.get(ThrowingSupplier.java:58)
+	at org.springframework.util.function.ThrowingSupplier.get(ThrowingSupplier.java:46)
+	at org.springframework.boot.SpringApplication.withHook(SpringApplication.java:1461)
+	at org.springframework.boot.test.context.SpringBootContextLoader$ContextLoaderHook.run(SpringBootContextLoader.java:590)
+	at org.springframework.boot.test.context.SpringBootContextLoader.loadContext(SpringBootContextLoader.java:151)
+	at org.springframework.boot.test.context.SpringBootContextLoader.loadContext(SpringBootContextLoader.java:110)
+	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContextInternal(DefaultCacheAwareContextLoaderDelegate.java:225)
+	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContext(DefaultCacheAwareContextLoaderDelegate.java:152)
+	at org.springframework.test.context.support.DefaultTestContext.getApplicationContext(DefaultTestContext.java:130)
+	at org.springframework.test.context.support.DependencyInjectionTestExecutionListener.injectDependencies(DependencyInjectionTestExecutionListener.java:155)
+	at org.springframework.test.context.support.DependencyInjectionTestExecutionListener.prepareTestInstance(DependencyInjectionTestExecutionListener.java:111)
+	at org.springframework.test.context.TestContextManager.prepareTestInstance(TestContextManager.java:260)
+	at org.springframework.test.context.junit.jupiter.SpringExtension.postProcessTestInstance(SpringExtension.java:159)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$invokeTestInstancePostProcessors$10(ClassBasedTestDescriptor.java:383)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.executeAndMaskThrowable(ClassBasedTestDescriptor.java:388)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$invokeTestInstancePostProcessors$11(ClassBasedTestDescriptor.java:382)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:179)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1708)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:151)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:174)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:596)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.invokeTestInstancePostProcessors(ClassBasedTestDescriptor.java:382)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$instantiateAndPostProcessTestInstance$6(ClassBasedTestDescriptor.java:293)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.instantiateAndPostProcessTestInstance(ClassBasedTestDescriptor.java:292)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$testInstancesProvider$4(ClassBasedTestDescriptor.java:281)
+	at java.base/java.util.Optional.orElseGet(Optional.java:364)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$testInstancesProvider$5(ClassBasedTestDescriptor.java:280)
+	at org.junit.jupiter.engine.execution.TestInstancesProvider.getTestInstances(TestInstancesProvider.java:27)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$prepare$0(TestMethodTestDescriptor.java:112)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.prepare(TestMethodTestDescriptor.java:111)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.prepare(TestMethodTestDescriptor.java:69)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$prepare$2(NodeTestTask.java:128)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.prepare(NodeTestTask.java:128)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:160)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:146)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:144)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:143)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:100)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:160)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:146)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:144)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:143)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:100)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:201)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:170)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:94)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:59)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:142)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:58)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:103)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:85)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47)
+	at org.junit.platform.launcher.core.InterceptingLauncher.lambda$execute$1(InterceptingLauncher.java:39)
+	at org.junit.platform.launcher.core.ClasspathAlignmentCheckingLauncherInterceptor.intercept(ClasspathAlignmentCheckingLauncherInterceptor.java:25)
+	at org.junit.platform.launcher.core.InterceptingLauncher.execute(InterceptingLauncher.java:38)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47)
+	at org.apache.maven.surefire.junitplatform.LazyLauncher.execute(LazyLauncher.java:56)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:184)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:148)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:122)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
+	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
+04:37:34.340 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    Uploads may not work properly without signed URLs
+04:37:34.340 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m - ==========================================
+04:37:34.401 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.stripe.StripeConfig&amp#27;[0;39m - 💳 Stripe SDK initialized — 🧪 TEST mode 🏖️
+04:37:34.495 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.a.FirebaseAuthConfig&amp#27;[0;39m - Configuring JWT decoder for Firebase project: check-it-out-47c50
+04:37:35.123 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.common.config.AsyncConfig&amp#27;[0;39m - Email task executor initialized: core=5, max=20, queue=100
+04:37:35.211 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - ==========================================
+04:37:35.211 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - 📍 GEOLOCATION CACHE CONFIGURATION
+04:37:35.211 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - ==========================================
+04:37:35.211 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - Storage Mode: redis
+04:37:35.211 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - GeoLocation Cache: RedisGeoLocationCache
+04:37:35.211 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m -   • GeoLocation data stored in Redis
+04:37:35.211 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m -   • Distributed across instances
+04:37:35.211 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m -   • Data persists with TTL
+04:37:35.211 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.UnifiedStorageConfiguration&amp#27;[0;39m - ==========================================
+04:37:36.376 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.e.v.SmtpStartupValidator&amp#27;[0;39m - 📧 Validating SMTP configuration...
+04:37:36.832 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.e.v.SmtpStartupValidator&amp#27;[0;39m - ⚠️ WARNING: SMTP validation failed for smtp.gmail.com:587 - SMTP connection failed: 535-5.7.8 Username and Password not accepted. For more information, go to
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials 5a478bee46e88-33ba4fa50efsm3046434eec.28 - gsmtp
+ - Application starting in DEGRADED MODE. Email functionality will not work!
+04:37:36.888 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.s.TestEnvironmentGuard&amp#27;[0;39m - Environment validation - App Environment: INTEGRATION_TEST, Active Profiles: integration
+04:37:36.891 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.o.OpenApiSpecGeneratorTest&amp#27;[0;39m - Started OpenApiSpecGeneratorTest in 29.458 seconds (process running for 132.311)
+04:37:36.902 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - ==========================================
+04:37:36.902 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - 🔐 TOTP (2FA) VALIDATION
+04:37:36.902 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - ==========================================
+04:37:36.902 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - GDPR: Operation=startTotpValidation, FirebaseUID=SYSTEM, DataAccessed=config_validation, Purpose=system_initialization
+04:37:36.902 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - 📋 TOTP Configuration:
+04:37:36.902 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    Issuer: CheckItOut-Test
+04:37:36.902 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    Key Ring: instagram-tokens
+04:37:36.902 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    TOTP Key: totp-secrets-key
+04:37:36.902 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    Status: ENABLED
+04:37:36.902 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - 
+🔑 Testing TOTP KMS Encryption:
+04:37:36.902 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✗ TOTP KMS validation failed: KMS not available for TOTP encryption
+04:37:36.902 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    → Check if totp-secrets-key exists in instagram-tokens
+04:37:36.902 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - 
+📚 Testing Firestore TOTP Collection:
+04:37:36.912 [scheduling-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.FileTrackingService&amp#27;[0;39m - GDPR: Service=cleanupOrphanedUploads, Operation=CLEANUP, Purpose=maintenance
+04:37:37.035 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✗ Firestore access failed: com.google.api.gax.rpc.UnauthenticatedException: io.grpc.StatusRuntimeException: UNAUTHENTICATED: Failed computing credential metadata
+04:37:37.035 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - 
+🔢 Testing TOTP Generation:
+04:37:37.035 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✓ TOTP secret generated: BFDD...
+04:37:37.035 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✓ TOTP code generated: 923572
+04:37:37.035 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✓ TOTP generation and verification working
+04:37:37.035 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    Testing time window tolerance (configured in application.yml)...
+04:37:37.035 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✓ TOTP time window tolerance working
+04:37:37.035 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - 
+❌ TOTP Service: DEGRADED
+04:37:37.035 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    Some checks failed - 2FA may not work properly
+04:37:37.035 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    Check the logs above for details
+04:37:37.035 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - GDPR: Operation=completeTotpValidation, FirebaseUID=SYSTEM, DataAccessed=system_health, Purpose=startup_validation, Result=FAILED
+04:37:37.035 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - ==========================================
+04:37:37.036 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m - ╔══════════════════════════════════════════════════════════════╗
+04:37:37.036 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m - ║      META APP & INSTAGRAM CONFIGURATION VALIDATION          ║
+04:37:37.036 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m - ╚══════════════════════════════════════════════════════════════╝
+04:37:37.036 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m - 📋 CREDENTIAL STATUS:
+04:37:37.036 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m -    Meta App ID:        ✅ Present (synthetic-meta-app-id)
+04:37:37.036 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m -    Meta App Secret:    ✅ Present (25 chars)
+04:37:37.036 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m -    Instagram App ID:   ✅ Present (synthetic-instagram-client-id)
+04:37:37.036 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m -    Instagram Secret:   ✅ Present (33 chars)
+04:37:37.036 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m -    Environment:        ⚠️ Unknown Meta App ID
+04:37:37.036 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m - 🔍 Validating basic configuration...
+04:37:37.036 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m -    ✅ Basic configuration is valid
+04:37:37.036 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m - 📘 Validating Meta App...
+04:37:37.036 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m -    🔄 Connecting to Facebook Graph API...
+04:37:37.069 [scheduling-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.FileTrackingService&amp#27;[0;39m - GDPR: Service=cleanupOrphanedUploads_complete, CleanedCount=0, Purpose=maintenance
+04:37:37.077 [scheduling-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:37.116 [scheduling-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:41.102 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m -    ❌ Error validating Meta App: Retries exhausted: 2/2
+04:37:41.102 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m -    ❌ Failed to validate Meta App: Retries exhausted: 2/2
+04:37:41.102 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m - 🔗 Validating OAuth configuration...
+04:37:41.102 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m -    ⚠️ Local redirect URI not using port 4200 (Angular default)
+04:37:41.102 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m -    ✅ Local development redirect URI: http://localhost:8080/api/auth/social/callback/instagram
+04:37:41.102 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m -    OAuth URL: https://www.instagram.com/oauth/authorize?client_id=synthetic-instagram-client-id&redirect_uri=http://localhost:8080/api/auth/social/callback/instagra...
+04:37:41.102 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m -    ✅ OAuth configuration is valid
+04:37:41.102 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m - 
+04:37:41.102 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m - 🔍 INSTAGRAM API VALIDATION (with test token):
+04:37:41.102 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m -    🔄 Testing Instagram Graph API connectivity...
+04:37:41.167 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m -    ⚠️ Instagram API validation failed (non-critical)
+04:37:41.167 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m -    Status: 400 BAD_REQUEST - Bad Request
+04:37:41.167 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m -    Note: This does not prevent app startup
+04:37:41.167 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m - ══════════════════════════════════════════════════════════════
+04:37:41.167 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m - ❌ Configuration validation failed
+04:37:41.167 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m -    Please check the errors above and update your configuration
+04:37:41.167 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.i.InstagramStartupValidator&amp#27;[0;39m - ══════════════════════════════════════════════════════════════
+04:37:41.168 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.RecaptchaStartupValidator&amp#27;[0;39m - 🔒 reCAPTCHA is DISABLED - skipping startup validation
+04:37:41.168 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - ==========================================
+04:37:41.168 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - 🔐 TOTP QR CODE STARTUP VALIDATION
+04:37:41.168 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - ==========================================
+04:37:41.168 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.ImprovedQRCodeService&amp#27;[0;39m - GDPR: Service=generateTOTPSecret, Operation=GENERATE_SECRET, Purpose=2fa_setup
+04:37:41.176 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.ImprovedQRCodeService&amp#27;[0;39m - GDPR: Service=generateQRCode, Operation=GENERATE_2FA_QR, Email=va***@test.com, Issuer=CheckItOut-Test, Purpose=2fa_setup
+04:37:41.195 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.ImprovedQRCodeService&amp#27;[0;39m - GDPR: Service=generateGoogleChartsQR, Operation=GENERATE_EXTERNAL_QR, Email=va***@test.com, Purpose=2fa_fallback
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - 
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - 📊 VALIDATION SUMMARY:
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - ------------------------------------------
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    ✅ Configuration - PASS
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -       └─ Issuer: CheckItOut-Test | Status: ENABLED
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    ✅ Secret Generation - PASS
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -       └─ Generated 32-char Base32 secret: 34LNTT...TXP3
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    ✅ Improved QR (java-totp) - PASS
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -       └─ ✅ RECOMMENDED - Generated 350x350 PNG QR code (843 bytes)
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    ✅ OTP Auth URL Format - PASS
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -       └─ Valid format: otpauth://totp/CheckItOut-Test%3Avalidator%40test.com?secret=REDACTED&issuer=Che...
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    ✅ External QR API - PASS
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -       └─ ✅ FALLBACK - QuickChart.io QR API configured
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    ⚠️ Legacy QR (with logo) - WARN
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -       └─ ⚠️ DEPRECATED - Works but may have compatibility issues with logo
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    ✅ TOTP Code Generation - PASS
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -       └─ Generated and verified 6-digit code: 574477
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    ✅ Manual Entry Info - PASS
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -       └─ Manual entry ready - CheckItOut-Test for validator@test.com
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - ------------------------------------------
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    Total: 7 passed | 1 warnings | 0 failed
+04:37:41.284 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - ⚠️ TOTP QR CODE VALIDATION PASSED WITH WARNINGS
+04:37:41.284 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    Improved QR service should work correctly
+04:37:41.284 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    Legacy QR generator may have issues
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - 
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - 🎯 RECOMMENDATIONS:
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    1. Use ImprovedQRCodeService for primary QR generation
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    2. Provide Google Charts URL as fallback option
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    3. Always show manual entry option for users
+04:37:41.284 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    4. Test with real authenticator apps before production
+04:37:41.285 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - 
+04:37:41.285 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - 🔧 CONFIGURATION:
+04:37:41.285 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    Issuer: CheckItOut-Test
+04:37:41.285 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    Algorithm: SHA1 (max compatibility)
+04:37:41.285 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    Digits: 6
+04:37:41.285 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    Period: 30 seconds
+04:37:41.285 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m -    Status: 🟢 ENABLED
+04:37:41.285 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpQRCodeStartupValidator&amp#27;[0;39m - ==========================================
+04:37:41.285 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.s.MaxMindStartupValidator&amp#27;[0;39m - ========================================
+04:37:41.285 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.s.MaxMindStartupValidator&amp#27;[0;39m - Starting MaxMind GeoIP validation...
+04:37:41.285 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.s.MaxMindStartupValidator&amp#27;[0;39m - ========================================
+04:37:41.403 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.s.MaxMindStartupValidator&amp#27;[0;39m - Server external IP: 20.168.119.85
+04:37:41.404 [pool-107-thread-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+04:37:41.405 [pool-107-thread-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+04:37:41.405 [pool-106-thread-1] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.s.g.MaxMindDatabaseService&amp#27;[0;39m - MaxMind reader not initialized
+04:37:41.406 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.s.MaxMindStartupValidator&amp#27;[0;39m - ⚠️ GeoIP validation WARNING: Could not determine location for IP: 20.168.119.85
+04:37:41.406 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.s.MaxMindStartupValidator&amp#27;[0;39m - ⚠️ GeoIP service may not be fully functional
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.s.MaxMindStartupValidator&amp#27;[0;39m - ========================================
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.s.MaxMindStartupValidator&amp#27;[0;39m - GeoIP validation completed
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.s.MaxMindStartupValidator&amp#27;[0;39m - ========================================
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m - 
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m - ==========================================
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m - 🚀 APPLICATION STARTUP VALIDATION
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m - ==========================================
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m - 📍 Environment: INTEGRATION_TEST
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m - 📍 Server Port: 0
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m - 📍 Storage Mode: REDIS
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m - 
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m - 📊 SERVICE STATUS:
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m - ------------------------------------------
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m -    ✅ Firebase Auth - OPERATIONAL
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m -       └─ Account: s***@check-it-out-47c50.iam.gserviceaccount.com
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m -    ✅ Cloud Storage - OPERATIONAL
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m -       └─ Buckets configured for check-it-out-47c50
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m -    🔒 reCAPTCHA - DISABLED
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m -       └─ Disabled in configuration
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m -    ✅ Cache Storage - OPERATIONAL
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m -       └─ Redis mode active
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m -    ✅ Project Config - OPERATIONAL
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m -       └─ All services using: check-it-out-47c50
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m -    ✅ SMTP Mail - OPERATIONAL
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m -       └─ Configured: norbert_marchewka@checkitout.app@smtp.gmail.com:587
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m - ------------------------------------------
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m - 
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m - ✅ APPLICATION STATUS: OPERATIONAL
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m -    All critical services are running correctly
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m - 
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m - 🏷️ INSTANCE INFORMATION:
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m -    Type: 🟢 TEST
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m -    Environment: INTEGRATION_TEST
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m -    Project: check-it-out-47c50
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m -    Ready URL: http://localhost:0
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m - ==========================================
+04:37:41.406 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.v.ApplicationStartupValidator&amp#27;[0;39m - 
+04:37:41.609 [http-nio-auto-1-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EarlyRequestLoggingFilter: Processing request GET /api/v3/api-docs from origin: null
+04:37:41.610 [http-nio-auto-1-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EARLY_REQUEST_START: {method=GET, originAuthorized=true, requestId=REQ-1789101461609-438, origin=null, correlationId=REQ-cc38c908, userAgent=ReactorNetty/1.2.18, type=EARLY_REQUEST, uri=/api/v3/api-docs, timestamp=2026-09-11 04:37:41.609, remoteAddr=127.0.0.1}
+04:37:41.633 [http-nio-auto-1-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - INCOMING_REQUEST: {method=GET, requestId=REQ-1789101461633-438, correlationId=REQ-cc38c908, contentLength=-1, uri=/api/v3/api-docs, contentType=null, timestamp=2026-09-11 04:37:41.633, remoteAddr=127.0.0.xxx}
+04:37:47.924 [http-nio-auto-1-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_SUCCESS: {duration=6290ms, method=GET, requestId=REQ-1789101461633-438, requestCompleted=true, correlationId=REQ-cc38c908, uri=/api/v3/api-docs, timestamp=2026-09-11 04:37:41.633, status=200}
+04:37:47.924 [http-nio-auto-1-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_COMPLETE request_id="REQ-1789101461633-438" correlation_id="REQ-cc38c908" method="GET" path="/api/v3/api-docs" status=200 execution_time_ms=6290 client_ip="127.0.0.xxx" user_agent="Other"
+[OpenAPI] Spec written to: /home/runner/work/checkitout-backend/checkitout-backend/docs/openapi/openapi.json
+[OpenAPI] Spec size: 477603 characters
