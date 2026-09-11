@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sm.instagram.platform.common.authorization.PermissionUtils;
 import com.sm.instagram.platform.common.exceptions.RateLimitTranslatableException;
 import com.sm.instagram.platform.common.exceptions.StorageTranslatableException;
+import com.sm.instagram.platform.common.exceptions.ValidationTranslatableException;
 import com.sm.instagram.platform.common.exceptions.GlobalDefaultExceptionHandler;
 import com.sm.instagram.platform.common.exceptions.handlers.BusinessExceptionHandler;
 import com.sm.instagram.platform.common.exceptions.handlers.RateLimitExceptionHandler;
@@ -604,6 +605,69 @@ class FileUploadControllerUnitTest {
 
             verify(signedUrlService).validateUploadSuccess(filePath);
             verify(signedUrlService, never()).confirmUpload(any(), any());
+        }
+    }
+
+    @Nested
+    @DisplayName("A refusal keeps the status it means, rather than becoming 507")
+    class RefusalStatuses {
+
+        /**
+         * Both upload handlers end in a catch-all that rethrows everything as
+         * {@code error.storage.upload_failed}, which is 507 Insufficient Storage -- a claim about
+         * the server's disk. {@code POST /upload/confirm/0?filePath=} came back 507 when the
+         * service had simply refused an empty path, and a caller reading that goes looking for a
+         * quota problem that does not exist. The catch-all is still there for what is genuinely
+         * unexpected; what it may not do is relabel an exception that already knows its own status.
+         */
+        @Test
+        @WithMockUser(authorities = "INFLUENCER")
+        @DisplayName("confirm: an empty filePath is a 400")
+        void confirmRejectsEmptyPathAsBadRequest() throws Exception {
+            when(signedUrlService.validateUploadSuccess(""))
+                    .thenThrow(new ValidationTranslatableException("error.validation.required_field", "filePath"));
+
+            mockMvc.perform(post("/upload/confirm/{uploadId}", "0").param("filePath", ""))
+                    .andExpect(status().isBadRequest());
+
+            verify(signedUrlService, never()).confirmUpload(any(), any());
+        }
+
+        @Test
+        @WithMockUser(authorities = "INFLUENCER")
+        @DisplayName("confirm: a storage failure is still a 507")
+        void confirmKeepsStorageFailureAsInsufficientStorage() throws Exception {
+            String filePath = "content/test-user/whatever.jpg";
+            when(signedUrlService.validateUploadSuccess(filePath))
+                    .thenThrow(new StorageTranslatableException("error.storage.upload_failed"));
+
+            mockMvc.perform(post("/upload/confirm/{uploadId}", TEST_UPLOAD_ID).param("filePath", filePath))
+                    .andExpect(status().isInsufficientStorage());
+        }
+
+        @Test
+        @WithMockUser(authorities = "INFLUENCER")
+        @DisplayName("confirm: something genuinely unexpected is still a 507")
+        void confirmKeepsUnexpectedFailureAsInsufficientStorage() throws Exception {
+            String filePath = "content/test-user/whatever.jpg";
+            when(signedUrlService.validateUploadSuccess(filePath))
+                    .thenThrow(new IllegalStateException("the sink is in an impossible state"));
+
+            mockMvc.perform(post("/upload/confirm/{uploadId}", TEST_UPLOAD_ID).param("filePath", filePath))
+                    .andExpect(status().isInsufficientStorage());
+        }
+
+        @Test
+        @WithMockUser(authorities = "INFLUENCER")
+        @DisplayName("signed-url: a refusal from the service is a 400")
+        void signedUrlRejectionIsBadRequest() throws Exception {
+            when(signedUrlService.generateSignedUrl(eq(TEST_USER_ID), any()))
+                    .thenThrow(new ValidationTranslatableException("error.validation.required_field", "filename"));
+
+            mockMvc.perform(post("/upload/signed-url")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(validRequestJson))
+                    .andExpect(status().isBadRequest());
         }
     }
 

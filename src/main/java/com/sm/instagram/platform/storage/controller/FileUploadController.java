@@ -3,6 +3,7 @@ package com.sm.instagram.platform.storage.controller;
 import com.sm.instagram.platform.common.authorization.PermissionUtils;
 import com.sm.instagram.platform.common.exceptions.RateLimitTranslatableException;
 import com.sm.instagram.platform.common.exceptions.ResourceNotFoundException;
+import com.sm.instagram.platform.common.exceptions.TranslatableException;
 import com.sm.instagram.platform.common.exceptions.StorageTranslatableException;
 import com.sm.instagram.platform.common.exceptions.ValidationTranslatableException;
 import com.sm.instagram.platform.common.ratelimit.RateLimit;
@@ -135,7 +136,11 @@ public class FileUploadController {
                     firebaseUid, response.getUploadId());
             return ResponseEntity.ok(response);
 
-        } catch (StorageTranslatableException | RateLimitTranslatableException | ValidationTranslatableException e) {
+        } catch (TranslatableException e) {
+            // Every domain exception in this project already carries the status it means, and the
+            // handlers already map it. Naming three of them here left the rest to the catch-all
+            // below, which relabels anything at all as 507 Insufficient Storage -- a specific claim
+            // about the server's disk, made about a request the server had simply refused.
             throw e;
         } catch (Exception e) {
             log.error("GDPR: Operation=generateSignedUrl_failed, FirebaseUID={}, Error={}",
@@ -150,7 +155,7 @@ public class FileUploadController {
                 }
             }
 
-            throw new StorageTranslatableException("error.storage.upload_failed", "Upload confirmation failed");
+            throw new StorageTranslatableException("error.storage.upload_failed", "Upload operation failed");
         }
     }
 
@@ -215,13 +220,13 @@ public class FileUploadController {
 
             return ResponseEntity.ok(response);
 
-        } catch (ResourceNotFoundException e) {
-            throw e;
-        } catch (IllegalArgumentException e) {
-            // A path the caller typed. 507 Insufficient Storage is a specific claim -- the server
+        } catch (TranslatableException | IllegalArgumentException e) {
+            // What the caller typed. 507 Insufficient Storage is a specific claim -- the server
             // cannot store the representation -- and saying it about a malformed filePath sends the
-            // caller looking for a quota problem that does not exist. `?filePath=` reached here and
-            // came back 507; it is a 400, which is what the handler for this exception returns.
+            // caller looking for a quota problem that does not exist. `?filePath=` came back 507
+            // even after IllegalArgumentException was let through here, because the service refuses
+            // an empty path with ValidationTranslatableException, which is a 400 and was being
+            // caught below and relabelled.
             log.warn("GDPR: Operation=confirmUpload_rejected, FirebaseUID={}, UploadID={}, Reason={}",
                     firebaseUid, uploadId, e.getMessage());
             throw e;
