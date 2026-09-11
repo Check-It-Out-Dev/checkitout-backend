@@ -86,9 +86,13 @@ public class GeoIpAdminController {
 
         String adminUid = getAuthenticatedAdminUid();
 
-        // GDPR: Log IP location lookup
+        // GDPR: Log IP location lookup. Bounded quantifiers, not `\d+`: an octet is at most three
+        // digits, and the unbounded form backtracks polynomially over a long run of digits that
+        // never completes the match (CodeQL java/polynomial-redos). validateIpAddress above already
+        // refuses such a string — this is the second lock, not the first, and it costs nothing.
+        // Proven to mask every valid IPv4 shape identically to the version it replaces.
         log.info("GDPR: Operation=lookupIpLocation, FirebaseUID={}, TargetIP={}, Purpose=geo_location_analysis, DataAccessed=ip.location, LegalBasis=legitimate_interest",
-                adminUid, ip.replaceAll("(\\d+\\.\\d+\\.)(\\d+\\.\\d+)", "$1***.**"));
+                adminUid, ip.replaceAll("(\\d{1,3}\\.\\d{1,3}\\.)(\\d{1,3}\\.\\d{1,3})", "$1***.**"));
 
         log.info("Admin GeoIP lookup for: {}", ip);
         GeoLocation location = geoLocationService.getLocation(ip, 2000);  // 2 second timeout
@@ -116,7 +120,7 @@ public class GeoIpAdminController {
 
         // GDPR: Log self location check
         log.info("GDPR: Operation=getMyLocation, FirebaseUID={}, OwnIP={}, Purpose=self_location_check, DataAccessed=own.ip.location",
-                adminUid, clientIp.replaceAll("(\\d+\\.\\d+\\.)(\\d+\\.\\d+)", "$1***.**"));
+                adminUid, clientIp.replaceAll("(\\d{1,3}\\.\\d{1,3}\\.)(\\d{1,3}\\.\\d{1,3})", "$1***.**"));
 
         log.info("Admin checking own location from IP: {}", clientIp);
         GeoLocation location = geoLocationService.getLocation(clientIp, 2000);

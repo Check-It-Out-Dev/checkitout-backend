@@ -329,6 +329,29 @@ class InMemoryStorageRateLimitServiceUnitTest {
         }
 
         @Test
+        @DisplayName("a declared size that overflows the sum is refused, not waved through")
+        void refusesASizeThatOverflowsTheSum() {
+            // Given - any non-zero usage at all
+            service.updateUserStorage("user123", 1024);
+
+            // When - the caller declares a size whose sum with `used` wraps past Long.MAX_VALUE
+            boolean result = service.hasStorageSpace("user123", Long.MAX_VALUE);
+
+            // Then - `used + requestedSize` is negative, and a negative is <= the limit, so the
+            // old comparison returned true: the quota check passed on exactly the input it exists
+            // to refuse. SignedUrlService hands this a caller-declared fileSize.
+            assertThat(result).isFalse();
+        }
+
+        @Test
+        @DisplayName("a negative declared size is refused rather than crediting the quota")
+        void refusesANegativeSize() {
+            service.updateUserStorage("user123", 1024);
+
+            assertThat(service.hasStorageSpace("user123", -1)).isFalse();
+        }
+
+        @Test
         @DisplayName("should return true when request fits exactly")
         void shouldReturnTrueWhenRequestFitsExactly() {
             // Given - use all but 1000 bytes
