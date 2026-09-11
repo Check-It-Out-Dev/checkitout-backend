@@ -1,6 +1,7 @@
 package com.sm.instagram.platform.common.ratelimit;
 
 import com.sm.instagram.platform.common.utils.HashingUtil;
+import com.sm.instagram.platform.common.util.LogSafe;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -544,12 +545,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
      * Sanitizes a string for safe logging (removes control chars, limits length).
      */
     private String sanitizeForLog(String input) {
-        if (input == null) return "null";
-        String sanitized = input.replaceAll("[\\p{Cntrl}]", "?");
-        if (sanitized.length() > 50) {
-            return sanitized.substring(0, 50) + "...";
-        }
-        return sanitized;
+        return LogSafe.value(input);
     }
     
     private void addRateLimitHeaders(HttpServletResponse response, RateLimiterService.RateLimitResult result) {

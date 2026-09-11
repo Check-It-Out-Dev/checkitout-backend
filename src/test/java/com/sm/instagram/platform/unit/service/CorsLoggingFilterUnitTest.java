@@ -1432,4 +1432,82 @@ class CorsLoggingFilterUnitTest {
             verify(filterChain).doFilter(any(), any());
         }
     }
+    /**
+     * The filter reads five request headers and writes all of them down. A value that still carries
+     * a line break writes its own entry, and an entry that a log viewer cannot tell from a real one
+     * is worse than no log at all.
+     *
+     * <p>These belong here rather than only on {@code LogSafeUnitTest}: that test proves the
+     * sanitiser works, this one proves the filter calls it. Deleting the call leaves the utility
+     * test green.
+     */
+    @Nested
+    @DisplayName("Log Injection Tests")
+    class LogInjectionTests {
+
+        private static final String FORGED_ENTRY =
+                "http://evil.example\r\n2026-09-11 03:02:10 ERROR c.s.i.p.SecurityAudit - Login succeeded for admin";
+
+        @Test
+        @DisplayName("a line break in Origin cannot forge a second log entry")
+        void lineBreakInOriginCannotForgeAnEntry() throws ServletException, IOException {
+            // Given
+            request.setRequestURI("/api/test");
+            request.setMethod("GET");
+            request.addHeader("Origin", FORGED_ENTRY);
+
+            // When
+            filter.doFilter(request, response, filterChain);
+
+            // Then
+            assertThat(loggedMessages())
+                    .as("the origin is not allow-listed, so the filter has something to say")
+                    .isNotEmpty()
+                    .allSatisfy(message -> assertThat(message).doesNotContain("\n").doesNotContain("\r"));
+            assertThat(String.join(" | ", loggedMessages()))
+                    .as("the attempt stays in the record rather than being silently dropped")
+                    .contains("Login succeeded for admin");
+        }
+
+        @Test
+        @DisplayName("a line break in the preflight headers cannot forge one either")
+        void lineBreakInPreflightHeadersCannotForgeAnEntry() throws ServletException, IOException {
+            // Given
+            request.setRequestURI("/api/test");
+            request.setMethod("OPTIONS");
+            request.addHeader("Origin", "http://localhost:4200");
+            request.addHeader("Access-Control-Request-Method", "GET\r\nINJECTED");
+            request.addHeader("Access-Control-Request-Headers", "Authorization\r\nINJECTED");
+
+            // When
+            filter.doFilter(request, response, filterChain);
+
+            // Then
+            assertThat(loggedMessages())
+                    .isNotEmpty()
+                    .allSatisfy(message -> assertThat(message).doesNotContain("\n").doesNotContain("\r"));
+        }
+
+        @Test
+        @DisplayName("a line break in X-Correlation-ID cannot forge one through the rejection reason")
+        void lineBreakInCorrelationHeaderCannotForgeAnEntry() throws ServletException, IOException {
+            // Given - an allowed origin and a 500 takes determineRejectionReason to its last branch,
+            // which quotes the client's own correlation header back into the message.
+            request.setRequestURI("/api/test");
+            request.setMethod("OPTIONS");
+            request.addHeader("Origin", "http://localhost:4200");
+            request.addHeader("Access-Control-Request-Method", "GET");
+            request.addHeader("X-Correlation-ID", "abc\r\nINJECTED");
+            response.setStatus(403);
+            response.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+
+            // When
+            filter.doFilter(request, response, filterChain);
+
+            // Then
+            assertThat(loggedMessages())
+                    .isNotEmpty()
+                    .allSatisfy(message -> assertThat(message).doesNotContain("\n").doesNotContain("\r"));
+        }
+    }
 }

@@ -10,6 +10,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.sm.instagram.platform.common.util.LogSafe;
 import com.sm.instagram.platform.config.CorsProperties;
 
 import java.io.IOException;
@@ -40,7 +41,7 @@ public class CorsLoggingFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String origin = request.getHeader("Origin");
+        String origin = LogSafe.value(request.getHeader("Origin"));
         String method = request.getMethod();
         
         // FIXED: Capture MDC values at the beginning before they get cleared
@@ -98,8 +99,8 @@ public class CorsLoggingFilter extends OncePerRequestFilter {
             corsInfo.put("userAgentCategory", categorizeUserAgent(request.getHeader("User-Agent")));
 
             // Additional CORS headers
-            corsInfo.put("accessControlRequestMethod", request.getHeader("Access-Control-Request-Method"));
-            corsInfo.put("accessControlRequestHeaders", request.getHeader("Access-Control-Request-Headers"));
+            corsInfo.put("accessControlRequestMethod", LogSafe.value(request.getHeader("Access-Control-Request-Method")));
+            corsInfo.put("accessControlRequestHeaders", LogSafe.value(request.getHeader("Access-Control-Request-Headers")));
 
             // Check if this is a preflight request
             boolean isPreflight = "OPTIONS".equals(method) && 
@@ -265,8 +266,8 @@ public class CorsLoggingFilter extends OncePerRequestFilter {
         MDC.put("correlationId", correlationId);
         
         try {
-            String requestedMethod = request.getHeader("Access-Control-Request-Method");
-            String requestedHeaders = request.getHeader("Access-Control-Request-Headers");
+            String requestedMethod = LogSafe.value(request.getHeader("Access-Control-Request-Method"));
+            String requestedHeaders = LogSafe.value(request.getHeader("Access-Control-Request-Headers"));
 
             Map<String, Object> preflightInfo = new HashMap<>();
             preflightInfo.put("requestId", requestId);
@@ -426,7 +427,7 @@ public class CorsLoggingFilter extends OncePerRequestFilter {
             return "Origin not in allowed list: " + origin + ". Allowed origins: " + allowedOrigins;
         }
         
-        String requestedMethod = request.getHeader("Access-Control-Request-Method");
+        String requestedMethod = LogSafe.value(request.getHeader("Access-Control-Request-Method"));
         if (requestedMethod != null && !isMethodAllowed(requestedMethod)) {
             return "HTTP method not allowed: " + requestedMethod + ". Allowed methods: GET, POST, PUT, PATCH, DELETE, OPTIONS";
         }
@@ -435,7 +436,7 @@ public class CorsLoggingFilter extends OncePerRequestFilter {
             return "Server did not set Access-Control-Allow-Origin header";
         }
         
-        String requestedHeaders = request.getHeader("Access-Control-Request-Headers");
+        String requestedHeaders = LogSafe.value(request.getHeader("Access-Control-Request-Headers"));
         if (requestedHeaders != null && requestedHeaders.contains("Authorization") && 
             response.getHeader("Access-Control-Allow-Headers") != null && 
             !response.getHeader("Access-Control-Allow-Headers").contains("Authorization")) {
@@ -452,7 +453,8 @@ public class CorsLoggingFilter extends OncePerRequestFilter {
             return "HTTP method not allowed by endpoint";
         }
         
-        return "Unknown rejection reason - check server logs with trace ID: " + request.getHeader("X-Correlation-ID");
+        return "Unknown rejection reason - check server logs with trace ID: "
+                + LogSafe.value(request.getHeader("X-Correlation-ID"));
     }
 
     @Override

@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import com.sm.instagram.platform.common.util.LogSafe;
 
 /**
  * Centralized provider for Google/Firebase credentials.
@@ -510,12 +511,6 @@ public class GoogleCredentialsProvider {
      * Sanitize log output to prevent injection attacks
      */
     private String sanitizeForLogging(String input) {
-        if (input == null) {
-            return "null";
-        }
-        // Remove line breaks and control characters
-        return input.replaceAll("[\\r\\n\\t]", " ")
-                   .replaceAll("[\\x00-\\x1F\\x7F]", "")
-                   .trim();
+        return LogSafe.value(input);
     }
 }

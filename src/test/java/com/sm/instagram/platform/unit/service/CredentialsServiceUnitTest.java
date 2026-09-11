@@ -449,58 +449,65 @@ class CredentialsServiceUnitTest {
         }
     }
 
+    /**
+     * These pinned the private implementation this class used to carry. It now delegates to
+     * {@link com.sm.instagram.platform.common.util.LogSafe}, and the contract changed on purpose:
+     * a control character is replaced by {@code ?} rather than deleted or turned into a space, so
+     * the log keeps evidence that something tried, and nothing is trimmed, because trimming is a
+     * cosmetic edit to a value under investigation.
+     */
     @Nested
     @DisplayName("sanitizeForLogging Tests")
     class SanitizeForLoggingTests {
 
         @Test
-        @DisplayName("should remove line breaks from input")
-        void shouldRemoveLineBreaks() {
+        @DisplayName("should neutralise line breaks rather than delete them")
+        void shouldNeutraliseLineBreaks() {
             // When
             String result = invokeSanitizeForLogging("line1\nline2\rline3");
 
             // Then
-            assertThat(result).isEqualTo("line1 line2 line3");
+            assertThat(result).isEqualTo("line1?line2?line3");
         }
 
         @Test
-        @DisplayName("should remove tabs from input")
-        void shouldRemoveTabs() {
+        @DisplayName("should neutralise tabs")
+        void shouldNeutraliseTabs() {
             // When
             String result = invokeSanitizeForLogging("text\twith\ttabs");
 
             // Then
-            assertThat(result).isEqualTo("text with tabs");
+            assertThat(result).isEqualTo("text?with?tabs");
         }
 
         @Test
-        @DisplayName("should return 'null' string for null input")
-        void shouldReturnNullStringForNullInput() {
+        @DisplayName("should pass null through, which SLF4J renders as null anyway")
+        void shouldPassNullThrough() {
             // When
             String result = invokeSanitizeForLogging(null);
 
             // Then
-            assertThat(result).isEqualTo("null");
+            assertThat(result).isNull();
         }
 
         @Test
-        @DisplayName("should trim whitespace from result")
-        void shouldTrimWhitespace() {
+        @DisplayName("should leave surrounding whitespace alone")
+        void shouldNotTrimWhitespace() {
             // When
             String result = invokeSanitizeForLogging("  text with spaces  ");
 
             // Then
-            assertThat(result).isEqualTo("text with spaces");
+            assertThat(result).isEqualTo("  text with spaces  ");
         }
 
         @Test
-        @DisplayName("should remove control characters")
-        void shouldRemoveControlCharacters() {
+        @DisplayName("should neutralise control characters")
+        void shouldNeutraliseControlCharacters() {
             // When
             String result = invokeSanitizeForLogging("text\u0000with\u001Fcontrol\u007Fchars");
 
             // Then
-            assertThat(result).isEqualTo("textwithcontrolchars");
+            assertThat(result).isEqualTo("text?with?control?chars");
         }
 
         private String invokeSanitizeForLogging(String input) {
