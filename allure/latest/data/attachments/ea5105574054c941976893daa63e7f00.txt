@@ -1,0 +1,8 @@
+13:46:21.382 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.t.c.s.AnnotationConfigContextLoaderUtils&amp#27;[0;39m - Could not detect default configuration classes for test class [com.sm.instagram.platform.integration.service.appliedopportunity.AppliedOpportunityService_Delete_IntegrationTest]: AppliedOpportunityService_Delete_IntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+13:46:21.384 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.b.t.c.SpringBootTestContextBootstrapper&amp#27;[0;39m - Found @SpringBootConfiguration com.sm.instagram.platform.InstagramPlatformApplication for test class com.sm.instagram.platform.integration.service.appliedopportunity.AppliedOpportunityService_Delete_IntegrationTest
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-deba1f8b-ab59-4b9a-9eed-17e8a3ddce30
+  Company: COMPANY-f4db7939-4187-4ebe-81c7-9ded15b32980
+  Admin: ADMIN-ddacd56b-8db0-42c0-a64c-cf12be410f6d
+13:46:21.397 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: DELETION Operation=deleteAppliedOpportunity, FirebaseUID=INFLUENCER2-0674c7a4-a9f2-4425-b04e-8260e3627056, OpportunityID=2581, Purpose=opportunity_removal, LegalBasis=user_request
+13:46:21.397 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=INFLUENCER2-0674c7a4-a9f2-4425-b04e-8260e3627056, OpportunityID=2581, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data

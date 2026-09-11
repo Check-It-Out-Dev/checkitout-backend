@@ -1,0 +1,11 @@
+13:46:26.399 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.t.c.s.AnnotationConfigContextLoaderUtils&amp#27;[0;39m - Could not detect default configuration classes for test class [com.sm.instagram.platform.integration.service.useraccountorchestrator.UserAccountOrchestrator_Archive_IntegrationTest$CompanyArchival]: CompanyArchival does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+13:46:26.400 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.b.t.c.SpringBootTestContextBootstrapper&amp#27;[0;39m - Found @SpringBootConfiguration com.sm.instagram.platform.InstagramPlatformApplication for test class com.sm.instagram.platform.integration.service.useraccountorchestrator.UserAccountOrchestrator_Archive_IntegrationTest$CompanyArchival
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-65c4299f-998b-4b82-b881-e056dfbfb6c9
+  Company: COMPANY-76910aba-a44e-4cff-b788-fb051a827e74
+  Admin: ADMIN-9a1bc97a-adee-46f8-ae88-120e282f5f80
+13:46:26.422 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.user.UserAccountOrchestrator&amp#27;[0;39m - User 9080 status changed from ACTIVE to TO_BE_DELETED for archival
+13:46:26.423 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=evictUser, DataDeleted=cached_user_data, Purpose=cache_management
+13:46:26.423 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+13:46:26.424 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+13:46:26.424 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.user.UserAccountOrchestrator&amp#27;[0;39m - GDPR: Operation=cacheEvict_onArchival, UserId=9080, NewStatus=TO_BE_DELETED, Purpose=immediate_session_invalidation

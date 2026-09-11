@@ -1,0 +1,10 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-196a3f0d-c5fa-420f-b398-bf315e980c2d
+  Company: COMPANY-7edd02b6-de14-4de9-998c-06df81ef64c0
+  Admin: ADMIN-15dd726c-7269-440a-beb9-a69c3acfb4cb
+13:46:19.802 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus, FirebaseUID=INFLUENCER-196a3f0d-c5fa-420f-b398-bf315e980c2d, OpportunityID=2552, Action=ACCEPT, Purpose=status_management
+13:46:19.803 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=INFLUENCER-196a3f0d-c5fa-420f-b398-bf315e980c2d, OpportunityID=2552, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
+13:46:19.838 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus_SUCCESS, FirebaseUID=INFLUENCER-196a3f0d-c5fa-420f-b398-bf315e980c2d, OpportunityID=2552, OldStatus=CONTENT_APPROVED, NewStatus=CONTENT_POSTED
+13:46:19.838 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=INFLUENCER-196a3f0d-c5fa-420f-b398-bf315e980c2d, AppliedOpportunityID=2552, StatusChange=CONTENT_APPROVED→CONTENT_POSTED, Purpose=status_tracking
+13:46:19.839 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=INFLUENCER-196a3f0d-c5fa-420f-b398-bf315e980c2d, AppliedOpportunityID=2552, DataAccessed=status,changedBy,reason, Purpose=audit_trail
+13:46:19.839 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2552, CONTENT_APPROVED -> CONTENT_POSTED, Changed by=INFLUENCER-196a3f0d-c5fa-420f-b398-bf315e980c2d, Reason=Status accepted via API (/status/update endpoint)

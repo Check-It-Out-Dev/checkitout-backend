@@ -1,9 +1,0 @@
-13:31:21.734 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.t.c.s.AnnotationConfigContextLoaderUtils&amp#27;[0;39m - Could not detect default configuration classes for test class [com.sm.instagram.platform.integration.service.user.UserService_Update_IntegrationTest$UpdateAddresses]: UpdateAddresses does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-13:31:21.736 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.b.t.c.SpringBootTestContextBootstrapper&amp#27;[0;39m - Found @SpringBootConfiguration com.sm.instagram.platform.InstagramPlatformApplication for test class com.sm.instagram.platform.integration.service.user.UserService_Update_IntegrationTest$UpdateAddresses
-[Integration Test] Test users created:
-  Influencer: INFLUENCER-640b8208-b544-4b27-a88e-0855fa3e80e6
-  Company: COMPANY-4f8e480f-d51d-40d2-9ce4-0a672a7a64e3
-  Admin: ADMIN-aef3a136-9851-4f16-a42e-6b06c40a2a14
-13:31:21.745 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=updateUser, UpdaterFirebaseUID=ADMIN-aef3a136-9851-4f16-a42e-6b06c40a2a14, TargetUserID=12621, Purpose=profile_update, DataModified=user.profile,user.addresses, LegalBasis=consent
-13:31:21.745 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=findUserById, AccessorFirebaseUID=ADMIN-aef3a136-9851-4f16-a42e-6b06c40a2a14, TargetUserID=12621, Purpose=user_data_retrieval, DataAccessed=user.profile,user.addresses,user.socialConnections
-13:31:21.777 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=updateUser_SUCCESS, UpdaterFirebaseUID=ADMIN-aef3a136-9851-4f16-a42e-6b06c40a2a14, UserID=12621, AccountStatus=ACTIVE, CriticalChanges=false
