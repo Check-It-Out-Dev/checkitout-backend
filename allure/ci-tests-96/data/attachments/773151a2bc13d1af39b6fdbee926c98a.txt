@@ -1,0 +1,18 @@
+11:55:35.957 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.t.c.s.AnnotationConfigContextLoaderUtils&amp#27;[0;39m - Could not detect default configuration classes for test class [com.sm.instagram.platform.integration.service.user.UserService_Delete_IntegrationTest$SoftDelete]: SoftDelete does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+11:55:35.958 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mo.s.b.t.c.SpringBootTestContextBootstrapper&amp#27;[0;39m - Found @SpringBootConfiguration com.sm.instagram.platform.InstagramPlatformApplication for test class com.sm.instagram.platform.integration.service.user.UserService_Delete_IntegrationTest$SoftDelete
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-803df3a1-b499-40eb-b1f9-24beccab1a0a
+  Company: COMPANY-2fb28105-7292-40b1-b0ba-d2d281d598ea
+  Admin: ADMIN-27426cb8-02ab-4256-a744-ce3cc8f33fdb
+11:55:35.963 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: DELETION_REQUEST Operation=deleteUser, DeleterFirebaseUID=ADMIN-27426cb8-02ab-4256-a744-ce3cc8f33fdb, TargetUserID=12531, Purpose=account_deletion, LegalBasis=user_request
+11:55:35.963 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=findUserById, AccessorFirebaseUID=ADMIN-27426cb8-02ab-4256-a744-ce3cc8f33fdb, TargetUserID=12531, Purpose=user_data_retrieval, DataAccessed=user.profile,user.addresses,user.socialConnections
+11:55:35.970 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=findUserById, AccessorFirebaseUID=ADMIN-27426cb8-02ab-4256-a744-ce3cc8f33fdb, TargetUserID=12531, Purpose=user_data_retrieval, DataAccessed=user.profile,user.addresses,user.socialConnections
+11:55:35.975 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findByInfluencerUserId, FirebaseUID=delete-test-1789127735963, Purpose=user_opportunities_retrieval, DataAccessed=applied_opportunities.list
+11:55:35.977 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findByInfluencerUserId_SUCCESS, FirebaseUID=delete-test-1789127735963, RecordsRetrieved=0
+11:55:35.977 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.user.UserAccountOrchestrator&amp#27;[0;39m - User 12531 status changed from ACTIVE to TO_BE_DELETED for archival
+11:55:35.978 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=evictUser, DataDeleted=cached_user_data, Purpose=cache_management
+11:55:35.978 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+11:55:35.978 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+11:55:35.978 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.user.UserAccountOrchestrator&amp#27;[0;39m - GDPR: Operation=cacheEvict_onArchival, UserId=12531, NewStatus=TO_BE_DELETED, Purpose=immediate_session_invalidation
+11:55:35.978 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - User with ID 12531 marked for deletion
+11:55:35.978 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: DELETION_ARCHIVED Operation=deleteUser_ARCHIVED, DeleterFirebaseUID=ADMIN-27426cb8-02ab-4256-a744-ce3cc8f33fdb, UserID=12531, Status=TO_BE_DELETED
