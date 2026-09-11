@@ -1,7 +1,5 @@
 package com.sm.instagram.platform.common.util;
 
-import java.util.regex.Pattern;
-
 /**
  * One place that knows how to make a caller-supplied string safe to write into a log line.
  *
@@ -42,7 +40,7 @@ public final class LogSafe {
      * named. They matter because a log shipper that writes JSON, or a viewer that renders it, will
      * happily treat them as the end of a line.
      */
-    private static final Pattern UNSAFE = Pattern.compile("[\\p{Cntrl}\\u0085\\u2028\\u2029]");
+    static final String UNSAFE_REGEX = "[\\p{Cntrl}\\u0085\\u2028\\u2029]";
 
     /** Long enough for an Origin, a UID or a user agent; short enough that it cannot flood. */
     public static final int MAX_LENGTH = 200;
@@ -50,18 +48,6 @@ public final class LogSafe {
     private LogSafe() {
     }
 
-    /**
-     * The same value with anything that could forge a line break replaced by {@code ?}, cut to
-     * {@link #MAX_LENGTH}.
-     *
-     * <p>Null goes through as null rather than as the string {@code "null"}, which matters: a
-     * caller that sanitises a header where it reads it — the honest place, because then no later
-     * edit can miss a use — still has to be able to ask whether the header was there at all. SLF4J
-     * renders a null argument as {@code null} anyway, so nothing is lost in the log line.
-     *
-     * @param value the caller-supplied string, or null
-     * @return a string that is always safe to interpolate into a log line, or null if it was null
-     */
     /**
      * The same map with every key and value made safe to write, as a new map.
      * <p>A copy, deliberately. The maps this is called on are the ones that also travel back to the
@@ -80,11 +66,33 @@ public final class LogSafe {
         return safe;
     }
 
+    /**
+     * The same value with anything that could forge a line break replaced by {@code ?}, cut to
+     * {@link #MAX_LENGTH}.
+     *
+     * <p>Null goes through as null rather than as the string {@code "null"}, which matters: a
+     * caller that sanitises a header where it reads it — the honest place, because then no later
+     * edit can miss a use — still has to be able to ask whether the header was there at all. SLF4J
+     * renders a null argument as {@code null} anyway, so nothing is lost in the log line.
+     *
+     * <p><strong>Why {@code String.replaceAll} and not a precompiled {@code Pattern}.</strong>
+     * Both do the same work, and the precompiled one does it with one fewer {@code Pattern.compile}
+     * per call — microseconds against a log write. What the compiled-pattern form cost was the
+     * analysers: CodeQL models {@code String.replaceAll} as a log-injection sanitiser and does not
+     * model {@code Matcher.replaceAll}, so every call site of this method was reported as
+     * unsanitised. Seven alerts, all wrong, and while they stand a genuinely unsanitised log
+     * statement is indistinguishable from them. A security control the scanner cannot see is a
+     * control that stops the scanner working; the pattern stays as a named constant so the
+     * definition is still in one place.
+     *
+     * @param value the caller-supplied string, or null
+     * @return a string that is always safe to interpolate into a log line, or null if it was null
+     */
     public static String value(String value) {
         if (value == null) {
             return null;
         }
-        String cleaned = UNSAFE.matcher(value).replaceAll("?");
+        String cleaned = value.replaceAll(UNSAFE_REGEX, "?");
         if (cleaned.length() > MAX_LENGTH) {
             return cleaned.substring(0, MAX_LENGTH) + "…(truncated, " + cleaned.length() + " chars)";
         }
