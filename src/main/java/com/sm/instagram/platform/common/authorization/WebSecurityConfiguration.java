@@ -1,13 +1,15 @@
 package com.sm.instagram.platform.common.authorization;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sm.instagram.platform.config.CorsProperties;
 import com.sm.instagram.platform.common.util.SecurityResponseUtils;
+import com.sm.instagram.platform.config.CorsProperties;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -15,14 +17,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.firewall.HttpStatusRequestRejectedHandler;
+import org.springframework.security.web.firewall.RequestRejectedHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -329,5 +331,24 @@ public class WebSecurityConfiguration {
             SecurityResponseUtils.writeAccessDeniedResponse(
                     request, response, accessDeniedException, objectMapper, messageSource);
         };
+    }
+
+    /**
+     * Answer 400 when {@code StrictHttpFirewall} refuses a request, instead of rethrowing.
+     *
+     * <p>The firewall rejects a URL or parameter name carrying control characters. Where the
+     * rejection happens depends on when the request is parsed: a bad path is caught in the filter
+     * chain, and a bad parameter name only when a controller binds the parameters, which is what
+     * the thirteen {@code /paged} endpoints do. Spring's default handler rethrows, so the filter
+     * chain path ends at the container as a 500 and the MVC path ends in
+     * {@code ValidationExceptionHandler}. The exception is the same and so is the caller's mistake,
+     * so both answer 400; this bean covers the half no {@code @ControllerAdvice} can see.
+     *
+     * <p>Nothing of the request goes into the body — the rejected characters are exactly the part
+     * that should not be reflected — so the status is the whole answer.
+     */
+    @Bean
+    public RequestRejectedHandler requestRejectedHandler() {
+        return new HttpStatusRequestRejectedHandler(HttpStatus.BAD_REQUEST.value());
     }
 }

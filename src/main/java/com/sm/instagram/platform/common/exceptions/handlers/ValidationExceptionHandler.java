@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.web.firewall.RequestRejectedException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -316,6 +317,40 @@ public class ValidationExceptionHandler extends ResponseEntityExceptionHandler {
                 HttpStatus.BAD_REQUEST.value(),
                 BaseExceptionHandler.BAD_REQUEST,
                 localizedMessage,
+                baseHandler.getPath(request)
+        );
+        errorResponse.setRequestId(traceId);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Handle a request Spring Security's {@code StrictHttpFirewall} refused to let through.
+     *
+     * <p>The firewall rejects a URL or a parameter name containing control characters, and it
+     * throws from inside parameter binding -- so the same thirteen {@code /paged} endpoints that
+     * inherit {@code findPaginated(Pageable, Map<String, String>)} met it, because binding the
+     * filter map is the first thing that asks the container to parse every parameter name. The
+     * catch-all read the resulting {@link RequestRejectedException} as a server fault and answered
+     * 500; a request the server refused to parse is the caller's fault, and 400 is what the
+     * document already promises for every operation that takes a parameter.
+     *
+     * <p>Nothing from the request is echoed. The rejected name is by definition the part that
+     * contained the control characters, it reaches the log through
+     * {@link BaseExceptionHandler#logException}, and reflecting it would put an attacker's bytes
+     * back into a response body.
+     */
+    @ExceptionHandler(RequestRejectedException.class)
+    public ResponseEntity<BaseExceptionHandler.ErrorResponse> handleRequestRejectedException(
+            RequestRejectedException ex, WebRequest request) {
+
+        String traceId = baseHandler.generateTraceId();
+        baseHandler.logException(ex, HttpStatus.BAD_REQUEST, request, traceId);
+
+        BaseExceptionHandler.ErrorResponse errorResponse = new BaseExceptionHandler.ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                BaseExceptionHandler.BAD_REQUEST,
+                baseHandler.getLocalizedMessage("error.validation.malformed_request", null, request),
                 baseHandler.getPath(request)
         );
         errorResponse.setRequestId(traceId);
