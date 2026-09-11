@@ -1,11 +1,11 @@
 {
- "mutationScore": 43.78,
- "coveredScore": 69.87,
+ "mutationScore": 43.85,
+ "coveredScore": 69.84,
  "mutants": {
-  "total": 2405,
-  "SURVIVED": 454,
-  "NO_COVERAGE": 898,
-  "KILLED": 1052,
+  "total": 2392,
+  "SURVIVED": 453,
+  "NO_COVERAGE": 890,
+  "KILLED": 1048,
   "TIMED_OUT": 1
  },
  "classesWithNoUnitTest": 15,
@@ -14,9 +14,9 @@
  "classes": [
   {
    "class": "auth.service.TokenExchangeService",
-   "score": 39.33,
-   "killed": 118,
-   "survived": 113,
+   "score": 39,
+   "killed": 117,
+   "survived": 114,
    "noCoverage": 69,
    "n": 300
   },
@@ -30,11 +30,11 @@
   },
   {
    "class": "common.ratelimit.RateLimitInterceptor",
-   "score": 71.34,
-   "killed": 117,
-   "survived": 35,
-   "noCoverage": 12,
-   "n": 164
+   "score": 72.96,
+   "killed": 116,
+   "survived": 33,
+   "noCoverage": 10,
+   "n": 159
   },
   {
    "class": "auth.service.OAuthCallbackService",
@@ -49,8 +49,8 @@
    "score": 0,
    "killed": 0,
    "survived": 0,
-   "noCoverage": 126,
-   "n": 126
+   "noCoverage": 124,
+   "n": 124
   },
   {
    "class": "auth.service.EmailVerificationService",
@@ -118,11 +118,11 @@
   },
   {
    "class": "common.security.geoip.GeoLocationFacade",
-   "score": 35.09,
-   "killed": 20,
+   "score": 35.29,
+   "killed": 18,
    "survived": 16,
-   "noCoverage": 21,
-   "n": 57
+   "noCoverage": 17,
+   "n": 51
   },
   {
    "class": "common.ratelimit.RedisRateLimiterService",

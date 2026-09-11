@@ -1,0 +1,29 @@
+03:44:53.491 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - ==========================================
+03:44:53.491 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - 🔐 TOTP (2FA) VALIDATION
+03:44:53.491 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - ==========================================
+03:44:53.491 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - GDPR: Operation=startTotpValidation, FirebaseUID=SYSTEM, DataAccessed=config_validation, Purpose=system_initialization
+03:44:53.491 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - 📋 TOTP Configuration:
+03:44:53.491 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    Issuer: CheckItOut
+03:44:53.491 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    Key Ring: instagram-tokens
+03:44:53.491 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    TOTP Key: totp-secrets-key
+03:44:53.491 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    Status: ENABLED
+03:44:53.491 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - 
+🔑 Testing TOTP KMS Encryption:
+03:44:53.492 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✓ TOTP secret encrypted
+03:44:53.492 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✓ TOTP secret decrypted
+03:44:53.492 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✗ TOTP KMS validation failed: error.validation.failed
+03:44:53.492 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    → Check if totp-secrets-key exists in instagram-tokens
+03:44:53.492 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - 
+📚 Testing Firestore TOTP Collection:
+03:44:53.492 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✓ Firestore TOTP collection accessible
+03:44:53.492 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - 
+🔢 Testing TOTP Generation:
+03:44:53.492 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✓ TOTP secret generated: JBSW...
+03:44:53.492 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✓ TOTP code generated: 123456
+03:44:53.492 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    ✗ TOTP generation failed: error.validation.failed
+03:44:53.492 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - 
+❌ TOTP Service: DEGRADED
+03:44:53.492 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    Some checks failed - 2FA may not work properly
+03:44:53.492 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m -    Check the logs above for details
+03:44:53.492 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - GDPR: Operation=completeTotpValidation, FirebaseUID=SYSTEM, DataAccessed=system_health, Purpose=startup_validation, Result=FAILED
+03:44:53.492 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.v.TotpValidationService&amp#27;[0;39m - ==========================================

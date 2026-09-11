@@ -1,0 +1,22 @@
+05:53:47.033 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - GDPR: Operation=instagramOAuthCallback, DataAccessed=instagram_profile,oauth_tokens, Purpose=social_authentication, LegalBasis=consent, ThirdParty=Instagram
+05:53:47.033 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - Processing Instagram OAuth callback
+05:53:47.033 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - OAUTH_DEBUG [CALLBACK_START]: {
+  "state" : "null",
+  "code" : "test-auth-..."
+}
+05:53:47.034 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - OAUTH_DEBUG [TOKEN_EXCHANGE_SUCCESS]: {
+  "username" : "testuser",
+  "hasAccessToken" : true,
+  "userId" : "12345678"
+}
+05:53:47.034 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - GDPR: InstagramProfileRetrieved, SocialUserID=12345678, Username=testuser, DataAccessed=profile_data,oauth_tokens, Purpose=user_identification
+05:53:47.034 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - Instagram profile retrieved for user: testuser
+05:53:47.034 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - GDPR: ExistingUserAuth, FirebaseUID=firebase-uid-123, UserID=1, DataAccessed=user_profile,social_connection, Purpose=authentication
+05:53:47.034 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - Existing user found via local DB: 1
+05:53:47.034 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - User Firebase UID: firebase-uid-123
+05:53:47.034 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - Updated user profile picture URL: https://instagram.cdninstagram.com/profile.jpg
+05:53:47.034 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - Failed to update Firestore for existing user, continuing: Firestore error
+05:53:47.034 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - Firebase user verified for UID: firebase-uid-123
+05:53:47.034 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - User 1 has Firebase role: INFLUENCER
+05:53:47.035 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - Set HMAC-signed OAuth cookies for existing user
+05:53:47.035 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.OAuthCallbackService&amp#27;[0;39m - GDPR: OAuthSuccess, FirebaseUID=firebase-uid-123, UserID=1, DataProcessed=authentication_tokens,session_cookies, Purpose=session_creation

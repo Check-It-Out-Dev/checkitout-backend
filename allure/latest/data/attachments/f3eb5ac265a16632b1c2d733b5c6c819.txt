@@ -1,0 +1,27 @@
+01:13:03.659 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m - GDPR: Operation=testSignedUrlLifecycle, Purpose=system_validation, DataAccessed=test_data_only
+01:13:03.659 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m - 
+🔬 SIGNED URL LIFECYCLE VALIDATION:
+01:13:03.659 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m - 
+   Test 1: Service Account for URL Signing
+01:13:03.659 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    ✓ PASSED: Service account loaded
+01:13:03.659 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    → Email: test@test-project.iam.gserviceaccount.com
+01:13:03.659 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m - 
+   Test 2: Target Bucket Access
+01:13:03.659 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    ✓ PASSED: Bucket 'test-bucket.firebasestorage.app' exists
+01:13:03.659 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m - 
+   Test 3: Generate Upload URL
+01:13:03.659 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    → Test file path: _validation/test_8406b31c-5176-490a-909b-82d1289a7047.png
+01:13:03.659 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    ✓ PASSED: Upload URL generated
+01:13:03.659 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    → URL contains signature: true
+01:13:03.659 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    → URL expires in 5 minutes
+01:13:03.659 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m - 
+📊 SIGNED URL LIFECYCLE SUMMARY:
+01:13:03.659 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    ════════════════════════════════
+01:13:03.659 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    Only URL generation tested
+01:13:03.659 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    Set file-upload.validation.test-actual-upload=true
+01:13:03.659 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    to test actual uploads
+01:13:03.659 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m - 
+   ⚠️ IMPORTANT:
+01:13:03.659 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    Signed URLs do NOT require JWT tokens!
+01:13:03.659 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    Authentication is via URL signature only
+01:13:03.659 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.s.s.SignedUrlValidationService&amp#27;[0;39m -    No user login needed for signed URL uploads
