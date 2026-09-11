@@ -1,0 +1,5 @@
+21:10:03.135 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.TwoFactorAuthService&amp#27;[0;39m - Setting up 2FA for user: firebase-uid-123
+21:10:03.135 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.TwoFactorAuthService&amp#27;[0;39m - GDPR: Operation=setupTwoFactor_entry, FirebaseUID=firebase-uid-123, DataAccessed=user.profile,user.type, Purpose=2fa_enrollment
+21:10:03.140 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.TwoFactorAuthService&amp#27;[0;39m - GDPR: Operation=storeTotpSecret, FirebaseUID=firebase-uid-123, DataStored=encrypted_totp_secret,backup_codes, Purpose=2fa_security, LegalBasis=consent, ThirdParty=firebase_firestore
+21:10:03.140 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.TwoFactorAuthService&amp#27;[0;39m - 2FA setup initiated for user: firebase-uid-123 with QR code image
+21:10:03.141 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.s.TwoFactorAuthService&amp#27;[0;39m - GDPR: Operation=setupTwoFactor_success, FirebaseUID=firebase-uid-123, DataGenerated=qr_code,backup_codes, Purpose=2fa_enrollment_complete

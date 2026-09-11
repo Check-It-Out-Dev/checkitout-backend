@@ -1,0 +1,10 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-62eabd58-5186-45f6-b253-4770fee4b34e
+  Company: COMPANY-1b59bd2d-6616-43c5-ae0b-28309bf7a7bf
+  Admin: ADMIN-e081e6f7-4fc9-4763-be22-3bf157cc25b8
+21:10:32.674 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus, FirebaseUID=INFLUENCER-62eabd58-5186-45f6-b253-4770fee4b34e, OpportunityID=2552, Action=ACCEPT, Purpose=status_management
+21:10:32.674 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=INFLUENCER-62eabd58-5186-45f6-b253-4770fee4b34e, OpportunityID=2552, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
+21:10:32.707 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus_SUCCESS, FirebaseUID=INFLUENCER-62eabd58-5186-45f6-b253-4770fee4b34e, OpportunityID=2552, OldStatus=CONTENT_APPROVED, NewStatus=CONTENT_POSTED
+21:10:32.707 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=INFLUENCER-62eabd58-5186-45f6-b253-4770fee4b34e, AppliedOpportunityID=2552, StatusChange=CONTENT_APPROVED→CONTENT_POSTED, Purpose=status_tracking
+21:10:32.708 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=INFLUENCER-62eabd58-5186-45f6-b253-4770fee4b34e, AppliedOpportunityID=2552, DataAccessed=status,changedBy,reason, Purpose=audit_trail
+21:10:32.708 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2552, CONTENT_APPROVED -> CONTENT_POSTED, Changed by=INFLUENCER-62eabd58-5186-45f6-b253-4770fee4b34e, Reason=Status accepted via API (/status/update endpoint)
