@@ -1,0 +1,9 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-9fd41504-755d-4aa0-9a65-aa5c41cd654d
+  Company: COMPANY-5b3bfee5-dd8c-4e64-b051-395bddad9fe0
+  Admin: ADMIN-6d8c4666-738d-47fa-af5a-1d39bd8eb38d
+15:58:23.381 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=checkMyDeletionEligibility, FirebaseUID=my-eligibility-1789142303375, UserID=12512, Purpose=deletion_assessment
+15:58:23.381 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findByInfluencerUserId, FirebaseUID=my-eligibility-1789142303375, Purpose=user_opportunities_retrieval, DataAccessed=applied_opportunities.list
+15:58:23.383 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findByInfluencerUserId_SUCCESS, FirebaseUID=my-eligibility-1789142303375, RecordsRetrieved=0
+15:58:23.383 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: Service Operation=getTranslation, FirebaseUID=my-eligibility-1789142303375, Key=DELETION_SUMMARY_CAN_DELETE_ALL, Language=en, Purpose=translation_lookup
+15:58:23.384 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: DataAccessed=translation_value, FirebaseUID=my-eligibility-1789142303375, Key=DELETION_SUMMARY_CAN_DELETE_ALL, Purpose=translation_service
