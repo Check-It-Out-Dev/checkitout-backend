@@ -1,0 +1,16 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-4ad2aaad-9c1b-49e1-806d-20bed252ca3f
+  Company: COMPANY-89461e36-ddb7-4a47-a07d-5ba311b74e73
+  Admin: ADMIN-20057e0e-3edc-4ebd-99e6-6f018e906eb0
+16:57:02.467 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: DELETION_REQUEST Operation=deleteUser, DeleterFirebaseUID=ADMIN-20057e0e-3edc-4ebd-99e6-6f018e906eb0, TargetUserID=12531, Purpose=account_deletion, LegalBasis=user_request
+16:57:02.467 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=findUserById, AccessorFirebaseUID=ADMIN-20057e0e-3edc-4ebd-99e6-6f018e906eb0, TargetUserID=12531, Purpose=user_data_retrieval, DataAccessed=user.profile,user.addresses,user.socialConnections
+16:57:02.479 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=findUserById, AccessorFirebaseUID=ADMIN-20057e0e-3edc-4ebd-99e6-6f018e906eb0, TargetUserID=12531, Purpose=user_data_retrieval, DataAccessed=user.profile,user.addresses,user.socialConnections
+16:57:02.485 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findByInfluencerUserId, FirebaseUID=delete-test-1789145822467, Purpose=user_opportunities_retrieval, DataAccessed=applied_opportunities.list
+16:57:02.487 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findByInfluencerUserId_SUCCESS, FirebaseUID=delete-test-1789145822467, RecordsRetrieved=0
+16:57:02.487 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.user.UserAccountOrchestrator&amp#27;[0;39m - User 12531 status changed from ACTIVE to TO_BE_DELETED for archival
+16:57:02.488 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=evictUser, DataDeleted=cached_user_data, Purpose=cache_management
+16:57:02.488 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+16:57:02.489 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+16:57:02.489 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.user.UserAccountOrchestrator&amp#27;[0;39m - GDPR: Operation=cacheEvict_onArchival, UserId=12531, NewStatus=TO_BE_DELETED, Purpose=immediate_session_invalidation
+16:57:02.489 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - User with ID 12531 marked for deletion
+16:57:02.489 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: DELETION_ARCHIVED Operation=deleteUser_ARCHIVED, DeleterFirebaseUID=ADMIN-20057e0e-3edc-4ebd-99e6-6f018e906eb0, UserID=12531, Status=TO_BE_DELETED
