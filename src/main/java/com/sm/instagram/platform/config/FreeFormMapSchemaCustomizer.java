@@ -95,15 +95,31 @@ public class FreeFormMapSchemaCustomizer {
     /**
      * True for the exact shape {@code Map<String, Object>} produces: {@code type: object} and
      * nothing else that would make it a description of something.
+     *
+     * <p>The type has to be read from both places. Swagger's 3.0 classes keep it in {@code type};
+     * the {@code JsonSchema} the 3.1 resolver produces keeps it in {@code types} and leaves
+     * {@code type} null. Checking only the first fixed 35 of the 39 free-form maps in this document
+     * and silently missed four, all of them properties of component schemas rather than response
+     * bodies -- including {@code FileOperationResponse.data}, whose endpoint the fuzzer then
+     * reported.
      */
     static boolean isBareObject(Schema<?> schema) {
         return schema != null
-                && "object".equals(schema.getType())
+                && isObjectTyped(schema)
                 && schema.get$ref() == null
                 && schema.getProperties() == null
                 && schema.getAdditionalProperties() == null
                 && schema.getAllOf() == null
                 && schema.getAnyOf() == null
                 && schema.getOneOf() == null;
+    }
+
+    /** {@code type: "object"} however the resolver chose to spell it. */
+    private static boolean isObjectTyped(Schema<?> schema) {
+        Set<String> types = schema.getTypes();
+        if (types != null && !types.isEmpty()) {
+            return types.size() == 1 && types.contains("object");
+        }
+        return "object".equals(schema.getType());
     }
 }

@@ -138,6 +138,32 @@ class FreeFormMapSchemaCustomizerUnitTest {
     }
 
     @Test
+    @DisplayName("the 3.1 spelling of the type is recognised too")
+    void typeSetIsReadAsWellAsTypeString() {
+        // What the 3.1 resolver produces: the type lives in `types` and `type` is null. Reading
+        // only `type` fixed 35 of this document's 39 free-form maps and missed four in silence.
+        Schema<?> values = new Schema<>();
+        values.setTypes(new java.util.LinkedHashSet<>(java.util.List.of("object")));
+        Schema<?> schema = new MapSchema().additionalProperties(values);
+
+        responding(schema);
+
+        assertThat(schema.getAdditionalProperties()).isEqualTo(Boolean.TRUE);
+    }
+
+    @Test
+    @DisplayName("a union type is a description, and is left alone")
+    void unionTypedValuesAreLeftAlone() {
+        Schema<?> values = new Schema<>();
+        values.setTypes(new java.util.LinkedHashSet<>(java.util.List.of("object", "null")));
+        Schema<?> schema = new MapSchema().additionalProperties(values);
+
+        responding(schema);
+
+        assertThat(schema.getAdditionalProperties()).isSameAs(values);
+    }
+
+    @Test
     @DisplayName("an empty document is not a special case")
     void emptyDocumentIsSafe() {
         assertThat(customise(new OpenAPI()).getPaths()).isNull();
