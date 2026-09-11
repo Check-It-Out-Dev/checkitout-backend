@@ -258,4 +258,91 @@ class PiiMaskingUtilsUnitTest {
             assertThat(result).isEqualTo(phone);
         }
     }
+    @Nested
+    @DisplayName("maskUsername")
+    class MaskUsernameTests {
+
+        @Test
+        @DisplayName("shows the first two characters and hides the rest")
+        void maskUsername_long_showsTwoCharacters() {
+            assertThat(PiiMaskingUtils.maskUsername("testuser123")).isEqualTo("te***");
+        }
+
+        @Test
+        @DisplayName("hides a short handle entirely, because two of three characters is not a mask")
+        void maskUsername_short_hidesEverything() {
+            assertThat(PiiMaskingUtils.maskUsername("abc")).isEqualTo("***");
+            assertThat(PiiMaskingUtils.maskUsername("a")).isEqualTo("***");
+        }
+
+        @Test
+        @DisplayName("null and empty read as unknown")
+        void maskUsername_nullOrEmpty_isUnknown() {
+            assertThat(PiiMaskingUtils.maskUsername(null)).isEqualTo("unknown");
+            assertThat(PiiMaskingUtils.maskUsername("")).isEqualTo("unknown");
+        }
+    }
+
+    /**
+     * A pseudonym has two jobs that pull against each other: the same account must produce the same
+     * string on every line, or the log cannot be followed, and the string must not hand the account
+     * id to whoever reads it. These tests hold both ends.
+     */
+    @Nested
+    @DisplayName("pseudonymousId")
+    class PseudonymousIdTests {
+
+        /** SHA-256("12345678") = ef797c8118f0... - pinned, so a change of algorithm fails here. */
+        private static final String ID = "12345678";
+
+        @Test
+        @DisplayName("is SHA-256 truncated to twelve hex characters behind the prefix")
+        void pseudonymousId_isTruncatedSha256() {
+            assertThat(PiiMaskingUtils.pseudonymousId(ID, "ig")).isEqualTo("ig_ef797c8118f0");
+        }
+
+        @Test
+        @DisplayName("is not the 32-bit String.hashCode it replaced")
+        void pseudonymousId_isNotTheOldHash() {
+            String oldFormula = "ig_" + Integer.toHexString(ID.hashCode());
+
+            assertThat(PiiMaskingUtils.pseudonymousId(ID, "ig")).isNotEqualTo(oldFormula);
+        }
+
+        @Test
+        @DisplayName("the same id always produces the same pseudonym, which is the point of logging it")
+        void pseudonymousId_isStable() {
+            assertThat(PiiMaskingUtils.pseudonymousId(ID, "ig"))
+                    .isEqualTo(PiiMaskingUtils.pseudonymousId(ID, "ig"));
+        }
+
+        @Test
+        @DisplayName("two accounts do not collide")
+        void pseudonymousId_differentIdsDiffer() {
+            assertThat(PiiMaskingUtils.pseudonymousId("17841400000000001", "ig"))
+                    .isNotEqualTo(PiiMaskingUtils.pseudonymousId("17841400000000002", "ig"));
+        }
+
+        @Test
+        @DisplayName("the id itself does not survive into the output")
+        void pseudonymousId_doesNotContainTheId() {
+            assertThat(PiiMaskingUtils.pseudonymousId("17841400000000001", "ig"))
+                    .doesNotContain("17841400000000001")
+                    .doesNotContain("178414");
+        }
+
+        @Test
+        @DisplayName("the prefix keeps two id spaces apart")
+        void pseudonymousId_prefixSeparatesIdSpaces() {
+            assertThat(PiiMaskingUtils.pseudonymousId(ID, "ig"))
+                    .isNotEqualTo(PiiMaskingUtils.pseudonymousId(ID, "fb"));
+        }
+
+        @Test
+        @DisplayName("null and empty read as unknown rather than as a hash of nothing")
+        void pseudonymousId_nullOrEmpty_isUnknown() {
+            assertThat(PiiMaskingUtils.pseudonymousId(null, "ig")).isEqualTo("unknown");
+            assertThat(PiiMaskingUtils.pseudonymousId("", "ig")).isEqualTo("unknown");
+        }
+    }
 }

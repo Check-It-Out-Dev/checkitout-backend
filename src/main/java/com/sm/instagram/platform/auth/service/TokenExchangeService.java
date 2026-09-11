@@ -27,6 +27,7 @@ import com.sm.instagram.platform.common.jwt.JwtTokenProvider;
 import com.sm.instagram.platform.user.User;
 import com.sm.instagram.platform.user.UserRepository;
 import com.sm.instagram.platform.user.UserType;
+import com.sm.instagram.platform.common.util.PiiMaskingUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -1482,10 +1483,10 @@ public class TokenExchangeService {
             
             // Note: The access token is already decrypted by FirestoreService.getInstagramUserData()
             
-            log.info("Validating Instagram token freshness for user: {}", expectedUsername);
+            log.info("Validating Instagram token freshness for user: {}", PiiMaskingUtils.maskUsername(expectedUsername));
             
             // Call Instagram Graph API /me endpoint to verify token
-            log.info("Calling Instagram Graph API to validate token for user {}", expectedId);
+            log.info("Calling Instagram Graph API to validate token for user {}", PiiMaskingUtils.pseudonymousId(expectedId, "ig"));
             
             // Use InstagramService to get user profile with the access token
             // This verifies the token is still valid and gets fresh user data
@@ -1494,7 +1495,7 @@ public class TokenExchangeService {
                 .block(); // Block since we're in a synchronous context
             
             if (freshProfile == null) {
-                log.error("Instagram API returned null profile for user {}", expectedId);
+                log.error("Instagram API returned null profile for user {}", PiiMaskingUtils.pseudonymousId(expectedId, "ig"));
                 throw new AuthenticationTranslatableException("error.auth.instagram_validation_failed");
             }
             
@@ -1502,14 +1503,16 @@ public class TokenExchangeService {
             // 1. Verify Instagram user ID matches
             String apiUserId = String.valueOf(freshProfile.get("id"));
             if (!apiUserId.equals(expectedId)) {
-                log.error("Instagram ID mismatch! Token claims: {}, API returned: {}", expectedId, apiUserId);
+                log.error("Instagram ID mismatch! Token claims: {}, API returned: {}",
+                        PiiMaskingUtils.pseudonymousId(expectedId, "ig"), PiiMaskingUtils.pseudonymousId(apiUserId, "ig"));
                 throw new AuthenticationTranslatableException("error.auth.account_mismatch");
             }
             
             // 2. Verify username matches (allow case-insensitive)
             String apiUsername = (String) freshProfile.get("username");
             if (apiUsername != null && !apiUsername.equalsIgnoreCase(expectedUsername)) {
-                log.warn("Instagram username changed from {} to {}", expectedUsername, apiUsername);
+                log.warn("Instagram username changed from {} to {}",
+                        PiiMaskingUtils.maskUsername(expectedUsername), PiiMaskingUtils.maskUsername(apiUsername));
                 // Username change is allowed but logged for audit
                 // Could update Firestore with new username here
             }
