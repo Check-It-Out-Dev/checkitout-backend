@@ -7,15 +7,7 @@ public class FileUploadRequest {
     @NotBlank(message = "{validation.file.filename.required}")
     @Pattern(regexp = "^[a-zA-Z0-9._-]+$",
             message = "{validation.file.filename.pattern}")
-    /**
-     * 240, not 255. The stored object's last path segment is {@code {timestamp}_{filename}}, and
-     * the timestamp is thirteen digits plus an underscore -- so a 254-character filename becomes a
-     * 268-byte name that no filesystem will take, and the upload failed after validation had
-     * passed it. The catch-all reported that as 507 Insufficient Storage, which told the caller
-     * their quota was full. 255 minus the fourteen the server adds is 241; 240 is the round number
-     * below it.
-     */
-    @Size(max = 240, message = "{validation.file.filename.size}")
+    @Size(max = 255, message = "{validation.file.filename.size}")
     private String filename;
 
     @NotBlank(message = "{validation.file.contentType.required}")

@@ -324,7 +324,9 @@ public class SignedUrlService {
      * Sanitizes filename to prevent path traversal attacks.
      * Think of this as checking a package label for suspicious characters.
      */
-    private String sanitizeFilename(String filename) {
+    // Public so the unit tier can reach it: the tests here are the ones that keep a filename from
+    // being able to throw, and every one of them is pure string work with no collaborator in sight.
+    public String sanitizeFilename(String filename) {
         if (filename == null || filename.trim().isEmpty()) {
             throw new ValidationTranslatableException("error.validation.required_field", "filename");
         }
@@ -340,10 +342,20 @@ public class SignedUrlService {
             filename = FILENAME_UNDERSCORE + filename.substring(1);
         }
 
-        // Limit length
+        // Limit length, keeping the extension if there is one to keep.
+        //
+        // `substring(lastIndexOf('.'))` is -1 when the name has no dot in it, and
+        // String.substring(-1) throws. A 239-character filename with no extension therefore came
+        // back as 507 Insufficient Storage -- the catch-all's verdict on a StringIndexOutOfBounds
+        // raised while sanitising the name. The second branch covers the other way it could throw:
+        // an "extension" long enough to leave nothing to truncate to.
         if (filename.length() > MAX_FILENAME_LENGTH) {
-            String extension = filename.substring(filename.lastIndexOf('.'));
-            filename = filename.substring(0, MAX_FILENAME_LENGTH - FILENAME_BUFFER - extension.length()) + extension;
+            int lastDot = filename.lastIndexOf('.');
+            String extension = lastDot >= 0 ? filename.substring(lastDot) : "";
+            int keep = MAX_FILENAME_LENGTH - FILENAME_BUFFER - extension.length();
+            filename = keep > 0
+                    ? filename.substring(0, keep) + extension
+                    : filename.substring(0, MAX_FILENAME_LENGTH);
         }
 
         return filename;

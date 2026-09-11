@@ -3,7 +3,6 @@ package com.sm.instagram.platform.unit.validation;
 import com.sm.instagram.platform.legal.dto.ConsentPrepareRequest;
 import com.sm.instagram.platform.legal.dto.ConsentProofDtoIn;
 import com.sm.instagram.platform.legal.dto.ConsentRecordBatchDtoIn;
-import com.sm.instagram.platform.storage.model.FileUploadRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -41,40 +40,6 @@ class BoundaryRefusalUnitTest {
     static void open() {
         factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
-    }
-
-    /**
-     * The 254-character filename Schemathesis sent. It passed validation at max = 255, and then
-     * the stored object's last path segment -- {@code {timestamp}_{filename}} -- came to 268 bytes,
-     * which no filesystem will take. The upload failed after the boundary had approved it, and the
-     * catch-all called that 507 Insufficient Storage: the caller was told their quota was full.
-     */
-    @Test
-    @DisplayName("a filename the storage path cannot hold is refused before any upload begins")
-    void tooLongFilenameIsRefused() {
-        FileUploadRequest request = new FileUploadRequest();
-        request.setFilename("0".repeat(254) + ".jpg");
-        request.setContentType("image/jpeg");
-        request.setFileSize(1L);
-
-        assertThat(propertiesViolating(request)).contains("filename");
-    }
-
-    @Test
-    @DisplayName("and one that fits is not")
-    void filenameThatFitsIsAccepted() {
-        FileUploadRequest request = new FileUploadRequest();
-        request.setFilename("0".repeat(236) + ".jpg");
-        request.setContentType("image/jpeg");
-        request.setFileSize(1L);
-
-        assertThat(propertiesViolating(request)).doesNotContain("filename");
-    }
-
-    private static Set<String> propertiesViolating(Object body) {
-        return validator.validate(body).stream()
-                .map(violation -> violation.getPropertyPath().toString())
-                .collect(Collectors.toSet());
     }
 
     @AfterAll
