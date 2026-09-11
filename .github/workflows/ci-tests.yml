@@ -69,6 +69,13 @@ jobs:
       - name: The Pages publisher still behaves
         run: bash tools/ci/publish-pages.test.sh tools/ci/publish-pages.sh
 
+      # The other script that decides whether a tier passes. Its failure mode is the dangerous
+      # direction -- a red run reported green -- so what is asserted is that an unclassified
+      # category still gates, that an environment exemption excuses only the operation it names,
+      # and that rewriting the baseline keeps the prose explaining the numbers.
+      - name: The fuzz verdict still behaves
+        run: node tools/ci/fuzz-verdict.test.mjs
+
       - run: chmod +x mvnw && ./mvnw $MAVEN_ARGS test -Ptest -DskipITs
       - uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d  # v6
         if: always()

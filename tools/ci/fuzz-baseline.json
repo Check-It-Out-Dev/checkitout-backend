@@ -25,5 +25,10 @@
     "Undocumented HTTP status code": 46,
     "API accepted schema-violating request": 72,
     "Invalid Allow header": 59
+  },
+  "environment": {
+    "Server error": {
+      "POST /auth/firebase/verify-reset-code": "dev-lite carries no Firebase credential, so FirebaseAuthProxyService cannot obtain an OAuth access token for the Identity Toolkit and answers 503 -- which is the correct answer for an upstream that is not there, and the same answer production would give if Firebase were down. The fuzzer cannot tell those apart; a reader of this file can. These flows ARE tested for real: the e2e tier signs in, mints oobCodes and verifies them against the Firebase emulator suite, with no credential either. Remove this exemption by running the emulators beside the backend in api-fuzz.yml, which needs the backend out of a service container so it can reach them."
+    }
   }
 }
