@@ -108,8 +108,8 @@ jobs:
 
       - name: Fuzz
         id: fuzz
-        # The expressions are bound to env rather than pasted into the script. GitHub expands
-        # `${{ }}` into the shell TEXT before bash ever sees it, so a value carrying a quote or
+        # The expressions are bound to env rather than pasted into the script. GitHub expands them
+        # into the shell TEXT before bash ever sees it, so a value carrying a quote or
         # a backtick becomes syntax rather than an argument. Semgrep's run-shell-injection.
         env:
           SESSION_COOKIES: ${{ steps.session.outputs.cookies }}

@@ -51,9 +51,9 @@ jobs:
           
       - name: Merge and resolve templates
         id: final
-        # Bound to env rather than pasted into the script: GitHub expands `${{ }}` into the
-        # shell TEXT before bash sees it, so a value carrying a quote, a backtick or a line
-        # reading EOF becomes syntax rather than data. Semgrep's run-shell-injection.
+        # Bound to env rather than pasted into the script: GitHub expands a workflow expression
+        # into the shell TEXT before bash sees it, so a value carrying a quote, a backtick or a
+        # line reading EOF becomes syntax rather than data. Semgrep's run-shell-injection.
         env:
           IN_ENVIRONMENT: ${{ inputs.environment }}
           IN_CONFIG_PATH: ${{ inputs.config-path }}
@@ -294,9 +294,9 @@ jobs:
           jq -r '._flat | {container_user_name, container_user_id, container_group_name, container_group_id}' final-config.json
           
       - name: Generate summary
-        # Bound to env rather than pasted into the script: GitHub expands `${{ }}` into the
-        # shell TEXT before bash sees it, so a value carrying a quote, a backtick or a line
-        # reading EOF becomes syntax rather than data. Semgrep's run-shell-injection.
+        # Bound to env rather than pasted into the script: GitHub expands a workflow expression
+        # into the shell TEXT before bash sees it, so a value carrying a quote, a backtick or a
+        # line reading EOF becomes syntax rather than data. Semgrep's run-shell-injection.
         env:
           IN_ENVIRONMENT: ${{ inputs.environment }}
           STEP_CONFIG: ${{ steps.final.outputs.config }}

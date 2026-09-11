@@ -260,8 +260,8 @@ jobs:
           IN_CONFIG_JSON: ${{ inputs.config-json }}
         run: |
           # printf rather than a heredoc: the heredoc was quoted so bash would not expand the JSON,
-          # but GitHub substitutes `${{ }}` into the text first, so a config whose content held a
-          # line reading EOF ended the heredoc early and the remainder became script.
+          # but GitHub substitutes the workflow expression into the text first, so a config whose
+          # content held a line reading EOF ended the heredoc early and the rest became script.
           printf '%s' "$IN_CONFIG_JSON" > /tmp/config.json
           
           # Validate JSON is properly formed
