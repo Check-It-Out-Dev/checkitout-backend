@@ -146,8 +146,8 @@ talk to it — the two are joined at two seams, and both seams are files here.
    the contract                         ┌───►  compiles against it
    · openapi.json, taken from a    ─────┘      · 181 model types, 41 services
      server that actually booted               · generated, never hand-written
-   · 234 paths · 279 operations                · a drifted signature is a
-   · 182 schemas                                 compile error, not a bug report
+   · 233 paths · 272 operations                · a drifted signature is a
+   · 205 schemas                                 compile error, not a bug report
 ```
 
 **The contract is taken from the running code, not written about it.**
@@ -157,13 +157,25 @@ started, canonicalises the JSON (keys sorted, pretty-printed — springdoc's map
 ordering shuffles between boots) and writes
 [`docs/openapi/openapi.json`](docs/openapi/openapi.json). A spec produced that
 way cannot describe an endpoint that does not exist, and the determinism is what
-lets two repositories hold it *identically*:
+*lets* two repositories hold it identically. Whether they do is a different
+question, and on 2026-09-12 the answer was no:
 
 ```bash
 sha256sum docs/openapi/openapi.json
-# 96ceb20f44831ba48ac6a01349e953c0131260ff8db84b447d704893b01e7cbb
-# byte for byte the same file in both repositories
+# 2b413dda0fa2514ade63dad88a4cc5bf86f2b631976aecd778ae8f061e58733a  here
+# 73b99335dbb904ebadbe0055ce2627f0ce52310dc113e23c5fb30e39f8d5815d  the frontend's copy
+# 205 schemas here, 183 there — seven contract commits not propagated
 ```
+
+The hash this block published until today matched neither file, nor any of the
+15 committed revisions of it: it described a state that was never committed. The
+two copies *were* byte-identical at every one of their five sync points, and then
+lost to seven contract commits in one evening, because the sync runs only when a
+person runs `npm run openapi:cycle`. Nothing compares the two repositories, which
+is why nobody noticed. The gate that makes this impossible is the next slice; the
+reasoning is in the frontend's
+[design of record](https://github.com/Check-It-Out-Dev/checkitout-frontend/blob/main/docs/ci/GOVERNING-MACHINE-WRITTEN-CHANGE.md)
+§10.
 
 **The Cucumber corpus is the other seam.** The 34 feature files under
 [`src/test/resources/features/`](src/test/resources/features/) are the executable
@@ -283,6 +295,40 @@ Dated 2026-09. ✅ built · 🟡 under way · ⬜ designed, not started.
 | ✅ | **Schemathesis against the running server** | `api-fuzz.yml` generates requests from the schema and sends them at a real instance. It earned its place on the first run: every secured operation answered 401 while the document declared none, which is a contract defect because the frontend generates its client from that document. Fixed by `AuthFailureResponsesCustomizer`; the fuzzer now runs nightly |
 | ✅ | **OWASP Top 10 in the pipeline** | `security.yml`: Semgrep over the OWASP, secrets and Java rule sets; Checkov on the Dockerfiles and workflows for the misconfiguration surface nothing else reaches; Trivy on both the source tree and the **published image**, with an SBOM of each. All SARIF into code scanning. The dynamic half runs from the frontend repository, against the sandbox — which is this backend |
 | ✅ | **SonarQube Cloud quality gate** | Free for public repositories; fed the JaCoCo coverage the unit tier already writes. Its gate can be set on new code alone, which is what makes an existing backlog survivable |
+
+## Seven days of machine-written change
+
+Coding agents ran in a loop over this repository and the frontend for about seven
+days, with the security scanners switched on while they worked. Counted through
+the GitHub API on 2026-09-12 — a dated observation of a service, not a fact about
+this tree, so no gate re-derives it:
+
+|                 | Code scanning | Fixed | Dismissed | Open | Dependabot |
+| :-------------- | :------------ | :---- | :-------- | :--- | :--------- |
+| this repository | 1151 | 582 | 550 | 19 | 138 (137 fixed) |
+| the frontend | 335 | 265 | 63 | 7 | 82 (all fixed) |
+
+```bash
+gh api "repos/Check-It-Out-Dev/checkitout-backend/code-scanning/alerts?per_page=100" \
+  --paginate -q '.[].state' | sort | uniq -c
+```
+
+1486 findings in three days is three scanners meeting a codebase for the first
+time, not a collapse. What happened to them is the part worth reading: 509 of the
+550 dismissals here are one rule, closed by one control at the sink with a
+[written disposition](docs/security/log-injection-disposition.md) and a test that
+fails if the control is ever reverted. Every dismissal carries a comment. None of
+that is enforced by anything yet — it holds because one person did it that way.
+
+The loop this codebase was built with assumed the test and the code came from two
+separate readings of the requirement. An agent writing both in one pass ends that,
+and the same seven days left the contract seam above out of step without a single
+red build. **So: after seven days of machine-written change, does the system still
+do the same thing for the user?** Answering that mechanically — invariants
+extracted from the code, enforced on the diff, with a human ratifying every
+loosening — is in progress, and the method, its precedents and its honest status
+are in the frontend's
+[design of record](https://github.com/Check-It-Out-Dev/checkitout-frontend/blob/main/docs/ci/GOVERNING-MACHINE-WRITTEN-CHANGE.md).
 
 ## The rest of the estate
 
