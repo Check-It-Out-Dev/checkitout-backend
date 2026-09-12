@@ -1,11 +1,11 @@
 {
- "mutationScore": 43.85,
- "coveredScore": 69.84,
+ "mutationScore": 43.73,
+ "coveredScore": 69.92,
  "mutants": {
-  "total": 2392,
+  "total": 2408,
   "SURVIVED": 453,
-  "NO_COVERAGE": 890,
-  "KILLED": 1048,
+  "NO_COVERAGE": 902,
+  "KILLED": 1052,
   "TIMED_OUT": 1
  },
  "classesWithNoUnitTest": 15,
@@ -37,6 +37,14 @@
    "n": 159
   },
   {
+   "class": "auth.service.SessionSecurityService",
+   "score": 0,
+   "killed": 0,
+   "survived": 0,
+   "noCoverage": 128,
+   "n": 128
+  },
+  {
    "class": "auth.service.OAuthCallbackService",
    "score": 59.52,
    "killed": 75,
@@ -45,20 +53,12 @@
    "n": 126
   },
   {
-   "class": "auth.service.SessionSecurityService",
-   "score": 0,
-   "killed": 0,
-   "survived": 0,
-   "noCoverage": 124,
-   "n": 124
-  },
-  {
    "class": "auth.service.EmailVerificationService",
-   "score": 60.98,
-   "killed": 75,
+   "score": 61.6,
+   "killed": 77,
    "survived": 14,
    "noCoverage": 34,
-   "n": 123
+   "n": 125
   },
   {
    "class": "auth.service.RegistrationService",
@@ -78,11 +78,11 @@
   },
   {
    "class": "common.security.GeoIpStorageService",
-   "score": 2.47,
+   "score": 2.35,
    "killed": 2,
    "survived": 0,
-   "noCoverage": 79,
-   "n": 81
+   "noCoverage": 83,
+   "n": 85
   },
   {
    "class": "common.ratelimit.GdprCompliantRateLimiterService",
@@ -118,11 +118,11 @@
   },
   {
    "class": "common.security.geoip.GeoLocationFacade",
-   "score": 35.29,
-   "killed": 18,
+   "score": 35.09,
+   "killed": 20,
    "survived": 16,
-   "noCoverage": 17,
-   "n": 51
+   "noCoverage": 21,
+   "n": 57
   },
   {
    "class": "common.ratelimit.RedisRateLimiterService",
