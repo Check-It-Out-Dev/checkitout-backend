@@ -689,20 +689,6 @@ public class PartnershipOpportunityService extends BaseService<PartnershipOpport
     }
 
     /**
-     * Patches an opportunity and returns as DTO.
-     * This method ensures all DTO conversions happen within the same transaction.
-     *
-     * @param id      the ID of the opportunity
-     * @param updates the map of updates
-     * @return the patched opportunity as DTO
-     */
-    @Transactional
-    public PartnershipOpportunityDtoOut patchAsDto(Long id, Map<String, Object> updates) {
-        PartnershipOpportunity entity = getSelf().patch(id, updates);
-        return getSelf().convertToFilteredDto(entity, getLocaleFromRequest());
-    }
-
-    /**
      * Patches an opportunity and returns as DTO with translations.
      * This method ensures all DTO conversions happen within the same transaction.
      *

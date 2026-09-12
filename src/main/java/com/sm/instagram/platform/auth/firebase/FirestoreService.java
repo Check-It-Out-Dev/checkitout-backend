@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import com.sm.instagram.platform.common.util.Interrupts;
 
 /**
  * Service for handling Firestore operations, specifically for storing Instagram user data.
@@ -387,6 +388,9 @@ public class FirestoreService {
             com.google.cloud.firestore.DocumentSnapshot document = future.get();
             return document.exists();
         } catch (Exception e) {
+            if (Interrupts.isInterrupt(e)) {
+                Thread.currentThread().interrupt();
+            }
             log.error("Error checking Instagram data existence for user {}: {}", firebaseUid, e.getMessage());
             return false;
         }

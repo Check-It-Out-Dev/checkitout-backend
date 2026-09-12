@@ -733,6 +733,24 @@
         },
         "type" : "object"
       },
+      "BackupCodes" : {
+        "description" : "A fresh set of single-use backup codes",
+        "properties" : {
+          "backupCodes" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "success" : {
+            "type" : "boolean"
+          }
+        },
+        "type" : "object"
+      },
       "BatchCascadeDeletePreview" : {
         "properties" : {
           "allSystemsToClean" : {
@@ -2116,6 +2134,25 @@
         },
         "type" : "object"
       },
+      "Disabled" : {
+        "description" : "Two-factor authentication is off, and the role has come back down with it",
+        "properties" : {
+          "message" : {
+            "type" : "string"
+          },
+          "newRole" : {
+            "example" : "PENDING_ADMIN",
+            "type" : "string"
+          },
+          "requiresRelogin" : {
+            "type" : "boolean"
+          },
+          "success" : {
+            "type" : "boolean"
+          }
+        },
+        "type" : "object"
+      },
       "EmailUpdateRequest" : {
         "properties" : {
           "newEmail" : {
@@ -2884,6 +2921,18 @@
       "NotificationType" : {
         "enum" : [ "APPLICATION_RECEIVED", "OFFER_ACCEPTED", "OFFER_REJECTED", "CONTENT_SUBMITTED", "CONTENT_POSTED", "APPLICATION_ACCEPTED", "APPLICATION_REJECTED", "CONTENT_APPROVED", "CONTENT_REJECTED", "POST_VERIFIED", "POST_REJECTED", "COLLABORATION_COMPLETE", "ACCOUNT_ACTIVATED", "ACCOUNT_SUSPENDED", "ACCOUNT_BANNED", "ADMIN_NEW_USER_REGISTERED", "ADMIN_ACCOUNT_ACTIVATED", "SUBSCRIPTION_TRIAL_ENDING", "SUBSCRIPTION_TRIAL_EXPIRED", "SUBSCRIPTION_PAYMENT_FAILED", "SUBSCRIPTION_PAYMENT_RECOVERED", "SUBSCRIPTION_PAYMENT_EXHAUSTED", "SUBSCRIPTION_UPGRADED", "SUBSCRIPTION_DOWNGRADE_SCHEDULED", "SUBSCRIPTION_DOWNGRADED", "SUBSCRIPTION_SUSPENDED", "SUBSCRIPTION_REACTIVATED", "TICKET_RESPONSE", "TICKET_RESOLVED", "TICKET_CLOSED" ],
         "type" : "string"
+      },
+      "OAuthCallbackFailure" : {
+        "description" : "An OAuth callback that could not be completed, for a caller that cannot be redirected",
+        "properties" : {
+          "error" : {
+            "type" : "string"
+          },
+          "success" : {
+            "type" : "boolean"
+          }
+        },
+        "type" : "object"
       },
       "OpportunityStatus" : {
         "enum" : [ "APPLIED", "ACCEPTED_BY_COMPANY", "REJECTED_BY_COMPANY", "ACCEPTED_BY_INFLUENCER", "REJECTED_BY_INFLUENCER", "CONTENT_SEND_TO_ACCEPT", "CONTENT_APPROVED", "CONTENT_REJECTED", "CONTENT_POSTED", "CONTENT_POSTED_REJECTED", "TO_BE_PAID", "DONE" ],
@@ -4683,6 +4732,34 @@
         },
         "type" : "object"
       },
+      "SetupVerified" : {
+        "description" : "Two-factor authentication is now on, and the session already reflects it",
+        "properties" : {
+          "autoLoggedIn" : {
+            "type" : "boolean"
+          },
+          "canAccessAdmin" : {
+            "type" : "boolean"
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "newRole" : {
+            "example" : "ADMIN",
+            "type" : "string"
+          },
+          "requiresRelogin" : {
+            "type" : "boolean"
+          },
+          "success" : {
+            "type" : "boolean"
+          },
+          "twoFactorVerified" : {
+            "type" : "boolean"
+          }
+        },
+        "type" : "object"
+      },
       "SortObject" : {
         "properties" : {
           "empty" : {
@@ -4693,6 +4770,34 @@
           },
           "unsorted" : {
             "type" : "boolean"
+          }
+        },
+        "type" : "object"
+      },
+      "Status" : {
+        "description" : "Whether this account has two-factor authentication, and whether it needs it",
+        "properties" : {
+          "canAccessAdmin" : {
+            "type" : "boolean"
+          },
+          "has2FA" : {
+            "type" : "boolean"
+          },
+          "integrityIssue" : {
+            "description" : "Which disagreement, when there is one",
+            "enum" : [ "role_not_upgraded", "totp_not_enabled", "no_totp_document" ],
+            "type" : "string"
+          },
+          "requires2FASetup" : {
+            "type" : "boolean"
+          },
+          "role" : {
+            "example" : "ADMIN",
+            "type" : "string"
+          },
+          "warning" : {
+            "description" : "Present only when the role and the TOTP document disagree",
+            "type" : "string"
           }
         },
         "type" : "object"
@@ -5132,6 +5237,44 @@
           "userId" : {
             "format" : "int64",
             "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "TotpSetupResponse" : {
+        "properties" : {
+          "alreadyEnabled" : {
+            "type" : "boolean"
+          },
+          "backupCodes" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "error" : {
+            "type" : "string"
+          },
+          "googleChartsUrl" : {
+            "type" : "string"
+          },
+          "issuer" : {
+            "type" : "string"
+          },
+          "qrCodeImage" : {
+            "type" : "string"
+          },
+          "qrCodeUrl" : {
+            "type" : "string"
+          },
+          "secret" : {
+            "type" : "string"
+          },
+          "secretFormatted" : {
+            "type" : "string"
           }
         },
         "type" : "object"
@@ -5861,6 +6004,31 @@
               "$ref" : "#/components/schemas/FileUpload"
             },
             "type" : "array"
+          }
+        },
+        "type" : "object"
+      },
+      "Verified" : {
+        "description" : "A code accepted at sign-in",
+        "properties" : {
+          "canAccessAdmin" : {
+            "type" : "boolean"
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "reuseIdToken" : {
+            "description" : "The original ID token is still the one to use; no new token is issued",
+            "type" : "boolean"
+          },
+          "success" : {
+            "type" : "boolean"
+          },
+          "twoFactorVerified" : {
+            "type" : "boolean"
+          },
+          "verified" : {
+            "type" : "boolean"
           }
         },
         "type" : "object"
@@ -11838,25 +12006,18 @@
           }
         } ],
         "responses" : {
-          "200" : {
-            "content" : {
-              "*/*" : {
-                "schema" : {
-                  "type" : "object"
-                }
-              }
-            },
-            "description" : "OK"
+          "302" : {
+            "description" : "The browser is sent back to the application, with the outcome in the query"
           },
           "400" : {
             "content" : {
-              "application/json" : {
+              "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/ApiErrorResponse"
+                  "$ref" : "#/components/schemas/OAuthCallbackFailure"
                 }
               }
             },
-            "description" : "The request was rejected before it reached the handler: a field the constraints refuse, a parameter that will not parse, or a body that is not the JSON it claims to be."
+            "description" : "The callback could not be completed and the caller is not a browser"
           }
         },
         "tags" : [ "auth-controller" ]
@@ -19033,7 +19194,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "type" : "object"
+                  "$ref" : "#/components/schemas/BackupCodes"
                 }
               }
             },
@@ -19091,7 +19252,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "type" : "object"
+                  "$ref" : "#/components/schemas/Disabled"
                 }
               }
             },
@@ -19139,7 +19300,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "type" : "object"
+                  "$ref" : "#/components/schemas/TotpSetupResponse"
                 }
               }
             },
@@ -19177,7 +19338,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "type" : "object"
+                  "$ref" : "#/components/schemas/Status"
                 }
               }
             },
@@ -19225,7 +19386,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "type" : "object"
+                  "$ref" : "#/components/schemas/Verified"
                 }
               }
             },
@@ -19283,7 +19444,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "type" : "object"
+                  "$ref" : "#/components/schemas/SetupVerified"
                 }
               }
             },

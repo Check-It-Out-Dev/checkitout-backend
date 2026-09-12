@@ -264,8 +264,9 @@ public class SignedUrlValidationService {
                     log.error("   → Upload may have failed silently");
                 }
             } catch (Exception e) {
-                // A broad catch swallows the interrupt too; put the flag back before handling the failure.
-                Interrupts.preserveInterrupt(e);
+                if (Interrupts.isInterrupt(e)) {
+                    Thread.currentThread().interrupt();
+                }
                 log.error("   ❌ VERIFICATION FAILED", e);
             }
         }

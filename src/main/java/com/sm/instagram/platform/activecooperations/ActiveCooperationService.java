@@ -69,6 +69,9 @@ public class ActiveCooperationService {
      * {@link InsufficientPermissionsException} when the caller is not an
      * admin; otherwise delegates verbatim.
      */
+    // Carries the delegate's transaction itself: the call below is a self-invocation, which
+    // never reaches the proxy, so getInfluencersToRate's readOnly=true was silently dropped.
+    @Transactional(readOnly = true)
     public Page<CoopDto> getInfluencersToRateWithPermission(String filterRateStatusStr,
                                                             Pageable pageable) {
         String firebaseUid = permissionUtils.getUserId();

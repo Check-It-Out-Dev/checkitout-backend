@@ -1,5 +1,10 @@
 package com.sm.instagram.platform.auth;
 
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Content;
+import com.sm.instagram.platform.auth.dto.OAuthCallbackFailure;
 import static com.sm.instagram.platform.common.util.PiiMaskingUtils.maskEmail;
 
 import com.sm.instagram.platform.auth.dto.*;
@@ -162,6 +167,26 @@ public class AuthController {
      */
     @GetMapping("/social/callback/instagram")
     @RateLimit(profile = RateLimitProfile.AUTH)
+    /**
+     * Every path through this endpoint is a redirect or a refusal; there is no 200.
+     *
+     * <p>springdoc invents one from the {@code ResponseEntity<?>} return type, so the document
+     * promised a body on a status the endpoint never sends, and the shape of that body as
+     * {@code object}. Declaring the two real answers replaces the invented one: a browser is sent
+     * back to the application with 302 and no body, and a caller that cannot be redirected gets
+     * {@link OAuthCallbackFailure}.
+     *
+     * <p>The wildcard stays on the signature because the two branches really do return different
+     * things; what changes is that the document now says which.
+     */
+    @ApiResponses({
+            @ApiResponse(responseCode = "302",
+                    description = "The browser is sent back to the application, with the outcome in the query",
+                    content = @Content),
+            @ApiResponse(responseCode = "400",
+                    description = "The callback could not be completed and the caller is not a browser",
+                    content = @Content(schema = @Schema(implementation = OAuthCallbackFailure.class)))
+    })
     public ResponseEntity<?> instagramCallback(
             @RequestParam(value = "code", required = false) String code,
             @RequestParam(value = "state", required = false) String state,

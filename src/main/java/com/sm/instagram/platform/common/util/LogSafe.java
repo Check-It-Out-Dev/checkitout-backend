@@ -42,12 +42,30 @@ public final class LogSafe {
      * named. They matter because a log shipper that writes JSON, or a viewer that renders it, will
      * happily treat them as the end of a line.
      */
-    private static final Pattern UNSAFE = Pattern.compile("[\\p{Cntrl}\\u0085\\u2028\\u2029]");
+    private static final Pattern UNSAFE = Pattern.compile("[\\r\\n\\p{Cntrl}\\u0085\\u2028\\u2029]");
 
     /** Long enough for an Origin, a UID or a user agent; short enough that it cannot flood. */
     public static final int MAX_LENGTH = 200;
 
     private LogSafe() {
+    }
+
+    /**
+     * The same map with every key and value made safe to write, as a new map.
+     * <p>A copy, deliberately. The maps this is called on are the ones that also travel back to the
+     * caller in the response body, and they must keep the caller's own text intact: HTML encoding
+     * is what the response needs, and HTML encoding does not touch a line break. So the response
+     * keeps the encoded original and the log gets this.
+     * @param values the map to render into a log line, or null
+     * @return a new map safe to interpolate, or null if it was null
+     */
+    public static java.util.Map<String, String> map(java.util.Map<String, String> values) {
+        if (values == null) {
+            return null;
+        }
+        java.util.Map<String, String> safe = new java.util.LinkedHashMap<>();
+        values.forEach((k, v) -> safe.put(value(k), value(v)));
+        return safe;
     }
 
     /**
@@ -58,6 +76,20 @@ public final class LogSafe {
      * caller that sanitises a header where it reads it — the honest place, because then no later
      * edit can miss a use — still has to be able to ask whether the header was there at all. SLF4J
      * renders a null argument as {@code null} anyway, so nothing is lost in the log line.
+     *
+     * <p><strong>CodeQL does not recognise this method as a sanitiser, and two attempts to make it
+     * did not change that.</strong> It reports all seven call sites as {@code java/log-injection}.
+     * The first attempt swapped the precompiled {@code Pattern} for {@code String.replaceAll},
+     * which CodeQL does model — analysis on 711451d7, unchanged. The second named {@code \r} and
+     * {@code \n} explicitly in the class, on the theory that a sanitiser is recognised by the
+     * characters it names — analysis on 56913103, unchanged. The compiled pattern is back, because
+     * it was the better implementation and the change bought nothing; {@code \r\n} stays in the
+     * class, because it costs nothing and tells a reader what this is about.
+     *
+     * <p>The seven alerts are dismissed as false positives, naming this method. That is a real
+     * cost, not a tidy-up: while they stood, a log statement that genuinely forgot LogSafe looked
+     * exactly like one that did not. Dismissing them individually is what keeps the eighth
+     * visible.
      *
      * @param value the caller-supplied string, or null
      * @return a string that is always safe to interpolate into a log line, or null if it was null

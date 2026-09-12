@@ -76,6 +76,9 @@ public class TotpFirestoreService {
             logAuditEvent(userId, "TOTP_SETUP", "SUCCESS", null, null);
             
         } catch (Exception e) {
+            if (Interrupts.isInterrupt(e)) {
+                Thread.currentThread().interrupt();
+            }
             log.error("Failed to store TOTP secret for user {}: {}", LogSafe.value(userId), e.getMessage());
             throw new BusinessRuleTranslatableException("error.business.data_integrity");
         }
@@ -111,6 +114,9 @@ public class TotpFirestoreService {
             return encryptionService.decryptTotpSecret(document.getEncryptedSecret());
             
         } catch (Exception e) {
+            if (Interrupts.isInterrupt(e)) {
+                Thread.currentThread().interrupt();
+            }
             log.error("Failed to get TOTP secret for user {}: {}", LogSafe.value(userId), e.getMessage());
             return null;
         }
@@ -141,6 +147,9 @@ public class TotpFirestoreService {
             return enabled;
 
         } catch (Exception e) {
+            if (Interrupts.isInterrupt(e)) {
+                Thread.currentThread().interrupt();
+            }
             // CRITICAL: Do NOT return false here! Returning false would incorrectly
             // indicate that 2FA is not configured, causing users with existing 2FA
             // to be shown the setup screen instead of the TOTP verification screen.
@@ -164,6 +173,9 @@ public class TotpFirestoreService {
             DocumentSnapshot doc = future.get();
             return doc.exists();
         } catch (Exception e) {
+            if (Interrupts.isInterrupt(e)) {
+                Thread.currentThread().interrupt();
+            }
             log.error("Failed to check TOTP document existence for user {}: {}", LogSafe.value(userId), e.getMessage());
             return false;
         }
@@ -192,6 +204,9 @@ public class TotpFirestoreService {
             logAuditEvent(userId, "2FA_ENABLED", "SUCCESS", null, null);
             
         } catch (Exception e) {
+            if (Interrupts.isInterrupt(e)) {
+                Thread.currentThread().interrupt();
+            }
             log.error("Failed to enable 2FA for user {}: {}", LogSafe.value(userId), e.getMessage());
             throw new BusinessRuleTranslatableException("error.business.data_integrity");
         }
@@ -220,6 +235,9 @@ public class TotpFirestoreService {
             logAuditEvent(userId, "2FA_DISABLED", "SUCCESS", null, null);
             
         } catch (Exception e) {
+            if (Interrupts.isInterrupt(e)) {
+                Thread.currentThread().interrupt();
+            }
             log.error("Failed to disable 2FA for user {}: {}", LogSafe.value(userId), e.getMessage());
             throw new BusinessRuleTranslatableException("error.business.data_integrity");
         }
@@ -287,6 +305,9 @@ public class TotpFirestoreService {
             return valid;
             
         } catch (Exception e) {
+            if (Interrupts.isInterrupt(e)) {
+                Thread.currentThread().interrupt();
+            }
             log.error("Failed to verify backup code for user {}: {}", LogSafe.value(userId), e.getMessage());
             return false;
         }
@@ -328,6 +349,9 @@ public class TotpFirestoreService {
             return info;
             
         } catch (Exception e) {
+            if (Interrupts.isInterrupt(e)) {
+                Thread.currentThread().interrupt();
+            }
             log.error("Failed to get backup codes info for user {}: {}", LogSafe.value(userId), e.getMessage());
             return null;
         }
@@ -395,8 +419,9 @@ public class TotpFirestoreService {
             log.info("All 2FA data deleted for user: {}", LogSafe.value(userId));
             
         } catch (Exception e) {
-            // A broad catch swallows the interrupt too; put the flag back before handling the failure.
-            Interrupts.preserveInterrupt(e);
+            if (Interrupts.isInterrupt(e)) {
+                Thread.currentThread().interrupt();
+            }
             log.error("Failed to delete 2FA data for user {}: {}", LogSafe.value(userId), e.getMessage());
             throw new BusinessRuleTranslatableException("error.business.data_integrity");
         }

@@ -68,6 +68,24 @@ class ErrorEnvelopeResponsesCustomizerUnitTest {
     }
 
     @Test
+    @DisplayName("an error body that is deliberately its own shape is left alone")
+    void ownErrorShapeIsKept() {
+        // Overwriting is the right default -- springdoc inherits the success type onto the 4xx, as
+        // the test above shows -- so "it already has a schema" cannot be the test. What is left is
+        // the short list: the Instagram callback answers a caller it cannot redirect with a shape
+        // older than the envelope, and declaring that had no effect until the list existed.
+        ApiResponse badRequest = new ApiResponse()
+                .description("Not a browser")
+                .content(schemaNamed("#/components/schemas/OAuthCallbackFailure"));
+        Operation operation = new Operation().responses(
+                new ApiResponses().addApiResponse("400", badRequest));
+
+        customise(operation);
+
+        assertThat(refOf(badRequest)).isEqualTo("#/components/schemas/OAuthCallbackFailure");
+    }
+
+    @Test
     @DisplayName("a 200 is never touched")
     void successIsLeftAlone() {
         ApiResponse ok = new ApiResponse().content(schemaNamed("#/components/schemas/AddressDtoOut"));

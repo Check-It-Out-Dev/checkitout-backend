@@ -56,8 +56,9 @@ public class GeoLocationFacade implements GeoLocationService {
             log.warn("GeoIP lookup timed out for IP: {}", maskIp(ip));
             return GeoLocation.unknown(ip);
         } catch (Exception e) {
-            // A broad catch swallows the interrupt too; put the flag back before handling the failure.
-            Interrupts.preserveInterrupt(e);
+            if (Interrupts.isInterrupt(e)) {
+                Thread.currentThread().interrupt();
+            }
             log.error("GeoIP lookup failed for IP: {}", maskIp(ip), e);
             return GeoLocation.unknown(ip);
         }
@@ -263,8 +264,9 @@ public class GeoLocationFacade implements GeoLocationService {
                 })
                 .get(30, TimeUnit.SECONDS);
         } catch (Exception e) {
-            // A broad catch swallows the interrupt too; put the flag back before handling the failure.
-            Interrupts.preserveInterrupt(e);
+            if (Interrupts.isInterrupt(e)) {
+                Thread.currentThread().interrupt();
+            }
             log.error("Failed to download from Firebase Storage", e);
         }
     }
@@ -285,8 +287,9 @@ public class GeoLocationFacade implements GeoLocationService {
                     .get(30, TimeUnit.SECONDS);
             }
         } catch (Exception e) {
-            // A broad catch swallows the interrupt too; put the flag back before handling the failure.
-            Interrupts.preserveInterrupt(e);
+            if (Interrupts.isInterrupt(e)) {
+                Thread.currentThread().interrupt();
+            }
             log.error("Failed to upload to Firebase Storage", e);
         }
     }

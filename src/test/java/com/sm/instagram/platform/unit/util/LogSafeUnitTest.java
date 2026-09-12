@@ -20,6 +20,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("LogSafe — a header cannot write its own log entry")
 class LogSafeUnitTest {
 
+    /** A line break followed by something that reads like a log entry: the attack, in one string. */
+    private static final String FORGED = "\nINFO  forged";
+
     @Test
     @DisplayName("a newline in an Origin header cannot forge a second entry")
     void forgedEntryCollapsesIntoOneLine() {
@@ -103,5 +106,28 @@ class LogSafeUnitTest {
         String safe = LogSafe.value("a\n".repeat(1_000));
 
         assertThat(safe).contains("truncated, 2000 chars").doesNotContain("\n");
+    }
+
+    @Test
+    @DisplayName("map() makes every key and value safe, and leaves the caller's map alone")
+    void mapSanitisesBothSidesWithoutMutating() {
+        String forgedKey = "field" + FORGED;
+        String forgedValue = "value" + FORGED;
+        Map<String, String> original = new LinkedHashMap<>();
+        original.put(forgedKey, forgedValue);
+
+        Map<String, String> safe = LogSafe.map(original);
+
+        assertThat(safe).containsExactly(org.assertj.core.api.Assertions.entry(
+                "field?INFO  forged", "value?INFO  forged"));
+        // The original travels back to the caller in the response body and must stay intact.
+        assertThat(original).containsExactly(
+                org.assertj.core.api.Assertions.entry(forgedKey, forgedValue));
+    }
+
+    @Test
+    @DisplayName("map() tolerates null, because a handler may not have built one")
+    void mapToleratesNull() {
+        assertThat(LogSafe.map(null)).isNull();
     }
 }

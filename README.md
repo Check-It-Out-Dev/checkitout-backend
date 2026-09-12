@@ -21,6 +21,8 @@ production with real users; the frontend's mocked build is the open demo today.
 [![nightly pipeline](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/nightly.yml/badge.svg)](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/nightly.yml)
 [![image](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/build-image.yml/badge.svg)](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/build-image.yml)
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=Check-It-Out-Dev_checkitout-backend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Check-It-Out-Dev_checkitout-backend)
+[![Reliability](https://sonarcloud.io/api/project_badges/measure?project=Check-It-Out-Dev_checkitout-backend&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=Check-It-Out-Dev_checkitout-backend)
+[![Security](https://sonarcloud.io/api/project_badges/measure?project=Check-It-Out-Dev_checkitout-backend&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=Check-It-Out-Dev_checkitout-backend)
 
 <sub>The test, flaky, mutation and security badges are read live from the <a href="https://check-it-out-dev.github.io/checkitout-backend/">quality dashboard</a>, which every run republishes.</sub>
 
@@ -102,18 +104,19 @@ Every build also passes six gates: Enforcer (Java 21), Spotless, PMD, SpotBugs +
 FindSecBugs at maximum effort, OWASP dependency-check (fails at CVSS ≥ 7) and
 JaCoCo. If a gate blocks a change, the cause is fixed — never the gate.
 
-**The numbers**, measured 2026-09-08 on this tree, with commands you can run:
+**The numbers**, measured on this tree by `node tools/ci/measure-counts.mjs`, which the unit
+job re-runs with `--check` so a stale figure fails the build rather than ageing in public:
 
 | | | |
 | :-- | --: | :-- |
-| **Test methods** | **8,908** | 8,312 `@Test` + 596 `@ParameterizedTest`, across **256** test classes and the **2,152** `@Nested` groups inside them |
-| **Test code : main code** | **2.0 : 1** | 182,241 lines of test Java against 90,195 of main |
+| **Test methods** | **9,101** | 8,494 `@Test` + 607 `@ParameterizedTest`, across **292** test classes and the **2,162** `@Nested` groups inside them |
+| **Test code : main code** | **2.0 : 1** | ~188k lines of test Java against ~93k of main |
 | **Cucumber** | **34 files** | 148 `Scenario` + 28 `Scenario Outline`, **277 after Examples expansion** |
 | **Domain** | **38 entities** | 50 REST controllers |
-| **Contract** | **234 paths** | 279 operations · 182 schemas · OpenAPI 3.1 |
+| **Contract** | **233 paths** | 272 operations · 205 schemas · OpenAPI 3.1 |
 
 And one number worth more than any of them: **`@Disabled` appears zero times**
-across all 325 test files. Nothing is quarantined, skipped-and-forgotten, or
+across all 363 test files. Nothing is quarantined, skipped-and-forgotten, or
 commented out waiting for someone to come back to it.
 
 > [!NOTE]
@@ -143,8 +146,8 @@ talk to it — the two are joined at two seams, and both seams are files here.
    the contract                         ┌───►  compiles against it
    · openapi.json, taken from a    ─────┘      · 181 model types, 41 services
      server that actually booted               · generated, never hand-written
-   · 234 paths · 279 operations                · a drifted signature is a
-   · 182 schemas                                 compile error, not a bug report
+   · 233 paths · 272 operations                · a drifted signature is a
+   · 205 schemas                                 compile error, not a bug report
 ```
 
 **The contract is taken from the running code, not written about it.**
@@ -154,13 +157,25 @@ started, canonicalises the JSON (keys sorted, pretty-printed — springdoc's map
 ordering shuffles between boots) and writes
 [`docs/openapi/openapi.json`](docs/openapi/openapi.json). A spec produced that
 way cannot describe an endpoint that does not exist, and the determinism is what
-lets two repositories hold it *identically*:
+*lets* two repositories hold it identically. Whether they do is a different
+question, and on 2026-09-12 the answer was no:
 
 ```bash
 sha256sum docs/openapi/openapi.json
-# 96ceb20f44831ba48ac6a01349e953c0131260ff8db84b447d704893b01e7cbb
-# byte for byte the same file in both repositories
+# 2b413dda0fa2514ade63dad88a4cc5bf86f2b631976aecd778ae8f061e58733a  here
+# 73b99335dbb904ebadbe0055ce2627f0ce52310dc113e23c5fb30e39f8d5815d  the frontend's copy
+# 205 schemas here, 183 there — seven contract commits not propagated
 ```
+
+The hash this block published until today matched neither file, nor any of the
+15 committed revisions of it: it described a state that was never committed. The
+two copies *were* byte-identical at every one of their five sync points, and then
+lost to seven contract commits in one evening, because the sync runs only when a
+person runs `npm run openapi:cycle`. Nothing compares the two repositories, which
+is why nobody noticed. The gate that makes this impossible is the next slice; the
+reasoning is in the frontend's
+[design of record](https://github.com/Check-It-Out-Dev/checkitout-frontend/blob/main/docs/ci/GOVERNING-MACHINE-WRITTEN-CHANGE.md)
+§10.
 
 **The Cucumber corpus is the other seam.** The 34 feature files under
 [`src/test/resources/features/`](src/test/resources/features/) are the executable
@@ -240,7 +255,7 @@ while you work on it, never firing by itself — and each pipeline ends in one l
 | [`mutation.yml`](.github/workflows/mutation.yml) | PIT over the security, rate-limit and auth services: **43.35 %**, or **69.22 %** on the code the unit suite actually reaches, across 2,397 mutants. Coverage says a line ran; this says whether anything checked the result. The report names the seventeen classes with no unit test at all rather than hiding them in an average. |
 | [`api-fuzz.yml`](.github/workflows/api-fuzz.yml) | Schemathesis generates requests from the OpenAPI document and sends them at a running instance, checking every response against the schema it claims. |
 | [`security.yml`](.github/workflows/security.yml) | Semgrep over the OWASP, secrets and Java rule sets; Checkov on the Dockerfiles and workflows; Trivy on the tree and the published image, with an SBOM of each. Every scanner writes SARIF into code scanning. |
-| [`sonar.yml`](.github/workflows/sonar.yml) | SonarQube Cloud, fed the JaCoCo coverage the unit tier writes. |
+| [`sonar.yml`](.github/workflows/sonar.yml) | SonarQube Cloud, fed the JaCoCo coverage the unit tier writes **and the dependency classpath Maven resolves**. The second half is not a detail: the CLI scanner has no view of the reactor, and without `sonar.java.libraries` every rule that needs a resolved type quietly degrades. It was reporting fourteen inner test classes as missing `@Nested` when the annotation was on the line above, and missing fifteen real defects — a guaranteed NPE, three `@Transactional` annotations on private methods, two methods that only looked like overrides — because it could not resolve the types to see them. |
 
 | | Trigger | What runs |
 | :--- | :--- | :--- |
@@ -280,6 +295,40 @@ Dated 2026-09. ✅ built · 🟡 under way · ⬜ designed, not started.
 | ✅ | **Schemathesis against the running server** | `api-fuzz.yml` generates requests from the schema and sends them at a real instance. It earned its place on the first run: every secured operation answered 401 while the document declared none, which is a contract defect because the frontend generates its client from that document. Fixed by `AuthFailureResponsesCustomizer`; the fuzzer now runs nightly |
 | ✅ | **OWASP Top 10 in the pipeline** | `security.yml`: Semgrep over the OWASP, secrets and Java rule sets; Checkov on the Dockerfiles and workflows for the misconfiguration surface nothing else reaches; Trivy on both the source tree and the **published image**, with an SBOM of each. All SARIF into code scanning. The dynamic half runs from the frontend repository, against the sandbox — which is this backend |
 | ✅ | **SonarQube Cloud quality gate** | Free for public repositories; fed the JaCoCo coverage the unit tier already writes. Its gate can be set on new code alone, which is what makes an existing backlog survivable |
+
+## Seven days of machine-written change
+
+Coding agents ran in a loop over this repository and the frontend for about seven
+days, with the security scanners switched on while they worked. Counted through
+the GitHub API on 2026-09-12 — a dated observation of a service, not a fact about
+this tree, so no gate re-derives it:
+
+|                 | Code scanning | Fixed | Dismissed | Open | Dependabot |
+| :-------------- | :------------ | :---- | :-------- | :--- | :--------- |
+| this repository | 1151 | 582 | 550 | 19 | 138 (137 fixed) |
+| the frontend | 335 | 265 | 63 | 7 | 82 (all fixed) |
+
+```bash
+gh api "repos/Check-It-Out-Dev/checkitout-backend/code-scanning/alerts?per_page=100" \
+  --paginate -q '.[].state' | sort | uniq -c
+```
+
+1486 findings in three days is three scanners meeting a codebase for the first
+time, not a collapse. What happened to them is the part worth reading: 509 of the
+550 dismissals here are one rule, closed by one control at the sink with a
+[written disposition](docs/security/log-injection-disposition.md) and a test that
+fails if the control is ever reverted. Every dismissal carries a comment. None of
+that is enforced by anything yet — it holds because one person did it that way.
+
+The loop this codebase was built with assumed the test and the code came from two
+separate readings of the requirement. An agent writing both in one pass ends that,
+and the same seven days left the contract seam above out of step without a single
+red build. **So: after seven days of machine-written change, does the system still
+do the same thing for the user?** Answering that mechanically — invariants
+extracted from the code, enforced on the diff, with a human ratifying every
+loosening — is in progress, and the method, its precedents and its honest status
+are in the frontend's
+[design of record](https://github.com/Check-It-Out-Dev/checkitout-frontend/blob/main/docs/ci/GOVERNING-MACHINE-WRITTEN-CHANGE.md).
 
 ## The rest of the estate
 

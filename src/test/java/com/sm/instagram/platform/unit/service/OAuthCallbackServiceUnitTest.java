@@ -1,6 +1,7 @@
 package com.sm.instagram.platform.unit.service;
 
 import com.google.firebase.auth.UserRecord;
+import com.sm.instagram.platform.auth.dto.OAuthCallbackFailure;
 import com.sm.instagram.platform.auth.firebase.FirebaseService;
 import com.sm.instagram.platform.auth.firebase.FirestoreService;
 import com.sm.instagram.platform.auth.service.OAuthCallbackService;
@@ -822,11 +823,12 @@ class OAuthCallbackServiceUnitTest {
 
             // Then
             assertThat(result.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-            assertThat(result.getBody()).isInstanceOf(Map.class);
-            @SuppressWarnings("unchecked")
-            Map<String, Object> body = (Map<String, Object>) result.getBody();
-            assertThat(body.get("success")).isEqualTo(false);
-            assertThat(body.get("error")).isEqualTo("User denied access");
+            // A record rather than a map, so the contract can describe it: the endpoint published
+            // `object` for a body whose two keys have never changed.
+            assertThat(result.getBody()).isInstanceOf(OAuthCallbackFailure.class);
+            OAuthCallbackFailure body = (OAuthCallbackFailure) result.getBody();
+            assertThat(body.success()).isFalse();
+            assertThat(body.error()).isEqualTo("User denied access");
         }
 
         @Test
@@ -841,7 +843,9 @@ class OAuthCallbackServiceUnitTest {
 
             // Then
             assertThat(result.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-            assertThat(result.getBody()).isInstanceOf(Map.class);
+            assertThat(result.getBody()).isInstanceOf(OAuthCallbackFailure.class);
+            assertThat(((OAuthCallbackFailure) result.getBody()).error())
+                    .isEqualTo("Authorization code missing");
         }
     }
 

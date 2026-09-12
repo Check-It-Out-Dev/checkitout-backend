@@ -14,6 +14,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import com.sm.instagram.platform.common.util.Interrupts;
 
 /**
  * Validates TOTP (2FA) service configuration and functionality at application startup.
@@ -142,6 +143,9 @@ public class TotpValidationService implements ApplicationListener<ApplicationRea
             return true;
             
         } catch (Exception e) {
+            if (Interrupts.isInterrupt(e)) {
+                Thread.currentThread().interrupt();
+            }
             // This is expected if the document doesn't exist
             if (e.getMessage() != null && !e.getMessage().contains("NOT_FOUND")) {
                 log.error("   ✗ Firestore access failed: {}", e.getMessage());

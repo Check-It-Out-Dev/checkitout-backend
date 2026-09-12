@@ -192,7 +192,8 @@ public class AddressService extends BaseService<Address, Long, AddressDtoIn> {
     /**
      * Manage primary address.
      */
-    @Transactional
+    // No @Transactional: Spring's proxy cannot intercept a private method, so the annotation
+    // that used to be here promised a transaction it never opened. This runs in the caller's.
     private void managePrimaryAddress(Address address) {
         if (address.getUser() != null) {
             if (address.isPrimary()) {

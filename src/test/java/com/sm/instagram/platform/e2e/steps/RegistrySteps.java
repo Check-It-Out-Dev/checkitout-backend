@@ -382,8 +382,9 @@ public class RegistrySteps extends CucumberSpringConfig {
     @Then("the company data response body should be empty")
     public void companyDataBodyIsEmpty() {
         ResponseEntity<?> response = context.getLastResponse();
-        // getCompanyData returns null body when no data exists
-        // Spring may serialize null as empty or null
+        // A 204 carries no body at all, which is what getCompanyData answers when the user has
+        // confirmed nothing; it used to be a 200 with a null body, which is a 200 with no body and
+        // no Content-Type. Both arrive here as null, so this step reads the same either way.
         Object body = response.getBody();
         boolean isEmpty = body == null
                 || (body instanceof Map && ((Map<?, ?>) body).isEmpty())

@@ -66,6 +66,23 @@ public class LegalConsentService {
     @Transactional
     public Long recordAnonymousConsent(AnonymousConsentDtoIn dtoIn, HttpServletRequest request,
                                         HttpServletResponse response) {
+        return recordAnonymousConsentInternal(dtoIn, request, response);
+    }
+
+    /**
+     * The body of {@link #recordAnonymousConsent}, without the transaction attribute.
+     *
+     * <p>toggleCategoryConsent below calls this one. It used to call the public method, and a
+     * self-invocation never reaches the proxy, so the @Transactional there was decoration
+     * (sonar java:S2229): the consent write and the cookie that carries its id were never one
+     * unit. Splitting it keeps today's behaviour exactly and says so. The controller still calls
+     * the public method and still gets the transaction.
+     *
+     * <p>Whether the toggle path should be atomic with its cookie is the owner's call; it changes
+     * what a half-failed toggle leaves behind.
+     */
+    private Long recordAnonymousConsentInternal(AnonymousConsentDtoIn dtoIn, HttpServletRequest request,
+                                        HttpServletResponse response) {
         LegalDocument document = legalDocumentService.findByDocumentName(dtoIn.getDocumentName());
 
         ConsentProofPayload proof = ConsentProofPayload.builder()
@@ -128,7 +145,7 @@ public class LegalConsentService {
                 dtoIn.setLanguage(lang);
                 dtoIn.setIsTrusted(isTrusted);
                 dtoIn.setUserAgent(request.getHeader("User-Agent"));
-                recordAnonymousConsent(dtoIn, request, response);
+                recordAnonymousConsentInternal(dtoIn, request, response);
                 log.debug("Enabled essential cookie via anonymous consent (cookie policy v{})", cookieDoc.getVersion());
             } else {
                 consentCookieService.clearConsentCookie(response, ConsentCookieService.COOKIE_CONSENT_COOKIE_POLICY);

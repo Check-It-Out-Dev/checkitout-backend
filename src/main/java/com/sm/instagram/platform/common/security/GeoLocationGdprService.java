@@ -216,7 +216,10 @@ public class GeoLocationGdprService {
         // Count travel patterns
         String pattern = TRAVEL_PREFIX + userId + ":*";
         Set<String> keys = redisTemplate.keys(pattern);
-        int travelRecords = 0;
+        // long, not int: redisTemplate.opsForList().size() returns a Long, and `int += Long` is
+        // a compound assignment with an implicit narrowing cast -- it compiles, and truncates
+        // silently past Integer.MAX_VALUE (CodeQL java/implicit-cast-in-compound-assignment).
+        long travelRecords = 0;
         
         // Defensive null check for Redis operation
         if (keys != null) {

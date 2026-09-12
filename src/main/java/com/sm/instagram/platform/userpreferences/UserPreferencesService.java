@@ -496,7 +496,8 @@ public class UserPreferencesService extends BaseService<UserPreferences, Long, U
      * @param entity The entity to convert
      * @return The converted UserPreferencesDtoOut
      */
-    @Transactional(readOnly = true)
+    // No @Transactional: a private method is not proxied, so readOnly never took effect here.
+    // Ten call sites reach this from methods that carry their own; those are the ones that count.
     private UserPreferencesDtoOut toDtoInternal(UserPreferences entity) {
         if (entity == null) return null;
         return modelMapper.map(entity, UserPreferencesDtoOut.class);
@@ -603,19 +604,6 @@ public class UserPreferencesService extends BaseService<UserPreferences, Long, U
     @Transactional
     public UserPreferencesDtoOut patchUserPreferencesAsDto(Long userId, Map<String, Object> updates) {
         UserPreferences entity = patchUserPreferences(userId, updates);
-        return toDtoInternal(entity);
-    }
-
-    /**
-     * Patches user preferences by ID and returns as DTO.
-     *
-     * @param id      The preferences ID
-     * @param updates The map of fields to update
-     * @return The patched preferences as a DTO
-     */
-    @Transactional
-    public UserPreferencesDtoOut patchAsDto(Long id, Map<String, Object> updates) {
-        UserPreferences entity = patch(id, updates);
         return toDtoInternal(entity);
     }
 

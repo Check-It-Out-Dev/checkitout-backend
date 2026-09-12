@@ -93,6 +93,21 @@ public class LocalDatabaseInitializer {
         return value;
     }
 
+    /**
+     * Escape a value that has to go into a SQL string literal, because nothing here can bind it.
+     *
+     * <p>{@code CREATE USER … WITH PASSWORD} takes a literal and PostgreSQL offers no parameter for
+     * it, so the password was being interpolated between two quotes and a password containing one
+     * would have ended the literal early. Identifiers are handled by refusing anything that is not
+     * one; a password may legitimately contain almost anything, so it is escaped instead: doubling
+     * the quote is the standard escape, and the backslash form this would miss is only interpreted
+     * when {@code standard_conforming_strings} is off, which it has not been by default since
+     * PostgreSQL 9.1.
+     */
+    private static String sqlStringLiteral(String value) {
+        return "'" + value.replace("'", "''") + "'";
+    }
+
     @PostConstruct
     public void initializeDatabase() {
         // Before anything is concatenated into a statement. Every use of appDatabase and appUser
@@ -288,6 +303,14 @@ public class LocalDatabaseInitializer {
         }
     }
     
+    /**
+     * Reviewed for java:S2077: the user name is an identifier, which PostgreSQL cannot bind, and the password is escaped by
+     * {@link #sqlStringLiteral}. Both went through
+     * {@link #requireIdentifier} in {@code initializeDatabase} before any statement was built, so
+     * the only strings that reach here match {@code [A-Za-z_][A-Za-z0-9_]{0,62}}. The suppression
+     * records that decision beside the code rather than in a dashboard nobody reads twice.
+     */
+    @SuppressWarnings("java:S2077")
     private void createUser(Connection conn) throws SQLException {
         log.info("   Creating user '{}'...", appUser);
         
@@ -299,8 +322,8 @@ public class LocalDatabaseInitializer {
         }
         
         String sql = String.format(
-            "CREATE USER %s WITH PASSWORD '%s' CREATEDB",
-            appUser, appPassword
+            "CREATE USER %s WITH PASSWORD %s CREATEDB",
+            appUser, sqlStringLiteral(appPassword)
         );
         
         try (Statement stmt = conn.createStatement()) {
@@ -309,6 +332,13 @@ public class LocalDatabaseInitializer {
         }
     }
     
+    /**
+     * Reviewed for java:S2077: the database and user names are identifiers, which PostgreSQL cannot bind. Both went through
+     * {@link #requireIdentifier} in {@code initializeDatabase} before any statement was built, so
+     * the only strings that reach here match {@code [A-Za-z_][A-Za-z0-9_]{0,62}}. The suppression
+     * records that decision beside the code rather than in a dashboard nobody reads twice.
+     */
+    @SuppressWarnings("java:S2077")
     private void createDatabase(Connection conn) throws SQLException {
         log.info("   Creating database '{}'...", appDatabase);
         
@@ -337,6 +367,13 @@ public class LocalDatabaseInitializer {
         }
     }
     
+    /**
+     * Reviewed for java:S2077: every value interpolated here is an identifier, which PostgreSQL cannot bind. Both went through
+     * {@link #requireIdentifier} in {@code initializeDatabase} before any statement was built, so
+     * the only strings that reach here match {@code [A-Za-z_][A-Za-z0-9_]{0,62}}. The suppression
+     * records that decision beside the code rather than in a dashboard nobody reads twice.
+     */
+    @SuppressWarnings("java:S2077")
     private void setupSchemaAndPermissions(Connection conn) throws SQLException {
         log.info("   Setting up schema ownership and permissions...");
         

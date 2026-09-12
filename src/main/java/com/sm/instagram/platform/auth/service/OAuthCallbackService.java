@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import com.sm.instagram.platform.auth.dto.OAuthCallbackFailure;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -728,10 +729,7 @@ public class OAuthCallbackService {
                 .build();
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Map.of(
-                    "success", false,
-                    "error", message
-                ));
+                .body(new OAuthCallbackFailure(false, message));
         }
     }
     

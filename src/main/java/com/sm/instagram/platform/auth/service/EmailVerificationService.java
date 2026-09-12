@@ -35,6 +35,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import com.sm.instagram.platform.common.util.LogSafe;
 
 @Service
 @RequiredArgsConstructor
@@ -189,6 +190,23 @@ public class EmailVerificationService {
      */
     @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
     public boolean syncEmailVerificationStatus(User userInput, boolean firebaseEmailVerified) {
+        return syncEmailVerificationStatusInternal(userInput, firebaseEmailVerified);
+    }
+
+    /**
+     * The body of {@link #syncEmailVerificationStatus}, without the transaction attribute.
+     *
+     * <p>applyVerificationCode below calls this one. It used to call the public method, and a
+     * self-invocation never reaches the proxy -- so REQUIRES_NEW was silently dropped there and
+     * the sync ran in whatever transaction that caller had, which is none (sonar java:S2229).
+     * Splitting it keeps exactly that behaviour and stops the annotation promising the other one
+     * to a reader. The three callers outside this class still go through the proxy and still get
+     * their own transaction, which is what they were written for.
+     *
+     * <p>Whether the verification flow <em>should</em> commit the sync separately is a question
+     * about the flow, not about the annotation, and it is the owner's to answer.
+     */
+    private boolean syncEmailVerificationStatusInternal(User userInput, boolean firebaseEmailVerified) {
         // BUG-14: refetch a managed reference in THIS persistence context.
         User user = userRepository.findById(userInput.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("error.business.item_not_found", "User"));
@@ -363,11 +381,18 @@ public class EmailVerificationService {
      * Store oobCode → {firebaseUid, email} mapping in Redis.
      * Called when generating a verification link. Public so test endpoints can use it.
      */
+    // javasecurity:S5145. The value IS sanitised -- LogSafe.value is this codebase's one
+    // implementation of the control, and the line below calls it. The taint engine does not
+    // recognise it as a sanitiser: it is a regex replace of a character class in another file,
+    // not one of the shapes the rule knows. Inlining a second copy of that regex here would
+    // satisfy the tool and give the codebase two implementations of one security control,
+    // which is the mistake LogSafe exists to have already fixed.
+    @SuppressWarnings("javasecurity:S5145")
     public void storeOobCode(String oobCode, String firebaseUid, String email) {
         String key = OOB_CODE_PREFIX + oobCode;
         String value = firebaseUid + "|" + email;
         redisTemplate.opsForValue().set(key, value, OOB_CODE_TTL);
-        log.debug("Stored verification oobCode mapping for user: {}", firebaseUid);
+        log.debug("Stored verification oobCode mapping for user: {}", LogSafe.value(firebaseUid));
     }
 
     /**
@@ -419,7 +444,7 @@ public class EmailVerificationService {
 
             // Sync to PostgreSQL
             userRepository.findByFirebaseUserId(firebaseUid).ifPresent(user ->
-                    syncEmailVerificationStatus(user, true)
+                    syncEmailVerificationStatusInternal(user, true)
             );
 
             // Invalidate (one-time use)

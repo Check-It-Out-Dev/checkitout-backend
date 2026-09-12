@@ -20,6 +20,11 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("user-preferences")
+// java:S6856 -- the overrides below re-declare @PathVariable but inherit their mapping from
+// BaseController, where the "{id}"/"{ids}" templates are declared. Spring resolves them through
+// the type hierarchy; the rule looks only at the method in front of it. Restating the paths here
+// would give every route two declarations and one of them would eventually be wrong.
+@SuppressWarnings("java:S6856")
 @RateLimit(profile = RateLimitProfile.STANDARD, keyType = RateLimitKeyType.USER_ENDPOINT)
 public class UserPreferencesController extends BaseController<UserPreferences, Long, UserPreferencesDtoIn, UserPreferencesDtoOut> {
     private final UserPreferencesService userPreferencesService;

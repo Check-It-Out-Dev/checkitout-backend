@@ -84,6 +84,14 @@ public class SessionSecurityService {
             return true;
         }
 
+        // No claims is no fingerprint, and the fingerprint path below rejects that. Said here
+        // because extractFirebaseUid already treats null claims as reachable and the next line
+        // dereferences them: one of the two was wrong, and the strict reading is the safe one.
+        if (claims == null) {
+            log.warn("GDPR: Operation=session_rejected, FirebaseUID=unknown, Reason=no_claims, Purpose=security_enforcement");
+            return false;
+        }
+
         // Extract Firebase UID if available
         String firebaseUid = extractFirebaseUid(claims);
         
@@ -288,8 +296,9 @@ public class SessionSecurityService {
             log.debug("Impossible travel check timed out, failing open (failures={})", failures);
             return false;
         } catch (Exception e) {
-            // A broad catch swallows the interrupt too; put the flag back before handling the failure.
-            Interrupts.preserveInterrupt(e);
+            if (Interrupts.isInterrupt(e)) {
+                Thread.currentThread().interrupt();
+            }
             int failures = geoIpConsecutiveFailures.incrementAndGet();
             if (failures >= geoIpCircuitBreakerThreshold && isHighPrivilegeRole(role)) {
                 log.warn("GeoIP circuit breaker open ({} consecutive failures), failing closed for role={}",

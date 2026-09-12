@@ -76,6 +76,12 @@ jobs:
       - name: The fuzz verdict still behaves
         run: node tools/ci/fuzz-verdict.test.mjs
 
+      # The README publishes five rows of figures on a page the estate links to. They had drifted
+      # -- 8,908 test methods against 9,089 actual, 256 test classes against 292 -- because nobody
+      # typed a wrong number, the repository just kept growing. Each figure has one home now.
+      - name: The published numbers are still the measured ones
+        run: node tools/ci/measure-counts.mjs --check
+
       - run: chmod +x mvnw && ./mvnw $MAVEN_ARGS test -Ptest -DskipITs
       - uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d  # v6
         if: always()
@@ -279,7 +285,7 @@ jobs:
           cp site/allure/history-ci-tests.jsonl history.jsonl 2>/dev/null || true
           # Allure 3's CLI takes the results directory from its config or the default ./allure-results,
           # and knows --output and --config only.
-          npx --yes allure generate --config .github/allurerc.mjs --output allure-report
+          npx --yes allure@3.17.0 generate --config .github/allurerc.mjs --output allure-report
           # Bound by size, not by line count; see the note in browser-tiers.yml.
           node frontend/tools/ci/trim-history.mjs history.jsonl
           mkdir -p site/allure && cp history.jsonl site/allure/history-ci-tests.jsonl
@@ -295,9 +301,16 @@ jobs:
           mkdir -p site && rm -rf site/.git
           STARTED_AT=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" --jq .run_started_at)
           DURATION=$(( $(date +%s) - $(date -d "$STARTED_AT" +%s) ))
+          # The integration glob needs the `**`, like the e2e one below it: that tier's failsafe
+          # writes into failsafe-reports/integration, one directory down, so a flat pattern
+          # matched nothing and the dashboard published a test count with the whole 833-test tier
+          # missing -- 10,857 where 11,690 ran. quality-metrics.mjs now refuses a --junit spec
+          # that matches nothing while the directory it names is present, so the next one cannot
+          # be silent. (And a comment does NOT go inside the command: a # between two
+          # backslash-continued lines ends the continuation, and the step exits 127.)
           node frontend/tools/ci/quality-metrics.mjs --out site --workflow ci-tests --started-at "$STARTED_AT" --duration-sec "$DURATION" \
             --junit 'results/unit-results/surefire-reports/TEST-*.xml:unit' \
-            --junit 'results/integration-results/failsafe-reports/TEST-*.xml:integration' \
+            --junit 'results/integration-results/failsafe-reports/**/TEST-*.xml:integration' \
             --junit 'results/e2e-results/failsafe-reports/**/TEST-*.xml:e2e' \
             --jacoco results/unit-results/site/jacoco-unit/jacoco.xml \
             --mutation site/mutation/latest.json --security site/security/latest.json \

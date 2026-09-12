@@ -374,8 +374,12 @@ public class TestRegistryController {
             log.info("[E2E] Cleared registry lookup cache ({} entries)", size);
             return ResponseEntity.ok(Map.of("cleared", true, "entriesRemoved", size));
         } catch (Exception e) {
+            // Was 200 with cleared=false, which a test step reading only the status code cannot
+            // see. The cache is reached reflectively, so this branch means the field moved --
+            // exactly the kind of silent rot an E2E helper should fail loudly on.
             log.warn("[E2E] Failed to clear cache: {}", e.getMessage());
-            return ResponseEntity.ok(Map.of("cleared", false, "error", e.getMessage()));
+            return ResponseEntity.internalServerError()
+                    .body(Map.of("cleared", false, "error", e.getMessage()));
         }
     }
 

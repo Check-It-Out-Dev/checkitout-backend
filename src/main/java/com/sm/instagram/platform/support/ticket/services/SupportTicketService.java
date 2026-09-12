@@ -635,7 +635,8 @@ public class SupportTicketService {
      * @param id The ticket ID
      * @return The ticket with initialized collections
      */
-    @Transactional(readOnly = true)
+    // No @Transactional: a private method is not proxied, so readOnly never took effect here.
+    // The fetch-join does the work this needed; the caller's transaction is the one in force.
     private SupportTicket getTicketByIdWithAssociations(Long id) {
         return ((SupportTicketRepository) ticketRepository).findByIdWithAssociationsFetched(id)
                 .orElseThrow(() -> new ResourceNotFoundException("error.business.item_not_found", "Ticket"));

@@ -926,6 +926,10 @@ public class SubscriptionService {
     // NOTIFICATION HELPER
     // ========================================================================
 
+    // javasecurity:S5145, same shape as the content service: the sink is "in dependency"
+    // because Sonar cannot follow a Spring event. The params map reaches notification records
+    // and the templates that render them; SubscriptionNotificationEvent is never logged.
+    @SuppressWarnings("javasecurity:S5145")
     private void publishNotification(User user, NotificationType type, java.util.Map<String, String> params) {
         eventPublisher.publishEvent(new SubscriptionNotificationEvent(this, user, type, params));
     }

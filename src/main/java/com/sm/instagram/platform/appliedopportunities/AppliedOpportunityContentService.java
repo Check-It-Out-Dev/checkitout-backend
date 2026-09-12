@@ -230,6 +230,14 @@ public class AppliedOpportunityContentService extends BaseService<AppliedOpportu
         }
     }
 
+    // javasecurity:S5145 reports this publishEvent as a log-injection sink "in dependency": it
+    // cannot see where a Spring event goes, so it assumes a logger. Traced, and it is not one.
+    // Every use of the note is NotificationEventListener putting it into a notification
+    // parameter map (rejectionReason) that is rendered for the person who is meant to read it.
+    // The listener's own log lines carry ids and statuses, never the text. Sanitising here would
+    // not close a sink, it would replace the line breaks in a human being's rejection reason
+    // with question marks on their way to the screen.
+    @SuppressWarnings("javasecurity:S5145")
     public void approveContent(Long contentId, String approvalNotes, String updaterId) {
         log.info("GDPR: Operation=approveContent, FirebaseUID={}, ContentID={}, Purpose=content_approval",
                 updaterId, contentId);
@@ -290,6 +298,14 @@ public class AppliedOpportunityContentService extends BaseService<AppliedOpportu
                 updaterId, contentId);
     }
 
+    // javasecurity:S5145 reports this publishEvent as a log-injection sink "in dependency": it
+    // cannot see where a Spring event goes, so it assumes a logger. Traced, and it is not one.
+    // Every use of the note is NotificationEventListener putting it into a notification
+    // parameter map (rejectionReason) that is rendered for the person who is meant to read it.
+    // The listener's own log lines carry ids and statuses, never the text. Sanitising here would
+    // not close a sink, it would replace the line breaks in a human being's rejection reason
+    // with question marks on their way to the screen.
+    @SuppressWarnings("javasecurity:S5145")
     public void rejectContent(Long contentId, String approvalNotes, String updaterId) {
         log.info("GDPR: Operation=rejectContent, FirebaseUID={}, ContentID={}, Purpose=content_rejection",
                 updaterId, contentId);

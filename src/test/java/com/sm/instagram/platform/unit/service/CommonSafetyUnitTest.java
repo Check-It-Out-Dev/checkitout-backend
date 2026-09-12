@@ -119,14 +119,19 @@ class CommonSafetyUnitTest {
     class IsTestContextTests {
 
         @Test
-        @DisplayName("should detect test context when JUnit is on classpath")
-        void shouldDetectTestContextWhenJUnitOnClasspath() {
-            // When - we are actually running in a test context
+        @DisplayName("says no from a unit test: JUnit on the classpath is not enough")
+        void saysNoFromAUnitTest() {
+            // When - called from a plain unit test
             boolean result = invokeIsTestContext();
 
-            // Then - since we're running in JUnit, this might return true or false
-            // depending on stack trace analysis
-            assertThat(result).isNotNull();
+            // Then - false, and that is the contract. isTestContext() guards integration tests
+            // against production-like configuration, so it needs BOTH JUnit on the classpath and
+            // a stack frame naming an Integration or SpringBootTest class. This class is neither,
+            // so the guard correctly stays out of the way.
+            //
+            // The assertion used to be isNotNull() on a primitive boolean, which cannot fail
+            // (sonar java:S5845) and hid the fact that nobody had ever checked which way it goes.
+            assertThat(result).isFalse();
         }
 
         @Test

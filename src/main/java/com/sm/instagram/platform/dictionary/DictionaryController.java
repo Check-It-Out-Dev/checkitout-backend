@@ -96,6 +96,14 @@ public class DictionaryController {
      * @throws ValidationTranslatableException if entry data is invalid
      * @throws ResourceNotFoundException       if authentication missing
      */
+    // java:S4684, reviewed rather than refactored. The danger the rule names is mass
+    // assignment, and this entity gives it nothing to work with: every field is a scalar, there
+    // is no relation to traverse, both timestamps belong to Hibernate (@CreationTimestamp and
+    // @UpdateTimestamp, with created_at updatable=false, so a posted value is ignored), and
+    // updaterId is now set from the security context in the service. What is left is id, key,
+    // value, languageCode and category -- which is the update contract itself, on an ADMIN-only
+    // endpoint. A DTO here would be the same five fields under a second name.
+    @SuppressWarnings("java:S4684")
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/entry")
     public ResponseEntity<DictionaryEntry> createEntry(@RequestBody DictionaryEntry entry) {

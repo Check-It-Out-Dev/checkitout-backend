@@ -165,7 +165,26 @@ public class InMemoryStorageRateLimitService extends StorageRateLimitService {
         AtomicLong currentUsage = userStorageUsage.get(userId);
         long used = currentUsage != null ? currentUsage.get() : 0;
 
-        return (used + requestedSize) <= rateLimitProperties.getUpload().getMaxUserStorage();
+        // The same overflow-safe comparison StorageRateLimitService has carried all along, and
+        // this implementation of the same interface did not. `used + requestedSize` wraps to a
+        // negative for a large declared size, and a negative is <= the limit -- so the quota check
+        // passed exactly on the input it exists to refuse. SignedUrlService calls this with a
+        // caller-declared fileSize (CodeQL java/tainted-arithmetic).
+        if (requestedSize < 0) {
+            log.warn("GDPR: Operation=hasStorageSpace_invalidRequest, UserID={}, RequestedSize={}, Purpose=security",
+                    anonymizeUserId(userId), requestedSize);
+            return false;
+        }
+        if (used < 0) {
+            log.warn("GDPR: Operation=hasStorageSpace_invalid, UserID={}, Used={}, Purpose=security",
+                    anonymizeUserId(userId), used);
+            used = 0;
+        }
+        long maxStorage = rateLimitProperties.getUpload().getMaxUserStorage();
+        if (used > maxStorage) {
+            return false;
+        }
+        return requestedSize <= maxStorage - used;
     }
 
     @Override
