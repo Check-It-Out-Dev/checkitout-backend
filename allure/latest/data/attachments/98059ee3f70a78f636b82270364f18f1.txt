@@ -1,0 +1,7 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-81e0bdef-9d10-44cc-8f49-a5befc077044
+  Company: COMPANY-db730068-4329-4f97-a76e-c96009c47397
+  Admin: ADMIN-f7d77c4d-15ea-4935-b673-be9333c048b5
+01:23:47.279 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=updateUser, UpdaterFirebaseUID=ADMIN-f7d77c4d-15ea-4935-b673-be9333c048b5, TargetUserID=12630, Purpose=profile_update, DataModified=user.profile,user.addresses, LegalBasis=consent
+01:23:47.279 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=findUserById, AccessorFirebaseUID=ADMIN-f7d77c4d-15ea-4935-b673-be9333c048b5, TargetUserID=12630, Purpose=user_data_retrieval, DataAccessed=user.profile,user.addresses,user.socialConnections
+01:23:47.302 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=updateUser_SUCCESS, UpdaterFirebaseUID=ADMIN-f7d77c4d-15ea-4935-b673-be9333c048b5, UserID=12630, AccountStatus=ACTIVE, CriticalChanges=true
