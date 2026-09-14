@@ -82,7 +82,9 @@ jobs:
       - name: The published numbers are still the measured ones
         run: node tools/ci/measure-counts.mjs --check
 
-      - run: chmod +x mvnw && ./mvnw $MAVEN_ARGS test -Ptest -DskipITs
+      # Armed: the probe listener records what every test exercised (target/subsume/), which is what
+      # the invariants job below judges the change on. Measured at +8 s on a 2-minute tier.
+      - run: chmod +x mvnw && ./mvnw $MAVEN_ARGS test -Ptest -DskipITs -Dsubsume.probes=true
       - uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d  # v6
         if: always()
         with:
@@ -100,6 +102,85 @@ jobs:
           path: |
             target/surefire-reports/*.xml
             target/site/jacoco-unit/jacoco.xml
+            target/subsume/probes.jsonl
+            target/subsume/classes.json
+            target/subsume/exec-check.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  # The invariants of the test population, on every change (the frontend's docs/ci/ADR-test-subsumption.md):
+  # coverage never lower on a file, class or method this change did not touch, no mutant killed on
+  # base left unkilled, the suite green, the published numbers consistent — judged from this run's
+  # own probes against the base artefacts the last governance run published. Until the first
+  # governance run publishes `subsume/latest`, the verdict is INCOMPLETE and the job says so
+  # without blocking; FAIL always blocks. A governance branch gets the fuller re-measurement in
+  # test-governance-pr.yml instead of this.
+  invariants:
+    name: Invariants of the test population
+    needs: unit
+    if: ${{ contains(fromJSON('["unit","integration","all"]'), inputs.tier) && !startsWith(github.head_ref, 'test-governance/') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PAGES: https://check-it-out-dev.github.io/checkitout-backend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020  # v7.0.0
+        with:
+          node-version: 24
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          repository: Check-It-Out-Dev/checkitout-frontend
+          ref: feature/ai-in-the-loop
+          path: frontend
+          sparse-checkout: |
+            tools/subsume
+            tools/lib
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
+        with:
+          name: unit-results
+          path: results
+      - name: Base artefacts of the last governance run
+        id: base
+        run: |
+          mkdir -p base base2 && cd base
+          ok=true
+          for f in probes.jsonl classes.json kills.json; do
+            curl -fsSL "$PAGES/subsume/latest/$f.gz" -o "$f.gz" && gunzip -f "$f.gz" || { echo "::warning::$f is not on Pages yet — the verdict will be INCOMPLETE"; ok=false; }
+          done
+          curl -fsSL "$PAGES/subsume/latest/probes2.jsonl.gz" -o ../base2/probes.jsonl.gz && gunzip -f ../base2/probes.jsonl.gz && cp classes.json ../base2/ 2>/dev/null || true
+          echo "ok=$ok" >> "$GITHUB_OUTPUT"
+      - name: What this change touched
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          if [ -n "$BASE_REF" ]; then git diff --name-only "origin/$BASE_REF...HEAD" > changed.txt
+          else git diff --name-only HEAD~1...HEAD > changed.txt 2>/dev/null || : > changed.txt; fi
+          wc -l < changed.txt
+      - name: The published numbers are still the measured ones (I4)
+        id: numbers
+        run: node tools/ci/measure-counts.mjs --check && echo "i4=pass" >> "$GITHUB_OUTPUT" || echo "i4=fail" >> "$GITHUB_OUTPUT"
+      - name: Invariants I1–I4
+        env:
+          I4: ${{ steps.numbers.outputs.i4 }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          mkdir -p head && cp results/subsume/probes.jsonl results/subsume/classes.json head/ 2>/dev/null || true
+          set +e
+          node frontend/tools/subsume/invariant.mjs --repo backend --base base --base2 base2 --head head \
+            --changed changed.txt --suite results/surefire-reports --i4 "$I4" \
+            --head-commit "$HEAD_SHA" --out reports/subsume
+          code=$?
+          set -e
+          # 0 PASS, 1 FAIL, 2 INCOMPLETE: only FAIL blocks — an INCOMPLETE verdict is printed, never hidden
+          if [ "$code" = "1" ]; then exit 1; fi
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        if: always()
+        with:
+          name: invariants
+          path: reports/subsume/invariant-report.json
           if-no-files-found: warn
           retention-days: 30
 
