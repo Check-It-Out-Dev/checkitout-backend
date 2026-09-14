@@ -1,0 +1,6 @@
+19:06:27.976 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.GdprCompliantRateLimiterService&amp#27;[0;39m - GdprCompliantRateLimiterService using InMemoryRateLimiterService
+19:06:27.976 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.GdprCompliantRateLimiterService&amp#27;[0;39m - GDPR: Service=rateLimitViolation, Operation=LIMIT_EXCEEDED, UserKey=user:to-be-deleted, Limit=10, Purpose=security
+19:06:27.977 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.GdprCompliantRateLimiterService&amp#27;[0;39m - Rate limit exceeded - ID: e462684e-bd27-4548-9d31-85aa2f99c00e, Type: user, Limit: 10/60
+19:06:27.977 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.GdprCompliantRateLimiterService&amp#27;[0;39m - GDPR: DELETION Service=deleteUserRateLimitData, Operation=DELETE_AUDIT_DATA, UserID=9e07f73f258938f2, Purpose=gdpr_erasure
+19:06:27.978 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.GdprCompliantRateLimiterService&amp#27;[0;39m - GDPR: DELETION_COMPLETE Operation=deleteUserRateLimitData, UserID=9e07f73f258938f2, RecordsDeleted=0, Note=active_limits_retained
+19:06:27.978 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.GdprCompliantRateLimiterService&amp#27;[0;39m - GDPR: Service=exportUserData, Operation=DATA_EXPORT, UserID=9e07f73f258938f2, Purpose=gdpr_data_portability
