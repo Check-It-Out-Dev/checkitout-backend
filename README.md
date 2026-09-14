@@ -116,7 +116,7 @@ job re-runs with `--check` so a stale figure fails the build rather than ageing 
 | **Contract** | **233 paths** | 272 operations · 205 schemas · OpenAPI 3.1 |
 
 And one number worth more than any of them: **`@Disabled` appears zero times**
-across all 363 test files. Nothing is quarantined, skipped-and-forgotten, or
+across all 364 test files. Nothing is quarantined, skipped-and-forgotten, or
 commented out waiting for someone to come back to it.
 
 > [!NOTE]

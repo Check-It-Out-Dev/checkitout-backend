@@ -627,6 +627,22 @@
 			<artifactId>junit-platform-suite-engine</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- JaCoCo's runtime API (RT.getAgent) and core (ExecutionDataReader, Analyzer) for the
+		     per-test probe listener. Same version as the plugin; the runtime classifier is the
+		     agent jar itself, so the class the listener calls is the class the -javaagent loaded. -->
+		<dependency>
+			<groupId>org.jacoco</groupId>
+			<artifactId>org.jacoco.agent</artifactId>
+			<version>0.8.11</version>
+			<classifier>runtime</classifier>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jacoco</groupId>
+			<artifactId>org.jacoco.core</artifactId>
+			<version>0.8.11</version>
+			<scope>test</scope>
+		</dependency>
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
@@ -916,6 +932,14 @@
 						<configuration>
 							<destFile>${project.build.directory}/jacoco-unit.exec</destFile>
 							<append>true</append>
+							<!-- Only the application's own classes are instrumented; target/classes is all
+							     com.sm.instagram, so the report is unchanged, and the agent's execution data
+							     stays small enough for the probe listener to snapshot after every one of
+							     11,415 tests. This is the agent's class-name pattern — the report goal reads
+							     `includes` as class-file paths, so it must not sit at plugin level. -->
+							<includes>
+								<include>com.sm.instagram.*</include>
+							</includes>
 						</configuration>
 					</execution>
 
@@ -1165,7 +1189,7 @@
 							</argLine>
 						</configuration>
 					</plugin>
-					
+
 					<plugin>
 						<groupId>org.springframework.boot</groupId>
 						<artifactId>spring-boot-maven-plugin</artifactId>
