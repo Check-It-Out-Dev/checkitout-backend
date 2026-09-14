@@ -1,0 +1,11 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-09a7b17a-da45-4a2d-9f82-13db94e33d93
+  Company: COMPANY-ba41e590-89bf-49cf-b1f8-bc8d59852324
+  Admin: ADMIN-11750b0d-5f82-4259-ac4a-38772dac2645
+18:43:55.243 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.p.PartnershipOpportunityService&amp#27;[0;39m - GDPR: Service=deleteOpportunity, Operation=DEACTIVATE_OPPORTUNITY, UserID=ADMIN-11750b0d-5f82-4259-ac4a-38772dac2645, OpportunityID=2803, Purpose=data_deactivation
+18:43:55.243 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.p.PartnershipOpportunityService&amp#27;[0;39m - GDPR: Service=findOpportunityById, Operation=RETRIEVE_OPPORTUNITY, UserID=ADMIN-11750b0d-5f82-4259-ac4a-38772dac2645, OpportunityID=2803, Purpose=data_retrieval
+18:43:55.248 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.user.UserAccountOrchestrator&amp#27;[0;39m - User 9090 status changed from ACTIVE to TO_BE_DELETED for archival
+18:43:55.248 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=evictUser, DataDeleted=cached_user_data, Purpose=cache_management
+18:43:55.248 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+18:43:55.249 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+18:43:55.249 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.user.UserAccountOrchestrator&amp#27;[0;39m - GDPR: Operation=cacheEvict_onArchival, UserId=9090, NewStatus=TO_BE_DELETED, Purpose=immediate_session_invalidation
