@@ -109,14 +109,15 @@ job re-runs with `--check` so a stale figure fails the build rather than ageing 
 
 | | | |
 | :-- | --: | :-- |
-| **Test methods** | **9,101** | 8,494 `@Test` + 607 `@ParameterizedTest`, across **292** test classes and the **2,162** `@Nested` groups inside them |
+| **Test methods** | **9,109** | 8,502 `@Test` + 607 `@ParameterizedTest`, across **292** test classes and the **2,163** `@Nested` groups inside them |
 | **Test code : main code** | **2.0 : 1** | ~188k lines of test Java against ~93k of main |
+| **Demoted from the pull-request tier** | **0** | `@Tag("subsumed")` on a test whose every covered line and killed mutant other tests also cover and kill — it leaves the pull-request tier and still runs nightly; nothing is deleted ([Test governance](#test-governance)) |
 | **Cucumber** | **34 files** | 148 `Scenario` + 28 `Scenario Outline`, **277 after Examples expansion** |
 | **Domain** | **38 entities** | 50 REST controllers |
 | **Contract** | **233 paths** | 272 operations · 205 schemas · OpenAPI 3.1 |
 
 And one number worth more than any of them: **`@Disabled` appears zero times**
-across all 363 test files. Nothing is quarantined, skipped-and-forgotten, or
+across all 365 test files. Nothing is quarantined, skipped-and-forgotten, or
 commented out waiting for someone to come back to it.
 
 > [!NOTE]
@@ -282,6 +283,49 @@ the frontend compiles against, so a contract change here becomes a build error t
 surprise. And [checkitout.app/sandbox](https://checkitout.app/sandbox/) is this backend on the `dev-lite`
 profile with two fixed demo accounts — a live instance to look at rather than run.
 
+### Test governance
+
+Two things, named as two, because they run at different times and answer different questions.
+
+**On every pull request: the invariants.** The unit tier runs armed — a JaCoCo listener records what
+every test exercised — and the `invariants` job in [`ci-tests.yml`](.github/workflows/ci-tests.yml)
+judges the change on that run's own probes against the base artefacts the last governance run
+published, in one line: coverage never lower on any file, class or method the change did not touch
+(I1); no mutant killed on base left unkilled by the tests still in the tier (I2); the suite green
+(I3); the published numbers consistent (I4). It proposes nothing, calls no model, holds no secret. A
+missing artefact is INCOMPLETE, never PASS.
+
+**As a process of its own: the governance round.** A proposal run computes, from per-test coverage and
+the whole-estate kill matrix (the `mutation-matrix` profile, every class in `main`, every killing test
+per mutant), which tests are carried by others: a test may leave the pull-request tier only if every
+probe it covers and every mutant it kills is also covered and killed by tests that stay, and the
+matrix actually ran it against a mutant. An exact minimum-cost cover picks the set; a round policy
+takes the surest evidence tier first — an exact duplicate in the same class before a test with two
+carriers before one with one — under a budget, never more than half of any class in one round.
+`apply.mjs` tags each one `@Tag("subsumed")` (never `@Disabled`, which this suite deactivates on
+purpose; never a deletion — the nightly passes `-Dsubsume.excludedGroups=never` and runs everything)
+and opens a branch `test-governance/round-N-<runId>` whose tracked
+[`docs/testing/governance/round.json`](docs/testing/governance/round.json) is the link to the
+proposal run. On that branch, under the label `test-governance`,
+[`test-governance-pr.yml`](.github/workflows/test-governance-pr.yml) trusts nothing the proposal
+said and re-measures on the reduced tier: the tier armed, then the invariants from that run; the
+tier again in random order, so a kept test that only passed because a demoted one ran before it
+shows itself; PIT again with the demoted group excluded, so the mutation score is measured, not
+projected; then a ledger with one rule — tests or seconds lower, **and** none of coverage on
+unchanged code, kills on unchanged code or mutation score lower, both runs green, the published
+numbers consistent — drawn as a gains diagram beside the subsumption diagram. A person merges.
+
+Three voices appear on such a pull request, each with a fixed first line, so a reader knows who is
+speaking before reading a number: `▣ Proposer` (the tool on the box, applies CONFIRMED only, never
+merges), `▮ Invariants` (the replay plane, no model), `◇ Reviewer` (Claude Code on a pull request,
+quotes the gate's numbers only, never approves). Every figure on the page comes from a report the
+run produced; the row above is the only one that lives in this README, and the gate keeps it true.
+The method — identities, artefact shapes, the solver, the metrics, the round policy — is the
+frontend's [`tools/subsume/README.md`](https://github.com/Check-It-Out-Dev/checkitout-frontend/blob/main/tools/subsume/README.md)
+and its [ADR](https://github.com/Check-It-Out-Dev/checkitout-frontend/blob/main/docs/ci/ADR-test-subsumption.md).
+Round 1 is [pull request #30](https://github.com/Check-It-Out-Dev/checkitout-backend/pull/30); its
+measured ledger is in that pull request, dated, and nowhere else.
+
 ## In progress
 
 Dated 2026-09. ✅ built · 🟡 under way · ⬜ designed, not started.
@@ -295,6 +339,7 @@ Dated 2026-09. ✅ built · 🟡 under way · ⬜ designed, not started.
 | ✅ | **Schemathesis against the running server** | `api-fuzz.yml` generates requests from the schema and sends them at a real instance. It earned its place on the first run: every secured operation answered 401 while the document declared none, which is a contract defect because the frontend generates its client from that document. Fixed by `AuthFailureResponsesCustomizer`; the fuzzer now runs nightly |
 | ✅ | **OWASP Top 10 in the pipeline** | `security.yml`: Semgrep over the OWASP, secrets and Java rule sets; Checkov on the Dockerfiles and workflows for the misconfiguration surface nothing else reaches; Trivy on both the source tree and the **published image**, with an SBOM of each. All SARIF into code scanning. The dynamic half runs from the frontend repository, against the sandbox — which is this backend |
 | ✅ | **SonarQube Cloud quality gate** | Free for public repositories; fed the JaCoCo coverage the unit tier already writes. Its gate can be set on new code alone, which is what makes an existing backlog survivable |
+| 🟡 | **The test population under invariants** | Per-test coverage for every unit test (a JaCoCo listener that resets after each test and writes the exec file back whole), the whole-estate `mutation-matrix` profile, the invariants job on every pull request, and the governance round with its special re-measuring job — see [Test governance](#test-governance). Round 1 is open as [#30](https://github.com/Check-It-Out-Dev/checkitout-backend/pull/30). Next: the reviewer that draws it on the pull request, and the scheduled governance run that replaces the developer box |
 
 ## Seven days of machine-written change
 
@@ -329,6 +374,61 @@ extracted from the code, enforced on the diff, with a human ratifying every
 loosening — is in progress, and the method, its precedents and its honest status
 are in the frontend's
 [design of record](https://github.com/Check-It-Out-Dev/checkitout-frontend/blob/main/docs/ci/GOVERNING-MACHINE-WRITTEN-CHANGE.md).
+
+## AI in the loop, invariants in charge
+
+Agents write and remove code here now. What keeps the system intact is not the
+agent's judgement but five **invariants** — things that must stay true after
+every change, checked by a machine from the change's own measurements before a
+person looks:
+
+1. Coverage never drops for any file, class or method the change did not touch.
+2. No deliberate defect the suite caught yesterday survives today.
+3. The suite is green — in the order it was written and in a random one.
+4. Every number this README publishes moved in the same commit as the code.
+5. Every number the reviewing agent writes appears in a report the machine produced.
+
+An agent may propose anything; the invariants dispose; a person merges. Two
+planes, meeting at that person:
+
+```mermaid
+flowchart LR
+  subgraph model["Model plane · agents"]
+    direction LR
+    P["▣ Proposer<br/>applies CONFIRMED only"] --> PR["Pull request<br/>tracked round file"]
+    PR --> R["◇ Reviewer<br/>quotes, never computes"]
+  end
+  subgraph replay["Replay plane · no model, no secret"]
+    direction LR
+    M["Per-test coverage<br/>+ kill matrix"] --> G["▮ Invariants I1–I5<br/>from the PR's own run"]
+    G --> L["Ledger + gains diagram"]
+  end
+  PR --> G
+  L --> H(["A person merges"])
+  R --> H
+```
+
+**The first thing governed this way is the suite itself: a redundant-test
+killer that may not lose anything.** Coverage says a test walked past a line;
+mutation testing says whether it would notice the line being wrong — PIT makes
+one deliberate change at a time (a _mutant_: `<` becomes `<=`, a condition is
+negated), runs the unit tests that reach it, and records every test that fails
+(_kills_ it). A test may leave the pull-request tier only when the tests that
+stay cover every line and branch it covers **and** kill every mutant it kills;
+it is tagged `@Tag("subsumed")`, never deleted, and the nightly still runs it.
+One pair from the first round: in `OpportunityStatusUnitTest$JsonSerialization`,
+`fromStringShouldParseMixedCase()` reaches the same two blocks and kills the
+same one mutant as `fromStringShouldParseLowercase()`, so the first leaves with
+a marker naming the second — and if anyone later weakens the second, invariant 2
+on their pull request says so. Before the door closes, the round's own job
+re-measures everything on its own machine: the full tier, the reduced tier, the
+reduced tier in random order, PIT again — and a ledger with one rule, tests or
+seconds lower and nothing the invariants guard lower. The plain-words guide,
+with the loop drawn and the round explained step by step, is
+[docs/testing/ai-in-the-loop.md](docs/testing/ai-in-the-loop.md); the
+mechanics are under [Test governance](#test-governance) above. If mutants, kills
+and set cover are new words, [docs/testing/mutation-primer.md](docs/testing/mutation-primer.md)
+starts from a house and its guards and ends at our metrics.
 
 ## The rest of the estate
 

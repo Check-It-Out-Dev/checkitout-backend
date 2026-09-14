@@ -627,6 +627,22 @@
 			<artifactId>junit-platform-suite-engine</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- JaCoCo's runtime API (RT.getAgent) and core (ExecutionDataReader, Analyzer) for the
+		     per-test probe listener. Same version as the plugin; the runtime classifier is the
+		     agent jar itself, so the class the listener calls is the class the -javaagent loaded. -->
+		<dependency>
+			<groupId>org.jacoco</groupId>
+			<artifactId>org.jacoco.agent</artifactId>
+			<version>0.8.11</version>
+			<classifier>runtime</classifier>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jacoco</groupId>
+			<artifactId>org.jacoco.core</artifactId>
+			<version>0.8.11</version>
+			<scope>test</scope>
+		</dependency>
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
@@ -916,6 +932,14 @@
 						<configuration>
 							<destFile>${project.build.directory}/jacoco-unit.exec</destFile>
 							<append>true</append>
+							<!-- Only the application's own classes are instrumented; target/classes is all
+							     com.sm.instagram, so the report is unchanged, and the agent's execution data
+							     stays small enough for the probe listener to snapshot after every one of
+							     11,415 tests. This is the agent's class-name pattern — the report goal reads
+							     `includes` as class-file paths, so it must not sit at plugin level. -->
+							<includes>
+								<include>com.sm.instagram.*</include>
+							</includes>
 						</configuration>
 					</execution>
 
@@ -1123,6 +1147,68 @@
 			</build>
 		</profile>
 
+		<!--
+			The whole-estate mutation matrix: not a score but a fact per test — which mutants it kills —
+			for every class in main, which is what the subsumption analysis (tools/subsume in the frontend
+			repository) needs before "its kills are carried by the tests that stay" can be judged for a test
+			outside the four packages above. At the measured rate (2,408 mutants in ten minutes on two
+			threads) the whole estate is an hour or more, so this runs on a developer box or a nightly with
+			time to spare, never on a pull request, and writes to target/pit-matrix so the published score
+			report is untouched. XML only: the full matrix is an XML feature.
+
+			  ./mvnw -Pmutation-matrix -Dpit.threads=8 test-compile org.pitest:pitest-maven:mutationCoverage
+			  node tools/subsume/pit-matrix.mjs - -xml target/pit-matrix/mutations.xml - -root . - -out target/subsume/kills.json
+		-->
+		<profile>
+			<id>mutation-matrix</id>
+			<properties>
+				<skip.unit.tests>false</skip.unit.tests>
+				<skip.integration.tests>true</skip.integration.tests>
+				<jacoco.skip>true</jacoco.skip>
+				<pit.threads>2</pit.threads>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.pitest</groupId>
+						<artifactId>pitest-maven</artifactId>
+						<version>${pitest-maven.version}</version>
+						<dependencies>
+							<dependency>
+								<groupId>org.pitest</groupId>
+								<artifactId>pitest-junit5-plugin</artifactId>
+								<version>${pitest-junit5-plugin.version}</version>
+							</dependency>
+						</dependencies>
+						<configuration>
+							<targetClasses>
+								<param>com.sm.instagram.*</param>
+							</targetClasses>
+							<targetTests>
+								<param>com.sm.instagram.platform.unit.*</param>
+							</targetTests>
+							<excludedTestClasses>
+								<param>com.sm.instagram.platform.unit.e2e.*</param>
+							</excludedTestClasses>
+							<fullMutationMatrix>true</fullMutationMatrix>
+							<exportLineCoverage>true</exportLineCoverage>
+							<outputFormats>
+								<param>XML</param>
+							</outputFormats>
+							<timestampedReports>false</timestampedReports>
+							<reportsDirectory>${project.build.directory}/pit-matrix</reportsDirectory>
+							<threads>${pit.threads}</threads>
+							<timeoutConstant>8000</timeoutConstant>
+							<avoidCallsTo>
+								<avoidCallsTo>java.util.logging</avoidCallsTo>
+								<avoidCallsTo>org.slf4j</avoidCallsTo>
+							</avoidCallsTo>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
 		<!-- Test Profile - excludes devtools and optimizes for containers -->
 		<profile>
 			<id>test</id>
@@ -1132,6 +1218,10 @@
 				<!-- Enable unit tests, disable integration tests -->
 				<skip.unit.tests>false</skip.unit.tests>
 				<skip.integration.tests>true</skip.integration.tests>
+				<!-- Tests the subsumption analysis demoted carry @Tag("subsumed") and leave this tier only;
+				     the nightly runs everything with -Dsubsume.excludedGroups=never. A tag, not @Disabled:
+				     junit-platform.properties deactivates every DisabledCondition on purpose. -->
+				<subsume.excludedGroups>subsumed</subsume.excludedGroups>
 			</properties>
 			<build>
 				<plugins>
@@ -1151,6 +1241,7 @@
 								<exclude>**/*IntegrationTest.java</exclude>
 								<exclude>**/*IT.java</exclude>
 							</excludes>
+							<excludedGroups>${subsume.excludedGroups}</excludedGroups>
 							<systemPropertyVariables>
 								<user.timezone>UTC</user.timezone>
 								<file.encoding>UTF-8</file.encoding>
@@ -1165,7 +1256,7 @@
 							</argLine>
 						</configuration>
 					</plugin>
-					
+
 					<plugin>
 						<groupId>org.springframework.boot</groupId>
 						<artifactId>spring-boot-maven-plugin</artifactId>
