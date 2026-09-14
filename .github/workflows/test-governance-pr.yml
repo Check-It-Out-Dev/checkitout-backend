@@ -95,10 +95,23 @@ jobs:
       - name: What this pull request changed
         run: git diff --name-only "origin/$BASE_REF...HEAD" > changed.txt && wc -l < changed.txt
 
+      # The before, on this machine: the full tier (the demoted group included) armed, twice —
+      # once for the coverage every test gives here, once more for the probes that flip between
+      # two runs and are set aside. The first round compared a box-made base with a runner run and
+      # read 75.4 → 84.5 s and eight "lost" methods that were the two machines disagreeing.
+      - name: Full tier, armed, twice (the before, on this machine)
+        run: |
+          chmod +x mvnw
+          mkdir -p before before2
+          ./mvnw $MAVEN_ARGS test -Ptest -DskipITs -Dsubsume.probes=true -Dsubsume.excludedGroups=never
+          mv target/subsume/probes.jsonl before/ && cp target/subsume/classes.json before/ && cp base/kills.json before/
+          ./mvnw $MAVEN_ARGS test -Ptest -DskipITs -Dsubsume.probes=true -Dsubsume.excludedGroups=never
+          mv target/subsume/probes.jsonl before2/ && cp target/subsume/classes.json before2/
+          wc -l before/probes.jsonl before2/probes.jsonl
+
       - name: Reduced tier, armed, declared order
         id: tier
         run: |
-          chmod +x mvnw
           START=$(date +%s)
           ./mvnw $MAVEN_ARGS test -Ptest -DskipITs -Dsubsume.probes=true
           echo "seconds=$(( $(date +%s) - START ))" >> "$GITHUB_OUTPUT"
@@ -121,7 +134,7 @@ jobs:
           I4: ${{ steps.numbers.outputs.i4 }}
           BASE_COMMIT: ${{ steps.round.outputs.baseCommit }}
         run: |
-          node frontend/tools/subsume/invariant.mjs --repo backend --base base --base2 base2 --head target/subsume \
+          node frontend/tools/subsume/invariant.mjs --repo backend --base before --base2 before2 --head target/subsume \
             --changed changed.txt --suite target/surefire-reports --i4 "$I4" \
             --base-commit "$BASE_COMMIT" --head-commit "$HEAD_SHA" --out reports/subsume
 
@@ -152,8 +165,8 @@ jobs:
         run: |
           node frontend/tools/subsume/ledger.mjs --round docs/testing/governance/round.json \
             --proposal base/subsume-report.json --invariants reports/subsume/invariant-report.json \
-            --suite target/surefire-reports --head-probes target/subsume/probes.jsonl --seconds-after "$SECONDS_AFTER" \
-            --kills-before base/kills.json --kills-after reports/subsume/kills-after.json \
+            --suite target/surefire-reports --before-probes before/probes.jsonl --head-probes target/subsume/probes.jsonl \
+            --seconds-after "$SECONDS_AFTER" --kills-before base/kills.json --kills-after reports/subsume/kills-after.json \
             --changed changed.txt --random-order "$RANDOM_ORDER" --out reports/subsume
 
       - name: The gains diagram
