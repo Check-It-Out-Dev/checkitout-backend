@@ -3,6 +3,7 @@ package com.sm.instagram.platform.unit.entity;
 import com.sm.instagram.platform.appliedopportunities.OpportunityStatus;
 import com.sm.instagram.platform.dictionary.DictionaryService;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 
@@ -191,6 +192,8 @@ class OpportunityStatusUnitTest {
             assertThat(OpportunityStatus.fromString("applied")).isEqualTo(OpportunityStatus.APPLIED);
         }
 
+        // subsumed-by: OpportunityStatusUnitTest$JsonSerialization#fromStringShouldParseLowercase() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("fromString() should parse mixed case value")
         void fromStringShouldParseMixedCase() {
@@ -719,6 +722,8 @@ class OpportunityStatusUnitTest {
             mockDictionaryService = mock(DictionaryService.class);
         }
 
+        // subsumed-by: OpportunityStatusUnitTest$LocalizationMethods#getLabelReturnsEnumNameWhenTranslationMissing() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("getLabel() returns translated label when available")
         void getLabelReturnsTranslatedLabel() {

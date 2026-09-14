@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -52,6 +53,8 @@ class ServiceAccountKeyValidatorUnitTest {
     @DisplayName("validateServiceAccountKey - Valid Input")
     class ValidInput {
 
+        // subsumed-by: ServiceAccountKeyValidatorUnitTest$ValidInput#shouldAcceptJsonWithAdditionalFields() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should accept valid service account JSON with all required fields")
         void shouldAcceptValidServiceAccountJson() {

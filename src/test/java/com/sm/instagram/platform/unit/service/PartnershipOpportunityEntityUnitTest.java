@@ -11,6 +11,7 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -109,6 +110,8 @@ class PartnershipOpportunityEntityUnitTest {
             assertThat(opportunity.isEndDateNotBeforeStartDate()).isTrue();
         }
 
+        // subsumed-by: PartnershipOpportunityEntityUnitTest$EndDateNotBeforeStartDateTests#shouldReturnTrueWhenEndDateAfterStartDate() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should return true when end date equals start date")
         void shouldReturnTrueWhenEndDateEqualsStartDate() {

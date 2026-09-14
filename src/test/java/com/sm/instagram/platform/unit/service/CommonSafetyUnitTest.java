@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -214,6 +215,8 @@ class CommonSafetyUnitTest {
             assertThat(result).isTrue();
         }
 
+        // subsumed-by: CommonSafetyUnitTest$DangerousConfigurationProfileTests#shouldDetectLiveProfileAsDangerous() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should detect 'LIVE' profile case-insensitively")
         void shouldDetectLiveProfileCaseInsensitively() {
@@ -543,6 +546,8 @@ class CommonSafetyUnitTest {
             assertThat(result).isTrue();
         }
 
+        // subsumed-by: CommonSafetyUnitTest$DangerousConfigurationEnvironmentTests#shouldDetectLiveAppEnvironment() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should detect 'live' app environment case-insensitively")
         void shouldDetectLiveAppEnvironmentCaseInsensitively() {
@@ -633,6 +638,8 @@ class CommonSafetyUnitTest {
             assertThat(result).isEqualTo("Not configured");
         }
 
+        // subsumed-by: CommonSafetyUnitTest$MaskSensitiveUrlTests#shouldCorrectlyMaskPasswordWithoutSpecialAtCharacter() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should mask password in PostgreSQL URL")
         void shouldMaskPasswordInPostgresUrl() {
@@ -647,6 +654,8 @@ class CommonSafetyUnitTest {
             assertThat(result).doesNotContain("secretpassword");
         }
 
+        // subsumed-by: CommonSafetyUnitTest$MaskSensitiveUrlTests#shouldCorrectlyMaskPasswordWithoutSpecialAtCharacter() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should mask password in MySQL URL")
         void shouldMaskPasswordInMySqlUrl() {
@@ -717,6 +726,8 @@ class CommonSafetyUnitTest {
             assertThat(result).doesNotContain("ComplexP4ss");
         }
 
+        // subsumed-by: CommonSafetyUnitTest$MaskSensitiveUrlTests#shouldHandleH2InMemoryUrl() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should handle URL without protocol separator")
         void shouldHandleUrlWithoutProtocolSeparator() {
@@ -743,6 +754,8 @@ class CommonSafetyUnitTest {
             assertThat(result).isEqualTo("jdbc:h2:mem:testdb");
         }
 
+        // subsumed-by: CommonSafetyUnitTest$MaskSensitiveUrlTests#shouldCorrectlyMaskPasswordWithoutSpecialAtCharacter() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should mask password in URL with port and database")
         void shouldMaskPasswordInUrlWithPortAndDatabase() {
@@ -1275,6 +1288,8 @@ class CommonSafetyUnitTest {
             guard.onApplicationEvent(contextRefreshedEvent);
         }
 
+        // subsumed-by: CommonSafetyUnitTest$IntegrationScenarioSimulationsTests#shouldAllowLocalDevelopmentConfiguration() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should allow staging with test database")
         void shouldAllowStagingWithTestDatabase() {

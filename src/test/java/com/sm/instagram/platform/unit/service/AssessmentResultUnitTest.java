@@ -4,6 +4,7 @@ import com.sm.instagram.platform.auth.dto.AssessmentResult;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullSource;
@@ -280,6 +281,8 @@ class AssessmentResultUnitTest {
     @DisplayName("toString() format")
     class ToStringTests {
 
+        // subsumed-by: AssessmentResultUnitTest$ToStringTests#shouldFollowExpectedFormatPattern() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should format toString correctly for SUCCESS")
         void shouldFormatToStringForSuccess() {

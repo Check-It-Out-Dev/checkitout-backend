@@ -8,6 +8,7 @@ import com.sm.instagram.platform.common.exceptions.ResourceNotFoundException;
 import com.sm.instagram.platform.common.exceptions.ValidationTranslatableException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 import org.mockito.InjectMocks;
@@ -263,6 +264,8 @@ class ActiveCooperationControllerUnitTest {
                     .isInstanceOf(InsufficientPermissionsException.class);
         }
 
+        // subsumed-by: ActiveCooperationControllerUnitTest$GetInfluencersToRateTests#shouldReturnInfluencersWithDefaultFilterStatus() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should sort by lastUpdateTime ascending")
         void shouldSortByLastUpdateTimeAscending() {
@@ -306,6 +309,8 @@ class ActiveCooperationControllerUnitTest {
             assertThat(response.getBody()).hasSize(1);
         }
 
+        // subsumed-by: ActiveCooperationControllerUnitTest$GetInfluencersToAcceptTests#shouldReturnInfluencersToAcceptWithNoFilters() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should pass minFollowers filter")
         void shouldPassMinFollowersFilter() {
@@ -322,6 +327,8 @@ class ActiveCooperationControllerUnitTest {
                     eq(1000), isNull(), isNull(), any(Pageable.class));
         }
 
+        // subsumed-by: ActiveCooperationControllerUnitTest$GetInfluencersToAcceptTests#shouldReturnInfluencersToAcceptWithNoFilters() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should pass maxFollowers filter")
         void shouldPassMaxFollowersFilter() {
@@ -354,6 +361,8 @@ class ActiveCooperationControllerUnitTest {
                     isNull(), isNull(), eq(5L), any(Pageable.class));
         }
 
+        // subsumed-by: ActiveCooperationControllerUnitTest$GetInfluencersToAcceptTests#shouldReturnInfluencersToAcceptWithNoFilters() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should pass all filters together")
         void shouldPassAllFiltersTogether() {
@@ -386,6 +395,8 @@ class ActiveCooperationControllerUnitTest {
                     any(), any(), any(), argThat(pageable -> pageable.getPageSize() == 100));
         }
 
+        // subsumed-by: ActiveCooperationControllerUnitTest$GetInfluencersToAcceptTests#shouldReturnInfluencersToAcceptWithNoFilters() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should sort by lastUpdateTime descending")
         void shouldSortByLastUpdateTimeDescending() {
@@ -568,6 +579,8 @@ class ActiveCooperationControllerUnitTest {
     @DisplayName("PUT /activecoop/{id}/company-rating - updateCompanyRating")
     class UpdateCompanyRatingTests {
 
+        // subsumed-by: ActiveCooperationControllerUnitTest$UpdateCompanyRatingTests#shouldSetCorrectSerializationView() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should update company rating successfully")
         void shouldUpdateCompanyRatingSuccessfully() {
@@ -673,6 +686,8 @@ class ActiveCooperationControllerUnitTest {
     @DisplayName("PUT /activecoop/{id}/influencer-rating - updateInfluencerRating")
     class UpdateInfluencerRatingTests {
 
+        // subsumed-by: ActiveCooperationControllerUnitTest$UpdateInfluencerRatingTests#shouldSetCorrectSerializationView() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should update influencer rating successfully")
         void shouldUpdateInfluencerRatingSuccessfully() {

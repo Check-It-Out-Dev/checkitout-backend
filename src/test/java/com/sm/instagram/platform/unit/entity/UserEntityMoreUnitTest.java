@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -1486,6 +1487,8 @@ class UserEntityMoreUnitTest {
                 assertThat(note).isEqualTo("Admin note using influencer key");
             }
 
+            // subsumed-by: UserEntityMoreUnitTest$DefaultNoteServiceTests$GetDefaultNoteForAdminTypesTests#shouldUseInfluencerKeyForAdmin() (round 1)
+            @Tag("subsumed")
             @Test
             @DisplayName("should use INFLUENCER key for PENDING_ADMIN")
             void shouldUseInfluencerKeyForPendingAdmin() {

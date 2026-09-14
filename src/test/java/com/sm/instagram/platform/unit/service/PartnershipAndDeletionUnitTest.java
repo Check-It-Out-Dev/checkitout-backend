@@ -17,6 +17,7 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -456,6 +457,8 @@ class PartnershipAndDeletionUnitTest {
             assertThat(type.getValue()).isEqualTo(type.name());
         }
 
+        // subsumed-by: PartnershipAndDeletionUnitTest$CompensationTypeTests#getLabelShouldReturnNameWhenTranslationNotFound() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("getLabel should use dictionary service")
         void getLabelShouldUseDictionaryService() {
@@ -879,6 +882,8 @@ class PartnershipAndDeletionUnitTest {
             assertThat(DeletionBlockerCategory.RECENT_ACTIVITY.getColorTheme()).isEqualTo("info");
         }
 
+        // subsumed-by: PartnershipAndDeletionUnitTest$DeletionBlockerCategoryTests#getLabelShouldReturnNameWhenTranslationNotFound() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("getLabel should use dictionary service")
         void getLabelShouldUseDictionaryService() {
@@ -901,6 +906,8 @@ class PartnershipAndDeletionUnitTest {
             assertThat(label).isEqualTo("LAST_ADMIN");
         }
 
+        // subsumed-by: PartnershipAndDeletionUnitTest$DeletionBlockerCategoryTests#getDescriptionShouldReturnNameWhenTranslationNotFound() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("getDescription should use dictionary service")
         void getDescriptionShouldUseDictionaryService() {

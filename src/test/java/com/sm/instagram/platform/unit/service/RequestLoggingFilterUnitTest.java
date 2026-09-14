@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
@@ -77,6 +78,8 @@ class RequestLoggingFilterUnitTest {
     @DisplayName("doFilterInternal()")
     class DoFilterInternalTests {
 
+        // subsumed-by: RequestLoggingFilterUnitTest$DoFilterInternalTests#shouldGenerateRequestIdIfNotPresent() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should call filter chain and copy response body")
         void shouldCallFilterChainAndCopyResponseBody() throws ServletException, IOException {
@@ -87,6 +90,8 @@ class RequestLoggingFilterUnitTest {
             verify(filterChain).doFilter(any(), any());
         }
 
+        // subsumed-by: RequestLoggingFilterUnitTest$DoFilterInternalTests#shouldGenerateRequestIdIfNotPresent() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should set request method and URI in MDC")
         void shouldSetRequestContextInMdc() throws ServletException, IOException {
@@ -190,6 +195,8 @@ class RequestLoggingFilterUnitTest {
             verify(filterChain).doFilter(any(), any());
         }
 
+        // subsumed-by: RequestLoggingFilterUnitTest$DoFilterInternalTests#shouldGenerateRequestIdIfNotPresent() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should set response status correctly")
         void shouldSetResponseStatusCorrectly() throws ServletException, IOException {
@@ -225,6 +232,8 @@ class RequestLoggingFilterUnitTest {
             assertThat(shouldNotFilter).isTrue();
         }
 
+        // subsumed-by: RequestLoggingFilterUnitTest$ShouldNotFilterTests#shouldSkipActuatorHealthEndpoint() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should skip actuator info endpoint")
         void shouldSkipActuatorInfoEndpoint() {
@@ -238,6 +247,8 @@ class RequestLoggingFilterUnitTest {
             assertThat(shouldNotFilter).isTrue();
         }
 
+        // subsumed-by: RequestLoggingFilterUnitTest$ShouldNotFilterTests#shouldSkipActuatorHealthEndpoint() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should skip actuator metrics endpoint")
         void shouldSkipActuatorMetricsEndpoint() {

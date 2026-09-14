@@ -1,0 +1,740 @@
+{
+ "schema": 1,
+ "repo": "backend",
+ "round": 1,
+ "runId": "local-2026-09-14",
+ "baseCommit": "2f12c187558",
+ "proposalCommit": "5018f91c",
+ "demoted": [
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.ActiveCooperationControllerUnitTest]/[nested-class:GetInfluencersToAcceptTests]/[method:shouldPassAllFiltersTogether()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.ActiveCooperationControllerUnitTest]/[nested-class:GetInfluencersToAcceptTests]/[method:shouldPassMaxFollowersFilter()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.ActiveCooperationControllerUnitTest]/[nested-class:GetInfluencersToAcceptTests]/[method:shouldPassMinFollowersFilter()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.ActiveCooperationControllerUnitTest]/[nested-class:GetInfluencersToAcceptTests]/[method:shouldSortByLastUpdateTimeDescending()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.ActiveCooperationControllerUnitTest]/[nested-class:GetInfluencersToRateTests]/[method:shouldSortByLastUpdateTimeAscending()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.ActiveCooperationControllerUnitTest]/[nested-class:UpdateCompanyRatingTests]/[method:shouldUpdateCompanyRatingSuccessfully()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.ActiveCooperationControllerUnitTest]/[nested-class:UpdateInfluencerRatingTests]/[method:shouldUpdateInfluencerRatingSuccessfully()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.AdminControllerUnitTest]/[nested-class:SetUserClaimsTests]/[nested-class:AuthorizationTests]/[method:shouldReturn403WhenInfluencerTriesToSetClaims()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.AdminControllerUnitTest]/[nested-class:SetUserClaimsTests]/[nested-class:AuthorizationTests]/[method:shouldReturn403WhenPendingAdminTriesToSetClaims()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.AdminControllerUnitTest]/[nested-class:SetUserClaimsTests]/[nested-class:FirebaseErrorHandlingTests]/[method:shouldReturn500WhenFirebaseServiceUnavailable()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.AdminControllerUnitTest]/[nested-class:SetUserClaimsTests]/[nested-class:FirebaseErrorHandlingTests]/[method:shouldReturn500WhenUserNotFound()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.AdminControllerUnitTest]/[nested-class:SetUserClaimsTests]/[nested-class:PermissionSettingTests]/[method:shouldSetAdminPermission()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.AdminControllerUnitTest]/[nested-class:SetUserClaimsTests]/[nested-class:PermissionSettingTests]/[method:shouldSetSingleCompanyPermission()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.AdminControllerUnitTest]/[nested-class:SetUserClaimsTests]/[nested-class:PermissionSettingTests]/[method:shouldSetSingleInfluencerPermission()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.FileUploadControllerUnitTest]/[nested-class:GenerateSignedUrlValidation]/[method:shouldRejectRequestWithFileSizeExceedingMax()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.FileUploadControllerUnitTest]/[nested-class:GenerateSignedUrlValidation]/[method:shouldRejectRequestWithMissingContentType()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.FileUploadControllerUnitTest]/[nested-class:GenerateSignedUrlValidation]/[method:shouldRejectRequestWithMissingFileSize()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.FileUploadControllerUnitTest]/[nested-class:GenerateSignedUrlValidation]/[method:shouldRejectRequestWithMissingFilename()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.FileUploadControllerUnitTest]/[nested-class:GenerateSignedUrlValidation]/[method:shouldRejectRequestWithZeroFileSize()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.FileUploadControllerUnitTest]/[nested-class:GenerateSignedUrl]/[method:shouldAcceptGifContentType()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.FileUploadControllerUnitTest]/[nested-class:GenerateSignedUrl]/[method:shouldAcceptPngContentType()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.FileUploadControllerUnitTest]/[nested-class:GenerateSignedUrl]/[method:shouldAcceptWebpContentType()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.FileUploadControllerUnitTest]/[nested-class:GenerateSignedUrl]/[method:shouldGenerateSignedUrlForCompanyUser()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.FileUploadControllerUnitTest]/[nested-class:HealthCheck]/[method:shouldReturnHealthyStatus()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.UserControllerUnitTest]/[nested-class:DeletePermanentlyTests]/[method:shouldDeleteMultipleUsersPermanently()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.UserControllerUnitTest]/[nested-class:GetAccountStatusListTests]/[method:shouldReturnStatusValuesAsStrings()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.UserControllerUnitTest]/[nested-class:GetUserTypeListTests]/[method:shouldReturnUserTypeValuesAsStrings()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.entity.OpportunityStatusUnitTest]/[nested-class:JsonSerialization]/[method:fromStringShouldParseMixedCase()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.entity.OpportunityStatusUnitTest]/[nested-class:LocalizationMethods]/[method:getLabelReturnsTranslatedLabel()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.entity.UserEntityMoreUnitTest]/[nested-class:DefaultNoteServiceTests]/[nested-class:GetDefaultNoteForAdminTypesTests]/[method:shouldUseInfluencerKeyForPendingAdmin()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.registry.GusBir1ResponseParserUnitTest]/[nested-class:ExtractSearchResult]/[method:shouldExtractSearchResultFromEncodedXml()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.registry.NipValidatorUnitTest]/[nested-class:Normalize]/[method:shouldRemoveMixedDashesAndSpaces()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.registry.NipValidatorUnitTest]/[nested-class:Normalize]/[method:shouldRemoveSpaces()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.registry.NipValidatorUnitTest]/[nested-class:Normalize]/[method:shouldReturnSameStringIfAlreadyClean()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.security.LocalTotpCipherUnitTest]/[nested-class:RoundTrip]/[method:returnsWhatWasEncrypted()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.security.ServiceAccountKeyValidatorUnitTest]/[nested-class:ValidInput]/[method:shouldAcceptValidServiceAccountJson()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.ApplicationHealthIndicatorUnitTest]/[nested-class:UpStateTests]/[method:shouldReturnPercentageWithTwoDecimalPlaces()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.AssessmentResultUnitTest]/[nested-class:ToStringTests]/[method:shouldFormatToStringForSuccess()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.AuthValidatorsUnitTest]/[nested-class:ImprovedQRCodeServiceTests]/[nested-class:GenerateOtpAuthUrlTests]/[method:shouldIncludeAlgorithmParameter()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.AuthValidatorsUnitTest]/[nested-class:ImprovedQRCodeServiceTests]/[nested-class:GenerateOtpAuthUrlTests]/[method:shouldIncludeIssuerParameter()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.AuthValidatorsUnitTest]/[nested-class:ImprovedQRCodeServiceTests]/[nested-class:GenerateOtpAuthUrlTests]/[method:shouldIncludeSecretParameter()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.AuthValidatorsUnitTest]/[nested-class:ImprovedQRCodeServiceTests]/[nested-class:GenerateSecretTests]/[method:shouldGenerateBase32Secret()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.AuthValidatorsUnitTest]/[nested-class:ImprovedQRCodeServiceTests]/[nested-class:GenerateSecretTests]/[method:shouldGenerateUniqueSecrets()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.AuthValidatorsUnitTest]/[nested-class:ImprovedQRCodeServiceTests]/[nested-class:IsValidSecretTests]/[method:shouldReturnFalseForLowercaseSecret()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.AuthorizationMoreUnitTest]/[nested-class:HmacSignatureValidationTests]/[method:shouldRejectTamperedHmacSignature()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.AuthorizationServiceUnitTest]/[nested-class:BannedUserAuthorizationFilterTests]/[method:shouldAllowBannedUserToAccessApiUsersMeEndpoint()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.AuthorizationServiceUnitTest]/[nested-class:BannedUserAuthorizationFilterTests]/[method:shouldAllowBannedUserToAccessHealthEndpoints()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.AuthorizationServiceUnitTest]/[nested-class:BannedUserAuthorizationFilterTests]/[method:shouldAllowBannedUserToAccessNotifications()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.AuthorizationServiceUnitTest]/[nested-class:BannedUserAuthorizationFilterTests]/[method:shouldAllowBannedUserToAccessUsersMeEndpoint()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.AuthorizationServiceUnitTest]/[nested-class:BannedUserAuthorizationFilterTests]/[method:shouldAllowBannedUserToRefreshSession()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.AuthorizationServiceUnitTest]/[nested-class:BannedUserAuthorizationFilterTests]/[method:shouldAllowBannedUserToSignOut()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.AuthorizationServiceUnitTest]/[nested-class:PermissionUtilsRoleCheckingTests]/[method:hasRoleShouldReturnFalseWhenUserDoesNotHaveRole()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.BaseClassesUnitTest]/[nested-class:BaseControllerTests]/[nested-class:FindPaginatedTests]/[method:shouldRemovePaginationParametersFromFilters()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.BaseClassesUnitTest]/[nested-class:BaseServiceTests]/[nested-class:SaveTests]/[method:shouldSaveEntityWithoutUpdaterTracking()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CityFullUnitTest]/[nested-class:CityConverterToCityNameTests]/[method:shouldConvertCityWithLongNameCorrectly()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CityFullUnitTest]/[nested-class:CityConverterToCityNameTests]/[method:shouldConvertCityWithSpecialCharactersInName()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CityFullUnitTest]/[nested-class:CityConverterToCityTests]/[method:shouldThrowIllegalArgumentExceptionForTabOnlyCityName()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CityFullUnitTest]/[nested-class:CityConverterToCityTests]/[method:shouldThrowIllegalArgumentExceptionForWhitespaceCityName()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CommonJwtUnitTest]/[nested-class:ClaimTypePreservationTests]/[method:shouldPreserveBooleanClaimType()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CommonJwtUnitTest]/[nested-class:ClaimTypePreservationTests]/[method:shouldPreserveDoubleClaimType()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CommonJwtUnitTest]/[nested-class:CreateTokenWithMinutesExpiryTests]/[method:shouldSetCorrectExpirationInMinutes()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CommonJwtUnitTest]/[nested-class:ErrorHandlingTests]/[method:shouldHandleTruncatedToken()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CommonSafetyUnitTest]/[nested-class:DangerousConfigurationEnvironmentTests]/[method:shouldDetectLiveAppEnvironmentCaseInsensitively()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CommonSafetyUnitTest]/[nested-class:DangerousConfigurationProfileTests]/[method:shouldDetectLiveProfileCaseInsensitively()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CommonSafetyUnitTest]/[nested-class:IntegrationScenarioSimulationsTests]/[method:shouldAllowStagingWithTestDatabase()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CommonSafetyUnitTest]/[nested-class:MaskSensitiveUrlTests]/[method:shouldHandleUrlWithoutProtocolSeparator()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CommonSafetyUnitTest]/[nested-class:MaskSensitiveUrlTests]/[method:shouldMaskPasswordInMySqlUrl()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CommonSafetyUnitTest]/[nested-class:MaskSensitiveUrlTests]/[method:shouldMaskPasswordInPostgresUrl()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CommonSafetyUnitTest]/[nested-class:MaskSensitiveUrlTests]/[method:shouldMaskPasswordInUrlWithPortAndDatabase()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CommonValidatorUnitTest]/[nested-class:MaskEmailTests]/[method:shouldHandleEmailWithSingleCharacterBeforeAt()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.ConsentDtosUnitTest]/[nested-class:ConsentActionEnumTests]/[method:shouldReturnDefaultDescriptionWhenTranslationMissing()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.ConsentDtosUnitTest]/[nested-class:ConsentActionEnumTests]/[method:shouldReturnEnumNameAsFallbackWhenTranslationMissing()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.ConsentEnforcementFilterUnitTest]/[nested-class:WhenUserBlocked]/[method:should_allow_get_partnership_opportunity_paged()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.ConsentEnforcementFilterUnitTest]/[nested-class:WhenUserBlocked]/[method:should_allow_get_to_any_endpoint()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.ConsentEnforcementFilterUnitTest]/[nested-class:WhenUserBlocked]/[method:should_allow_patch_collaboration_status()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.ConsentEnforcementFilterUnitTest]/[nested-class:WhenUserBlocked]/[method:should_allow_post_to_subpath_content_submission()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.ConsentEnforcementFilterUnitTest]/[nested-class:WhenUserBlocked]/[method:should_allow_users_me_endpoint()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CorsLoggingFilterUnitTest]/[nested-class:ResponseHeaderLoggingTests]/[method:shouldLogWarningForErrorResponses()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CredentialsServiceUnitTest]/[nested-class:DecodeWithAutoPaddingTests]/[method:shouldDecodeValidLookingBase64String()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CredentialsServiceUnitTest]/[nested-class:GetCredentialsWithScopesTests]/[method:shouldReturnBaseCredentialsWhenNoScopes()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CredentialsServiceUnitTest]/[nested-class:MaskEmailTests]/[method:shouldMaskLongLocalPartCorrectly()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CredentialsServiceUnitTest]/[nested-class:MaskEmailTests]/[method:shouldMaskStandardEmailCorrectly()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.DatabaseHealthIndicatorUnitTest]/[nested-class:HealthUpStatusTests]/[method:shouldIncludeDatabaseNameInDetails()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.DatabaseHealthIndicatorUnitTest]/[nested-class:HealthUpStatusTests]/[method:shouldIncludeDatabaseVersionInDetails()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.DatabaseHealthIndicatorUnitTest]/[nested-class:HealthUpStatusTests]/[method:shouldIncludeResponseTimeInDetails()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.DiskAndLiquibaseHealthUnitTest]/[nested-class:LiquibaseHealthIndicatorTests]/[nested-class:ExceptionHandlingTests]/[method:shouldReturnDownWithErrorDetailsWhenUnexpectedException()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.EmailVerificationServiceUnitTest]/[nested-class:ExtractOobCodeTests]/[method:extractOobCode_validLink_returnsCode()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.EmailVerificationServiceUnitTest]/[nested-class:SyncEmailVerificationStatusTests]/[method:doesNotWriteFirebaseRoleWhenSaveFails()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.EncryptionServicesUnitTest]/[nested-class:TokenEncryptionServiceTests]/[nested-class:EndToEndTests]/[method:shouldHandleMultipleTokensCorrectly()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.EncryptionServicesUnitTest]/[nested-class:TotpEncryptionServiceTests]/[nested-class:EncryptBackupCodesTests]/[method:shouldEncryptBackupCodesSuccessfully()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.EncryptionServicesUnitTest]/[nested-class:TotpEncryptionServiceTests]/[nested-class:EncryptBackupCodesTests]/[method:shouldHandleMultipleBackupCodes()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.EncryptionServicesUnitTest]/[nested-class:TotpEncryptionServiceTests]/[nested-class:VerifyBackupCodeTests]/[method:shouldReturnFalseWhenKmsFails()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.FirebaseAuthMoreUnitTest]/[nested-class:FirestoreServiceTests]/[nested-class:UpdateAccessTokenTests]/[method:shouldUpdateAccessTokenSuccessfully()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.FirebaseServiceUnitTest]/[nested-class:GenerateCustomTokenWithClaimsTests]/[method:shouldPassComplexClaimsMapCorrectly()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.FirebaseStorageServiceUnitTest]/[nested-class:DeleteFolderTests]/[nested-class:DeleteFolderSuccessTests]/[method:shouldDeleteMultipleFilesAndReturnCount()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.FirebaseStorageServiceUnitTest]/[nested-class:DeleteFolderTests]/[nested-class:DeleteFolderSuccessTests]/[method:shouldDeleteSingleFileAndReturnCount()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.FirebaseStorageServiceUnitTest]/[nested-class:GetFileMetadataTests]/[nested-class:GetFileMetadataSuccessTests]/[method:shouldReturnBlobWithMetadata()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.FutureOrPresentDateValidatorUnitTest]/[nested-class:DirectValidatorTests]/[method:shouldReturnFalseForPastDateFarInPast()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.FutureOrPresentDateValidatorUnitTest]/[nested-class:DirectValidatorTests]/[method:shouldReturnFalseForYesterdaysDate()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.FutureOrPresentDateValidatorUnitTest]/[nested-class:DirectValidatorTests]/[method:shouldReturnFalseForYesterdaysDateAtEndOfDay()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.GeoLocationServiceUnitTest]/[nested-class:GeoLocationGdprServiceTests]/[nested-class:GetComplianceStatusTests]/[method:shouldIncludeImplementedRights()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.HashingUtilUnitTest]/[nested-class:HashFirebaseUidTests]/[method:shouldProduceDifferentHashesForDifferentFirebaseUids()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.HtmlEncoderUnitTest]/[nested-class:ObjectEncodingTests]/[method:encode_WhenObjectIsStringBuilder_EncodesContent()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.HtmlEncoderUnitTest]/[nested-class:ObjectEncodingTests]/[method:encode_WhenObjectToStringContainsSpecialChars_EncodesCorrectly()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.InMemoryUserCacheUnitTest]/[nested-class:UserTypeHandlingTests]/[method:shouldCachePendingAdminUserCorrectly()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.InstagramConfigUnitTest]/[nested-class:ConfigurationValidationTests]/[method:shouldReturnFalseWhenClientIdWhitespace()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.InstagramSocialAuthUnitTest]/[nested-class:InstagramStartupValidatorTests]/[nested-class:AppAccessTokenGenerationTests]/[method:shouldIncludePipeSeparator()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.InstagramSocialAuthUnitTest]/[nested-class:InstagramStartupValidatorTests]/[nested-class:OAuthUrlBuildingTests]/[method:shouldBuildOAuthUrlWithCorrectBase()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.InstagramSocialAuthUnitTest]/[nested-class:InstagramStartupValidatorTests]/[nested-class:OAuthUrlBuildingTests]/[method:shouldBuildOAuthUrlWithRedirectUri()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.PartnershipAndDeletionUnitTest]/[nested-class:CompensationTypeTests]/[method:getLabelShouldUseDictionaryService()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.PartnershipAndDeletionUnitTest]/[nested-class:DeletionBlockerCategoryTests]/[method:getDescriptionShouldUseDictionaryService()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.PartnershipAndDeletionUnitTest]/[nested-class:DeletionBlockerCategoryTests]/[method:getLabelShouldUseDictionaryService()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.PartnershipOpportunityEntityUnitTest]/[nested-class:EndDateNotBeforeStartDateTests]/[method:shouldReturnTrueWhenEndDateEqualsStartDate()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.ProfilePictureProxyServiceUnitTest]/[nested-class:IsPermanentFirebaseStorageUrlTests]/[method:shouldReturnFalseForBlankUrl()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RedisServiceUnitTest]/[nested-class:DataTypeTests]/[method:shouldSetExpirationOnTestCollections()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RedisServiceUnitTest]/[nested-class:DataTypeTests]/[method:shouldTestSortedSetOperationsDuringValidation()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RedisServiceUnitTest]/[nested-class:DataTypeTests]/[method:shouldTestStringOperationsDuringValidation()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RedisServiceUnitTest]/[nested-class:IsRedisOperationalTests]/[method:shouldReturnFalseWhenConnectionThrowsException()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RedisUserCacheUnitTest]/[nested-class:CacheUserTests]/[method:shouldCacheActiveUserWithCorrectKeyAndTtl()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RedisUserCacheUnitTest]/[nested-class:CacheUserTests]/[method:shouldCacheTokenVersionCorrectly()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RequestBodyCachingFilterUnitTest]/[nested-class:CachedBodyHttpServletRequestTests]/[method:cachedRequest_HandlesMultilineBody()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RequestBodyCachingFilterUnitTest]/[nested-class:CachedBodyHttpServletRequestTests]/[method:cachedRequest_HandlesUnicodeContent()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RequestBodyCachingFilterUnitTest]/[nested-class:EarlyRequestLoggingFilterTests]/[method:doFilter_LogsAndContinuesChain()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RequestBodyCachingFilterUnitTest]/[nested-class:MdcContextSetupTests]/[method:doFilter_SetsRequestIdInMdc()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RequestBodyCachingFilterUnitTest]/[nested-class:RequestBodyCachingDecisionTests]/[method:doFilter_CachesPostRequestWithJsonContent()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RequestBodyCachingFilterUnitTest]/[nested-class:ResponseStatusLoggingTests]/[method:doFilter_LogsWarningFor5xxStatus()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RequestLoggingFilterUnitTest]/[nested-class:DoFilterInternalTests]/[method:shouldCallFilterChainAndCopyResponseBody()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RequestLoggingFilterUnitTest]/[nested-class:DoFilterInternalTests]/[method:shouldSetRequestContextInMdc()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RequestLoggingFilterUnitTest]/[nested-class:DoFilterInternalTests]/[method:shouldSetResponseStatusCorrectly()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RequestLoggingFilterUnitTest]/[nested-class:ShouldNotFilterTests]/[method:shouldSkipActuatorInfoEndpoint()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RequestLoggingFilterUnitTest]/[nested-class:ShouldNotFilterTests]/[method:shouldSkipActuatorMetricsEndpoint()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.SecretsServiceUnitTest]/[nested-class:GetSecretProductionModeTests]/[method:shouldReadSecretFromEnvFile()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.ServiceTypeFullUnitTest]/[nested-class:ServiceTypeConverterTests]/[method:shouldReturnConverterFromFactoryMethod()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.ServiceTypeFullUnitTest]/[nested-class:ServiceTypeMapperTests]/[method:shouldReturnModelMapperInstanceFromConfigureMapping()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.SpecificationBuilderUnitTest]/[nested-class:BooleanFieldFilterTests]/[method:createSpecification_WhenBooleanTrue_CreatesEqualPredicate()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.SpecificationBuilderUnitTest]/[nested-class:NumberFieldFilterTests]/[method:createSpecification_WhenNegativeValue_CreatesEqualPredicate()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.SpecificationBuilderUnitTest]/[nested-class:NumberFieldFilterTests]/[method:createSpecification_WhenZeroValue_CreatesEqualPredicate()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.TranslationServiceUnitTest]/[nested-class:TranslateCompensationTypeTests]/[method:shouldTranslatePaidCompensationType()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.TranslationServiceUnitTest]/[nested-class:TranslateContentTypeTests]/[method:shouldTranslateVideoContentType()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.TranslationServiceUnitTest]/[nested-class:TranslateRateStatusTests]/[method:shouldTranslatePositiveRateStatus()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.TranslationServiceUnitTest]/[nested-class:TranslateUserTypeTests]/[method:shouldTranslateInfluencerUserType()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.TwoFactorAuthServiceUnitTest]/[nested-class:Is2FARequiredTests]/[method:shouldReturnFalseForInfluencerUser()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.TwoFactorAuthServiceUnitTest]/[nested-class:VerifyBackupCodeTests]/[method:shouldNormalizeBackupCodeRemoveSpaces()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.TwoFactorAuthServiceUnitTest]/[nested-class:VerifyBackupCodeTests]/[method:shouldNormalizeBackupCodeUppercase()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.TwoFactorAuthServiceUnitTest]/[nested-class:VerifyBackupCodeTests]/[method:shouldReturnTrueForValidBackupCode()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.TwoFactorAuthServiceUnitTest]/[nested-class:VerifyTotpCodeTests]/[method:shouldReturnTrueEvenIfClaimUpdateFails()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.UserServiceUnitTest]/[nested-class:WouldChangeEmailTests]/[method:unknownUserIsNotAChange()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.subscription.StripeServiceUnitTest]/[nested-class:GetPublicKey]/[method:shouldReturnPublicKey()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.GeoDistanceCalculatorUnitTest]/[nested-class:CalculateDistanceKmTests]/[method:calculateDistanceKm_negativeLongitude_handlesCorrectly()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.GeoDistanceCalculatorUnitTest]/[nested-class:CalculateDistanceKmTests]/[method:calculateDistanceKm_samePoint_returnsZero()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.HmacUtilsUnitTest]/[nested-class:IntegrationScenarios]/[method:shouldHandleLongSecretKeys()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.InterruptsUnitTest]/[method:recognisesInterruptedException()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.LogSafeUnitTest]/[method:crlfLeavesTwoMarkers()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.LogSafeUnitTest]/[method:everyLineBreakingCharacterIsReplaced()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.LogSafeUnitTest]/[method:forgedEntryCollapsesIntoOneLine()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.LogSafeUnitTest]/[method:ordinaryValuesAreUnchanged()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.LogSafeUnitTest]/[method:truncationReportsTheOriginalLength()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.PiiMaskingUtilsUnitTest]/[nested-class:MaskEmailTests]/[method:maskEmail_validEmail_masksCorrectly()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.PiiMaskingUtilsUnitTest]/[nested-class:MaskIpTests]/[method:maskIp_validIpv4_masksLastOctet()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.RequestContextUtilsUnitTest]/[nested-class:BuildFullRequestDetailsTests]/[method:shouldBuildFullRequestDetailsMap()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.RequestContextUtilsUnitTest]/[nested-class:GetClientIpAddressTests]/[method:shouldFallbackToRemoteAddress()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.RequestContextUtilsUnitTest]/[nested-class:SanitizeSensitiveDataTests]/[method:shouldMaskPasswordFieldInJson()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.RequestContextUtilsUnitTest]/[nested-class:SanitizeSensitiveDataTests]/[method:shouldMaskSecretFieldInJson()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.RequestContextUtilsUnitTest]/[nested-class:SanitizeSensitiveDataTests]/[method:shouldMaskTokenFieldInJson()]",
+  "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.SessionValidationUtilsUnitTest]/[nested-class:IsSameCountry]/[method:isSameCountry_sameCountry_returnsTrue()]"
+ ],
+ "notApplied": [
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.ActiveCooperationControllerUnitTest]/[nested-class:GetInfluencersToAcceptTests]/[test-template:shouldAcceptVariousPageNumbers(int)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.ActiveCooperationControllerUnitTest]/[nested-class:GetInfluencersToRateTests]/[test-template:shouldAcceptValidFilterRateStatuses(java.lang.String)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.ActiveCooperationControllerUnitTest]/[nested-class:GetInfluencersToRateTests]/[test-template:shouldAcceptValidFilterRateStatuses(java.lang.String)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.ActiveCooperationControllerUnitTest]/[nested-class:GetOpportunitiesInProgressTests]/[test-template:shouldAcceptValidInProgressStatuses(com.sm.instagram.platform.appliedopportunities.OpportunityStatus)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.ActiveCooperationControllerUnitTest]/[nested-class:GetOpportunitiesInProgressTests]/[test-template:shouldAcceptValidInProgressStatuses(com.sm.instagram.platform.appliedopportunities.OpportunityStatus)]/[test-template-invocation:#3]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.ActiveCooperationControllerUnitTest]/[nested-class:GetOpportunitiesInProgressTests]/[test-template:shouldAcceptValidInProgressStatuses(com.sm.instagram.platform.appliedopportunities.OpportunityStatus)]/[test-template-invocation:#4]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.ActiveCooperationControllerUnitTest]/[nested-class:GetOpportunitiesInProgressTests]/[test-template:shouldAcceptValidInProgressStatuses(com.sm.instagram.platform.appliedopportunities.OpportunityStatus)]/[test-template-invocation:#5]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.ActiveCooperationControllerUnitTest]/[nested-class:GetOpportunitiesInProgressTests]/[test-template:shouldAcceptValidInProgressStatuses(com.sm.instagram.platform.appliedopportunities.OpportunityStatus)]/[test-template-invocation:#6]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.ActiveCooperationControllerUnitTest]/[nested-class:GetOpportunitiesInProgressTests]/[test-template:shouldAcceptValidInProgressStatuses(com.sm.instagram.platform.appliedopportunities.OpportunityStatus)]/[test-template-invocation:#7]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.ActiveCooperationControllerUnitTest]/[nested-class:UpdateCompanyRatingTests]/[test-template:shouldAcceptAllRateStatuses(com.sm.instagram.platform.appliedopportunities.RateStatus)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.ActiveCooperationControllerUnitTest]/[nested-class:UpdateCompanyRatingTests]/[test-template:shouldAcceptAllRateStatuses(com.sm.instagram.platform.appliedopportunities.RateStatus)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.ActiveCooperationControllerUnitTest]/[nested-class:UpdateInfluencerRatingTests]/[test-template:shouldAcceptAllRateStatuses(com.sm.instagram.platform.appliedopportunities.RateStatus)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.ActiveCooperationControllerUnitTest]/[nested-class:UpdateInfluencerRatingTests]/[test-template:shouldAcceptAllRateStatuses(com.sm.instagram.platform.appliedopportunities.RateStatus)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.ActiveCooperationControllerUnitTest]/[nested-class:UpdateInfluencerRatingTests]/[test-template:shouldAcceptVariousOpportunityIds(java.lang.Long)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.controller.ActiveCooperationControllerUnitTest]/[nested-class:UpdateInfluencerRatingTests]/[test-template:shouldAcceptVariousOpportunityIds(java.lang.Long)]/[test-template-invocation:#3]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.entity.OpportunityStatusUnitTest]/[nested-class:JsonSerialization]/[test-template:fromStringShouldParseUppercase(com.sm.instagram.platform.appliedopportunities.OpportunityStatus)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.entity.OpportunityStatusUnitTest]/[nested-class:JsonSerialization]/[test-template:fromStringShouldParseUppercase(com.sm.instagram.platform.appliedopportunities.OpportunityStatus)]/[test-template-invocation:#10]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.entity.OpportunityStatusUnitTest]/[nested-class:JsonSerialization]/[test-template:fromStringShouldParseUppercase(com.sm.instagram.platform.appliedopportunities.OpportunityStatus)]/[test-template-invocation:#11]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.entity.OpportunityStatusUnitTest]/[nested-class:JsonSerialization]/[test-template:fromStringShouldParseUppercase(com.sm.instagram.platform.appliedopportunities.OpportunityStatus)]/[test-template-invocation:#12]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.entity.OpportunityStatusUnitTest]/[nested-class:JsonSerialization]/[test-template:fromStringShouldParseUppercase(com.sm.instagram.platform.appliedopportunities.OpportunityStatus)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.entity.OpportunityStatusUnitTest]/[nested-class:JsonSerialization]/[test-template:fromStringShouldParseUppercase(com.sm.instagram.platform.appliedopportunities.OpportunityStatus)]/[test-template-invocation:#3]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.entity.OpportunityStatusUnitTest]/[nested-class:JsonSerialization]/[test-template:fromStringShouldParseUppercase(com.sm.instagram.platform.appliedopportunities.OpportunityStatus)]/[test-template-invocation:#4]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.entity.OpportunityStatusUnitTest]/[nested-class:JsonSerialization]/[test-template:fromStringShouldParseUppercase(com.sm.instagram.platform.appliedopportunities.OpportunityStatus)]/[test-template-invocation:#5]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.entity.OpportunityStatusUnitTest]/[nested-class:JsonSerialization]/[test-template:fromStringShouldParseUppercase(com.sm.instagram.platform.appliedopportunities.OpportunityStatus)]/[test-template-invocation:#6]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.entity.OpportunityStatusUnitTest]/[nested-class:JsonSerialization]/[test-template:getValueShouldReturnEnumName(com.sm.instagram.platform.appliedopportunities.OpportunityStatus)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.entity.OpportunityStatusUnitTest]/[nested-class:JsonSerialization]/[test-template:getValueShouldReturnEnumName(com.sm.instagram.platform.appliedopportunities.OpportunityStatus)]/[test-template-invocation:#4]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.entity.OpportunityStatusUnitTest]/[nested-class:JsonSerialization]/[test-template:getValueShouldReturnEnumName(com.sm.instagram.platform.appliedopportunities.OpportunityStatus)]/[test-template-invocation:#6]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.entity.OpportunityStatusUnitTest]/[nested-class:LocalizationMethods]/[test-template:allStatusesUseCorrectLocalizationKeyFormat(com.sm.instagram.platform.appliedopportunities.OpportunityStatus)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.entity.OpportunityStatusUnitTest]/[nested-class:LocalizationMethods]/[test-template:allStatusesUseCorrectLocalizationKeyFormat(com.sm.instagram.platform.appliedopportunities.OpportunityStatus)]/[test-template-invocation:#10]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.entity.OpportunityStatusUnitTest]/[nested-class:LocalizationMethods]/[test-template:allStatusesUseCorrectLocalizationKeyFormat(com.sm.instagram.platform.appliedopportunities.OpportunityStatus)]/[test-template-invocation:#11]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.entity.OpportunityStatusUnitTest]/[nested-class:LocalizationMethods]/[test-template:allStatusesUseCorrectLocalizationKeyFormat(com.sm.instagram.platform.appliedopportunities.OpportunityStatus)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.entity.OpportunityStatusUnitTest]/[nested-class:LocalizationMethods]/[test-template:allStatusesUseCorrectLocalizationKeyFormat(com.sm.instagram.platform.appliedopportunities.OpportunityStatus)]/[test-template-invocation:#3]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.entity.OpportunityStatusUnitTest]/[nested-class:LocalizationMethods]/[test-template:allStatusesUseCorrectLocalizationKeyFormat(com.sm.instagram.platform.appliedopportunities.OpportunityStatus)]/[test-template-invocation:#4]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.entity.OpportunityStatusUnitTest]/[nested-class:LocalizationMethods]/[test-template:allStatusesUseCorrectLocalizationKeyFormat(com.sm.instagram.platform.appliedopportunities.OpportunityStatus)]/[test-template-invocation:#5]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.registry.NipValidatorUnitTest]/[nested-class:IsValid]/[test-template:shouldReturnTrueForValidNips(java.lang.String)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.registry.NipValidatorUnitTest]/[nested-class:IsValid]/[test-template:shouldReturnTrueForValidNips(java.lang.String)]/[test-template-invocation:#3]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.registry.NipValidatorUnitTest]/[nested-class:IsValid]/[test-template:shouldReturnTrueForValidNips(java.lang.String)]/[test-template-invocation:#4]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.registry.NipValidatorUnitTest]/[nested-class:IsValid]/[test-template:shouldReturnTrueForValidNipsWithFormatting(java.lang.String)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.registry.NipValidatorUnitTest]/[nested-class:IsValid]/[test-template:shouldReturnTrueForValidNipsWithFormatting(java.lang.String)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.security.JwtAuthenticationFilterDevLitePublicUnitTest]/[test-template:devLiteStoragePathsAreAnonymous(java.lang.String)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.security.JwtAuthenticationFilterDevLitePublicUnitTest]/[test-template:devLiteStoragePathsAreAnonymous(java.lang.String)]/[test-template-invocation:#4]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.security.JwtAuthenticationFilterDevLitePublicUnitTest]/[test-template:devLiteStoragePathsAreAnonymous(java.lang.String)]/[test-template-invocation:#5]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.security.JwtAuthenticationFilterDevLitePublicUnitTest]/[test-template:devLiteStoragePathsAreAnonymous(java.lang.String)]/[test-template-invocation:#6]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.AppliedOpportunityEnumsUnitTest]/[nested-class:RateStatusEnumTests]/[nested-class:EnumPropertiesTests]/[test-template:getValueShouldReturnEnumName(com.sm.instagram.platform.appliedopportunities.RateStatus)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.AppliedOpportunityEnumsUnitTest]/[nested-class:RateStatusEnumTests]/[nested-class:EnumPropertiesTests]/[test-template:getValueShouldReturnEnumName(com.sm.instagram.platform.appliedopportunities.RateStatus)]/[test-template-invocation:#3]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.AppliedOpportunityEnumsUnitTest]/[nested-class:RateStatusEnumTests]/[nested-class:FromStringTests]/[test-template:shouldParseVariousCaseFormats(java.lang.String, com.sm.instagram.platform.appliedopportunities.RateStatus)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.AppliedOpportunityEnumsUnitTest]/[nested-class:RateStatusEnumTests]/[nested-class:FromStringTests]/[test-template:shouldParseVariousCaseFormats(java.lang.String, com.sm.instagram.platform.appliedopportunities.RateStatus)]/[test-template-invocation:#3]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.AppliedOpportunityEnumsUnitTest]/[nested-class:RateStatusEnumTests]/[nested-class:FromStringTests]/[test-template:shouldParseVariousCaseFormats(java.lang.String, com.sm.instagram.platform.appliedopportunities.RateStatus)]/[test-template-invocation:#4]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.AppliedOpportunityEnumsUnitTest]/[nested-class:RateStatusEnumTests]/[nested-class:FromStringTests]/[test-template:shouldParseVariousCaseFormats(java.lang.String, com.sm.instagram.platform.appliedopportunities.RateStatus)]/[test-template-invocation:#5]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.AuthDtoCompleteUnitTest]/[nested-class:ExchangeTokenRequestCompleteTests]/[test-template:shouldCorrectlyConvertDaysToHours(int, int)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.AuthDtoCompleteUnitTest]/[nested-class:ExchangeTokenRequestCompleteTests]/[test-template:shouldCorrectlyConvertDaysToHours(int, int)]/[test-template-invocation:#3]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.AuthDtoCompleteUnitTest]/[nested-class:ExchangeTokenRequestCompleteTests]/[test-template:shouldCorrectlyConvertDaysToHours(int, int)]/[test-template-invocation:#4]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CommonValidatorUnitTest]/[nested-class:CheckStorageModeTests]/[test-template:shouldHandleCaseInsensitiveStorageModes(java.lang.String)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CommonValidatorUnitTest]/[nested-class:CheckStorageModeTests]/[test-template:shouldHandleCaseInsensitiveStorageModes(java.lang.String)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CommonValidatorUnitTest]/[nested-class:CheckStorageModeTests]/[test-template:shouldHandleVariousStorageModes(java.lang.String)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CommonValidatorUnitTest]/[nested-class:CheckStorageModeTests]/[test-template:shouldHandleVariousStorageModes(java.lang.String)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CommonValidatorUnitTest]/[nested-class:CheckStorageModeTests]/[test-template:shouldHandleVariousStorageModes(java.lang.String)]/[test-template-invocation:#3]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.ConsentAndAddressUnitTest]/[nested-class:ConsentActionEnumTests]/[nested-class:JsonSerializationTests]/[test-template:fromStringShouldBeCaseInsensitiveForGranted(java.lang.String)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.ConsentAndAddressUnitTest]/[nested-class:ConsentActionEnumTests]/[nested-class:JsonSerializationTests]/[test-template:fromStringShouldBeCaseInsensitiveForGranted(java.lang.String)]/[test-template-invocation:#3]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.ConsentAndAddressUnitTest]/[nested-class:ConsentActionEnumTests]/[nested-class:JsonSerializationTests]/[test-template:fromStringShouldBeCaseInsensitiveForWithdrawn(java.lang.String)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.ConsentAndAddressUnitTest]/[nested-class:ConsentActionEnumTests]/[nested-class:JsonSerializationTests]/[test-template:fromStringShouldBeCaseInsensitiveForWithdrawn(java.lang.String)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.ConsentAndAddressUnitTest]/[nested-class:ConsentActionEnumTests]/[nested-class:JsonSerializationTests]/[test-template:fromStringShouldBeCaseInsensitiveForWithdrawn(java.lang.String)]/[test-template-invocation:#3]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CorsLoggingFilterUnitTest]/[nested-class:SuspiciousOriginDetectionTests]/[test-template:shouldLogWarningForSuspiciousLocalhostPatterns(java.lang.String)]/[test-template-invocation:#9]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CorsLoggingFilterUnitTest]/[nested-class:UserAgentCategorizationTests]/[test-template:shouldCategorizeUserAgentsCorrectly(java.lang.String, java.lang.String)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CustomErrorControllerUnitTest]/[nested-class:UnknownStatusCodeTests]/[test-template:shouldHandleVariousStatusCodes(int)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CustomErrorControllerUnitTest]/[nested-class:UnknownStatusCodeTests]/[test-template:shouldHandleVariousStatusCodes(int)]/[test-template-invocation:#3]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CustomErrorControllerUnitTest]/[nested-class:UnknownStatusCodeTests]/[test-template:shouldHandleVariousStatusCodes(int)]/[test-template-invocation:#4]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.CustomErrorControllerUnitTest]/[nested-class:UnknownStatusCodeTests]/[test-template:shouldHandleVariousStatusCodes(int)]/[test-template-invocation:#5]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.FutureOrPresentDateValidatorUnitTest]/[nested-class:DirectValidatorTests]/[test-template:shouldReturnFalseForVariousDaysInPast(int)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.FutureOrPresentDateValidatorUnitTest]/[nested-class:DirectValidatorTests]/[test-template:shouldReturnFalseForVariousDaysInPast(int)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.FutureOrPresentDateValidatorUnitTest]/[nested-class:DirectValidatorTests]/[test-template:shouldReturnFalseForVariousDaysInPast(int)]/[test-template-invocation:#3]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.FutureOrPresentDateValidatorUnitTest]/[nested-class:DirectValidatorTests]/[test-template:shouldReturnFalseForVariousDaysInPast(int)]/[test-template-invocation:#4]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.FutureOrPresentDateValidatorUnitTest]/[nested-class:DirectValidatorTests]/[test-template:shouldReturnFalseForVariousDaysInPast(int)]/[test-template-invocation:#5]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.InMemoryUserCacheUnitTest]/[nested-class:UserTypeHandlingTests]/[test-template:shouldCacheAllUserTypesCorrectly(com.sm.instagram.platform.user.UserType)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.InMemoryUserCacheUnitTest]/[nested-class:UserTypeHandlingTests]/[test-template:shouldCacheAllUserTypesCorrectly(com.sm.instagram.platform.user.UserType)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.PartnershipAndDeletionUnitTest]/[nested-class:CompensationTypeTests]/[test-template:fromStringShouldBeCaseInsensitive(java.lang.String, java.lang.String)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.PartnershipAndDeletionUnitTest]/[nested-class:CompensationTypeTests]/[test-template:fromStringShouldBeCaseInsensitive(java.lang.String, java.lang.String)]/[test-template-invocation:#3]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.PartnershipAndDeletionUnitTest]/[nested-class:CompensationTypeTests]/[test-template:fromStringShouldBeCaseInsensitive(java.lang.String, java.lang.String)]/[test-template-invocation:#4]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.PartnershipAndDeletionUnitTest]/[nested-class:CompensationTypeTests]/[test-template:fromStringShouldBeCaseInsensitive(java.lang.String, java.lang.String)]/[test-template-invocation:#5]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.PartnershipAndDeletionUnitTest]/[nested-class:CompensationTypeTests]/[test-template:fromStringShouldBeCaseInsensitive(java.lang.String, java.lang.String)]/[test-template-invocation:#6]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.PartnershipAndDeletionUnitTest]/[nested-class:CompensationTypeTests]/[test-template:getValueShouldReturnName(com.sm.instagram.platform.partnershipopportunities.CompensationType)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.PartnershipOpportunityMoreUnitTest]/[nested-class:NumericRangeValidationTests]/[nested-class:CompensationAmountValidation]/[test-template:shouldValidateCompensationRangesCorrectly(int, int, boolean)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RecaptchaServiceUnitTest]/[nested-class:VerifyTokenScoreThresholdTests]/[test-template:shouldCorrectlyCompareScoreAgainstThreshold(float, double, boolean)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RedisUserCacheUnitTest]/[nested-class:CacheUserTests]/[test-template:shouldCacheCorrectRoleForAllUserTypes(com.sm.instagram.platform.user.UserType)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RedisUserCacheUnitTest]/[nested-class:CacheUserTests]/[test-template:shouldCacheCorrectRoleForAllUserTypes(com.sm.instagram.platform.user.UserType)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RedisUserCacheUnitTest]/[nested-class:CacheUserTests]/[test-template:shouldCacheCorrectRoleForAllUserTypes(com.sm.instagram.platform.user.UserType)]/[test-template-invocation:#3]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RedisUserCacheUnitTest]/[nested-class:CacheUserTests]/[test-template:shouldCacheCorrectRoleForAllUserTypes(com.sm.instagram.platform.user.UserType)]/[test-template-invocation:#4]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RedisUserCacheUnitTest]/[nested-class:GetAccountStatusTests]/[test-template:shouldReturnCorrectAccountStatusForAllStatuses(com.sm.instagram.platform.user.AccountStatus)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RedisUserCacheUnitTest]/[nested-class:GetAccountStatusTests]/[test-template:shouldReturnCorrectAccountStatusForAllStatuses(com.sm.instagram.platform.user.AccountStatus)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RedisUserCacheUnitTest]/[nested-class:GetAccountStatusTests]/[test-template:shouldReturnCorrectAccountStatusForAllStatuses(com.sm.instagram.platform.user.AccountStatus)]/[test-template-invocation:#3]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RedisUserCacheUnitTest]/[nested-class:GetAccountStatusTests]/[test-template:shouldReturnCorrectAccountStatusForAllStatuses(com.sm.instagram.platform.user.AccountStatus)]/[test-template-invocation:#5]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RedisUserCacheUnitTest]/[nested-class:GetAccountStatusTests]/[test-template:shouldReturnCorrectAccountStatusForAllStatuses(com.sm.instagram.platform.user.AccountStatus)]/[test-template-invocation:#6]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.RedisUserCacheUnitTest]/[nested-class:GetAccountStatusTests]/[test-template:shouldReturnCorrectAccountStatusForAllStatuses(com.sm.instagram.platform.user.AccountStatus)]/[test-template-invocation:#7]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.SignedUrlServiceUnitTest]/[nested-class:ValidationTests]/[test-template:shouldAcceptAllowedContentTypes(java.lang.String)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.SignedUrlServiceUnitTest]/[nested-class:ValidationTests]/[test-template:shouldAcceptAllowedContentTypes(java.lang.String)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.SignedUrlServiceUnitTest]/[nested-class:ValidationTests]/[test-template:shouldAcceptAllowedContentTypes(java.lang.String)]/[test-template-invocation:#3]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.SignedUrlServiceUnitTest]/[nested-class:ValidationTests]/[test-template:shouldAcceptAllowedContentTypes(java.lang.String)]/[test-template-invocation:#4]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.SignedUrlServiceUnitTest]/[nested-class:ValidationTests]/[test-template:shouldAcceptAllowedContentTypes(java.lang.String)]/[test-template-invocation:#5]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.SignedUrlServiceUnitTest]/[nested-class:ValidationTests]/[test-template:shouldAcceptAllowedContentTypes(java.lang.String)]/[test-template-invocation:#6]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.SignedUrlValidationServiceUnitTest]/[nested-class:IsBase64DetectionTests]/[test-template:shouldReturnTrueForVariousBase64Strings(java.lang.String)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.SignedUrlValidationServiceUnitTest]/[nested-class:IsBase64DetectionTests]/[test-template:shouldReturnTrueForVariousBase64Strings(java.lang.String)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.SignedUrlValidationServiceUnitTest]/[nested-class:IsBase64DetectionTests]/[test-template:shouldReturnTrueForVariousBase64Strings(java.lang.String)]/[test-template-invocation:#3]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.SpecificationBuilderUnitTest]/[nested-class:ParameterizedTests]/[test-template:isPersonalDataField_WhenVariousFields_ReturnsExpected(java.lang.String, boolean)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.SpecificationBuilderUnitTest]/[nested-class:ParameterizedTests]/[test-template:isPersonalDataField_WhenVariousFields_ReturnsExpected(java.lang.String, boolean)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.SpecificationBuilderUnitTest]/[nested-class:ParameterizedTests]/[test-template:isPersonalDataField_WhenVariousFields_ReturnsExpected(java.lang.String, boolean)]/[test-template-invocation:#3]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.SpecificationBuilderUnitTest]/[nested-class:ParameterizedTests]/[test-template:isPersonalDataField_WhenVariousFields_ReturnsExpected(java.lang.String, boolean)]/[test-template-invocation:#4]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.SpecificationBuilderUnitTest]/[nested-class:ParameterizedTests]/[test-template:isPersonalDataField_WhenVariousFields_ReturnsExpected(java.lang.String, boolean)]/[test-template-invocation:#5]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.SpecificationBuilderUnitTest]/[nested-class:ParameterizedTests]/[test-template:isPersonalDataField_WhenVariousFields_ReturnsExpected(java.lang.String, boolean)]/[test-template-invocation:#6]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.SpecificationBuilderUnitTest]/[nested-class:ParameterizedTests]/[test-template:isPersonalDataField_WhenVariousFields_ReturnsExpected(java.lang.String, boolean)]/[test-template-invocation:#8]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.SpecificationBuilderUnitTest]/[nested-class:ParameterizedTests]/[test-template:isPersonalDataField_WhenVariousFields_ReturnsExpected(java.lang.String, boolean)]/[test-template-invocation:#9]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.SupportTicketModelsUnitTest]/[nested-class:TicketStatusEnumTests]/[nested-class:StateTransitionTests]/[test-template:noStatusShouldTransitionToItself(com.sm.instagram.platform.support.ticket.models.TicketStatus)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.TranslationServiceUnitTest]/[nested-class:TranslateAccountStatusTests]/[test-template:shouldTranslateAccountStatuses(java.lang.String)]/[test-template-invocation:#3]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.TranslationServiceUnitTest]/[nested-class:TranslateAccountStatusTests]/[test-template:shouldTranslateAccountStatuses(java.lang.String)]/[test-template-invocation:#4]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.TranslationServiceUnitTest]/[nested-class:TranslateCurrencyTests]/[test-template:shouldTranslateCurrencyCodes(java.lang.String, java.lang.String, java.lang.String)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.TranslationServiceUnitTest]/[nested-class:TranslateCurrencyTests]/[test-template:shouldTranslateCurrencyCodes(java.lang.String, java.lang.String, java.lang.String)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.TranslationServiceUnitTest]/[nested-class:TranslateOpportunityStatusTests]/[test-template:shouldTranslateOpportunityStatuses(java.lang.String)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.TranslationServiceUnitTest]/[nested-class:TranslateOpportunityStatusTests]/[test-template:shouldTranslateOpportunityStatuses(java.lang.String)]/[test-template-invocation:#3]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.UserPackageUnitTest]/[nested-class:AccountStatusEnumTests]/[nested-class:CanTransitionToTests]/[test-template:noStatusCanTransitionToItself(com.sm.instagram.platform.user.AccountStatus)]/[test-template-invocation:#4]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.UserPackageUnitTest]/[nested-class:ProfileFieldCriticalityEnumTests]/[nested-class:NonCriticalFieldsTests]/[test-template:nonCriticalFieldsShouldBeIdentifiedCorrectly(java.lang.String)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.UserPackageUnitTest]/[nested-class:ProfileFieldCriticalityEnumTests]/[nested-class:NonCriticalFieldsTests]/[test-template:nonCriticalFieldsShouldBeIdentifiedCorrectly(java.lang.String)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.UserPackageUnitTest]/[nested-class:ProfileFieldCriticalityEnumTests]/[nested-class:NonCriticalFieldsTests]/[test-template:nonCriticalFieldsShouldBeIdentifiedCorrectly(java.lang.String)]/[test-template-invocation:#4]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.storage.SanitizeFilenameUnitTest]/[test-template:longNameWithoutExtension(int)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.storage.SanitizeFilenameUnitTest]/[test-template:longNameWithoutExtension(int)]/[test-template-invocation:#3]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.PiiMaskingUtilsUnitTest]/[nested-class:MaskEmailTests]/[test-template:maskEmail_variousValidEmails_masksCorrectly(java.lang.String, java.lang.String)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.PiiMaskingUtilsUnitTest]/[nested-class:MaskEmailTests]/[test-template:maskEmail_variousValidEmails_masksCorrectly(java.lang.String, java.lang.String)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.PiiMaskingUtilsUnitTest]/[nested-class:MaskEmailTests]/[test-template:maskEmail_variousValidEmails_masksCorrectly(java.lang.String, java.lang.String)]/[test-template-invocation:#3]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.PiiMaskingUtilsUnitTest]/[nested-class:MaskIpTests]/[test-template:maskIp_variousIpv4Addresses_masksCorrectly(java.lang.String, java.lang.String)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.PiiMaskingUtilsUnitTest]/[nested-class:MaskIpTests]/[test-template:maskIp_variousIpv4Addresses_masksCorrectly(java.lang.String, java.lang.String)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.PiiMaskingUtilsUnitTest]/[nested-class:MaskIpTests]/[test-template:maskIp_variousIpv4Addresses_masksCorrectly(java.lang.String, java.lang.String)]/[test-template-invocation:#3]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.RequestContextUtilsUnitTest]/[nested-class:SanitizeSensitiveDataTests]/[test-template:shouldMaskVariousSensitiveFieldNames(java.lang.String)]/[test-template-invocation:#1]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.RequestContextUtilsUnitTest]/[nested-class:SanitizeSensitiveDataTests]/[test-template:shouldMaskVariousSensitiveFieldNames(java.lang.String)]/[test-template-invocation:#2]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.RequestContextUtilsUnitTest]/[nested-class:SanitizeSensitiveDataTests]/[test-template:shouldMaskVariousSensitiveFieldNames(java.lang.String)]/[test-template-invocation:#3]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.RequestContextUtilsUnitTest]/[nested-class:SanitizeSensitiveDataTests]/[test-template:shouldMaskVariousSensitiveFieldNames(java.lang.String)]/[test-template-invocation:#4]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.RequestContextUtilsUnitTest]/[nested-class:SanitizeSensitiveDataTests]/[test-template:shouldMaskVariousSensitiveFieldNames(java.lang.String)]/[test-template-invocation:#7]",
+   "reason": "parameterized"
+  },
+  {
+   "test": "[engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.util.RequestContextUtilsUnitTest]/[nested-class:SanitizeSensitiveDataTests]/[test-template:shouldMaskVariousSensitiveFieldNames(java.lang.String)]/[test-template-invocation:#8]",
+   "reason": "parameterized"
+  }
+ ],
+ "tiers": {
+  "A": {
+   "available": 273,
+   "seconds": 0.4,
+   "taken": 221
+  },
+  "B": {
+   "available": 54,
+   "seconds": 0.3,
+   "taken": 44
+  },
+  "C": {
+   "available": 132,
+   "seconds": 1.4,
+   "taken": 35
+  },
+  "D": {
+   "available": 23,
+   "seconds": 0,
+   "taken": 0
+  }
+ },
+ "provisional": false
+}
