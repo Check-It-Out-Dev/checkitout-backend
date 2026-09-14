@@ -1147,6 +1147,68 @@
 			</build>
 		</profile>
 
+		<!--
+			The whole-estate mutation matrix: not a score but a fact per test — which mutants it kills —
+			for every class in main, which is what the subsumption analysis (tools/subsume in the frontend
+			repository) needs before "its kills are carried by the tests that stay" can be judged for a test
+			outside the four packages above. At the measured rate (2,408 mutants in ten minutes on two
+			threads) the whole estate is an hour or more, so this runs on a developer box or a nightly with
+			time to spare, never on a pull request, and writes to target/pit-matrix so the published score
+			report is untouched. XML only: the full matrix is an XML feature.
+
+			  ./mvnw -Pmutation-matrix -Dpit.threads=8 test-compile org.pitest:pitest-maven:mutationCoverage
+			  node tools/subsume/pit-matrix.mjs - -xml target/pit-matrix/mutations.xml - -root . - -out target/subsume/kills.json
+		-->
+		<profile>
+			<id>mutation-matrix</id>
+			<properties>
+				<skip.unit.tests>false</skip.unit.tests>
+				<skip.integration.tests>true</skip.integration.tests>
+				<jacoco.skip>true</jacoco.skip>
+				<pit.threads>2</pit.threads>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.pitest</groupId>
+						<artifactId>pitest-maven</artifactId>
+						<version>${pitest-maven.version}</version>
+						<dependencies>
+							<dependency>
+								<groupId>org.pitest</groupId>
+								<artifactId>pitest-junit5-plugin</artifactId>
+								<version>${pitest-junit5-plugin.version}</version>
+							</dependency>
+						</dependencies>
+						<configuration>
+							<targetClasses>
+								<param>com.sm.instagram.*</param>
+							</targetClasses>
+							<targetTests>
+								<param>com.sm.instagram.platform.unit.*</param>
+							</targetTests>
+							<excludedTestClasses>
+								<param>com.sm.instagram.platform.unit.e2e.*</param>
+							</excludedTestClasses>
+							<fullMutationMatrix>true</fullMutationMatrix>
+							<exportLineCoverage>true</exportLineCoverage>
+							<outputFormats>
+								<param>XML</param>
+							</outputFormats>
+							<timestampedReports>false</timestampedReports>
+							<reportsDirectory>${project.build.directory}/pit-matrix</reportsDirectory>
+							<threads>${pit.threads}</threads>
+							<timeoutConstant>8000</timeoutConstant>
+							<avoidCallsTo>
+								<avoidCallsTo>java.util.logging</avoidCallsTo>
+								<avoidCallsTo>org.slf4j</avoidCallsTo>
+							</avoidCallsTo>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
 		<!-- Test Profile - excludes devtools and optimizes for containers -->
 		<profile>
 			<id>test</id>
