@@ -426,7 +426,9 @@ reduced tier in random order, PIT again — and a ledger with one rule, tests or
 seconds lower and nothing the invariants guard lower. The plain-words guide,
 with the loop drawn and the round explained step by step, is
 [docs/testing/ai-in-the-loop.md](docs/testing/ai-in-the-loop.md); the
-mechanics are under [Test governance](#test-governance) above.
+mechanics are under [Test governance](#test-governance) above. If mutants, kills
+and set cover are new words, [docs/testing/mutation-primer.md](docs/testing/mutation-primer.md)
+starts from a house and its guards and ends at our metrics.
 
 ## The rest of the estate
 
