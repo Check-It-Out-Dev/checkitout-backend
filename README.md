@@ -295,6 +295,7 @@ Dated 2026-09. ✅ built · 🟡 under way · ⬜ designed, not started.
 | ✅ | **Schemathesis against the running server** | `api-fuzz.yml` generates requests from the schema and sends them at a real instance. It earned its place on the first run: every secured operation answered 401 while the document declared none, which is a contract defect because the frontend generates its client from that document. Fixed by `AuthFailureResponsesCustomizer`; the fuzzer now runs nightly |
 | ✅ | **OWASP Top 10 in the pipeline** | `security.yml`: Semgrep over the OWASP, secrets and Java rule sets; Checkov on the Dockerfiles and workflows for the misconfiguration surface nothing else reaches; Trivy on both the source tree and the **published image**, with an SBOM of each. All SARIF into code scanning. The dynamic half runs from the frontend repository, against the sandbox — which is this backend |
 | ✅ | **SonarQube Cloud quality gate** | Free for public repositories; fed the JaCoCo coverage the unit tier already writes. Its gate can be set on new code alone, which is what makes an existing backlog survivable |
+| 🟡 | **The test population under invariants** | Per-test coverage for every unit test, from a JaCoCo listener that resets after each test and writes the exec file back whole (the report from an armed run matches an unarmed one class for class); a `mutation-matrix` profile that records every killing test for every class in main. Next: the invariants gate on pull requests, the reduction pull request an agent opens and a person merges, and the reviewer that draws it — the method is the frontend's [ADR](https://github.com/Check-It-Out-Dev/checkitout-frontend/blob/main/docs/ci/ADR-test-subsumption.md) |
 
 ## Seven days of machine-written change
 
@@ -329,6 +330,22 @@ extracted from the code, enforced on the diff, with a human ratifying every
 loosening — is in progress, and the method, its precedents and its honest status
 are in the frontend's
 [design of record](https://github.com/Check-It-Out-Dev/checkitout-frontend/blob/main/docs/ci/GOVERNING-MACHINE-WRITTEN-CHANGE.md).
+
+The first instance is the suite itself. An agent may retire a unit test from the
+pull-request tier only when the tests that remain provably carry it — every probe
+it covers and every mutant it kills — and invariants a machine checks on every
+pull request say whether that held: coverage never lower for any class or method
+whose code did not change, no mutant killed yesterday surviving today, the suite
+green, the numbers in this file moved in the same commit. A second agent draws
+what changed and may quote the gate but not compute; a person merges; the
+nightly still runs everything, so the counts above stay true. This repository's
+half of the instrument is shipped: a JUnit listener that records what each
+unit-tier test exercised (`src/test/java/.../subsume/ProbeListener.java`,
+armed by `-Dsubsume.probes=true`, checked against an unarmed run's own JaCoCo
+report) and a `mutation-matrix` profile that records every killing test for
+every class in main. The analysis lives with the frontend's tooling
+(`tools/subsume/`); the decision is its
+[ADR](https://github.com/Check-It-Out-Dev/checkitout-frontend/blob/main/docs/ci/ADR-test-subsumption.md).
 
 ## The rest of the estate
 
