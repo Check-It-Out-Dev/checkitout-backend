@@ -14,6 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -720,6 +721,8 @@ class ServiceTypeFullUnitTest {
                     .hasMessageContaining("ServiceType not found: 999");
         }
 
+        // subsumed-by: ServiceTypeFullUnitTest$ServiceTypeConverterTests#shouldConvertIdToServiceTypeWhenFound() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should return converter from factory method")
         void shouldReturnConverterFromFactoryMethod() {
@@ -815,6 +818,8 @@ class ServiceTypeFullUnitTest {
             assertThat(existingEntity.getDescription()).isEqualTo("New Description");
         }
 
+        // subsumed-by: ServiceTypeFullUnitTest$ServiceTypeMapperTests#shouldConfigureMappingToSkipIdField() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should return ModelMapper instance from configureMapping")
         void shouldReturnModelMapperInstanceFromConfigureMapping() {

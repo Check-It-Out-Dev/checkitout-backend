@@ -22,6 +22,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -228,6 +229,8 @@ class AuthorizationServiceUnitTest {
             assertThat(result).isTrue();
         }
 
+        // subsumed-by: AuthorizationServiceUnitTest$PermissionUtilsCanEditAppliedOpportunityTests#canEditAppliedOpportunityShouldReturnFalseForCompany() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("hasRole should return false when user does not have the role")
         void hasRoleShouldReturnFalseWhenUserDoesNotHaveRole() {
@@ -1652,6 +1655,8 @@ class AuthorizationServiceUnitTest {
             verify(filterChain).doFilter(request, response);
         }
 
+        // subsumed-by: AuthorizationServiceUnitTest$BannedUserAuthorizationFilterTests#shouldAllowBannedUserToAccessActuatorEndpoints() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should allow banned user to access whitelisted endpoint /users/me")
         void shouldAllowBannedUserToAccessUsersMeEndpoint() throws Exception {
@@ -1667,6 +1672,8 @@ class AuthorizationServiceUnitTest {
             verify(filterChain).doFilter(request, response);
         }
 
+        // subsumed-by: AuthorizationServiceUnitTest$BannedUserAuthorizationFilterTests#shouldAllowBannedUserToAccessActuatorEndpoints() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should allow banned user to access whitelisted endpoint /api/users/me")
         void shouldAllowBannedUserToAccessApiUsersMeEndpoint() throws Exception {
@@ -1697,6 +1704,8 @@ class AuthorizationServiceUnitTest {
             verify(filterChain).doFilter(request, response);
         }
 
+        // subsumed-by: AuthorizationServiceUnitTest$BannedUserAuthorizationFilterTests#shouldAllowBannedUserToAccessActuatorEndpoints() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should allow banned user to access health endpoints")
         void shouldAllowBannedUserToAccessHealthEndpoints() throws Exception {
@@ -1712,6 +1721,8 @@ class AuthorizationServiceUnitTest {
             verify(filterChain).doFilter(request, response);
         }
 
+        // subsumed-by: AuthorizationServiceUnitTest$BannedUserAuthorizationFilterTests#shouldAllowBannedUserToAccessActuatorEndpoints() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should allow banned user to sign out")
         void shouldAllowBannedUserToSignOut() throws Exception {
@@ -1750,6 +1761,8 @@ class AuthorizationServiceUnitTest {
             verify(filterChain, never()).doFilter(request, response);
         }
 
+        // subsumed-by: AuthorizationServiceUnitTest$BannedUserAuthorizationFilterTests#shouldAllowBannedUserToAccessActuatorEndpoints() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should allow banned user to access notifications")
         void shouldAllowBannedUserToAccessNotifications() throws Exception {
@@ -1765,6 +1778,8 @@ class AuthorizationServiceUnitTest {
             verify(filterChain).doFilter(request, response);
         }
 
+        // subsumed-by: AuthorizationServiceUnitTest$BannedUserAuthorizationFilterTests#shouldAllowBannedUserToAccessActuatorEndpoints() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should allow banned user to refresh session")
         void shouldAllowBannedUserToRefreshSession() throws Exception {

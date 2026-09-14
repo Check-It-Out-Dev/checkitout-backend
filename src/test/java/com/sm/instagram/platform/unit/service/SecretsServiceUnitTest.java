@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -129,6 +130,8 @@ class SecretsServiceUnitTest {
             assertThat(result).isEqualTo("props-secret-value");
         }
 
+        // subsumed-by: SecretsServiceUnitTest$GetSecretProductionModeTests#shouldSkipCommentLinesInEnvFile() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should read secret from env file")
         void shouldReadSecretFromEnvFile() throws IOException {

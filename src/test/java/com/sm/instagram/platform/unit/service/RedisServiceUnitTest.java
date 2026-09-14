@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -384,6 +385,8 @@ class RedisServiceUnitTest {
             assertThat(result).isFalse();
         }
 
+        // subsumed-by: RedisServiceUnitTest$IsRedisOperationalTests#shouldReturnFalseWhenPingThrowsException() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should return false when connection throws exception")
         void shouldReturnFalseWhenConnectionThrowsException() {
@@ -465,6 +468,8 @@ class RedisServiceUnitTest {
     @DisplayName("Data Type Tests")
     class DataTypeTests {
 
+        // subsumed-by: RedisServiceUnitTest$DataTypeTests#shouldTestHashOperationsDuringValidation() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should test string operations during validation")
         void shouldTestStringOperationsDuringValidation() {
@@ -524,6 +529,8 @@ class RedisServiceUnitTest {
             verify(hashOperations).size(anyString());
         }
 
+        // subsumed-by: RedisServiceUnitTest$DataTypeTests#shouldTestHashOperationsDuringValidation() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should test sorted set operations during validation")
         void shouldTestSortedSetOperationsDuringValidation() {
@@ -539,6 +546,8 @@ class RedisServiceUnitTest {
             verify(zSetOperations).size(anyString());
         }
 
+        // subsumed-by: RedisServiceUnitTest$DataTypeTests#shouldTestHashOperationsDuringValidation() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should set expiration on test collections")
         void shouldSetExpirationOnTestCollections() {

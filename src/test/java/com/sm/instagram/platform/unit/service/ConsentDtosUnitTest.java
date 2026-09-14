@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -1233,6 +1234,8 @@ class ConsentDtosUnitTest {
             assertThat(label).isEqualTo("Udzielona");
         }
 
+        // subsumed-by: ConsentDtosUnitTest$ConsentActionEnumTests#shouldGetLabelFromDictionaryService() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should return enum name as fallback when translation missing")
         void shouldReturnEnumNameAsFallbackWhenTranslationMissing() {
@@ -1255,6 +1258,8 @@ class ConsentDtosUnitTest {
             assertThat(description).isEqualTo("Consent was granted by user");
         }
 
+        // subsumed-by: ConsentDtosUnitTest$ConsentActionEnumTests#shouldGetDescriptionFromDictionaryService() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should return default description when translation missing")
         void shouldReturnDefaultDescriptionWhenTranslationMissing() {

@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
@@ -86,6 +87,8 @@ class RedisUserCacheUnitTest {
     @DisplayName("cacheUser Tests")
     class CacheUserTests {
 
+        // subsumed-by: RedisUserCacheUnitTest$CacheUserTests#shouldCacheBannedUserAsActive() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should cache active user with correct key and TTL")
         void shouldCacheActiveUserWithCorrectKeyAndTtl() throws JsonProcessingException {
@@ -195,6 +198,8 @@ class RedisUserCacheUnitTest {
             assertThat(cachedData.get("role")).isEqualTo(userType.name());
         }
 
+        // subsumed-by: RedisUserCacheUnitTest$CacheUserTests#shouldCacheBannedUserAsActive() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should cache token version correctly")
         void shouldCacheTokenVersionCorrectly() throws JsonProcessingException {

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -407,6 +408,8 @@ class CorsLoggingFilterUnitTest {
             verify(filterChain).doFilter(any(), any());
         }
 
+        // subsumed-by: CorsLoggingFilterUnitTest$ResponseHeaderLoggingTests#shouldLogErrorWhenAccessControlAllowOriginMissing() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should log warning for error responses")
         void shouldLogWarningForErrorResponses() throws ServletException, IOException {

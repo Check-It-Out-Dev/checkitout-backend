@@ -4,6 +4,7 @@ import com.sm.instagram.platform.common.util.filtering.Copy;
 import com.sm.instagram.platform.common.util.filtering.SpecificationBuilder;
 import jakarta.persistence.criteria.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 import org.mockito.ArgumentCaptor;
@@ -383,6 +384,8 @@ class SpecificationBuilderUnitTest {
                     .doesNotThrowAnyException();
         }
 
+        // subsumed-by: SpecificationBuilderUnitTest$NumberFieldFilterTests#createSpecification_WhenIntegerField_CreatesEqualPredicate() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("Should handle zero value correctly")
         void createSpecification_WhenZeroValue_CreatesEqualPredicate() {
@@ -402,6 +405,8 @@ class SpecificationBuilderUnitTest {
             verify(criteriaBuilder).equal(path, 0);
         }
 
+        // subsumed-by: SpecificationBuilderUnitTest$NumberFieldFilterTests#createSpecification_WhenIntegerField_CreatesEqualPredicate() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("Should handle negative number correctly")
         void createSpecification_WhenNegativeValue_CreatesEqualPredicate() {
@@ -432,6 +437,8 @@ class SpecificationBuilderUnitTest {
          * field types, so root.getJavaType() must be stubbed first.
          */
 
+        // subsumed-by: SpecificationBuilderUnitTest$BooleanFieldFilterTests#createSpecification_WhenBooleanFalse_CreatesEqualPredicate() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("Should create equal predicate for boolean true value")
         void createSpecification_WhenBooleanTrue_CreatesEqualPredicate() {

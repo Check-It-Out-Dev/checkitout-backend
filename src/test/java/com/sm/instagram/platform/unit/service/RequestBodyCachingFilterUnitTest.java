@@ -11,6 +11,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletInputStream;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
@@ -59,6 +60,8 @@ class RequestBodyCachingFilterUnitTest {
     @DisplayName("doFilter - MDC Context Setup")
     class MdcContextSetupTests {
 
+        // subsumed-by: RequestBodyCachingFilterUnitTest$MdcContextSetupTests#doFilter_RequestIdHasCorrectFormat() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("Should set REQUEST_ID in MDC for any request")
         void doFilter_SetsRequestIdInMdc() throws ServletException, IOException {
@@ -146,6 +149,8 @@ class RequestBodyCachingFilterUnitTest {
     @DisplayName("doFilter - Request Body Caching Decision")
     class RequestBodyCachingDecisionTests {
 
+        // subsumed-by: RequestBodyCachingFilterUnitTest$RequestBodyCachingDecisionTests#doFilter_CachesJsonWithCharset() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("Should cache POST request with JSON content")
         void doFilter_CachesPostRequestWithJsonContent() throws ServletException, IOException {
@@ -545,6 +550,8 @@ class RequestBodyCachingFilterUnitTest {
             assertThat(cachedRequest.getCachedBodyBytes()).isEmpty();
         }
 
+        // subsumed-by: RequestBodyCachingFilterUnitTest$CachedBodyHttpServletRequestTests#cachedRequest_CachesBodyString() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("Should handle multiline JSON body")
         void cachedRequest_HandlesMultilineBody() throws IOException {
@@ -562,6 +569,8 @@ class RequestBodyCachingFilterUnitTest {
             assertThat(cachedBody).contains("\"value\": 123");
         }
 
+        // subsumed-by: RequestBodyCachingFilterUnitTest$CachedBodyHttpServletRequestTests#cachedRequest_CachesBodyString() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("Should handle Unicode content in body")
         void cachedRequest_HandlesUnicodeContent() throws IOException {
@@ -734,6 +743,8 @@ class RequestBodyCachingFilterUnitTest {
             earlyFilter = new EarlyRequestLoggingFilter(testCorsProperties());
         }
 
+        // subsumed-by: RequestBodyCachingFilterUnitTest$EarlyRequestLoggingFilterTests#doFilter_SetsMdcCorrelationId() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("Should log incoming request and continue filter chain")
         void doFilter_LogsAndContinuesChain() throws ServletException, IOException {
@@ -1038,6 +1049,8 @@ class RequestBodyCachingFilterUnitTest {
             verify(filterChain).doFilter(any(), any());
         }
 
+        // subsumed-by: RequestBodyCachingFilterUnitTest$ResponseStatusLoggingTests#doFilter_LogsWarningFor4xxStatus() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("Should log warning for 5xx status")
         void doFilter_LogsWarningFor5xxStatus() throws ServletException, IOException {

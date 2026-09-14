@@ -21,6 +21,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -1723,6 +1724,8 @@ class AuthValidatorsUnitTest {
                 assertThat(secret).isNotEmpty();
             }
 
+            // subsumed-by: AuthValidatorsUnitTest$ImprovedQRCodeServiceTests$GenerateSecretTests#shouldGenerate32CharSecret() (round 1)
+            @Tag("subsumed")
             @Test
             @DisplayName("should generate Base32 secret")
             void shouldGenerateBase32Secret() {
@@ -1737,6 +1740,8 @@ class AuthValidatorsUnitTest {
                 assertThat(secret).hasSize(32);
             }
 
+            // subsumed-by: AuthValidatorsUnitTest$ImprovedQRCodeServiceTests$GenerateSecretTests#shouldGenerate32CharSecret() (round 1)
+            @Tag("subsumed")
             @Test
             @DisplayName("should generate unique secrets")
             void shouldGenerateUniqueSecrets() {
@@ -1782,6 +1787,8 @@ class AuthValidatorsUnitTest {
                 assertThat(service.isValidSecret("ABC123!@#")).isFalse();
             }
 
+            // subsumed-by: AuthValidatorsUnitTest$ImprovedQRCodeServiceTests$IsValidSecretTests#shouldReturnFalseForInvalidCharacters() (round 1)
+            @Tag("subsumed")
             @Test
             @DisplayName("should return false for lowercase secret")
             void shouldReturnFalseForLowercaseSecret() {
@@ -1810,6 +1817,8 @@ class AuthValidatorsUnitTest {
                 assertThat(url).startsWith("otpauth://totp/");
             }
 
+            // subsumed-by: AuthValidatorsUnitTest$ImprovedQRCodeServiceTests$GenerateOtpAuthUrlTests#shouldGenerateOtpAuthUrl() (round 1)
+            @Tag("subsumed")
             @Test
             @DisplayName("should include secret parameter")
             void shouldIncludeSecretParameter() {
@@ -1817,6 +1826,8 @@ class AuthValidatorsUnitTest {
                 assertThat(url).contains("secret=" + TEST_SECRET);
             }
 
+            // subsumed-by: AuthValidatorsUnitTest$ImprovedQRCodeServiceTests$GenerateOtpAuthUrlTests#shouldGenerateOtpAuthUrl() (round 1)
+            @Tag("subsumed")
             @Test
             @DisplayName("should include issuer parameter")
             void shouldIncludeIssuerParameter() {
@@ -1824,6 +1835,8 @@ class AuthValidatorsUnitTest {
                 assertThat(url).contains("issuer=TestApp");
             }
 
+            // subsumed-by: AuthValidatorsUnitTest$ImprovedQRCodeServiceTests$GenerateOtpAuthUrlTests#shouldGenerateOtpAuthUrl() (round 1)
+            @Tag("subsumed")
             @Test
             @DisplayName("should include algorithm parameter")
             void shouldIncludeAlgorithmParameter() {

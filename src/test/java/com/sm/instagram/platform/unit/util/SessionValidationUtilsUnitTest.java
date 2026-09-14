@@ -4,6 +4,7 @@ import com.sm.instagram.platform.common.util.SessionValidationUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -144,6 +145,8 @@ class SessionValidationUtilsUnitTest {
     @DisplayName("isSameCountry")
     class IsSameCountry {
 
+        // subsumed-by: SessionValidationUtilsUnitTest$IsSameCountry#isSameCountry_caseInsensitive_returnsTrue() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should return true when countries are the same")
         void isSameCountry_sameCountry_returnsTrue() {

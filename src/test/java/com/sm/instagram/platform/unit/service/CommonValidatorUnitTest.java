@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
@@ -557,6 +558,8 @@ class CommonValidatorUnitTest {
                 .doesNotThrowAnyException();
         }
 
+        // subsumed-by: CommonValidatorUnitTest$MaskEmailTests#shouldHandleEmailWithNoLocalPart() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should handle email with single character before @")
         void shouldHandleEmailWithSingleCharacterBeforeAt() {

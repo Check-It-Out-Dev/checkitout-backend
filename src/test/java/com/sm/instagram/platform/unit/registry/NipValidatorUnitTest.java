@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -109,18 +110,24 @@ class NipValidatorUnitTest {
             assertThat(validator.normalize("526-104-08-28")).isEqualTo("5261040828");
         }
 
+        // subsumed-by: NipValidatorUnitTest$Normalize#shouldRemoveDashes() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should remove spaces")
         void shouldRemoveSpaces() {
             assertThat(validator.normalize("526 104 08 28")).isEqualTo("5261040828");
         }
 
+        // subsumed-by: NipValidatorUnitTest$Normalize#shouldRemoveDashes() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should remove mixed dashes and spaces")
         void shouldRemoveMixedDashesAndSpaces() {
             assertThat(validator.normalize("526-104 08-28")).isEqualTo("5261040828");
         }
 
+        // subsumed-by: NipValidatorUnitTest$Normalize#shouldRemoveDashes() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should return same string if already clean")
         void shouldReturnSameStringIfAlreadyClean() {

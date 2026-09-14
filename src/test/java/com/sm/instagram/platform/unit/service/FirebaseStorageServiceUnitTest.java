@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -135,6 +136,8 @@ class FirebaseStorageServiceUnitTest {
                 verify(storage, never()).delete(anyList());
             }
 
+            // subsumed-by: FirebaseStorageServiceUnitTest$DeleteFolderTests$DeleteFolderSuccessTests#shouldBatchDeleteFilesInGroupsOf100() (round 1)
+            @Tag("subsumed")
             @Test
             @DisplayName("should delete single file and return count of 1")
             void shouldDeleteSingleFileAndReturnCount() {
@@ -155,6 +158,8 @@ class FirebaseStorageServiceUnitTest {
                 verify(storage).delete(anyList());
             }
 
+            // subsumed-by: FirebaseStorageServiceUnitTest$DeleteFolderTests$DeleteFolderSuccessTests#shouldBatchDeleteFilesInGroupsOf100() (round 1)
+            @Tag("subsumed")
             @Test
             @DisplayName("should delete multiple files and return correct count")
             void shouldDeleteMultipleFilesAndReturnCount() {
@@ -682,6 +687,8 @@ class FirebaseStorageServiceUnitTest {
                 assertThat(capturedBlobId.getName()).isEqualTo(BLOB_PATH);
             }
 
+            // subsumed-by: FirebaseStorageServiceUnitTest$GetFileMetadataTests$GetFileMetadataSuccessTests#shouldReturnBlobWhenFileExists() (round 1)
+            @Tag("subsumed")
             @Test
             @DisplayName("should return blob with all metadata intact")
             void shouldReturnBlobWithMetadata() {

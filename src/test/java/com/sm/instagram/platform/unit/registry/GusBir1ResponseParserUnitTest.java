@@ -4,6 +4,7 @@ import com.sm.instagram.platform.registry.adapter.gus.GusBir1ResponseParser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -81,6 +82,8 @@ class GusBir1ResponseParserUnitTest {
     @DisplayName("extractSearchResult")
     class ExtractSearchResult {
 
+        // subsumed-by: GusBir1ResponseParserUnitTest$ExtractSearchResult#shouldSkipBlankValues() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should extract search result fields from HTML-encoded XML")
         void shouldExtractSearchResultFromEncodedXml() throws Exception {

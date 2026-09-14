@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 
@@ -146,6 +147,8 @@ class ApplicationHealthIndicatorUnitTest {
             assertThat(memoryMax).matches(".*\\d.*[BKMGTPE]?B?");
         }
 
+        // subsumed-by: ApplicationHealthIndicatorUnitTest$JvmMetricsValidationTests#shouldReportPositiveMemoryValues() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should return percentage with two decimal places")
         void shouldReturnPercentageWithTwoDecimalPlaces() {
