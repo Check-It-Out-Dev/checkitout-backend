@@ -18,6 +18,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -1669,6 +1670,8 @@ class InstagramSocialAuthUnitTest {
                 assertThat(token).isEqualTo("770277702827785|abc123secret");
             }
 
+            // subsumed-by: InstagramSocialAuthUnitTest$InstagramStartupValidatorTests$AppAccessTokenGenerationTests#shouldGenerateCorrectFormat() (round 1)
+            @Tag("subsumed")
             @Test
             @DisplayName("should include pipe separator in app access token")
             void shouldIncludePipeSeparator() throws Exception {
@@ -1689,6 +1692,8 @@ class InstagramSocialAuthUnitTest {
         @DisplayName("OAuth URL Building")
         class OAuthUrlBuildingTests {
 
+            // subsumed-by: InstagramSocialAuthUnitTest$InstagramStartupValidatorTests$OAuthUrlBuildingTests#shouldBuildOAuthUrlWithClientId() (round 1)
+            @Tag("subsumed")
             @Test
             @DisplayName("should build OAuth URL with correct base")
             void shouldBuildOAuthUrlWithCorrectBase() throws Exception {
@@ -1713,6 +1718,8 @@ class InstagramSocialAuthUnitTest {
                 assertThat(url).contains("client_id=my-client-id");
             }
 
+            // subsumed-by: InstagramSocialAuthUnitTest$InstagramStartupValidatorTests$OAuthUrlBuildingTests#shouldBuildOAuthUrlWithClientId() (round 1)
+            @Tag("subsumed")
             @Test
             @DisplayName("should build OAuth URL with redirect_uri parameter")
             void shouldBuildOAuthUrlWithRedirectUri() throws Exception {

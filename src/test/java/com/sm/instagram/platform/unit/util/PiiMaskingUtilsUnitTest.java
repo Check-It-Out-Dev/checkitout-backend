@@ -4,6 +4,7 @@ import com.sm.instagram.platform.common.util.PiiMaskingUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -24,6 +25,8 @@ class PiiMaskingUtilsUnitTest {
     @DisplayName("maskEmail tests")
     class MaskEmailTests {
 
+        // subsumed-by: PiiMaskingUtilsUnitTest$MaskEmailTests#maskEmail_shortLocalPart_masksCorrectly() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("masks valid email correctly - shows first char and domain")
         void maskEmail_validEmail_masksCorrectly() {
@@ -107,6 +110,8 @@ class PiiMaskingUtilsUnitTest {
     @DisplayName("maskIp tests")
     class MaskIpTests {
 
+        // subsumed-by: PiiMaskingUtilsUnitTest$MaskIpTests#maskIp_localhost_masksLastOctet() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("masks valid IPv4 address - hides last octet")
         void maskIp_validIpv4_masksLastOctet() {

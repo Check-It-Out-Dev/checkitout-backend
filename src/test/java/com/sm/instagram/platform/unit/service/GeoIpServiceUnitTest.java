@@ -918,6 +918,25 @@ class GeoIpServiceUnitTest {
                 Map<String, Object> metrics = cache.getMetrics();
                 assertThat((int) metrics.get("currentSize")).isLessThanOrEqualTo(3);
             }
+
+            @Test
+            @DisplayName("a full cache evicts exactly one entry even when every entry was written this millisecond")
+            void evictsExactlyOneEntryWhenTimestampsAreEqual() {
+                // The eviction used to seed its search with "now", so entries written in the same
+                // millisecond were never older than now: on a fast machine a full cache evicted
+                // nothing and grew past its limit, and the governance round's invariants gate saw
+                // the branch come and go between identical runs (2026-09-14). No sleeps here on
+                // purpose — equal timestamps are the case this test exists for.
+                ReflectionTestUtils.setField(cache, "maxEntries", 3);
+
+                cache.put("1.1.1.1", createLocation("US", "First", 40.0, -74.0));
+                cache.put("2.2.2.2", createLocation("GB", "Second", 51.0, -0.1));
+                cache.put("3.3.3.3", createLocation("DE", "Third", 52.0, 13.0));
+                cache.put("4.4.4.4", createLocation("FR", "Fourth", 48.0, 2.0));
+
+                Map<String, Object> metrics = cache.getMetrics();
+                assertThat((int) metrics.get("currentSize")).isEqualTo(3);
+            }
         }
 
         @Nested

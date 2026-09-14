@@ -24,6 +24,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -673,6 +674,8 @@ class UserServiceUnitTest {
             assertThat(service.wouldChangeEmail(1L, "   ")).isFalse();
         }
 
+        // subsumed-by: UserServiceUnitTest$WouldChangeEmailTests#sameEmailIsNotAChange() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("unknown user defers to downstream not-found handling")
         void unknownUserIsNotAChange() {

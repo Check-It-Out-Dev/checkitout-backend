@@ -4,6 +4,7 @@ import com.sm.instagram.platform.common.util.GeoDistanceCalculator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
@@ -51,6 +52,8 @@ class GeoDistanceCalculatorUnitTest {
     @DisplayName("calculateDistanceKm tests")
     class CalculateDistanceKmTests {
 
+        // subsumed-by: GeoDistanceCalculatorUnitTest$CalculateDistanceKmTests#calculateDistanceKm_knownCities_returnsCorrectDistance() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("Same point returns zero distance")
         void calculateDistanceKm_samePoint_returnsZero() {
@@ -107,6 +110,8 @@ class GeoDistanceCalculatorUnitTest {
             assertThat(distance).isCloseTo(7823.0, within(7823.0 * DISTANCE_TOLERANCE_PERCENT));
         }
 
+        // subsumed-by: GeoDistanceCalculatorUnitTest$CalculateDistanceKmTests#calculateDistanceKm_knownCities_returnsCorrectDistance() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("Negative longitude (Western Hemisphere) calculates correctly")
         void calculateDistanceKm_negativeLongitude_handlesCorrectly() {

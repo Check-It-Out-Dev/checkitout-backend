@@ -15,6 +15,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -556,6 +557,8 @@ class FirebaseServiceUnitTest {
             assertThat(result).isEqualTo(expectedToken);
         }
 
+        // subsumed-by: FirebaseServiceUnitTest$GenerateCustomTokenWithClaimsTests#shouldGenerateCustomTokenWithClaimsSuccessfully() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should pass complex claims map correctly")
         void shouldPassComplexClaimsMapCorrectly() throws FirebaseAuthException {

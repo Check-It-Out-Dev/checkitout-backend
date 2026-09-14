@@ -21,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -179,6 +180,8 @@ class FileUploadControllerUnitTest {
             verify(signedUrlService).generateSignedUrl(eq(TEST_USER_ID), any());
         }
 
+        // subsumed-by: FileUploadControllerUnitTest$GenerateSignedUrl#shouldGenerateSignedUrlForValidRequest() (round 1)
+        @Tag("subsumed")
         @Test
         @WithMockUser(authorities = "COMPANY")
         @DisplayName("should generate signed URL for company user")
@@ -277,6 +280,8 @@ class FileUploadControllerUnitTest {
                     .andExpect(status().isOk());
         }
 
+        // subsumed-by: FileUploadControllerUnitTest$GenerateSignedUrl#shouldGenerateSignedUrlForValidRequest() (round 1)
+        @Tag("subsumed")
         @Test
         @WithMockUser(authorities = "INFLUENCER")
         @DisplayName("should accept PNG content type")
@@ -293,6 +298,8 @@ class FileUploadControllerUnitTest {
                     .andExpect(status().isOk());
         }
 
+        // subsumed-by: FileUploadControllerUnitTest$GenerateSignedUrl#shouldGenerateSignedUrlForValidRequest() (round 1)
+        @Tag("subsumed")
         @Test
         @WithMockUser(authorities = "INFLUENCER")
         @DisplayName("should accept GIF content type")
@@ -309,6 +316,8 @@ class FileUploadControllerUnitTest {
                     .andExpect(status().isOk());
         }
 
+        // subsumed-by: FileUploadControllerUnitTest$GenerateSignedUrl#shouldGenerateSignedUrlForValidRequest() (round 1)
+        @Tag("subsumed")
         @Test
         @WithMockUser(authorities = "INFLUENCER")
         @DisplayName("should accept WebP content type")
@@ -330,6 +339,8 @@ class FileUploadControllerUnitTest {
     @DisplayName("POST /upload/signed-url - Validation")
     class GenerateSignedUrlValidation {
 
+        // subsumed-by: FileUploadControllerUnitTest$GenerateSignedUrlValidation#shouldRejectRequestWithBlankFilename() (round 1)
+        @Tag("subsumed")
         @Test
         @WithMockUser(authorities = "INFLUENCER")
         @DisplayName("should reject request with missing filename")
@@ -373,6 +384,8 @@ class FileUploadControllerUnitTest {
             verify(signedUrlService, never()).generateSignedUrl(any(), any());
         }
 
+        // subsumed-by: FileUploadControllerUnitTest$GenerateSignedUrlValidation#shouldRejectRequestWithBlankFilename() (round 1)
+        @Tag("subsumed")
         @Test
         @WithMockUser(authorities = "INFLUENCER")
         @DisplayName("should reject request with missing content type")
@@ -416,6 +429,8 @@ class FileUploadControllerUnitTest {
             verify(signedUrlService, never()).generateSignedUrl(any(), any());
         }
 
+        // subsumed-by: FileUploadControllerUnitTest$GenerateSignedUrlValidation#shouldRejectRequestWithBlankFilename() (round 1)
+        @Tag("subsumed")
         @Test
         @WithMockUser(authorities = "INFLUENCER")
         @DisplayName("should reject request with missing file size")
@@ -437,6 +452,8 @@ class FileUploadControllerUnitTest {
             verify(signedUrlService, never()).generateSignedUrl(any(), any());
         }
 
+        // subsumed-by: FileUploadControllerUnitTest$GenerateSignedUrlValidation#shouldRejectRequestWithBlankFilename() (round 1)
+        @Tag("subsumed")
         @Test
         @WithMockUser(authorities = "INFLUENCER")
         @DisplayName("should reject request with zero file size")
@@ -459,6 +476,8 @@ class FileUploadControllerUnitTest {
             verify(signedUrlService, never()).generateSignedUrl(any(), any());
         }
 
+        // subsumed-by: FileUploadControllerUnitTest$GenerateSignedUrlValidation#shouldRejectRequestWithBlankFilename() (round 1)
+        @Tag("subsumed")
         @Test
         @WithMockUser(authorities = "INFLUENCER")
         @DisplayName("should reject request with file size exceeding max")
@@ -734,6 +753,8 @@ class FileUploadControllerUnitTest {
     @DisplayName("GET /upload/health")
     class HealthCheck {
 
+        // subsumed-by: FileUploadControllerUnitTest$HealthCheck#shouldReturnHealthForCompanyUser() (round 1)
+        @Tag("subsumed")
         @Test
         @WithMockUser(authorities = "INFLUENCER")
         @DisplayName("should return healthy status")

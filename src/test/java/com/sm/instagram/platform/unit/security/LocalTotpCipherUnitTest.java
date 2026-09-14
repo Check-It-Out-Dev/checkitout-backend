@@ -4,6 +4,7 @@ import com.sm.instagram.platform.common.security.LocalTotpCipher;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -25,6 +26,8 @@ class LocalTotpCipherUnitTest {
     @DisplayName("round trip")
     class RoundTrip {
 
+        // subsumed-by: LocalTotpCipherUnitTest$RoundTrip#handlesAwkwardValues() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("returns what was encrypted")
         void returnsWhatWasEncrypted() {

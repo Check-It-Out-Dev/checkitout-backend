@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -881,6 +882,8 @@ class CityFullUnitTest {
             verifyNoInteractions(cityRepository);
         }
 
+        // subsumed-by: CityFullUnitTest$CityConverterToCityTests#shouldThrowIllegalArgumentExceptionForEmptyCityName() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should throw IllegalArgumentException for whitespace-only city name")
         void shouldThrowIllegalArgumentExceptionForWhitespaceCityName() {
@@ -899,6 +902,8 @@ class CityFullUnitTest {
             verifyNoInteractions(cityRepository);
         }
 
+        // subsumed-by: CityFullUnitTest$CityConverterToCityTests#shouldThrowIllegalArgumentExceptionForEmptyCityName() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should throw IllegalArgumentException for tab-only city name")
         void shouldThrowIllegalArgumentExceptionForTabOnlyCityName() {
@@ -984,6 +989,8 @@ class CityFullUnitTest {
             assertThat(result).isNull();
         }
 
+        // subsumed-by: CityFullUnitTest$CityConverterToCityNameTests#shouldConvertCityEntityToName() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should convert city with long name correctly")
         void shouldConvertCityWithLongNameCorrectly() {
@@ -1007,6 +1014,8 @@ class CityFullUnitTest {
             assertThat(result).hasSize(255);
         }
 
+        // subsumed-by: CityFullUnitTest$CityConverterToCityNameTests#shouldConvertCityEntityToName() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should convert city with special characters in name")
         void shouldConvertCityWithSpecialCharactersInName() {

@@ -170,9 +170,13 @@ public class InMemoryGeoLocationCache implements GeoLocationCache {
      * Evict oldest or least recently used entry.
      */
     private void evictOldestEntry() {
+        // The first entry is always a candidate. Seeding the comparison with the current time meant
+        // that entries written in the same millisecond as the eviction were never "older than now",
+        // so on a fast machine a full cache evicted nothing and grew past its limit; the governance
+        // round's invariants gate saw the branch come and go between identical runs (2026-09-14).
         String oldestKey = null;
-        long oldestTime = System.currentTimeMillis();
-        
+        long oldestTime = Long.MAX_VALUE;
+
         for (Map.Entry<String, CachedLocation> entry : locationCache.entrySet()) {
             CachedLocation cached = entry.getValue();
             if (cached.getLastAccessed() < oldestTime) {

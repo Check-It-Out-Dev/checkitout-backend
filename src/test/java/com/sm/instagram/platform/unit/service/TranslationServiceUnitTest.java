@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -138,6 +139,8 @@ class TranslationServiceUnitTest {
             assertThat(result).isEqualTo("Zdjęcie");
         }
 
+        // subsumed-by: TranslationServiceUnitTest$TranslateContentTypeTests#shouldReturnOriginalForUnknownContentType() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should translate video content type")
         void shouldTranslateVideoContentType() {
@@ -210,6 +213,8 @@ class TranslationServiceUnitTest {
     @DisplayName("translateCompensationType")
     class TranslateCompensationTypeTests {
 
+        // subsumed-by: TranslationServiceUnitTest$TranslateCompensationTypeTests#shouldTranslateBarterCompensationType() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should translate PAID compensation type")
         void shouldTranslatePaidCompensationType() {
@@ -254,6 +259,8 @@ class TranslationServiceUnitTest {
     @DisplayName("translateUserType")
     class TranslateUserTypeTests {
 
+        // subsumed-by: TranslationServiceUnitTest$TranslateUserTypeTests#shouldTranslateCompanyUserType() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should translate INFLUENCER user type")
         void shouldTranslateInfluencerUserType() {
@@ -359,6 +366,8 @@ class TranslationServiceUnitTest {
     @DisplayName("translateRateStatus")
     class TranslateRateStatusTests {
 
+        // subsumed-by: TranslationServiceUnitTest$TranslateRateStatusTests#shouldTranslateNegativeRateStatus() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should translate POSITIVE rate status")
         void shouldTranslatePositiveRateStatus() {

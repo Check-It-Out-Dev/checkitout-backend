@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -204,6 +205,8 @@ class ConsentEnforcementFilterUnitTest {
 
         // === ALLOWED: GET to blacklisted paths (read-only browsing) ===
 
+        // subsumed-by: ConsentEnforcementFilterUnitTest$WhenUserBlocked#should_allow_auth_sign_out_endpoint() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should allow GET /partnership-opportunity/paged (read-only browsing)")
         void should_allow_get_partnership_opportunity_paged() throws Exception {
@@ -221,6 +224,8 @@ class ConsentEnforcementFilterUnitTest {
 
         // === ALLOWED: POST to sub-paths of blacklisted endpoints (existing work) ===
 
+        // subsumed-by: ConsentEnforcementFilterUnitTest$WhenUserBlocked#should_allow_post_file_upload() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should allow POST /applied-opportunity/content (content submission for existing collaboration)")
         void should_allow_post_to_subpath_content_submission() throws Exception {
@@ -239,6 +244,8 @@ class ConsentEnforcementFilterUnitTest {
 
         // === ALLOWED: Other HTTP methods on blacklisted paths ===
 
+        // subsumed-by: ConsentEnforcementFilterUnitTest$WhenUserBlocked#should_allow_auth_sign_out_endpoint() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should allow PATCH /applied-opportunity/status/update (collaboration status transition)")
         void should_allow_patch_collaboration_status() throws Exception {
@@ -275,6 +282,8 @@ class ConsentEnforcementFilterUnitTest {
 
         // === ALLOWED: Previously blocked GET endpoints now pass through (soft block) ===
 
+        // subsumed-by: ConsentEnforcementFilterUnitTest$WhenUserBlocked#should_allow_auth_sign_out_endpoint() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should allow GET /collaborations (previously blocked, now soft-allowed)")
         void should_allow_get_to_any_endpoint() throws Exception {
@@ -292,6 +301,8 @@ class ConsentEnforcementFilterUnitTest {
 
         // === ALLOWED: Standard endpoints (profile, legal, auth, support, health) ===
 
+        // subsumed-by: ConsentEnforcementFilterUnitTest$WhenUserBlocked#should_allow_auth_sign_out_endpoint() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should allow /users/me endpoint")
         void should_allow_users_me_endpoint() throws Exception {

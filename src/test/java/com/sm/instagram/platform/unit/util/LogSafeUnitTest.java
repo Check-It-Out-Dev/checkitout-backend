@@ -3,6 +3,7 @@ package com.sm.instagram.platform.unit.util;
 import com.sm.instagram.platform.common.util.LogSafe;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -23,6 +24,8 @@ class LogSafeUnitTest {
     /** A line break followed by something that reads like a log entry: the attack, in one string. */
     private static final String FORGED = "\nINFO  forged";
 
+    // subsumed-by: CorsLoggingFilterUnitTest$SuspiciousOriginDetectionTests#shouldLogWarningForExcessivelyLongOrigin() (round 1)
+    @Tag("subsumed")
     @Test
     @DisplayName("a newline in an Origin header cannot forge a second entry")
     void forgedEntryCollapsesIntoOneLine() {
@@ -37,6 +40,8 @@ class LogSafeUnitTest {
                 .contains("Login succeeded for admin");
     }
 
+    // subsumed-by: CorsLoggingFilterUnitTest$SuspiciousOriginDetectionTests#shouldLogWarningForExcessivelyLongOrigin() (round 1)
+    @Tag("subsumed")
     @Test
     @DisplayName("every separator a log viewer honours is neutralised, not just CR and LF")
     void everyLineBreakingCharacterIsReplaced() {
@@ -59,12 +64,16 @@ class LogSafeUnitTest {
                 .isEqualTo("before?after"));
     }
 
+    // subsumed-by: CorsLoggingFilterUnitTest$SuspiciousOriginDetectionTests#shouldLogWarningForExcessivelyLongOrigin() (round 1)
+    @Tag("subsumed")
     @Test
     @DisplayName("a CRLF pair collapses to two markers, not one")
     void crlfLeavesTwoMarkers() {
         assertThat(LogSafe.value("before\r\nafter")).isEqualTo("before??after");
     }
 
+    // subsumed-by: CorsLoggingFilterUnitTest$SuspiciousOriginDetectionTests#shouldLogWarningForExcessivelyLongOrigin() (round 1)
+    @Tag("subsumed")
     @Test
     @DisplayName("ordinary values pass through untouched")
     void ordinaryValuesAreUnchanged() {
@@ -100,6 +109,8 @@ class LogSafeUnitTest {
         assertThat(LogSafe.value(null)).isNull();
     }
 
+    // subsumed-by: LogSafeUnitTest#longValuesAreTruncatedAndSaySo() (round 1)
+    @Tag("subsumed")
     @Test
     @DisplayName("truncation counts the value as it arrived, so a flood is visible in the length")
     void truncationReportsTheOriginalLength() {

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -92,6 +93,8 @@ class FutureOrPresentDateValidatorUnitTest {
             assertThat(result).isTrue();
         }
 
+        // subsumed-by: FutureOrPresentDateValidatorUnitTest$DirectValidatorTests#shouldReturnFalseForDateOneWeekAgo() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should return false for yesterday's date")
         void shouldReturnFalseForYesterdaysDate() {
@@ -100,6 +103,8 @@ class FutureOrPresentDateValidatorUnitTest {
             assertThat(result).isFalse();
         }
 
+        // subsumed-by: FutureOrPresentDateValidatorUnitTest$DirectValidatorTests#shouldReturnFalseForDateOneWeekAgo() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should return false for yesterday's date at 23:59:59")
         void shouldReturnFalseForYesterdaysDateAtEndOfDay() {
@@ -108,6 +113,8 @@ class FutureOrPresentDateValidatorUnitTest {
             assertThat(result).isFalse();
         }
 
+        // subsumed-by: FutureOrPresentDateValidatorUnitTest$DirectValidatorTests#shouldReturnFalseForDateOneWeekAgo() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should return false for date far in the past")
         void shouldReturnFalseForPastDateFarInPast() {

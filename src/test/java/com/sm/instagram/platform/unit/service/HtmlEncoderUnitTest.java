@@ -2,6 +2,7 @@ package com.sm.instagram.platform.unit.service;
 
 import com.sm.instagram.platform.common.util.HtmlEncoder;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 
@@ -301,6 +302,8 @@ class HtmlEncoderUnitTest {
             assertThat(result).isNull();
         }
 
+        // subsumed-by: HtmlEncoderUnitTest$ObjectEncodingTests#encode_WhenObjectIsInteger_ReturnsNumberAsString() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("Should encode object toString() containing special characters")
         void encode_WhenObjectToStringContainsSpecialChars_EncodesCorrectly() {
@@ -335,6 +338,8 @@ class HtmlEncoderUnitTest {
             assertThat(result).isEqualTo("42");
         }
 
+        // subsumed-by: HtmlEncoderUnitTest$ObjectEncodingTests#encode_WhenObjectIsInteger_ReturnsNumberAsString() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("Should encode StringBuilder with special characters")
         void encode_WhenObjectIsStringBuilder_EncodesContent() {

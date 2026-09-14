@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -152,6 +153,8 @@ class RequestContextUtilsUnitTest {
             assertThat(ip).isEqualTo("10.0.0.1");
         }
 
+        // subsumed-by: RequestContextUtilsUnitTest$BuildRequestContextTests#shouldBuildCompleteRequestContextString() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should fallback to remote address when no proxy headers")
         void shouldFallbackToRemoteAddress() {
@@ -288,6 +291,8 @@ class RequestContextUtilsUnitTest {
     @DisplayName("sanitizeSensitiveData()")
     class SanitizeSensitiveDataTests {
 
+        // subsumed-by: RequestContextUtilsUnitTest$SanitizeSensitiveDataTests#shouldMaskApiKeyFieldInJson() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should mask password field in JSON")
         void shouldMaskPasswordFieldInJson() {
@@ -303,6 +308,8 @@ class RequestContextUtilsUnitTest {
             assertThat(sanitized).contains("\"username\":\"john\"");
         }
 
+        // subsumed-by: RequestContextUtilsUnitTest$SanitizeSensitiveDataTests#shouldMaskApiKeyFieldInJson() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should mask token field in JSON")
         void shouldMaskTokenFieldInJson() {
@@ -331,6 +338,8 @@ class RequestContextUtilsUnitTest {
             assertThat(sanitized).doesNotContain("sk-1234567890abcdef");
         }
 
+        // subsumed-by: RequestContextUtilsUnitTest$SanitizeSensitiveDataTests#shouldMaskApiKeyFieldInJson() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should mask secret field in JSON")
         void shouldMaskSecretFieldInJson() {
@@ -481,6 +490,8 @@ class RequestContextUtilsUnitTest {
     @DisplayName("buildFullRequestDetails()")
     class BuildFullRequestDetailsTests {
 
+        // subsumed-by: RequestContextUtilsUnitTest$BuildFullRequestDetailsTests#shouldMaskSensitiveHeaders() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should build full request details map")
         void shouldBuildFullRequestDetailsMap() {

@@ -16,6 +16,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -394,6 +395,8 @@ class EncryptionServicesUnitTest {
                 assertThat(decrypted).isEqualTo(original);
             }
 
+            // subsumed-by: EncryptionServicesUnitTest$TokenEncryptionServiceTests$EndToEndTests#shouldEncryptAndDecryptSuccessfully() (round 1)
+            @Tag("subsumed")
             @Test
             @DisplayName("should handle multiple tokens correctly")
             void shouldHandleMultipleTokensCorrectly() {
@@ -601,6 +604,8 @@ class EncryptionServicesUnitTest {
         @DisplayName("encryptBackupCodes()")
         class EncryptBackupCodesTests {
 
+            // subsumed-by: EncryptionServicesUnitTest$TotpEncryptionServiceTests$EncryptBackupCodesTests#shouldBCryptHashEachCode() (round 1)
+            @Tag("subsumed")
             @Test
             @DisplayName("should encrypt backup codes successfully")
             void shouldEncryptBackupCodesSuccessfully() throws Exception {
@@ -655,6 +660,8 @@ class EncryptionServicesUnitTest {
                 assertThat(result).isEqualTo("encrypted");
             }
 
+            // subsumed-by: EncryptionServicesUnitTest$TotpEncryptionServiceTests$EncryptBackupCodesTests#shouldBCryptHashEachCode() (round 1)
+            @Tag("subsumed")
             @Test
             @DisplayName("should handle multiple backup codes")
             void shouldHandleMultipleBackupCodes() throws Exception {
@@ -750,6 +757,8 @@ class EncryptionServicesUnitTest {
                 verify(kmsService, never()).decryptTotpSecret(anyString());
             }
 
+            // subsumed-by: EncryptionServicesUnitTest$TotpEncryptionServiceTests$VerifyBackupCodeTests#shouldReturnFalseWhenJsonParsingFails() (round 1)
+            @Tag("subsumed")
             @Test
             @DisplayName("should return false when KMS decryption fails")
             void shouldReturnFalseWhenKmsFails() {
