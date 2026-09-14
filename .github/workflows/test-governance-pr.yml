@@ -115,6 +115,8 @@ jobs:
           START=$(date +%s)
           ./mvnw $MAVEN_ARGS test -Ptest -DskipITs -Dsubsume.probes=true
           echo "seconds=$(( $(date +%s) - START ))" >> "$GITHUB_OUTPUT"
+          # the declared-order results, kept for the ledger: every later mvnw test overwrites this directory
+          rm -rf reports/surefire-reduced && mkdir -p reports && cp -r target/surefire-reports reports/surefire-reduced
       - uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d  # v6
         if: always()
         with:
@@ -165,7 +167,7 @@ jobs:
         run: |
           node frontend/tools/subsume/ledger.mjs --round docs/testing/governance/round.json \
             --proposal base/subsume-report.json --invariants reports/subsume/invariant-report.json \
-            --suite target/surefire-reports --before-probes before/probes.jsonl --head-probes target/subsume/probes.jsonl \
+            --suite reports/surefire-reduced --before-probes before/probes.jsonl --head-probes target/subsume/probes.jsonl \
             --seconds-after "$SECONDS_AFTER" --kills-before base/kills.json --kills-after reports/subsume/kills-after.json \
             --changed changed.txt --random-order "$RANDOM_ORDER" --out reports/subsume
 
