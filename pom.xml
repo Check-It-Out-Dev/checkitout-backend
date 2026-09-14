@@ -1218,6 +1218,10 @@
 				<!-- Enable unit tests, disable integration tests -->
 				<skip.unit.tests>false</skip.unit.tests>
 				<skip.integration.tests>true</skip.integration.tests>
+				<!-- Tests the subsumption analysis demoted carry @Tag("subsumed") and leave this tier only;
+				     the nightly runs everything with -Dsubsume.excludedGroups=never. A tag, not @Disabled:
+				     junit-platform.properties deactivates every DisabledCondition on purpose. -->
+				<subsume.excludedGroups>subsumed</subsume.excludedGroups>
 			</properties>
 			<build>
 				<plugins>
@@ -1237,6 +1241,7 @@
 								<exclude>**/*IntegrationTest.java</exclude>
 								<exclude>**/*IT.java</exclude>
 							</excludes>
+							<excludedGroups>${subsume.excludedGroups}</excludedGroups>
 							<systemPropertyVariables>
 								<user.timezone>UTC</user.timezone>
 								<file.encoding>UTF-8</file.encoding>
