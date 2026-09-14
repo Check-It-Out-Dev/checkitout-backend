@@ -12,9 +12,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.slf4j.LoggerFactory;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +29,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -574,6 +581,37 @@ class InMemoryStorageRateLimitServiceUnitTest {
             // When/Then - should not throw
             service.scheduledCleanup();
         }
+
+        @Test
+        @DisplayName("expired entries are removed and the cleanup reports what it removed")
+        void expiredEntriesAreRemovedAndReported() throws Exception {
+            // Until 2026-09-14 the reporting branch ran only when the concurrency test's threads
+            // happened to interleave a certain way — coverage by race, which the governance round's
+            // invariants gate saw come and go between identical runs. An entry two hours old, planted
+            // through the same reflection the expiry helpers use, makes it run every time.
+            service.recordUpload("user123", 1024);
+            plantExpiredHourlyEntry("user123", Instant.now().toEpochMilli() - 2 * 3600_000L);
+            assertThat(service.getMemoryStats().get("hourlyUploadsEntries")).isEqualTo(2);
+
+            ch.qos.logback.classic.Logger serviceLogger =
+                    (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(InMemoryStorageRateLimitService.class);
+            Level previous = serviceLogger.getLevel();
+            serviceLogger.setLevel(Level.DEBUG);
+            ListAppender<ILoggingEvent> logs = new ListAppender<>();
+            logs.start();
+            serviceLogger.addAppender(logs);
+            try {
+                service.scheduledCleanup();
+            } finally {
+                serviceLogger.detachAppender(logs);
+                serviceLogger.setLevel(previous);
+            }
+
+            assertThat(service.getMemoryStats().get("hourlyUploadsEntries")).isEqualTo(1);
+            assertThat(service.getUserStatus("user123").getHourlyUsed()).isEqualTo(1);
+            String logged = logs.list.stream().map(ILoggingEvent::getFormattedMessage).collect(Collectors.joining("\n"));
+            assertThat(logged).contains("Cleaned expired entries").contains("Hourly: 2 -> 1");
+        }
     }
 
     @Nested
@@ -1112,6 +1150,21 @@ class InMemoryStorageRateLimitServiceUnitTest {
     }
 
     // Helper methods for testing expiration
+
+    /** Adds an hourly upload entry with the given timestamp, so that cleanupOldEntries has something to remove. */
+    @SuppressWarnings("unchecked")
+    private void plantExpiredHourlyEntry(String userId, long timestamp) throws Exception {
+        Class<?> entryClass = Class.forName(InMemoryStorageRateLimitService.class.getName() + "$UploadEntry");
+        Constructor<?> constructor = entryClass.getDeclaredConstructor(String.class, long.class);
+        constructor.setAccessible(true);
+        Object entry = constructor.newInstance("expired-" + userId, timestamp);
+        Field field = InMemoryStorageRateLimitService.class.getDeclaredField("userHourlyUploads");
+        field.setAccessible(true);
+        Map<String, ?> hourlyUploads = (Map<String, ?>) field.get(service);
+        Object entries = hourlyUploads.get(userId);
+        Method add = entries.getClass().getMethod("add", Object.class);
+        add.invoke(entries, entry);
+    }
 
     @SuppressWarnings("unchecked")
     private void forceExpireHourlyEntries(String userId) throws Exception {
