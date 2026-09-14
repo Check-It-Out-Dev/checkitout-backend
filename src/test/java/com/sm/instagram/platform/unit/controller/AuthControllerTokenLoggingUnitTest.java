@@ -29,7 +29,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -136,5 +140,23 @@ class AuthControllerTokenLoggingUnitTest {
         controller.exchangeToken(requestWith("short.but.still.a.bearer.value"), servletRequest, servletResponse);
 
         assertThat(logged()).contains("present=true").contains("length=30");
+    }
+
+    @Test
+    @DisplayName("a caller already authenticated is named in the GDPR line, not 'pending_exchange'")
+    void authenticatedCallerIsNamedInTheGdprLine() {
+        // Until 2026-09-14 this branch ran only because a SecurityContext leaked from another test
+        // class; the invariants gate reported it the moment ClearSecurityContextExtension ended the
+        // leak. Covered on purpose now: a fresh context, set here, cleared here.
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken("firebaseUid42", null, List.of()));
+        SecurityContextHolder.setContext(context);
+        try {
+            controller.exchangeToken(requestWith("short.but.still.a.bearer.value"), servletRequest, servletResponse);
+        } finally {
+            SecurityContextHolder.clearContext();
+        }
+
+        assertThat(logged()).contains("FirebaseUID=firebaseUid42").doesNotContain("pending_exchange");
     }
 }

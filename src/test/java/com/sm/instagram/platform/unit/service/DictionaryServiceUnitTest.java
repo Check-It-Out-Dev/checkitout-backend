@@ -1,8 +1,12 @@
 package com.sm.instagram.platform.unit.service;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.sm.instagram.platform.dictionary.DictionaryEntry;
 import com.sm.instagram.platform.dictionary.DictionaryEntryRepository;
 import com.sm.instagram.platform.dictionary.DictionaryService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -11,8 +15,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -411,6 +420,109 @@ class DictionaryServiceUnitTest {
             // Then
             assertThat(result).isPresent();
             assertThat(result.get()).contains("👋");
+        }
+    }
+
+    /**
+     * Every method names the caller in its GDPR line. Until 2026-09-14 that path ran only because a
+     * SecurityContext leaked from another test class; ClearSecurityContextExtension ended the leak,
+     * the invariants gate reported six methods as losing coverage on an unchanged file, and this
+     * class covers the path on purpose: a fresh context, set here, cleared here.
+     */
+    @Nested
+    @DisplayName("with an authenticated principal")
+    class WithAuthenticatedPrincipalTests {
+
+        private static final String PRINCIPAL = "firebaseUid42";
+
+        private ch.qos.logback.classic.Logger serviceLogger;
+        private ListAppender<ILoggingEvent> logs;
+        private Level previousLevel;
+
+        @BeforeEach
+        void authenticate() {
+            SecurityContext context = SecurityContextHolder.createEmptyContext();
+            context.setAuthentication(new UsernamePasswordAuthenticationToken(PRINCIPAL, null, List.of()));
+            SecurityContextHolder.setContext(context);
+
+            serviceLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(DictionaryService.class);
+            previousLevel = serviceLogger.getLevel();
+            serviceLogger.setLevel(Level.INFO);
+            logs = new ListAppender<>();
+            logs.start();
+            serviceLogger.addAppender(logs);
+        }
+
+        @AfterEach
+        void forget() {
+            serviceLogger.detachAppender(logs);
+            serviceLogger.setLevel(previousLevel);
+            SecurityContextHolder.clearContext();
+        }
+
+        private String logged() {
+            return logs.list.stream()
+                    .map(ILoggingEvent::getFormattedMessage)
+                    .collect(Collectors.joining("\n"));
+        }
+
+        @Test
+        @DisplayName("createOrUpdateEntry records the principal as the updater and names it in the log")
+        void createOrUpdateEntryRecordsThePrincipal() {
+            when(repository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+            DictionaryEntry saved = service.createOrUpdateEntry(createEntry("who.key", "Who", "en"));
+
+            assertThat(saved.getUpdaterId()).isEqualTo(PRINCIPAL);
+            assertThat(logged()).contains("FirebaseUID=" + PRINCIPAL).doesNotContain("FirebaseUID=SYSTEM");
+        }
+
+        @Test
+        @DisplayName("deleteEntry names the principal in the deletion line")
+        void deleteEntryNamesThePrincipal() {
+            service.deleteEntry(testId);
+
+            verify(repository).deleteById(testId);
+            assertThat(logged()).contains("DELETION").contains("FirebaseUID=" + PRINCIPAL).doesNotContain("SYSTEM");
+        }
+
+        @Test
+        @DisplayName("findAll names the principal and the record count")
+        void findAllNamesThePrincipal() {
+            when(repository.findAll()).thenReturn(List.of(testEntry, createEntry("k2", "v2", "pl")));
+
+            assertThat(service.findAll()).hasSize(2);
+            assertThat(logged()).contains("FirebaseUID=" + PRINCIPAL).contains("RecordCount=2").doesNotContain("SYSTEM");
+        }
+
+        @Test
+        @DisplayName("getEntriesByCategory names the principal and the category")
+        void getEntriesByCategoryNamesThePrincipal() {
+            when(repository.findByCategory("TEST_CATEGORY")).thenReturn(List.of(testEntry));
+
+            assertThat(service.getEntriesByCategory("TEST_CATEGORY")).hasSize(1);
+            assertThat(logged()).contains("FirebaseUID=" + PRINCIPAL).contains("Category=TEST_CATEGORY").doesNotContain("SYSTEM");
+        }
+
+        @Test
+        @DisplayName("getEntriesByLanguage names the principal and the language")
+        void getEntriesByLanguageNamesThePrincipal() {
+            when(repository.findByLanguageCode("pl")).thenReturn(List.of(createEntry("powitanie", "Cześć", "pl")));
+
+            assertThat(service.getEntriesByLanguage("pl")).hasSize(1);
+            assertThat(logged()).contains("FirebaseUID=" + PRINCIPAL).contains("Language=pl").doesNotContain("SYSTEM");
+        }
+
+        @Test
+        @DisplayName("getTranslation names the principal on the lookup and on the value it returned")
+        void getTranslationNamesThePrincipal() {
+            when(repository.findByKeyAndLanguageCode("test.key", "en")).thenReturn(Optional.of(testEntry));
+
+            assertThat(service.getTranslation("test.key", "en")).contains("Test Value");
+            assertThat(logged())
+                    .contains("Operation=getTranslation, FirebaseUID=" + PRINCIPAL)
+                    .contains("DataAccessed=translation_value, FirebaseUID=" + PRINCIPAL)
+                    .doesNotContain("SYSTEM");
         }
     }
 
