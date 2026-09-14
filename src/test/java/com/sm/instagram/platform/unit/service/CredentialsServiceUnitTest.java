@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -190,6 +191,8 @@ class CredentialsServiceUnitTest {
             assertThat(result).isEqualTo(original);
         }
 
+        // subsumed-by: CredentialsServiceUnitTest$DecodeWithAutoPaddingTests#shouldDecodeProperlyPaddedBase64() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should decode valid looking base64 string without throwing")
         void shouldDecodeValidLookingBase64String() throws Exception {
@@ -384,6 +387,8 @@ class CredentialsServiceUnitTest {
     @DisplayName("maskEmail Tests")
     class MaskEmailTests {
 
+        // subsumed-by: CredentialsServiceUnitTest$MaskEmailTests#shouldHandleEmailWithSubdomain() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should mask standard email correctly")
         void shouldMaskStandardEmailCorrectly() {
@@ -394,6 +399,8 @@ class CredentialsServiceUnitTest {
             assertThat(result).isEqualTo("t***@example.com");
         }
 
+        // subsumed-by: CredentialsServiceUnitTest$MaskEmailTests#shouldHandleEmailWithSubdomain() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should mask long local part correctly")
         void shouldMaskLongLocalPartCorrectly() {
@@ -583,6 +590,8 @@ class CredentialsServiceUnitTest {
         @Mock
         private GoogleCredentials scopedCredentials;
 
+        // subsumed-by: CredentialsServiceUnitTest$GetCredentialsWithScopesTests#shouldReturnBaseCredentialsWhenEmptyScopesArray() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should return base credentials when no scopes provided")
         void shouldReturnBaseCredentialsWhenNoScopes() {

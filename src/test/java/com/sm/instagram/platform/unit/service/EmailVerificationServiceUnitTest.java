@@ -23,6 +23,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -419,6 +420,8 @@ class EmailVerificationServiceUnitTest {
             verify(userCacheService).evict("uid-123");
         }
 
+        // subsumed-by: EmailVerificationServiceUnitTest$SyncEmailVerificationStatusTests#influencerCompleteProfile_activates() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("does not write Firebase role when the PG save fails (no Firebase/PG split-brain)")
         void doesNotWriteFirebaseRoleWhenSaveFails() {
@@ -527,6 +530,8 @@ class EmailVerificationServiceUnitTest {
     @DisplayName("extractOobCode")
     class ExtractOobCodeTests {
 
+        // subsumed-by: EmailVerificationServiceUnitTest$ExtractOobCodeTests#sendVerificationEmail_rewritesLink() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should extract oobCode from valid Firebase link")
         void extractOobCode_validLink_returnsCode() {

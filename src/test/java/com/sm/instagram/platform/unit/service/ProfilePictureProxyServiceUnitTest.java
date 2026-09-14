@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -123,6 +124,8 @@ class ProfilePictureProxyServiceUnitTest {
             assertThat(result).isFalse();
         }
 
+        // subsumed-by: [engine:junit-jupiter]/[class:com.sm.instagram.platform.unit.service.ProfilePictureProxyServiceUnitTest]/[nested-class:IsPermanentFirebaseStorageUrlTests]/[test-template:shouldReturnFalseForNullOrEmptyUrl(java.lang.String)]/[test-template-invocation:#2] (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should return false for blank URL")
         void shouldReturnFalseForBlankUrl() {

@@ -23,6 +23,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
@@ -429,6 +430,8 @@ class TwoFactorAuthServiceUnitTest {
             verify(firebaseAuth, never()).setCustomUserClaims(anyString(), anyMap());
         }
 
+        // subsumed-by: TwoFactorAuthServiceUnitTest$EnableTwoFactorTests#shouldEnableTwoFactorAfterVerification() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should still return true even if claim update fails")
         void shouldReturnTrueEvenIfClaimUpdateFails() throws Exception {
@@ -513,6 +516,8 @@ class TwoFactorAuthServiceUnitTest {
     @DisplayName("verifyBackupCode")
     class VerifyBackupCodeTests {
 
+        // subsumed-by: TwoFactorAuthServiceUnitTest$VerifyBackupCodeTests#shouldHandleMixedCaseAndSpaces() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should return true for valid backup code")
         void shouldReturnTrueForValidBackupCode() {
@@ -555,6 +560,8 @@ class TwoFactorAuthServiceUnitTest {
             verifyNoInteractions(firestoreService);
         }
 
+        // subsumed-by: TwoFactorAuthServiceUnitTest$VerifyBackupCodeTests#shouldHandleMixedCaseAndSpaces() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should normalize backup code - uppercase")
         void shouldNormalizeBackupCodeUppercase() {
@@ -570,6 +577,8 @@ class TwoFactorAuthServiceUnitTest {
             verify(firestoreService).verifyBackupCode(FIREBASE_USER_ID, "ABCD1234");
         }
 
+        // subsumed-by: TwoFactorAuthServiceUnitTest$VerifyBackupCodeTests#shouldHandleMixedCaseAndSpaces() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should normalize backup code - remove spaces")
         void shouldNormalizeBackupCodeRemoveSpaces() {
@@ -678,6 +687,8 @@ class TwoFactorAuthServiceUnitTest {
             assertThat(result).isTrue();
         }
 
+        // subsumed-by: TwoFactorAuthServiceUnitTest$Is2FARequiredTests#shouldReturnFalseForCompanyUser() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should return false for INFLUENCER user")
         void shouldReturnFalseForInfluencerUser() {

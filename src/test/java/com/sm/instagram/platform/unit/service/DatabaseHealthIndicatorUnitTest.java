@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -86,6 +87,8 @@ class DatabaseHealthIndicatorUnitTest {
             assertThat(health.getDetails().get("status")).isEqualTo("Database is accessible and responsive");
         }
 
+        // subsumed-by: DatabaseHealthIndicatorUnitTest$HealthUpStatusTests#shouldIncludeMaskedUrlInDetails() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should include database name in health details")
         void shouldIncludeDatabaseNameInDetails() {
@@ -96,6 +99,8 @@ class DatabaseHealthIndicatorUnitTest {
             assertThat(health.getDetails().get("database")).isEqualTo(DATABASE_NAME);
         }
 
+        // subsumed-by: DatabaseHealthIndicatorUnitTest$HealthUpStatusTests#shouldIncludeMaskedUrlInDetails() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should include database version in health details")
         void shouldIncludeDatabaseVersionInDetails() {
@@ -121,6 +126,8 @@ class DatabaseHealthIndicatorUnitTest {
             assertThat(maskedUrl).doesNotContain("testuser");
         }
 
+        // subsumed-by: DatabaseHealthIndicatorUnitTest$HealthUpStatusTests#shouldIncludeMaskedUrlInDetails() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should include response time in health details")
         void shouldIncludeResponseTimeInDetails() {

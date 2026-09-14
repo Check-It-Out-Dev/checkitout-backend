@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -877,6 +878,8 @@ class UserControllerUnitTest {
             }
         }
 
+        // subsumed-by: UserControllerUnitTest$DeletePermanentlyTests#shouldHandleExactly100Ids() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should delete multiple users permanently")
         void shouldDeleteMultipleUsersPermanently() {
@@ -1111,6 +1114,8 @@ class UserControllerUnitTest {
             assertThat(response.getBody()).hasSize(AccountStatus.values().length);
         }
 
+        // subsumed-by: UserControllerUnitTest$GetAccountStatusListTests#shouldReturnAllAccountStatusValues() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should return status values as strings")
         void shouldReturnStatusValuesAsStrings() {
@@ -1152,6 +1157,8 @@ class UserControllerUnitTest {
             assertThat(response.getBody()).hasSize(UserType.values().length);
         }
 
+        // subsumed-by: UserControllerUnitTest$GetUserTypeListTests#shouldReturnAllUserTypeValues() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should return user type values as strings")
         void shouldReturnUserTypeValuesAsStrings() {

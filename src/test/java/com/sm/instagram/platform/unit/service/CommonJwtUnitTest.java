@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -273,6 +274,8 @@ class CommonJwtUnitTest {
             assertThat(jwtTokenProvider.getClaim(token, "twoFaRequired")).isEqualTo(true);
         }
 
+        // subsumed-by: CommonJwtUnitTest$CreateTokenWithMinutesExpiryTests#shouldCreateTokenWithOneMinuteExpiry() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should set correct expiration in minutes")
         void shouldSetCorrectExpirationInMinutes() {
@@ -1185,6 +1188,8 @@ class CommonJwtUnitTest {
             assertThat(result).isFalse();
         }
 
+        // subsumed-by: CommonJwtUnitTest$ErrorHandlingTests#shouldHandleTokenWithExtraParts() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should handle truncated token")
         void shouldHandleTruncatedToken() {
@@ -1314,6 +1319,8 @@ class CommonJwtUnitTest {
             assertThat(count).isEqualTo(42);
         }
 
+        // subsumed-by: CommonJwtUnitTest$ClaimTypePreservationTests#shouldPreserveIntegerClaimType() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should preserve double claim type")
         void shouldPreserveDoubleClaimType() {
@@ -1328,6 +1335,8 @@ class CommonJwtUnitTest {
             assertThat(price).isEqualTo(99.99);
         }
 
+        // subsumed-by: CommonJwtUnitTest$ClaimTypePreservationTests#shouldPreserveIntegerClaimType() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should preserve boolean claim type")
         void shouldPreserveBooleanClaimType() {

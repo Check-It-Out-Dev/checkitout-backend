@@ -2,6 +2,7 @@ package com.sm.instagram.platform.unit.service;
 
 import com.sm.instagram.platform.common.utils.HashingUtil;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 
@@ -352,6 +353,8 @@ class HashingUtilUnitTest {
             assertThat(hash1).isEqualTo(hash2);
         }
 
+        // subsumed-by: HashingUtilUnitTest$HashFirebaseUidTests#shouldHashValidFirebaseUidCorrectly() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should produce different hashes for different Firebase UIDs")
         void shouldProduceDifferentHashesForDifferentFirebaseUids() {

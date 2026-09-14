@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
@@ -853,6 +854,8 @@ class InMemoryUserCacheUnitTest {
             assertThat(cache.getAccountStatus("firebase-uid-admin")).isEqualTo("ACTIVE");
         }
 
+        // subsumed-by: InMemoryUserCacheUnitTest$CleanExpiredTests#shouldNotRemoveNonExpiredEntries() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should cache pending admin user correctly")
         void shouldCachePendingAdminUserCorrectly() {

@@ -16,6 +16,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -525,6 +526,8 @@ class BaseClassesUnitTest {
                 verify(testRepository).save(any(TestEntity.class));
             }
 
+            // subsumed-by: BaseClassesUnitTest$BaseServiceTests$SaveAsDtoTests#shouldSaveEntityAndReturnAsDto() (round 1)
+            @Tag("subsumed")
             @Test
             @DisplayName("should save entity without UpdaterTracking interface")
             void shouldSaveEntityWithoutUpdaterTracking() {
@@ -1328,6 +1331,8 @@ class BaseClassesUnitTest {
                 assertThat(response.getBody().getContent()).hasSize(1);
             }
 
+            // subsumed-by: BaseClassesUnitTest$BaseControllerTests$FindPaginatedTests#shouldReturnPaginatedResults() (round 1)
+            @Tag("subsumed")
             @Test
             @DisplayName("should remove pagination parameters from filters")
             void shouldRemovePaginationParametersFromFilters() {

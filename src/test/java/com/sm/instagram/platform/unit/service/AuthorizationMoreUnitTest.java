@@ -25,6 +25,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -1019,6 +1020,8 @@ class AuthorizationMoreUnitTest {
             verify(filterChain).doFilter(request, response);
         }
 
+        // subsumed-by: AuthorizationMoreUnitTest$HmacSignatureValidationTests#shouldRejectSignatureForDifferentToken() (round 1)
+        @Tag("subsumed")
         @Test
         @DisplayName("should reject tampered HMAC signature")
         void shouldRejectTamperedHmacSignature() throws Exception {

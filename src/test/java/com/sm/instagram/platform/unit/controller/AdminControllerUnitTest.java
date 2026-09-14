@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -97,6 +98,8 @@ class AdminControllerUnitTest {
                 verify(userManagementService).setUserClaims(eq(VALID_UID), eq(permissions));
             }
 
+            // subsumed-by: AdminControllerUnitTest$SetUserClaimsTests$AuthorizationTests#shouldReturn403WhenCompanyTriesToSetClaims() (round 1)
+            @Tag("subsumed")
             @Test
             @WithMockUser(authorities = "INFLUENCER")
             @DisplayName("should return 403 when INFLUENCER tries to set user claims")
@@ -129,6 +132,8 @@ class AdminControllerUnitTest {
                 verify(userManagementService, never()).setUserClaims(anyString(), anyList());
             }
 
+            // subsumed-by: AdminControllerUnitTest$SetUserClaimsTests$AuthorizationTests#shouldReturn403WhenCompanyTriesToSetClaims() (round 1)
+            @Tag("subsumed")
             @Test
             @WithMockUser(authorities = "PENDING_ADMIN")
             @DisplayName("should return 403 when PENDING_ADMIN tries to set user claims")
@@ -204,6 +209,8 @@ class AdminControllerUnitTest {
         @DisplayName("Permission Setting Tests")
         class PermissionSettingTests {
 
+            // subsumed-by: AdminControllerUnitTest$SetUserClaimsTests$PermissionSettingTests#shouldSetMultiplePermissions() (round 1)
+            @Tag("subsumed")
             @Test
             @WithMockUser(authorities = "ADMIN")
             @DisplayName("should set single INFLUENCER permission")
@@ -220,6 +227,8 @@ class AdminControllerUnitTest {
                 verify(userManagementService).setUserClaims(VALID_UID, permissions);
             }
 
+            // subsumed-by: AdminControllerUnitTest$SetUserClaimsTests$PermissionSettingTests#shouldSetMultiplePermissions() (round 1)
+            @Tag("subsumed")
             @Test
             @WithMockUser(authorities = "ADMIN")
             @DisplayName("should set single COMPANY permission")
@@ -236,6 +245,8 @@ class AdminControllerUnitTest {
                 verify(userManagementService).setUserClaims(VALID_UID, permissions);
             }
 
+            // subsumed-by: AdminControllerUnitTest$SetUserClaimsTests$PermissionSettingTests#shouldSetMultiplePermissions() (round 1)
+            @Tag("subsumed")
             @Test
             @WithMockUser(authorities = "ADMIN")
             @DisplayName("should set ADMIN permission")
@@ -305,6 +316,8 @@ class AdminControllerUnitTest {
         @DisplayName("Firebase Error Handling Tests")
         class FirebaseErrorHandlingTests {
 
+            // subsumed-by: AdminControllerUnitTest$SetUserClaimsTests$FirebaseErrorHandlingTests#shouldHandleGenericFirebaseException() (round 1)
+            @Tag("subsumed")
             @Test
             @WithMockUser(authorities = "ADMIN")
             @DisplayName("should return 500 when Firebase user not found - ErrorCode.NOT_FOUND maps to default handler")
@@ -326,6 +339,8 @@ class AdminControllerUnitTest {
                         .andExpect(status().isInternalServerError());
             }
 
+            // subsumed-by: AdminControllerUnitTest$SetUserClaimsTests$FirebaseErrorHandlingTests#shouldHandleGenericFirebaseException() (round 1)
+            @Tag("subsumed")
             @Test
             @WithMockUser(authorities = "ADMIN")
             @DisplayName("should return 500 when Firebase service unavailable")

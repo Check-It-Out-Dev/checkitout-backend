@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -1129,6 +1130,8 @@ class GeoLocationServiceUnitTest {
                 assertThat(status.get("travelDataRetention")).isEqualTo(30);
             }
 
+            // subsumed-by: GeoLocationServiceUnitTest$GeoLocationGdprServiceTests$GetComplianceStatusTests#shouldIncludeDataCategoriesWithTtl() (round 1)
+            @Tag("subsumed")
             @Test
             @DisplayName("should include implemented rights")
             void shouldIncludeImplementedRights() {
