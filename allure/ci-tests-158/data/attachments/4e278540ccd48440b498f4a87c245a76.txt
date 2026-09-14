@@ -1,0 +1,10 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-57886ffa-afda-4b3b-ab8c-d98fc2be770e
+  Company: COMPANY-91a16fdc-09f8-41c6-bc6a-68bb6b9a5538
+  Admin: ADMIN-943ba8c8-2ba0-4bfc-b5be-9d6f7dfd6014
+20:31:37.303 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus, FirebaseUID=COMPANY-91a16fdc-09f8-41c6-bc6a-68bb6b9a5538, OpportunityID=2556, Action=REJECT, Purpose=status_management
+20:31:37.304 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=COMPANY-91a16fdc-09f8-41c6-bc6a-68bb6b9a5538, OpportunityID=2556, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
+20:31:37.339 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus_SUCCESS, FirebaseUID=COMPANY-91a16fdc-09f8-41c6-bc6a-68bb6b9a5538, OpportunityID=2556, OldStatus=CONTENT_POSTED, NewStatus=CONTENT_POSTED_REJECTED
+20:31:37.339 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=COMPANY-91a16fdc-09f8-41c6-bc6a-68bb6b9a5538, AppliedOpportunityID=2556, StatusChange=CONTENT_POSTED→CONTENT_POSTED_REJECTED, Purpose=status_tracking
+20:31:37.341 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=COMPANY-91a16fdc-09f8-41c6-bc6a-68bb6b9a5538, AppliedOpportunityID=2556, DataAccessed=status,changedBy,reason, Purpose=audit_trail
+20:31:37.341 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2556, CONTENT_POSTED -> CONTENT_POSTED_REJECTED, Changed by=COMPANY-91a16fdc-09f8-41c6-bc6a-68bb6b9a5538, Reason=Status rejected via API (/status/update endpoint)

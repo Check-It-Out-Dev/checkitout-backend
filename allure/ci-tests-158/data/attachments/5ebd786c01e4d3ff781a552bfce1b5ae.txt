@@ -1,0 +1,11 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-3fbba427-ad21-482c-84bb-b1781d452d13
+  Company: COMPANY-c55fdf46-1e49-44b5-b45a-d66e3772e9ed
+  Admin: ADMIN-b790d3db-3593-4d3c-bfa5-6bb275d5b1d0
+20:31:43.456 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findByInfluencerUserId, FirebaseUID=INFLUENCER-persist-f1432c14-d8a3-479b-8bbe-c4cb34e4903b, Purpose=user_opportunities_retrieval, DataAccessed=applied_opportunities.list
+20:31:43.461 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findByInfluencerUserId_SUCCESS, FirebaseUID=INFLUENCER-persist-f1432c14-d8a3-479b-8bbe-c4cb34e4903b, RecordsRetrieved=0
+20:31:43.461 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.user.UserAccountOrchestrator&amp#27;[0;39m - User 9051 status changed from ACTIVE to TO_BE_DELETED for archival
+20:31:43.461 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=evictUser, DataDeleted=cached_user_data, Purpose=cache_management
+20:31:43.461 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+20:31:43.462 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+20:31:43.463 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.user.UserAccountOrchestrator&amp#27;[0;39m - GDPR: Operation=cacheEvict_onArchival, UserId=9051, NewStatus=TO_BE_DELETED, Purpose=immediate_session_invalidation
