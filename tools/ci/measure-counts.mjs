@@ -50,10 +50,14 @@ const TEST_METHOD = /^[ \t]*@Test\b/gm;
 const PARAMETERIZED = /^[ \t]*@ParameterizedTest\b/gm;
 const NESTED = /^[ \t]*@Nested\b/gm;
 const DISABLED = /^[ \t]*@Disabled\b/gm;
+// A test a governance round demoted from the pull-request tier: tagged, still run nightly, never
+// deleted (docs/testing/governance/round.json names the round that did it).
+const SUBSUMED = /^[ \t]*@Tag\("subsumed"\)/gm;
 
 let testAnnotations = 0;
 let parameterized = 0;
 let nestedGroups = 0;
+let subsumed = 0;
 // A test class is a FILE that declares at least one test method. Counting declarations instead
 // would count the @Nested groups twice, and counting *Test.java by name would count the base
 // classes and fixtures that declare none.
@@ -68,6 +72,7 @@ for (const file of testFiles) {
   parameterized += count(text, PARAMETERIZED);
   nestedGroups += count(text, NESTED);
   disabled += count(text, DISABLED);
+  subsumed += count(text, SUBSUMED);
   if (here > 0) testClasses++;
 }
 
@@ -125,6 +130,7 @@ const measured = {
   testMethods: testAnnotations + parameterized,
   testAnnotations,
   parameterizedTests: parameterized,
+  subsumedMethods: subsumed,
   testClasses,
   nestedGroups,
   testJavaLines: lines(testFiles),
@@ -161,6 +167,7 @@ const CLAIMS = [
   { row: /\*\*Test methods\*\*.*$/m, key: 'testClasses' },
   { row: /\*\*Test methods\*\*.*$/m, key: 'nestedGroups' },
   { row: /`@Disabled` appears zero times\*\*[\s\S]{0,80}/m, key: 'testFiles' },
+  { row: /\*\*Demoted from the pull-request tier\*\*.*$/m, key: 'subsumedMethods' },
   { row: /\*\*Test code : main code\*\*.*$/m, key: 'testJavaLinesK' },
   { row: /\*\*Test code : main code\*\*.*$/m, key: 'mainJavaLinesK' },
   { row: /\*\*Cucumber\*\*.*$/m, key: 'featureFiles' },
