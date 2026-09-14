@@ -1,0 +1,113 @@
+# Test governance — the proposal run. Never on a pull request: on demand, and weekly after the
+# nightly. It measures the whole unit tier on a GitHub runner, twice for the probes that flip, runs
+# the whole-estate PIT matrix with every killing test recorded, computes the proposal and the pack,
+# and publishes all of it to Pages under subsume/<run number>/ and subsume/latest/ — the base every
+# ordinary pull request's invariants job is judged against, and the artefacts a governance branch
+# names in its round file.
+#
+# Why here and not on a developer box: a base made on another machine disagrees with a runner on
+# environment-dependent branches, and that disagreement is not a lost test (docs/testing/ai-in-the-loop.md).
+# Beside the gzipped artefacts the jobs consume, index.html is the same numbers for a person.
+#
+# The demotion itself stays a person's or an agent's act on a branch (the frontend's
+# tools/subsume/apply.mjs, the round file, the label test-governance); the special job re-measures it.
+name: test-governance
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 3 * * 0'
+
+concurrency:
+  group: test-governance-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  MAVEN_ARGS: -B -ntp -DskipPmd=true
+  TZ: UTC
+  PAGES: https://check-it-out-dev.github.io/checkitout-backend
+
+jobs:
+  proposal:
+    name: Proposal run — the base every pull request is judged against
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    env:
+      RUN: ${{ github.run_number }}
+      SHA: ${{ github.sha }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      # The analysis lives with the frontend's tooling (tools/subsume), the way tools/ci does.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: Check-It-Out-Dev/checkitout-frontend
+          ref: feature/ai-in-the-loop
+          path: frontend
+          sparse-checkout: |
+            tools/subsume
+            tools/lib
+
+      # The whole unit tier — the demoted group included — armed, twice.
+      - name: Full tier, armed, twice
+        run: |
+          chmod +x mvnw
+          mkdir -p run
+          ./mvnw $MAVEN_ARGS test -Ptest -DskipITs -Dsubsume.probes=true -Dsubsume.excludedGroups=never
+          mv target/subsume/probes.jsonl run/probes.jsonl && cp target/subsume/classes.json run/classes.json
+          ./mvnw $MAVEN_ARGS test -Ptest -DskipITs -Dsubsume.probes=true -Dsubsume.excludedGroups=never
+          mv target/subsume/probes.jsonl run/probes2.jsonl
+          wc -l run/probes.jsonl run/probes2.jsonl
+
+      # The whole-estate kill matrix, every killer recorded, the demoted group included.
+      - name: Whole-estate kill matrix
+        run: |
+          ./mvnw $MAVEN_ARGS -Pmutation-matrix -Dpit.threads=4 -DexcludedGroups=never test-compile org.pitest:pitest-maven:mutationCoverage
+          node frontend/tools/subsume/pit-matrix.mjs --xml target/pit-matrix/mutations.xml --root . --out run/kills.json --commit "$SHA"
+
+      - name: The proposal, the pack, the page
+        run: |
+          node frontend/tools/subsume/propose.mjs --repo backend --probes run/probes.jsonl --classes run/classes.json \
+            --kills run/kills.json --out run --commit "$SHA" | tail -n 1 | tee -a "$GITHUB_STEP_SUMMARY"
+          node frontend/tools/subsume/pack.mjs --report run/subsume-report.json --probes run/probes.jsonl \
+            --probes2 run/probes2.jsonl --out run | head -n 1 | tee -a "$GITHUB_STEP_SUMMARY"
+          mkdir -p "site/subsume/$RUN"
+          node frontend/tools/subsume/site.mjs --repo backend --run "$RUN" --report run/subsume-report.json \
+            --pack run/pack.json --diagram run/diagram.md --links "this run=$RUN_URL" --out "site/subsume/$RUN"
+          for f in probes.jsonl probes2.jsonl classes.json kills.json subsume-report.json; do
+            gzip -c "run/$f" > "site/subsume/$RUN/$f.gz"
+          done
+          cp run/pack.json run/pack.md run/diagram.md run/subsume-report.md "site/subsume/$RUN/"
+          rm -rf site/subsume/latest && cp -r "site/subsume/$RUN" site/subsume/latest
+          if [ -d target/pit-matrix ] && ls target/pit-matrix/*.html >/dev/null 2>&1; then
+            mkdir -p "site/mutation-estate/$RUN" && cp -r target/pit-matrix/. "site/mutation-estate/$RUN/"
+            rm -f "site/mutation-estate/$RUN/mutations.xml"
+            rm -rf site/mutation-estate/latest && cp -r "site/mutation-estate/$RUN" site/mutation-estate/latest
+          fi
+          echo "Base artefacts and the page: $PAGES/subsume/$RUN/ · the estate's PIT report: $PAGES/mutation-estate/$RUN/" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish to Pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PAGES_REPLACE: subsume/latest mutation-estate/latest
+        run: |
+          bash tools/ci/publish-pages.sh site "subsume: proposal run $RUN"
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: proposal-run-${{ github.run_number }}
+          path: run
+          if-no-files-found: warn
+          retention-days: 30

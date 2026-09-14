@@ -117,7 +117,7 @@ job re-runs with `--check` so a stale figure fails the build rather than ageing 
 | **Contract** | **233 paths** | 272 operations · 205 schemas · OpenAPI 3.1 |
 
 And one number worth more than any of them: **`@Disabled` appears zero times**
-across all 364 test files. Nothing is quarantined, skipped-and-forgotten, or
+across all 365 test files. Nothing is quarantined, skipped-and-forgotten, or
 commented out waiting for someone to come back to it.
 
 > [!NOTE]
@@ -375,21 +375,60 @@ loosening — is in progress, and the method, its precedents and its honest stat
 are in the frontend's
 [design of record](https://github.com/Check-It-Out-Dev/checkitout-frontend/blob/main/docs/ci/GOVERNING-MACHINE-WRITTEN-CHANGE.md).
 
-The first instance is the suite itself. An agent may retire a unit test from the
-pull-request tier only when the tests that remain provably carry it — every probe
-it covers and every mutant it kills — and invariants a machine checks on every
-pull request say whether that held: coverage never lower for any class or method
-whose code did not change, no mutant killed yesterday surviving today, the suite
-green, the numbers in this file moved in the same commit. A second agent draws
-what changed and may quote the gate but not compute; a person merges; the
-nightly still runs everything, so the counts above stay true. This repository's
-half of the instrument is shipped: a JUnit listener that records what each
-unit-tier test exercised (`src/test/java/.../subsume/ProbeListener.java`,
-armed by `-Dsubsume.probes=true`, checked against an unarmed run's own JaCoCo
-report) and a `mutation-matrix` profile that records every killing test for
-every class in main. The analysis lives with the frontend's tooling
-(`tools/subsume/`); the decision is its
-[ADR](https://github.com/Check-It-Out-Dev/checkitout-frontend/blob/main/docs/ci/ADR-test-subsumption.md).
+## AI in the loop, invariants in charge
+
+Agents write and remove code here now. What keeps the system intact is not the
+agent's judgement but five **invariants** — things that must stay true after
+every change, checked by a machine from the change's own measurements before a
+person looks:
+
+1. Coverage never drops for any file, class or method the change did not touch.
+2. No deliberate defect the suite caught yesterday survives today.
+3. The suite is green — in the order it was written and in a random one.
+4. Every number this README publishes moved in the same commit as the code.
+5. Every number the reviewing agent writes appears in a report the machine produced.
+
+An agent may propose anything; the invariants dispose; a person merges. Two
+planes, meeting at that person:
+
+```mermaid
+flowchart LR
+  subgraph model["Model plane · agents"]
+    direction LR
+    P["▣ Proposer<br/>applies CONFIRMED only"] --> PR["Pull request<br/>tracked round file"]
+    PR --> R["◇ Reviewer<br/>quotes, never computes"]
+  end
+  subgraph replay["Replay plane · no model, no secret"]
+    direction LR
+    M["Per-test coverage<br/>+ kill matrix"] --> G["▮ Invariants I1–I5<br/>from the PR's own run"]
+    G --> L["Ledger + gains diagram"]
+  end
+  PR --> G
+  L --> H(["A person merges"])
+  R --> H
+```
+
+**The first thing governed this way is the suite itself: a redundant-test
+killer that may not lose anything.** Coverage says a test walked past a line;
+mutation testing says whether it would notice the line being wrong — PIT makes
+one deliberate change at a time (a _mutant_: `<` becomes `<=`, a condition is
+negated), runs the unit tests that reach it, and records every test that fails
+(_kills_ it). A test may leave the pull-request tier only when the tests that
+stay cover every line and branch it covers **and** kill every mutant it kills;
+it is tagged `@Tag("subsumed")`, never deleted, and the nightly still runs it.
+One pair from the first round: in `OpportunityStatusUnitTest$JsonSerialization`,
+`fromStringShouldParseMixedCase()` reaches the same two blocks and kills the
+same one mutant as `fromStringShouldParseLowercase()`, so the first leaves with
+a marker naming the second — and if anyone later weakens the second, invariant 2
+on their pull request says so. Before the door closes, the round's own job
+re-measures everything on its own machine: the full tier, the reduced tier, the
+reduced tier in random order, PIT again — and a ledger with one rule, tests or
+seconds lower and nothing the invariants guard lower. The plain-words guide,
+with the loop drawn and the round explained step by step, is
+[docs/testing/ai-in-the-loop.md](docs/testing/ai-in-the-loop.md); the
+mechanics are under [Test governance](#test-governance) above. If mutants, kills
+and set cover are new words, [docs/testing/mutation-primer.md](docs/testing/mutation-primer.md)
+starts from a house and its guards and ends at our metrics.
 
 ## The rest of the estate
 

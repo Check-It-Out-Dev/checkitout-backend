@@ -21,6 +21,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Collections;
@@ -70,7 +71,12 @@ class ConsentEnforcementFilterUnitTest {
     private void setUpAuthentication(String firebaseUid) {
         UsernamePasswordAuthenticationToken auth =
                 new UsernamePasswordAuthenticationToken(firebaseUid, null, Collections.emptyList());
-        SecurityContextHolder.getContext().setAuthentication(auth);
+        // A fresh context, not whatever the previous test class left in the holder: a mocked
+        // SecurityContext installed elsewhere swallows setAuthentication, and this test then
+        // passed only when it ran before that class (found by the random-order run, 2026-09-14).
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(auth);
+        SecurityContextHolder.setContext(context);
     }
 
     private void setUpBlockedUser() {
