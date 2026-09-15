@@ -2,25 +2,25 @@
   "schema": 1,
   "repo": "Check-It-Out-Dev/checkitout-backend",
   "run": {
-    "number": 158,
-    "id": 34893229117,
+    "number": 10,
+    "id": 34922361339,
     "sha": "ff43730",
     "branch": "main",
     "workflow": "ci-tests",
-    "startedAt": "2026-09-14T20:29:29Z",
-    "durationSec": 269,
-    "url": "https://github.com/Check-It-Out-Dev/checkitout-backend/actions/runs/34893229117"
+    "startedAt": "2026-09-15T02:44:58Z",
+    "durationSec": 924,
+    "url": "https://github.com/Check-It-Out-Dev/checkitout-backend/actions/runs/34922361339"
   },
   "tests": {
-    "total": 11249,
-    "passed": 11217,
+    "total": 11546,
+    "passed": 11493,
     "failed": 0,
     "flaky": 0,
-    "skipped": 32,
+    "skipped": 53,
     "passRate": 1,
     "flakyRate": 0,
-    "durationMeanSec": 0.01,
-    "durationP95Sec": 0.02,
+    "durationMeanSec": 0.07,
+    "durationP95Sec": 0.03,
     "tiers": {
       "unit": {
         "total": 10416,
@@ -28,7 +28,7 @@
         "failed": 0,
         "flaky": 0,
         "skipped": 0,
-        "durationSec": 68
+        "durationSec": 80
       },
       "integration": {
         "total": 833,
@@ -36,7 +36,15 @@
         "failed": 0,
         "flaky": 0,
         "skipped": 32,
-        "durationSec": 23
+        "durationSec": 22
+      },
+      "e2e": {
+        "total": 297,
+        "passed": 276,
+        "failed": 0,
+        "flaky": 0,
+        "skipped": 21,
+        "durationSec": 658
       }
     }
   },
@@ -47,26 +55,26 @@
     "functions": 65.43
   },
   "mutation": {
-    "score": 43.73,
-    "coveredScore": 69.92,
+    "score": 43.77,
+    "coveredScore": 70.08,
     "mutants": 2408,
-    "survived": 453,
+    "survived": 450,
     "floor": 40,
     "classesWithNoUnitTest": 15
   },
   "security": {
-    "total": 16,
+    "total": 17,
     "error": 2,
-    "warning": 14,
+    "warning": 15,
     "note": 0,
     "tools": {
-      "Semgrep OSS": 14,
+      "Semgrep OSS": 15,
       "Trivy": 2
     },
     "scans": 3
   },
   "flaky": [],
   "reports": {
-    "allure": "allure/ci-tests-158/"
+    "allure": "allure/ci-tests-10/"
   }
 }
