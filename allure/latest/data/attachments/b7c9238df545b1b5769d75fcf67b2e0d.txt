@@ -1,0 +1,10 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-e7bd7736-79ac-4c61-923c-fed48c200d87
+  Company: COMPANY-14092a2b-5896-43f0-b6ad-1a86aec7692c
+  Admin: ADMIN-4bb5a1af-e5eb-4f3d-b526-8033bad1fd14
+02:46:53.845 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus, FirebaseUID=COMPANY-14092a2b-5896-43f0-b6ad-1a86aec7692c, OpportunityID=2563, Action=ACCEPT, Purpose=status_management
+02:46:53.845 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=COMPANY-14092a2b-5896-43f0-b6ad-1a86aec7692c, OpportunityID=2563, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
+02:46:53.877 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus_SUCCESS, FirebaseUID=COMPANY-14092a2b-5896-43f0-b6ad-1a86aec7692c, OpportunityID=2563, OldStatus=TO_BE_PAID, NewStatus=DONE
+02:46:53.878 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=COMPANY-14092a2b-5896-43f0-b6ad-1a86aec7692c, AppliedOpportunityID=2563, StatusChange=TO_BE_PAID→DONE, Purpose=status_tracking
+02:46:53.879 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=COMPANY-14092a2b-5896-43f0-b6ad-1a86aec7692c, AppliedOpportunityID=2563, DataAccessed=status,changedBy,reason, Purpose=audit_trail
+02:46:53.879 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2563, TO_BE_PAID -> DONE, Changed by=COMPANY-14092a2b-5896-43f0-b6ad-1a86aec7692c, Reason=Status accepted via API (/status/update endpoint)
