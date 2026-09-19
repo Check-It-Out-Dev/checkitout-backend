@@ -1,0 +1,10 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-6a86db97-6d64-4bed-889c-38d60081ae39
+  Company: COMPANY-33154fd5-3615-437a-9bfb-68428f38aee2
+  Admin: ADMIN-992dc4b9-91a0-47b4-af75-b02ab259a2ab
+02:45:20.712 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus, FirebaseUID=INFLUENCER-6a86db97-6d64-4bed-889c-38d60081ae39, OpportunityID=2552, Action=ACCEPT, Purpose=status_management
+02:45:20.713 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=INFLUENCER-6a86db97-6d64-4bed-889c-38d60081ae39, OpportunityID=2552, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
+02:45:20.744 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus_SUCCESS, FirebaseUID=INFLUENCER-6a86db97-6d64-4bed-889c-38d60081ae39, OpportunityID=2552, OldStatus=CONTENT_APPROVED, NewStatus=CONTENT_POSTED
+02:45:20.744 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=INFLUENCER-6a86db97-6d64-4bed-889c-38d60081ae39, AppliedOpportunityID=2552, StatusChange=CONTENT_APPROVED→CONTENT_POSTED, Purpose=status_tracking
+02:45:20.746 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=INFLUENCER-6a86db97-6d64-4bed-889c-38d60081ae39, AppliedOpportunityID=2552, DataAccessed=status,changedBy,reason, Purpose=audit_trail
+02:45:20.746 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2552, CONTENT_APPROVED -> CONTENT_POSTED, Changed by=INFLUENCER-6a86db97-6d64-4bed-889c-38d60081ae39, Reason=Status accepted via API (/status/update endpoint)
