@@ -1,9 +1,0 @@
-[Integration Test] Test users created:
-  Influencer: INFLUENCER-1c25b5fc-497e-41bc-8832-7e1f9b1b4fd3
-  Company: COMPANY-2e046a1f-4448-46af-912e-e0f6f4e8cfec
-  Admin: ADMIN-056c4e63-01d4-4ee1-b01d-a9cc0aa10a85
-07:57:09.850 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateRating, FirebaseUID=ADMIN-056c4e63-01d4-4ee1-b01d-a9cc0aa10a85, OpportunityID=2515, RatingType=influencer, Rating=POSITIVE, Purpose=feedback_management
-07:57:09.851 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateRating_SUCCESS, FirebaseUID=ADMIN-056c4e63-01d4-4ee1-b01d-a9cc0aa10a85, OpportunityID=2515, RatingType=influencer, NewRating=POSITIVE
-07:57:09.851 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=ADMIN-056c4e63-01d4-4ee1-b01d-a9cc0aa10a85, AppliedOpportunityID=2515, StatusChange=DONE→DONE, Purpose=status_tracking
-07:57:09.863 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=ADMIN-056c4e63-01d4-4ee1-b01d-a9cc0aa10a85, AppliedOpportunityID=2515, DataAccessed=status,changedBy,reason, Purpose=audit_trail
-07:57:09.863 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2515, DONE -> DONE, Changed by=ADMIN-056c4e63-01d4-4ee1-b01d-a9cc0aa10a85, Reason=Influencer rating updated to POSITIVE via API
