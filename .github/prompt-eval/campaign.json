@@ -1,12 +1,12 @@
 {
-  "mode": "smoke",
+  "mode": "baseline",
   "where": "box",
-  "label": "box-smoke-1",
+  "label": "baseline-2026-09-23",
   "instance": "backend-conventions",
   "graph_ref": "feature/prompt-under-test",
   "prompt": "v1",
-  "tasks": ["faq-reorder"],
-  "k": 1,
-  "parallel": 1,
-  "note": "Editing this file on ci/prompt-eval starts one prompt-eval campaign. mode: none | smoke | baseline | gepa | certify. where: box (self-hosted runner norbert-box) | hosted (ubuntu-latest, smoke only). First run on the box: the seed on one task, to prove the evidence plane before the baseline."
+  "tasks": "train",
+  "k": 3,
+  "parallel": 3,
+  "note": "Editing this file on ci/prompt-eval starts one prompt-eval campaign. mode: none | smoke | baseline | gepa | certify. where: box (self-hosted runner norbert-box) | hosted (ubuntu-latest, smoke only). S7: the seed on the six training tasks three times each, judged twice: the noise floor delta and the per-rule rates."
 }
