@@ -1,0 +1,157 @@
+# ◇ Prompt under test — does a conventions prompt make a coding agent follow the conventions?
+#
+# The graph repository's `applications/CodeMap/eval/put/` runs a Claude Sonnet coding agent on small tasks in a
+# fresh worktree of this repository, with a candidate CLAUDE.md, then scores each diff with deterministic
+# per-rule checks, hidden acceptance tests and a Claude Opus judge (method: that repository's
+# `applications/CodeMap/docs/09-prompt-under-test.md`). This workflow is the evidence plane: every campaign is a
+# run here with its logs, a job summary holding the per-rule table, and the raw artifacts.
+#
+# How a campaign starts: a commit on `ci/prompt-eval` that changes `.github/prompt-eval/campaign.json`. The
+# owner keeps this work on a feature branch, so there is no workflow_dispatch on main; the commit that edits the
+# campaign file is also the record of what was asked. No pull_request, pull_request_target or issue_comment
+# trigger exists here, and none may be added: the `box` job runs on a self-hosted runner whose group admits this
+# one workflow file on this one branch, and only people who can push to the branch can start it.
+#
+# Every model call is `claude -p` on the owner's subscription (CLAUDE_CODE_OAUTH_TOKEN in the `ai-review`
+# environment); ANTHROPIC_API_KEY is never set.
+name: prompt-eval
+
+on:
+  push:
+    branches: [ci/prompt-eval]
+    paths: [.github/prompt-eval/campaign.json]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prompt-eval
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    name: Read the campaign
+    runs-on: ubuntu-latest
+    outputs:
+      mode: ${{ steps.c.outputs.mode }}
+      where: ${{ steps.c.outputs.where }}
+      label: ${{ steps.c.outputs.label }}
+      graph_ref: ${{ steps.c.outputs.graph_ref }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          sparse-checkout: .github/prompt-eval
+      - id: c
+        run: |
+          f=.github/prompt-eval/campaign.json
+          for k in mode where label graph_ref; do
+            v=$(jq -r --arg k "$k" '.[$k] // ""' "$f")
+            case "$v" in *[!A-Za-z0-9._/-]*) echo "::error::$k has characters outside [A-Za-z0-9._/-]"; exit 1;; esac
+            echo "$k=$v" >> "$GITHUB_OUTPUT"
+          done
+          { echo "### Campaign"; echo '```json'; cat "$f"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+
+  box:
+    name: ◇ Campaign on norbert-box
+    needs: plan
+    if: needs.plan.outputs.mode != 'none' && needs.plan.outputs.where == 'box'
+    runs-on: [self-hosted, Windows, X64, put]
+    environment: ai-review
+    timeout-minutes: 2880
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      MODE: ${{ needs.plan.outputs.mode }}
+      LABEL: ${{ needs.plan.outputs.label }}
+      PYTHONUTF8: "1"
+      PYTHONIOENCODING: utf-8
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          path: backend
+          fetch-depth: 0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          repository: Check-It-Out-Dev/graph-theory-system-modeling
+          ref: ${{ needs.plan.outputs.graph_ref }}
+          path: graph
+          sparse-checkout: |
+            applications/CodeMap
+            .agents
+      - name: The graph pack the prompt's graph rule reads
+        run: python graph/applications/CodeMap/tools/pack/fetch_pack.py --version 1.1.1
+      - name: Run the campaign
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          Remove-Item Env:ANTHROPIC_API_KEY -ErrorAction SilentlyContinue
+          python graph/applications/CodeMap/eval/put/run.py $env:MODE `
+            --campaign backend/.github/prompt-eval/campaign.json `
+            --base-repo backend --label $env:LABEL --summary $env:GITHUB_STEP_SUMMARY
+      - name: Keep the evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: put-${{ needs.plan.outputs.label }}
+          path: graph/applications/CodeMap/eval/put/runs/
+          retention-days: 90
+          if-no-files-found: warn
+
+  hosted:
+    name: ◇ Smoke on ubuntu-latest
+    needs: plan
+    if: needs.plan.outputs.mode == 'smoke' && needs.plan.outputs.where == 'hosted'
+    runs-on: ubuntu-latest
+    environment: ai-review
+    timeout-minutes: 90
+    env:
+      LABEL: ${{ needs.plan.outputs.label }}
+      PYTHONUTF8: "1"
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          path: backend
+          fetch-depth: 0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          repository: Check-It-Out-Dev/graph-theory-system-modeling
+          ref: ${{ needs.plan.outputs.graph_ref }}
+          path: graph
+          sparse-checkout: |
+            applications/CodeMap
+            .agents
+      - uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c  # v6.0.0
+        with:
+          distribution: corretto
+          java-version: "21"
+          cache: maven
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020  # v7.0.0
+        with:
+          node-version: 24
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Tools
+        run: |
+          npm i -g @anthropic-ai/claude-code@2.1.280
+          pip install gepa==0.1.4 real_ladybug==0.15.3
+          python graph/applications/CodeMap/tools/pack/fetch_pack.py --version 1.1.1
+      - name: Run the smoke
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          unset ANTHROPIC_API_KEY
+          python graph/applications/CodeMap/eval/put/run.py smoke \
+            --campaign backend/.github/prompt-eval/campaign.json \
+            --base-repo backend --label "$LABEL" --summary "$GITHUB_STEP_SUMMARY"
+      - name: Keep the evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: put-${{ needs.plan.outputs.label }}
+          path: graph/applications/CodeMap/eval/put/runs/
+          retention-days: 90
+          if-no-files-found: warn
