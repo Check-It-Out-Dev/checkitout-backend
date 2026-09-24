@@ -17,9 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Field;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Test-only controller for configuring registry port stubs and manipulating
@@ -364,23 +362,9 @@ public class TestRegistryController {
      */
     @PostMapping("/clear-cache")
     public ResponseEntity<Map<String, Object>> clearCache() {
-        try {
-            Field cacheField = RegistryLookupService.class.getDeclaredField("lookupCache");
-            cacheField.setAccessible(true);
-            @SuppressWarnings("unchecked")
-            ConcurrentHashMap<String, ?> cache = (ConcurrentHashMap<String, ?>) cacheField.get(registryLookupService);
-            int size = cache.size();
-            cache.clear();
-            log.info("[E2E] Cleared registry lookup cache ({} entries)", size);
-            return ResponseEntity.ok(Map.of("cleared", true, "entriesRemoved", size));
-        } catch (Exception e) {
-            // Was 200 with cleared=false, which a test step reading only the status code cannot
-            // see. The cache is reached reflectively, so this branch means the field moved --
-            // exactly the kind of silent rot an E2E helper should fail loudly on.
-            log.warn("[E2E] Failed to clear cache: {}", e.getMessage());
-            return ResponseEntity.internalServerError()
-                    .body(Map.of("cleared", false, "error", e.getMessage()));
-        }
+        int size = registryLookupService.clearLookupCache();
+        log.info("[E2E] Cleared registry lookup cache ({} entries)", size);
+        return ResponseEntity.ok(Map.of("cleared", true, "entriesRemoved", size));
     }
 
     /**
