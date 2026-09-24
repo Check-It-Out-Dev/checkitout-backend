@@ -1,9 +1,11 @@
 {
-  "mode": "rejudge",
+  "mode": "gepa",
   "where": "box",
-  "label": "baseline-2026-09-23-r5",
-  "of": "baseline-2026-09-23",
+  "label": "gepa-2026-09-24",
+  "baseline": "baseline-2026-09-23-r5",
   "instance": "backend-conventions",
   "graph_ref": "feature/prompt-under-test",
-  "note": "Editing this file on ci/prompt-eval starts one prompt-eval campaign. mode: none | smoke | baseline | gepa | certify | rejudge. where: box (self-hosted runner norbert-box) | hosted (ubuntu-latest, smoke only). rejudge: the baseline's 18 runs and the 4 degraded calibration anchors re-graded twice under judge rubric r5 (calibration found r4 lenient on design); delta re-measured; no coder run repeated."
+  "parallel": 3,
+  "max_metric_calls": 60,
+  "note": "Editing this file on ci/prompt-eval starts one prompt-eval campaign. mode: none | smoke | baseline | gepa | certify | rejudge. where: box (self-hosted runner norbert-box) | hosted (ubuntu-latest, smoke only). gepa: the seed v1 optimised on the six training tasks with judge rubric r5; the seed's runs are reused from the r5 baseline; stops on the plateau rule (K = 3 iterations without a gain above delta 0.030) or at 60 metric calls."
 }
