@@ -131,7 +131,12 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
         with:
           python-version: "3.12"
-      - run: python -m pip install --quiet "schemathesis>=4,<5"
+      # Pinned, because the verdict counts findings by the label Schemathesis gives them and a
+      # minor release can move a finding between labels: 4.28 began accepting 429 as a refusal,
+      # so the undeclared 429s moved from "accepted schema-violating request" to "undocumented
+      # status code" and the night went red with no change on the server. A bump is a pull
+      # request that re-measures the budgets, never a surprise at 07:45.
+      - run: python -m pip install --quiet "schemathesis==4.28.0"
 
       # dev-lite mints a session without any credential, which is the whole reason this can run on a
       # public runner. Fuzzing unauthenticated would prove only that 280 paths answer 401.
