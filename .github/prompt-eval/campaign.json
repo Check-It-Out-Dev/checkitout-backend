@@ -1,14 +1,9 @@
 {
-  "mode": "smoke",
-  "where": "hosted",
-  "label": "hosted-smoke-1",
+  "mode": "rejudge",
+  "where": "box",
+  "label": "baseline-2026-09-23-r5",
+  "of": "baseline-2026-09-23",
   "instance": "backend-conventions",
   "graph_ref": "feature/prompt-under-test",
-  "prompt": "repo",
-  "tasks": [
-    "stale-ticket-close"
-  ],
-  "k": 1,
-  "parallel": 1,
-  "note": "Editing this file on ci/prompt-eval starts one prompt-eval campaign. mode: none | smoke | baseline | gepa | certify. where: box (self-hosted runner norbert-box) | hosted (ubuntu-latest, smoke only). The portable proof: the same pipeline on a GitHub-hosted Linux runner, the repository's CLAUDE.md (absent: the seed) on one task."
+  "note": "Editing this file on ci/prompt-eval starts one prompt-eval campaign. mode: none | smoke | baseline | gepa | certify | rejudge. where: box (self-hosted runner norbert-box) | hosted (ubuntu-latest, smoke only). rejudge: the baseline's 18 runs and the 4 degraded calibration anchors re-graded twice under judge rubric r5 (calibration found r4 lenient on design); delta re-measured; no coder run repeated."
 }
