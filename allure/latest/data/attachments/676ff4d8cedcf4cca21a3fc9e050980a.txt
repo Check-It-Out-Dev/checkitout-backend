@@ -1,9 +1,0 @@
-[Integration Test] Test users created:
-  Influencer: INFLUENCER-5cafe417-c8b0-4485-a57b-c3c7b3c2a7bd
-  Company: COMPANY-67ce3dc8-22ac-416c-bf30-5fa4a4446834
-  Admin: ADMIN-a275538a-04d3-457c-b61e-e485984883cd
-07:48:54.985 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mo.h.e.jdbc.spi.SqlExceptionHelper&amp#27;[0;39m - SQL Error: 0, SQLState: 23505
-07:48:54.986 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mo.h.e.jdbc.spi.SqlExceptionHelper&amp#27;[0;39m - Batch entry 0 /* insert for com.sm.instagram.platform.subscription.entity.SubscriptionPlan */insert into subscription_plan (active,campaign_limit,created_time,name,price_pln,stripe_price_id,stripe_product_id,id) values (('TRUE'::boolean),('1'::int4),('2026-09-24 07:48:54.981836+00'),('FREE'),('0'::numeric),(NULL),(NULL),('999'::int8)) was aborted: ERROR: duplicate key value violates unique constraint "subscription_plan_name_unique"
-  Detail: Key (name)=(FREE) already exists.  Call getNextException to see other errors in the batch.
-07:48:54.986 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mo.h.e.jdbc.spi.SqlExceptionHelper&amp#27;[0;39m - ERROR: duplicate key value violates unique constraint "subscription_plan_name_unique"
-  Detail: Key (name)=(FREE) already exists.

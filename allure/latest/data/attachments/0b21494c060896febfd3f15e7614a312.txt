@@ -1,6 +1,0 @@
-07:48:21.769 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.InMemoryRateLimiterService&amp#27;[0;39m - InMemoryRateLimiterService initialized - using local in-memory storage for rate limiting
-07:48:21.769 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RateLimiterService&amp#27;[0;39m - New rate limit window for key: user:limitOne1234567890
-07:48:21.769 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RateLimiterService&amp#27;[0;39m - Rate limit check - Key: user:limitOne1234567890, Count: 1/1, Allowed: true
-07:48:21.769 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.InMemoryRateLimiterService&amp#27;[0;39m - GDPR: Service=InMemoryRateLimit, Operation=CHECK_ALLOWED, Key=user:6e5f6986, Remaining=0/1, Duration=60s, Purpose=rate_limiting
-07:48:21.769 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.RateLimiterService&amp#27;[0;39m - Rate limit check - Key: user:limitOne1234567890, Count: 2/1, Allowed: false
-07:48:21.769 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.InMemoryRateLimiterService&amp#27;[0;39m - GDPR: Service=InMemoryRateLimit, Operation=LIMIT_EXCEEDED, Key=user:6e5f6986, Limit=1/60, Purpose=security
