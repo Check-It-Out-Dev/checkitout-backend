@@ -152,11 +152,26 @@ jobs:
           done
           curl -fsSL "$PAGES/subsume/latest/probes2.jsonl.gz" -o ../base2/probes.jsonl.gz && gunzip -f ../base2/probes.jsonl.gz && cp classes.json ../base2/ 2>/dev/null || true
           echo "ok=$ok" >> "$GITHUB_OUTPUT"
+          # The commit those probes were measured on. pack.json records it; anything that is not a full
+          # sha is ignored rather than handed to git.
+          commit=$(curl -fsSL "$PAGES/subsume/latest/pack.json" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{process.stdout.write(String(JSON.parse(s).commit||""))}catch{}})' || true)
+          if [[ "$commit" =~ ^[0-9a-f]{40}$ ]]; then echo "commit=$commit" >> "$GITHUB_OUTPUT"; fi
+      # "Changed" means changed since the commit the base was MEASURED on, not since the previous
+      # commit. JaCoCo numbers probes in order inside a class, so a method added to a class shifts the
+      # probes of every method after it: comparing that class probe by probe against the base reports
+      # coverage lost where none was. HEAD~1 hid that only while the class changed in the last commit.
+      # A night after any later commit -- or a dispatched night on a branch whose last commit touched
+      # a workflow -- compared a changed class as unchanged and went red on probe numbers alone (eight
+      # methods of RegistryLookupService, every line and branch count identical, 2026-09-24).
       - name: What this change touched
         env:
           BASE_REF: ${{ github.base_ref }}
+          BASE_COMMIT: ${{ steps.base.outputs.commit }}
         run: |
-          if [ -n "$BASE_REF" ]; then git diff --name-only "origin/$BASE_REF...HEAD" > changed.txt
+          if [ -n "$BASE_COMMIT" ] && git cat-file -e "$BASE_COMMIT^{commit}" 2>/dev/null; then
+            git diff --name-only "$BASE_COMMIT" HEAD > changed.txt
+            echo "changed since the base commit $BASE_COMMIT"
+          elif [ -n "$BASE_REF" ]; then git diff --name-only "origin/$BASE_REF...HEAD" > changed.txt
           else git diff --name-only HEAD~1...HEAD > changed.txt 2>/dev/null || : > changed.txt; fi
           wc -l < changed.txt
       - name: The published numbers are still the measured ones (I4)
@@ -166,12 +181,13 @@ jobs:
         env:
           I4: ${{ steps.numbers.outputs.i4 }}
           HEAD_SHA: ${{ github.sha }}
+          BASE_COMMIT: ${{ steps.base.outputs.commit }}
         run: |
           mkdir -p head && cp results/subsume/probes.jsonl results/subsume/classes.json head/ 2>/dev/null || true
           set +e
           node frontend/tools/subsume/invariant.mjs --repo backend --base base --base2 base2 --head head \
             --changed changed.txt --suite results/surefire-reports --i4 "$I4" \
-            --head-commit "$HEAD_SHA" --out reports/subsume
+            --base-commit "$BASE_COMMIT" --head-commit "$HEAD_SHA" --out reports/subsume
           code=$?
           set -e
           # 0 PASS, 1 FAIL, 2 INCOMPLETE: only FAIL blocks — an INCOMPLETE verdict is printed, never hidden
