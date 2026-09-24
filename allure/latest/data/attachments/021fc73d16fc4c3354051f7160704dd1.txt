@@ -1,0 +1,15 @@
+07:47:30.644 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.InMemoryUserCache&amp#27;[0;39m - GDPR: Operation=cacheUser_memory, FirebaseUID=firebase-uid-old, DataCached=user.status,user.role, Purpose=performance_optimization
+07:47:30.644 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.InMemoryUserCache&amp#27;[0;39m - Cached user firebase-uid-old in memory with status ACTIVE
+07:47:30.644 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.InMemoryUserCache&amp#27;[0;39m - GDPR: Operation=cacheUser_memory_success, FirebaseUID=firebase-uid-old, CacheDuration=5minutes, Purpose=authentication_cache
+07:47:30.645 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.InMemoryUserCache&amp#27;[0;39m - GDPR: Operation=cacheUser_memory, FirebaseUID=firebase-uid-new, DataCached=user.status,user.role, Purpose=performance_optimization
+07:47:30.645 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.InMemoryUserCache&amp#27;[0;39m - Cached user firebase-uid-new in memory with status ACTIVE
+07:47:30.645 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.InMemoryUserCache&amp#27;[0;39m - GDPR: Operation=cacheUser_memory_success, FirebaseUID=firebase-uid-new, CacheDuration=5minutes, Purpose=authentication_cache
+07:47:30.645 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.InMemoryUserCache&amp#27;[0;39m - Cleaned expired entries: 2 -> 1
+07:47:30.645 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.InMemoryUserCache&amp#27;[0;39m - GDPR: Operation=cleanExpired_memory, EntriesRemoved=1, Purpose=cache_maintenance
+07:47:30.645 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.InMemoryUserCache&amp#27;[0;39m - GDPR: Operation=isUserActive_check_memory, FirebaseUID=firebase-uid-new, DataAccessed=user.status, Purpose=authorization
+07:47:30.645 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.InMemoryUserCache&amp#27;[0;39m - Cache hit for user firebase-uid-new
+07:47:30.645 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.InMemoryUserCache&amp#27;[0;39m - GDPR: Operation=isUserActive_cacheHit_memory, FirebaseUID=firebase-uid-new, DataSource=memory_cache, Purpose=authorization
+07:47:30.645 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.InMemoryUserCache&amp#27;[0;39m - GDPR: Operation=isUserActive_check_memory, FirebaseUID=firebase-uid-old, DataAccessed=user.status, Purpose=authorization
+07:47:30.645 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.InMemoryUserCache&amp#27;[0;39m - Cache miss for user firebase-uid-old, checking DB
+07:47:30.645 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.InMemoryUserCache&amp#27;[0;39m - GDPR: DatabaseQuery=findByFirebaseUserId_memory, FirebaseUID=firebase-uid-old, Table=users, DataAccessed=user.accountStatus, Purpose=authorization
+07:47:30.645 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.InMemoryUserCache&amp#27;[0;39m - User not found for Firebase UID: firebase-uid-old

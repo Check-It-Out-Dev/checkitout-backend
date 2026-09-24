@@ -1,0 +1,4 @@
+07:48:23.829 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.GdprCompliantRateLimiterService&amp#27;[0;39m - GdprCompliantRateLimiterService using InMemoryRateLimiterService
+07:48:23.829 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.GdprCompliantRateLimiterService&amp#27;[0;39m - GDPR: Service=checkRateLimit, Operation=CHECK_LIMIT, UserKey=user:456, Limit=100, Duration=60, Purpose=rate_limiting
+07:48:23.829 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.GdprCompliantRateLimiterService&amp#27;[0;39m - GDPR: Service=rateLimitViolation, Operation=LIMIT_EXCEEDED, UserKey=user:456, Limit=100, Purpose=security
+07:48:23.829 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.r.GdprCompliantRateLimiterService&amp#27;[0;39m - Rate limit exceeded - ID: 5d659bab-b5fb-4525-a509-feee11e34983, Type: user, Limit: 100/60
