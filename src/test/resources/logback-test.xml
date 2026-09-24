@@ -19,7 +19,13 @@
     <logger name="com.github.dockerjava.zerodep" level="WARN"/>
     
     <!-- Application logging -->
-    <logger name="com.sm.instagram.platform" level="DEBUG"/>
+    <!-- INFO, the level every test profile sets once a Spring context boots (logging.level in
+         application.properties, -test, -integration). At DEBUG here the level depended on whether
+         a context had booted yet in this JVM, so a unit class took its log.isDebugEnabled() branches
+         or not according to where surefire happened to put it: JwtAuthenticationFilter's coverage
+         moved when the runner image changed on 2026-09-23. A test about a debug branch raises the
+         level itself and restores it (AuthControllerTokenLoggingUnitTest). -->
+    <logger name="com.sm.instagram.platform" level="INFO"/>
     <logger name="com.sm.instagram.platform.config" level="INFO"/>
     <logger name="com.sm.instagram.platform.common.redis" level="INFO"/>
     

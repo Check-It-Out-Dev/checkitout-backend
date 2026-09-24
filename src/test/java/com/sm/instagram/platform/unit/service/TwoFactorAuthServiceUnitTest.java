@@ -30,7 +30,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.HashMap;
 import java.util.List;
@@ -509,6 +512,69 @@ class TwoFactorAuthServiceUnitTest {
 
             // Then
             verify(firestoreService).disable2FA(FIREBASE_USER_ID);
+        }
+    }
+
+    /**
+     * What the audit log records about the caller. These branches used to be covered only when an
+     * earlier {@code @WebMvcTest} class happened to leave a request bound to the thread, so the
+     * coverage came and went with the order surefire ran the classes in. The request is bound here.
+     */
+    @Nested
+    @DisplayName("verifyTotpCode audit: client IP and user agent")
+    class AuditRequestContextTests {
+
+        private MockHttpServletRequest bind() {
+            MockHttpServletRequest request = new MockHttpServletRequest();
+            request.setRemoteAddr("198.51.100.20");
+            RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+            return request;
+        }
+
+        private void verifyAudited(String ip, String userAgent) {
+            when(firestoreService.getTotpSecret(FIREBASE_USER_ID)).thenReturn(TEST_SECRET);
+            when(gAuth.authorize(TEST_SECRET, VALID_CODE_INT)).thenReturn(false);
+
+            service.verifyTotpCode(FIREBASE_USER_ID, VALID_CODE);
+
+            verify(firestoreService).logAuditEvent(FIREBASE_USER_ID, "TOTP_VERIFY", "FAILED", ip, userAgent);
+        }
+
+        @Test
+        @DisplayName("the first address of X-Forwarded-For, and the User-Agent")
+        void firstForwardedAddress() {
+            MockHttpServletRequest request = bind();
+            request.addHeader("X-Forwarded-For", "203.0.113.7, 10.0.0.1");
+            request.addHeader("X-Real-IP", "192.0.2.99");
+            request.addHeader("User-Agent", "Mozilla/5.0 (test)");
+
+            verifyAudited("203.0.113.7", "Mozilla/5.0 (test)");
+        }
+
+        @Test
+        @DisplayName("X-Real-IP when X-Forwarded-For is empty")
+        void realIpWhenForwardedIsEmpty() {
+            MockHttpServletRequest request = bind();
+            request.addHeader("X-Forwarded-For", "");
+            request.addHeader("X-Real-IP", "192.0.2.99");
+
+            verifyAudited("192.0.2.99", null);
+        }
+
+        @Test
+        @DisplayName("the remote address when no proxy header is present")
+        void remoteAddressWithoutProxyHeaders() {
+            bind();
+
+            verifyAudited("198.51.100.20", null);
+        }
+
+        @Test
+        @DisplayName("nothing, when no request is bound to the thread")
+        void nothingOutsideARequest() {
+            RequestContextHolder.resetRequestAttributes();
+
+            verifyAudited(null, null);
         }
     }
 
