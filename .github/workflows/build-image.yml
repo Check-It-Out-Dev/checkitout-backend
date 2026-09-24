@@ -240,6 +240,12 @@ jobs:
   promote:
     name: Move the moving tags
     needs: [image, verify]
+    # Only the branches that own a moving tag -- the two the push trigger builds. A dispatch from
+    # any other branch is how a branch gets an image for an on-demand night (the Schemathesis tier
+    # fuzzes `<short sha>`, and the frontend's night can be pointed at it): it pushes and verifies
+    # the immutable tag and moves nothing. Without this, `feature/x` became the tag `feature/x`,
+    # which a registry refuses, and the run ended red after doing everything it was asked.
+    if: ${{ contains(fromJSON('["main", "greenfield"]'), github.ref_name) }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     outputs:

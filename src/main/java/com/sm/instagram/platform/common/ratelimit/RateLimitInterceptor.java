@@ -131,9 +131,13 @@ public class RateLimitInterceptor implements HandlerInterceptor {
     }
     
     /**
-     * Gets the rate limit configuration, with method-level taking precedence over class-level
+     * Gets the rate limit configuration, with method-level taking precedence over class-level.
+     *
+     * <p>Public and static because the OpenAPI document reads the same rule:
+     * {@code RateLimitResponsesCustomizer} declares 429 on exactly the operations this finds an
+     * enabled annotation for, so the document cannot drift from what the interceptor enforces.
      */
-    private RateLimit getRateLimitConfig(HandlerMethod handlerMethod) {
+    public static RateLimit getRateLimitConfig(HandlerMethod handlerMethod) {
         // First check method-level annotation
         RateLimit methodAnnotation = handlerMethod.getMethodAnnotation(RateLimit.class);
         if (methodAnnotation != null) {

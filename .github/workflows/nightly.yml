@@ -15,6 +15,12 @@
 # exist, and a night run that reports a cancelled tier as green is worse than one nobody reads.
 #
 # 02:30 rather than 02:00: the frontend's night starts at 02:00 and boots this repository's image.
+#
+# On demand, for a branch, before it merges -- the only way to know the night a change will get:
+#   gh workflow run build-image.yml --ref <branch>   # the commit's image, <short sha>; moves no tag
+#   gh workflow run nightly.yml --ref <branch>       # once that image is published
+# and the frontend's night against it: its nightly.yml takes backend_tag=<short sha> and
+# backend_ref=<sha>. A dispatched night publishes to Pages like any other run.
 name: nightly
 
 on:

@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.slf4j.MDC;
 import org.springframework.context.MessageSource;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -61,6 +62,10 @@ class ConsentEnforcementFilterUnitTest {
         // Register JavaTimeModule for LocalDateTime serialization
         objectMapper.findAndRegisterModules();
         filter = new ConsentEnforcementFilter(userCacheService, legalDocumentService, messageSource, objectMapper);
+        // The request id comes from the MDC when the logging filter put one there. Start without
+        // one: RequestLoggingFilter sets correlationId by design, and a unit test of it that ran just
+        // before this class used to decide which branch of write403Response these tests covered.
+        MDC.clear();
     }
 
     @AfterEach
@@ -184,6 +189,37 @@ class ConsentEnforcementFilterUnitTest {
             assertThat(consentHeader).isNotNull();
             assertThat(consentHeader).contains("TERMS_OF_SERVICE:2");
             assertThat(consentHeader).contains("PRIVACY_POLICY:1");
+        }
+
+        @Test
+        @DisplayName("should generate a request id on a blocked POST when the MDC carries none")
+        void should_generate_request_id_without_correlation_id() throws Exception {
+            setUpBlockedUser();
+
+            MockHttpServletRequest request = new MockHttpServletRequest();
+            request.setMethod("POST");
+            request.setRequestURI("/api/partnership-opportunity");
+            MockHttpServletResponse response = new MockHttpServletResponse();
+
+            filter.doFilter(request, response, filterChain);
+
+            assertThat(response.getHeader("X-Request-ID")).matches("REQ-[0-9a-f]{8}");
+        }
+
+        @Test
+        @DisplayName("should reuse the correlation id on a blocked POST when the MDC carries one")
+        void should_reuse_correlation_id() throws Exception {
+            setUpBlockedUser();
+            MDC.put("correlationId", "corr-42");
+
+            MockHttpServletRequest request = new MockHttpServletRequest();
+            request.setMethod("POST");
+            request.setRequestURI("/api/partnership-opportunity");
+            MockHttpServletResponse response = new MockHttpServletResponse();
+
+            filter.doFilter(request, response, filterChain);
+
+            assertThat(response.getHeader("X-Request-ID")).isEqualTo("corr-42");
         }
 
         @Test

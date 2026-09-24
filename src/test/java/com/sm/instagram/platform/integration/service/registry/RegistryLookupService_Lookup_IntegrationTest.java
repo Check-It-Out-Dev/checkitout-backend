@@ -13,6 +13,7 @@ import com.sm.instagram.platform.user.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.aop.support.AopUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -195,6 +196,26 @@ class RegistryLookupService_Lookup_IntegrationTest extends RegistryServiceIntegr
             assertThat(response.getCompanyType()).isEqualTo(CompanyType.JDG);
             assertThat(response.isSourceCeidg()).isFalse();
             assertThat(response.getOwnerName()).isNull();
+        }
+    }
+
+    @Nested
+    @DisplayName("Cache reset")
+    class CacheReset {
+
+        @Test
+        @DisplayName("clearLookupCache empties the cache of the real instance behind the proxy")
+        void clearLookupCacheReachesTheRealInstance() {
+            // The bean is a CGLIB proxy (the service has @Transactional methods). The E2E reset
+            // endpoint once read the cache field off the proxy, found null, and cleared nothing.
+            assertThat(AopUtils.isAopProxy(registryLookupService)).isTrue();
+
+            User user = createCompanyUserInValidation();
+            authenticateAs(user);
+            registryLookupService.lookupByNip(TEST_NIP, user.getFirebaseUserId());
+
+            assertThat(registryLookupService.clearLookupCache()).isEqualTo(1);
+            assertThat(registryLookupService.clearLookupCache()).isZero();
         }
     }
 }

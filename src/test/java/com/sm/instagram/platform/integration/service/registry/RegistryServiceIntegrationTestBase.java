@@ -14,9 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.lang.reflect.Field;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.lenient;
@@ -69,16 +67,10 @@ public abstract class RegistryServiceIntegrationTestBase extends BaseServiceInte
 
     @AfterEach
     void clearLookupCache() {
-        // Clear the in-memory ConcurrentHashMap cache to prevent cross-test leakage
-        try {
-            Field cacheField = RegistryLookupService.class.getDeclaredField("lookupCache");
-            cacheField.setAccessible(true);
-            @SuppressWarnings("unchecked")
-            ConcurrentHashMap<String, ?> cache = (ConcurrentHashMap<String, ?>) cacheField.get(registryLookupService);
-            cache.clear();
-        } catch (Exception e) {
-            // Non-critical — cache will be empty on fresh context anyway
-        }
+        // Clear the in-memory cache to prevent cross-test leakage. This used to read the field by
+        // reflection off the injected bean, which is a CGLIB proxy whose field is always null; the
+        // exception was swallowed, so the cache was never cleared between tests.
+        registryLookupService.clearLookupCache();
     }
 
     // =========================================================================

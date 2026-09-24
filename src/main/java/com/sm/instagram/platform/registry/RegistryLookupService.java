@@ -452,6 +452,21 @@ public class RegistryLookupService {
                 .orElseThrow(() -> new BusinessRuleTranslatableException("error.resource.user_not_found"));
     }
 
+    /**
+     * Empties the lookup cache and says how many entries it held. Exists for the E2E reset endpoint.
+     *
+     * <p>That endpoint used to read {@code lookupCache} by reflection off the injected bean. The bean
+     * is a CGLIB proxy -- this class has {@code @Transactional} methods -- and a proxy instance never
+     * runs field initialisers, so the field it read was always null: the cache was never cleared, and
+     * nothing noticed while the failure still answered 200. A method call goes through the proxy to
+     * the real instance.
+     */
+    public int clearLookupCache() {
+        int size = lookupCache.size();
+        lookupCache.clear();
+        return size;
+    }
+
     private void evictExpiredCacheEntries() {
         int ttl = registryProperties.getCache().getTtlMinutes();
         lookupCache.entrySet().removeIf(entry -> entry.getValue().isExpired(ttl));
