@@ -1,22 +1,101 @@
 # checkItOut — backend
 
-Marketplace connecting brands with influencers: companies publish campaigns,
-creators apply, both sides run the collaboration through content submission,
+**Where the business rules live, and where the contract comes from.**
+
+A marketplace connecting brands with influencers: companies publish campaigns,
+creators apply, and both sides run the collaboration through content submission,
 review and rating. Spring Boot 3.4 on Java 21, PostgreSQL with Liquibase, Redis,
 Firebase authentication, Stripe billing and Polish e-invoicing.
 
-The Angular frontend lives in its own repository and generates its API client
-from this project's OpenAPI contract.
+[![License: MIT](https://img.shields.io/badge/License-MIT-1f6feb.svg)](LICENSE)
+[![Java](https://img.shields.io/badge/Java-21-f89820.svg)](https://openjdk.org/projects/jdk/21/)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.4-6db33f.svg)](https://spring.io/projects/spring-boot)
+[![Test methods](https://img.shields.io/badge/test_methods-8922-15c213.svg)](#the-numbers)
+[![OpenAPI](https://img.shields.io/badge/OpenAPI-3.1-85ea2d.svg)](docs/openapi/openapi.json)
+
+▶ **[checkitout.app](https://checkitout.app)** — the live demo (the frontend's
+FE-only build, every `/api` call mocked in the browser)
+
+## One system, two repositories
+
+This is half of a system, and the other half is not a client that happens to talk
+to it — the two are joined at two seams, and both seams are files in this
+repository.
+
+```text
+        THIS REPOSITORY                             THE FRONTEND
+   ──────────────────────────                 ──────────────────────────
+   the business rules                   ┌───►  the same rules, re-proven
+   · 34 Cucumber feature files          │      through the screens a user
+   · 148 scenarios + 28 outlines  ──────┘      really touches
+   · the subscription state machine            · 26 features ported, 8 waived
+                                               · a gate fails on the 9th
+
+   the contract                         ┌───►  compiles against it
+   · openapi.json, taken from a    ─────┘      · 181 model types, 41 services
+     server that actually booted               · generated, never hand-written
+   · 234 paths · 277 operations                · a drifted signature is a
+   · 182 schemas · 41 operation tags             compile error, not a bug report
+```
+
+**The contract is not a document about the code; it is taken from the running
+code.** `OpenApiSpecGeneratorTest` starts the whole application on a random port
+under the `integration` profile, fetches `/api/v3/api-docs` over HTTP from the
+server it just started, and writes the result to
+[`docs/openapi/openapi.json`](docs/openapi/openapi.json). A spec produced that way
+cannot describe an endpoint that does not exist, because an endpoint that does not
+exist could not have answered.
+
+The same test canonicalises the JSON before writing it — keys sorted, output
+pretty-printed — because springdoc's runtime map ordering shuffles between boots
+and was re-dirtying the committed artifact with eighty-line no-op diffs on every
+run. Key order is meaningless to OpenAPI and to the code generator, and making it
+deterministic is what turns the spec into something two repositories can hold
+*identically* rather than merely equivalently.
+
+Which makes the claim one command to check:
+
+```bash
+sha256sum docs/openapi/openapi.json
+# 96ceb20f44831ba48ac6a01349e953c0131260ff8db84b447d704893b01e7cbb
+# byte for byte the same file in both repositories
+```
+
+**The Cucumber corpus is the other seam.** The 34 feature files under
+[`src/test/resources/features/`](src/test/resources/features/) are the executable
+statement of what this platform promises. The frontend ports 26 of them into its
+own BDD tier and waives 8 with written reasons — and it runs a gate that fails if
+a 35th feature appears here without being either ported or waived there. The rules
+are proven twice: once against the service layer, once through the screens.
+
+## The numbers
+
+Measured 2026-09-26, on this tree, with commands you can run.
+
+| | | |
+| :-- | --: | :-- |
+| **Test methods** | **8,922** | 8,326 `@Test` + 596 `@ParameterizedTest`, across **273** test classes |
+| **Test code : main code** | **2.0 : 1** | 182,241 lines of test Java against 90,195 of main |
+| **Cucumber** | **34 files** | 148 `Scenario` + 28 `Scenario Outline` |
+| **Domain** | **40 entities** | 50 REST controllers |
+| **Contract** | **234 paths** | 277 operations · 182 schemas · OpenAPI 3.1 |
+
+> [!NOTE]
+> These are declarations counted in the source, not a green run — a build here needs
+> Docker for Testcontainers and takes a while. The counts are reproducible with
+> `grep -rh '^\s*@Test' src/test --include='*.java' | wc -l` and its siblings; the
+> suites themselves are described in [`docs/Tests/`](docs/Tests/).
 
 ## Sister repositories
 
-- **Live demo** — <https://checkitout.app> (the frontend's FE-only demo
-  build: sandboxes and guided journeys, every `/api` call mocked in-browser)
-- **Frontend** — [`checkitout-frontend`](https://github.com/Check-It-Out-Dev/checkitout-frontend):
-  Angular + Material/Tailwind, OpenAPI-generated client from this contract
-- **Graph-theory research** — [`graph-theory-system-modeling`](https://github.com/Check-It-Out-Dev/graph-theory-system-modeling):
-  the mathematics this platform is modeled with, plus the CodeMap application
-  built on it
+- **[`checkitout-frontend`](https://github.com/Check-It-Out-Dev/checkitout-frontend)** —
+  Angular 22, and the other end of both seams above: it generates its client from
+  this contract and ports this Cucumber corpus. Its README is where the test
+  strategy is argued.
+- **[`graph-theory-system-modeling`](https://github.com/Check-It-Out-Dev/graph-theory-system-modeling)** —
+  the method this platform is modelled with, and the AI tooling built on it:
+  knowledge-graph navigation, retrieval, prompt evaluation. The answer to how one
+  person kept a system this size navigable.
 
 ## Run it without any credentials
 
