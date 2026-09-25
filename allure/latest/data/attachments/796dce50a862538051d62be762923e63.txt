@@ -1,0 +1,10 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-9ba54b2d-3b11-4bde-8eb7-060d4cf81780
+  Company: COMPANY-17540a86-a4af-4f74-adba-db9499341e8f
+  Admin: ADMIN-21ebf76f-562d-43b1-a7e9-07bbfa96d3f4
+08:09:16.242 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus, FirebaseUID=COMPANY-17540a86-a4af-4f74-adba-db9499341e8f, OpportunityID=2619, Action=REJECT, Purpose=status_management
+08:09:16.243 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=COMPANY-17540a86-a4af-4f74-adba-db9499341e8f, OpportunityID=2619, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
+08:09:16.269 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus_SUCCESS, FirebaseUID=COMPANY-17540a86-a4af-4f74-adba-db9499341e8f, OpportunityID=2619, OldStatus=APPLIED, NewStatus=REJECTED_BY_COMPANY
+08:09:16.269 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=COMPANY-17540a86-a4af-4f74-adba-db9499341e8f, AppliedOpportunityID=2619, StatusChange=APPLIED→REJECTED_BY_COMPANY, Purpose=status_tracking
+08:09:16.271 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=COMPANY-17540a86-a4af-4f74-adba-db9499341e8f, AppliedOpportunityID=2619, DataAccessed=status,changedBy,reason, Purpose=audit_trail
+08:09:16.271 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2619, APPLIED -> REJECTED_BY_COMPANY, Changed by=COMPANY-17540a86-a4af-4f74-adba-db9499341e8f, Reason=Status rejected via API (/status/update endpoint)

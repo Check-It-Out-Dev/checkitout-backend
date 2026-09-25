@@ -2,25 +2,25 @@
   "schema": 1,
   "repo": "Check-It-Out-Dev/checkitout-backend",
   "run": {
-    "number": 166,
-    "id": 36000115087,
+    "number": 22,
+    "id": 36111205867,
     "sha": "3d462b2",
     "branch": "main",
     "workflow": "ci-tests",
-    "startedAt": "2026-09-24T12:36:24Z",
-    "durationSec": 283,
-    "url": "https://github.com/Check-It-Out-Dev/checkitout-backend/actions/runs/36000115087"
+    "startedAt": "2026-09-25T08:07:21Z",
+    "durationSec": 795,
+    "url": "https://github.com/Check-It-Out-Dev/checkitout-backend/actions/runs/36111205867"
   },
   "tests": {
-    "total": 11264,
-    "passed": 11232,
+    "total": 11561,
+    "passed": 11508,
     "failed": 0,
     "flaky": 0,
-    "skipped": 32,
+    "skipped": 53,
     "passRate": 1,
     "flakyRate": 0,
-    "durationMeanSec": 0.01,
-    "durationP95Sec": 0.02,
+    "durationMeanSec": 0.06,
+    "durationP95Sec": 0.03,
     "tiers": {
       "unit": {
         "total": 10430,
@@ -37,13 +37,21 @@
         "flaky": 0,
         "skipped": 32,
         "durationSec": 23
+      },
+      "e2e": {
+        "total": 297,
+        "passed": 276,
+        "failed": 0,
+        "flaky": 0,
+        "skipped": 21,
+        "durationSec": 554
       }
     }
   },
   "coverage": {
     "lines": 58.49,
     "statements": 59.1,
-    "branches": 51.6,
+    "branches": 51.58,
     "functions": 65.47
   },
   "mutation": {
@@ -55,18 +63,18 @@
     "classesWithNoUnitTest": 15
   },
   "security": {
-    "total": 18,
-    "error": 3,
+    "total": 17,
+    "error": 2,
     "warning": 15,
     "note": 0,
     "tools": {
       "Semgrep OSS": 15,
-      "Trivy": 3
+      "Trivy": 2
     },
     "scans": 3
   },
   "flaky": [],
   "reports": {
-    "allure": "allure/ci-tests-166/"
+    "allure": "allure/ci-tests-22/"
   }
 }

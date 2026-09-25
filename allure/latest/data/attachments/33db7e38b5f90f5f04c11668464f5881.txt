@@ -1,0 +1,6 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-330e9d78-6aef-4781-80c1-d0775951db24
+  Company: COMPANY-42ddecad-5881-4b75-b2bd-d050ffa33c04
+  Admin: ADMIN-3a6c70b4-46c1-4a58-ab42-823a91a3d894
+08:09:34.245 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=patchUser, UpdaterFirebaseUID=INFLUENCER-330e9d78-6aef-4781-80c1-d0775951db24, TargetUserID=5050, FieldsModified=[accountStatus], Purpose=partial_profile_update, LegalBasis=consent
+08:09:34.245 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - SECURITY: Non-admin attempted to change accountStatus for user 5050
