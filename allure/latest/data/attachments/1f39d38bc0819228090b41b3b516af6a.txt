@@ -1,0 +1,7 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-b93eaa92-dafe-42ec-b3e2-454e3d28c259
+  Company: COMPANY-77a4ca62-8a59-4a5e-9185-d0d43b591ee3
+  Admin: ADMIN-3ea67783-2b15-4ec3-b763-af7c0d74bb50
+07:59:30.664 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=patchUser, UpdaterFirebaseUID=ADMIN-3ea67783-2b15-4ec3-b763-af7c0d74bb50, TargetUserID=5057, FieldsModified=[userType], Purpose=partial_profile_update, LegalBasis=consent
+07:59:30.664 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: ADMIN_ROLE_CHANGE Operation=updateUserType, AdminFirebaseUID=ADMIN-3ea67783-2b15-4ec3-b763-af7c0d74bb50, TargetUserID=5057, OldRole=INFLUENCER, RequestedRole=INFLUENCER, Purpose=role_management
+07:59:30.664 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - Patched user with ID: 5057 (critical changes: false)

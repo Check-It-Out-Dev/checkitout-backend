@@ -1,0 +1,10 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-526f540b-9fae-4859-91d1-bfa63bd08bb4
+  Company: COMPANY-984186fc-8062-46aa-9674-d7bbfb206fe3
+  Admin: ADMIN-def6a197-a31d-4c6d-bac1-4322b66c7095
+07:59:13.385 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus, FirebaseUID=COMPANY-984186fc-8062-46aa-9674-d7bbfb206fe3, OpportunityID=2614, Action=REJECT, Purpose=status_management
+07:59:13.385 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=COMPANY-984186fc-8062-46aa-9674-d7bbfb206fe3, OpportunityID=2614, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
+07:59:13.414 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus_SUCCESS, FirebaseUID=COMPANY-984186fc-8062-46aa-9674-d7bbfb206fe3, OpportunityID=2614, OldStatus=CONTENT_POSTED, NewStatus=CONTENT_POSTED_REJECTED
+07:59:13.414 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=COMPANY-984186fc-8062-46aa-9674-d7bbfb206fe3, AppliedOpportunityID=2614, StatusChange=CONTENT_POSTED→CONTENT_POSTED_REJECTED, Purpose=status_tracking
+07:59:13.415 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=COMPANY-984186fc-8062-46aa-9674-d7bbfb206fe3, AppliedOpportunityID=2614, DataAccessed=status,changedBy,reason, Purpose=audit_trail
+07:59:13.415 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2614, CONTENT_POSTED -> CONTENT_POSTED_REJECTED, Changed by=COMPANY-984186fc-8062-46aa-9674-d7bbfb206fe3, Reason=Status rejected via API (/status/update endpoint)

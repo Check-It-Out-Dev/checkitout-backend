@@ -1,0 +1,9 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-23b434a7-402f-456b-b52d-2ac36903d10c
+  Company: COMPANY-a4c6c3e1-eb71-4220-b9ce-c7cb115d1657
+  Admin: ADMIN-f2867e0b-9200-4fc8-b9ed-ac038c0d916d
+07:59:55.425 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=patchCurrentUserPreferences, FirebaseUID=INFLUENCER-23b434a7-402f-456b-b52d-2ac36903d10c, FieldsModified=[notificationPushEnabled, notificationSmsEnabled, notificationEmailEnabled], Purpose=partial_settings_update, LegalBasis=consent
+07:59:55.426 [scheduling-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+07:59:55.429 [scheduling-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+07:59:55.430 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=getCurrentUserPreferences, FirebaseUID=INFLUENCER-23b434a7-402f-456b-b52d-2ac36903d10c, Purpose=user_preference_retrieval, DataAccessed=user.preferences.*
+07:59:55.432 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=patchCurrentUserPreferences_SUCCESS, FirebaseUID=INFLUENCER-23b434a7-402f-456b-b52d-2ac36903d10c, ModifiedFields=[notificationPushEnabled, notificationSmsEnabled, notificationEmailEnabled]
