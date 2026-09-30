@@ -27,14 +27,14 @@ repository.
    ──────────────────────────                 ──────────────────────────
    the business rules                   ┌───►  the same rules, re-proven
    · 34 Cucumber feature files          │      through the screens a user
-   · 148 scenarios + 28 outlines  ──────┘      really touches
+   · 277 scenarios after expansion ─────┘      really touches
    · the subscription state machine            · 26 features ported, 8 waived
                                                · a gate fails on the 9th
 
    the contract                         ┌───►  compiles against it
    · openapi.json, taken from a    ─────┘      · 181 model types, 41 services
      server that actually booted               · generated, never hand-written
-   · 234 paths · 277 operations                · a drifted signature is a
+   · 234 paths · 279 operations                · a drifted signature is a
    · 182 schemas · 41 operation tags             compile error, not a bug report
 ```
 
@@ -74,11 +74,15 @@ Measured 2026-09-26, on this tree, with commands you can run.
 
 | | | |
 | :-- | --: | :-- |
-| **Test methods** | **8,922** | 8,326 `@Test` + 596 `@ParameterizedTest`, across **273** test classes |
+| **Test methods** | **8,908** | 8,312 `@Test` + 596 `@ParameterizedTest`, across **273** test classes |
 | **Test code : main code** | **2.0 : 1** | 182,241 lines of test Java against 90,195 of main |
-| **Cucumber** | **34 files** | 148 `Scenario` + 28 `Scenario Outline` |
+| **Cucumber** | **34 files** | 148 `Scenario` + 28 `Scenario Outline`, **277 after Examples expansion** |
 | **Domain** | **40 entities** | 50 REST controllers |
-| **Contract** | **234 paths** | 277 operations · 182 schemas · OpenAPI 3.1 |
+| **Contract** | **234 paths** | 279 operations · 182 schemas · OpenAPI 3.1 |
+
+And one number that is worth more than any of them: **`@Disabled` appears zero
+times** across all 325 test files. Nothing here is quarantined, skipped-and-
+forgotten, or commented out waiting for someone to come back to it.
 
 > [!NOTE]
 > These are declarations counted in the source, not a green run — a build here needs
@@ -167,7 +171,7 @@ regenerate it with [`docs/openapi/REGENERATE.md`](docs/openapi/REGENERATE.md).
 Three tiers, all runnable locally:
 
 ```bash
-./mvnw test                      # unit — no external services
+./mvnw test -Ptest               # unit — no external services (the profile matters)
 ./mvnw verify -Pintegration      # service + repository tier (Testcontainers)
 ./mvnw verify -Pe2e              # Cucumber end-to-end suites (needs port 8080 free)
 ./mvnw jacoco:report             # coverage
@@ -198,8 +202,11 @@ matters.
 - **Ports and adapters where the vendor is replaceable** — `InvoicingPort` →
   Fakturownia, `CompanyRegistryPort` → GUS/CEIDG/VAT. Strategic vendors
   (Stripe, Firebase) are integrated directly.
-- **Optimistic locking everywhere** (`@Version` on every entity), ShedLock for
-  scheduled jobs, transactional event listeners for decoupled side-effects.
+- **Optimistic locking where writes contend** — `@Version` on 7 of the 40
+  entities, the ones two actors can touch at once (user, notification,
+  opportunity, application, application content, company data, company
+  subscription). ShedLock for scheduled jobs, transactional event listeners for
+  decoupled side-effects.
 - **Security**: HttpOnly HMAC-signed session cookies bound to a request
   fingerprint, step-up authentication for sensitive changes, per-endpoint rate
   limiting, consent and terms enforcement filters, HMAC consent cookies.
