@@ -1,5 +1,7 @@
 # Technical Innovation & Scalability
-*Current Implementation & Realistic Growth Path*
+
+> **Status: an early design note, not maintained.** It was written before much of the code and was not kept in step with it — several classes and endpoints it names were never built. For what the code does today read [the architecture overview](../guide/overview.md); this file is kept for history.
+
 
 ## 🎯 Executive Summary
 

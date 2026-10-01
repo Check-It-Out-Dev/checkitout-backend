@@ -1,5 +1,7 @@
 # CheckItOut Platform - Complete Technical Documentation
-*Enterprise-Grade B2B Influencer Marketing Platform*
+
+> **Status: an early design note, not maintained.** It was written before much of the code and was not kept in step with it — several classes and endpoints it names were never built. For what the code does today read [the guide](../README.md); this file is kept for history.
+
 
 **Version**: 3.0  
 **Date**: January 2025  
@@ -10,16 +12,16 @@
 
 ## 📋 Table of Contents
 
-1. [Technical Executive Summary](#technical-executive-summary)
-2. [System Architecture](#system-architecture)
-3. [Security Architecture](#security-architecture)
-4. [CI/CD & Deployment](#cicd--deployment)
-5. [Monitoring & Observability](#monitoring--observability)
-6. [Data Privacy & Compliance](#data-privacy--compliance)
-7. [Innovation & Scalability](#innovation--scalability)
-8. [Technical Metrics & Performance](#technical-metrics--performance)
-9. [Platform Overview](#platform-overview)
-10. [Investment Value Proposition](#investment-value-proposition)
+1. [Technical Executive Summary](#-technical-executive-summary)
+2. [System Architecture](#%EF%B8%8F-system-architecture)
+3. [Security Architecture](#-security-architecture)
+4. [CI/CD & Deployment](#-cicd--deployment)
+5. [Monitoring & Observability](#-monitoring--observability)
+6. [Data Privacy & Compliance](#-data-privacy--compliance)
+7. [Innovation & Scalability](#-innovation--scalability)
+8. [Technical Metrics & Performance](#-technical-metrics--performance)
+9. [Platform Overview](#-platform-overview)
+10. [Investment Value Proposition](#-investment-value-proposition)
 
 ---
 

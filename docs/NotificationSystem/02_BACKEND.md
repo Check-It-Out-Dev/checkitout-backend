@@ -16,7 +16,7 @@
 6. [Repository](#repository)
 7. [Services](#services)
 8. [Domain Events](#domain-events)
-9. [Event Listener](#event-listener)
+9. [Event Listener](#notificationeventlistenerjava)
 10. [REST Controller](#rest-controller)
 11. [Email Infrastructure](#email-infrastructure)
 12. [Modifications to Existing Files](#modifications-to-existing-files)

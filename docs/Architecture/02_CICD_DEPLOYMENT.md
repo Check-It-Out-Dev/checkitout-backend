@@ -1,5 +1,7 @@
 # CI/CD Pipeline & Deployment Architecture
-*Actual Implementation - Production Deployment Pipeline*
+
+> **Status: an early design note, not maintained.** It was written before much of the code and was not kept in step with it — several classes and endpoints it names were never built. For what the code does today read [the CI/CD page of the guide](../guide/cicd.md); this file is kept for history.
+
 
 ## 🚀 Executive Summary
 

@@ -10,9 +10,9 @@
 1. [Overview](#overview)
 2. [What Already Exists](#what-already-exists)
 3. [Step-by-Step Integration](#step-by-step-integration)
-4. [Type Definitions](#type-definitions)
-5. [Service Updates](#service-updates)
-6. [Component Updates](#component-updates)
+4. [Type Definitions](#step-2-update-notification-types)
+5. [Service Updates](#step-3-update-notifications-service)
+6. [Component Updates](#step-4-update-notifications-component)
 7. [Preferences Integration](#preferences-integration)
 8. [Testing Checklist](#testing-checklist)
 

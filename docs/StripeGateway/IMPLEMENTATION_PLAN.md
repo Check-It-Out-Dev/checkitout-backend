@@ -1,5 +1,8 @@
 # Implementation Plan: Stripe Payment Gateway
 
+> **Status: the original design, not rewritten after the fact.** The code differs from it in places (nine states, not ten; no transition table; some paths wired only in tests). [The state machine as the code implements it](../guide/billing-graph.md) is the current description.
+
+
 ## Context
 
 checkItOut needs subscription-based payments for company accounts. Requirements, state machine (10 states, 56 transitions, 13 rules), and API connectivity are documented in `docs/StripeGateway/`. The full state machine is modeled in Neo4j namespace `subscription`.

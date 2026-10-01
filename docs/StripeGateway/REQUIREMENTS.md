@@ -1,5 +1,8 @@
 # Stripe Payment Gateway - Requirements
 
+> **Status: the original design, not rewritten after the fact.** The code differs from it in places (nine states, not ten; no transition table; some paths wired only in tests). [The state machine as the code implements it](../guide/billing-graph.md) is the current description.
+
+
 <!--
   STATE_MACHINE_GRAPH:
   The fully modeled subscription state machine (10 states, 56 transitions, 8 rules, 3 design decisions)

@@ -1,5 +1,8 @@
 # Test Suites - Claude Code Execution Guide
 
+> **Written for an AI coding agent operating this repository on Windows** — which is why it reads as a list of tool calls. A person should start at [testing in depth](../testing/README.md).
+
+
 > **AI-First Guide**: This document defines how Claude Code should execute tests via the Bash tool on Windows.
 
 ---
