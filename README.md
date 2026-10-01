@@ -88,7 +88,7 @@ One page per question, each drawn from the code:
 - [Security: authentication, MFA, secrets, hardening](docs/guide/security.md)
 - [CI/CD, rollback and the Claude review gate](docs/guide/cicd.md)
 - [Load testing on Kubernetes](docs/guide/load-testing.md)
-- [Privacy and GDPR: what is built, and what is left to the operator](docs/guide/gdpr.md)
+- [Privacy and GDPR: a base you can build on](docs/guide/gdpr.md)
 
 The full index is [docs/README.md](docs/README.md).
 
@@ -169,10 +169,10 @@ skipped-and-forgotten, or commented out.
 
 Teams building a marketplace in the EU:
 
-- **GDPR-aware by design** — versioned legal documents with recorded, provable consent and enforced
-  re-consent, cookie consent, and erasure on request: refused while a collaboration is running,
-  otherwise carried out by an administrator's cascade with a ledger. What is built and what is
-  left to the team that runs it is [written down](docs/guide/gdpr.md).
+- **A GDPR base you can build on** — provable, versioned consent with enforced re-consent, a log
+  line for every operation on personal data, and erasure on request: refused while a collaboration
+  is running, otherwise finished by an administrator. Part of it is automatic and part is a
+  person's job; [the page](docs/guide/gdpr.md) says which, and what to add when you need more.
 - **Subscriptions and invoicing wired end to end** — Stripe checkout and webhooks, invoices through
   a replaceable adapter. It was exercised end to end in Stripe's test mode; the flag that enables it
   is one setting.
@@ -183,6 +183,13 @@ The frontend lives in [checkitout-frontend](https://github.com/Check-It-Out-Dev/
 — Angular, with a typed API client generated from this repository's OpenAPI document. How one person
 kept a system this size navigable — the code base modelled as a graph that coding agents query — is
 [graph-theory-system-modeling](https://github.com/Check-It-Out-Dev/graph-theory-system-modeling).
+
+## Known bugs
+
+Three, all on the erasure path and none on the consent side: Meta's deletion callbacks write a
+status the database refuses, three foreign keys stop a permanent delete for some users, and the
+cascade removes files under the wrong prefix. What happens and how to fix each is in
+[privacy and GDPR](docs/guide/gdpr.md#known-bugs).
 
 ## License
 

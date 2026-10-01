@@ -12,7 +12,7 @@ way to check it yourself. Everything older is kept, and says at its top that it 
 | How billing survives three writers on one row | [The subscription state machine, as a graph](guide/billing-graph.md) |
 | Why the frontend cannot drift from this API | [The OpenAPI contract pipeline](guide/openapi-contract.md) |
 | How sessions, second factors and secrets work — and what an outside team found | [Security](guide/security.md) |
-| What "GDPR-aware" means here, exactly | [Privacy and GDPR: what is built, and what is left to the operator](guide/gdpr.md) |
+| What "GDPR-aware" means here, exactly | [Privacy and GDPR: a base you can build on](guide/gdpr.md) |
 | How a change gets to production, and back out of it | [CI/CD, rollback and the reviewer that cannot approve](guide/cicd.md) |
 | How the API behaves under load | [Load testing on Kubernetes](guide/load-testing.md) |
 | How the tests are shaped and governed | [Testing in depth](testing/README.md) |
