@@ -88,7 +88,7 @@ One page per question, each drawn from the code:
 - [Security: authentication, MFA, secrets, hardening](docs/guide/security.md)
 - [CI/CD, rollback and the Claude review gate](docs/guide/cicd.md)
 - [Load testing on Kubernetes](docs/guide/load-testing.md)
-- [Privacy and GDPR: what is built, and what is not](docs/guide/gdpr.md)
+- [Privacy and GDPR: what is built, and what is left to the operator](docs/guide/gdpr.md)
 
 The full index is [docs/README.md](docs/README.md).
 
@@ -170,9 +170,9 @@ skipped-and-forgotten, or commented out.
 Teams building a marketplace in the EU:
 
 - **GDPR-aware by design** — versioned legal documents with recorded, provable consent and enforced
-  re-consent, cookie consent, and an administrator's erasure cascade with a ledger. Erasure from
-  the user's side and the data export are not finished; what is built, what is not and what a
-  team must still add is [written down](docs/guide/gdpr.md).
+  re-consent, cookie consent, and erasure on request: refused while a collaboration is running,
+  otherwise carried out by an administrator's cascade with a ledger. What is built and what is
+  left to the team that runs it is [written down](docs/guide/gdpr.md).
 - **Subscriptions and invoicing wired end to end** — Stripe checkout and webhooks, invoices through
   a replaceable adapter. It was exercised end to end in Stripe's test mode; the flag that enables it
   is one setting.
