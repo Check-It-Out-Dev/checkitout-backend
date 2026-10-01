@@ -73,7 +73,7 @@ sequenceDiagram
   tracked; later requests carry only the upload's id, and the server resolves the URL itself after
   checking the caller owns it. This design is the fix for the one high-severity finding below.
 - **Meta's callbacks are verified**: the `signed_request` of the data-deletion and deauthorisation
-  callbacks is checked with HMAC-SHA256 before anything is deleted.
+  callbacks is checked with HMAC-SHA256 before the request is acted on.
 
 ## Evaluated from outside
 

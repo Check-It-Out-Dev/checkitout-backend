@@ -170,9 +170,9 @@ skipped-and-forgotten, or commented out.
 Teams building a marketplace in the EU:
 
 - **GDPR-aware by design** — versioned legal documents with recorded, provable consent and enforced
-  re-consent, cookie consent, an administrator erasure cascade across every store and a thinner
-  self-service path. What is built and what a
-  team must still add (the data export, for one) is [written down](docs/guide/gdpr.md).
+  re-consent, cookie consent, and an administrator's erasure cascade with a ledger. Erasure from
+  the user's side and the data export are not finished; what is built, what is not and what a
+  team must still add is [written down](docs/guide/gdpr.md).
 - **Subscriptions and invoicing wired end to end** — Stripe checkout and webhooks, invoices through
   a replaceable adapter. It was exercised end to end in Stripe's test mode; the flag that enables it
   is one setting.
