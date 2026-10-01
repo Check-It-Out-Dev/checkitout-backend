@@ -61,9 +61,16 @@ public class TestEmailController {
      *
      * <p>Production code dispatches notification emails via a 15-minute cron
      * (see {@link EmailCronJob#processEmailQueue}). Tests can't wait that
-     * long, so this endpoint synchronously invokes the same code path.
+     * long, so this endpoint synchronously runs the same work.
      * After it returns, any pending notifications have been pushed to
      * GreenMail and {@link #latest} reflects them.
+     *
+     * <p>It calls {@link EmailCronJob#processPendingEmails}, not the scheduled
+     * entry point: that one sits behind a ShedLock lock held for at least a
+     * minute, and a call made while it is held is skipped without an error —
+     * which this endpoint used to report as {@code flushed: true}. The answer
+     * now says what happened: {@code flushed} is false when the queue is
+     * switched off, and the counts are those of this pass.
      *
      * <p>Idempotent: per-notification dedup (email_sent=true) is enforced
      * inside the cron logic — calling this twice doesn't send the same
@@ -72,8 +79,12 @@ public class TestEmailController {
     @PostMapping("/flush")
     public ResponseEntity<Map<String, Object>> flushPending() {
         try {
-            emailCronJob.processEmailQueue();
-            return ResponseEntity.ok(Map.of("flushed", true));
+            EmailCronJob.BatchResult result = emailCronJob.processPendingEmails();
+            return ResponseEntity.ok(Map.of(
+                    "flushed", result.ran(),
+                    "sent", result.sent(),
+                    "failed", result.failed(),
+                    "skipped", result.skipped()));
         } catch (Exception e) {
             log.warn("[dev/e2e] flushPending failed: {}", e.getMessage());
             return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));

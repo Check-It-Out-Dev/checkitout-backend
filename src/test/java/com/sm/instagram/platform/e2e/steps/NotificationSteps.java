@@ -117,7 +117,9 @@ public class NotificationSteps extends CucumberSpringConfig {
     @When("the email queue is processed")
     public void processEmailQueue() {
         log.info("[E2E] Manually triggering email queue processing");
-        emailCronJob.processEmailQueue();
+        // Not the scheduled entry point: its scheduler lock is held for a minute after every run,
+        // and a second call inside that minute is skipped without an error.
+        emailCronJob.processPendingEmails();
         log.info("[E2E] Email queue processing complete, GreenMail messages: {}",
                 greenMail.getReceivedMessages().length);
     }
