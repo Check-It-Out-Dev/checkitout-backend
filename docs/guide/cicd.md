@@ -24,6 +24,8 @@ flowchart LR
         HC -->|"yes"| DONE(["Released"])
         HC -->|"no"| RB["Automatic rollback<br/>restore backup · restart · re-check"]
     end
+
+    PR -->|"merged"| REL
 ```
 
 ## The two test pipelines
