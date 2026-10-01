@@ -6,8 +6,9 @@ release work?* — the deployment chain, which takes a backup first and restores
 new version does not come up healthy.
 
 ```mermaid
-flowchart TB
-    subgraph PR["Every pull request · ~7 min"]
+flowchart LR
+    subgraph PR["1 · Every pull request · ~7 min"]
+        direction TB
         U["Unit + integration tests"] --> INV["Invariants<br/>coverage and killed mutants<br/>may not drop on untouched code"]
         INV --> REV["Claude reviewer<br/>comments · never approves"]
         REV --> I5{"Every number it wrote<br/>found in the run's reports?"}
@@ -15,16 +16,14 @@ flowchart TB
         I5 -->|"yes"| HUMAN(["A person merges"])
     end
 
-    subgraph REL["Release · push to main or prod"]
-        CFG["Config loaded and validated"] --> BLD["Build · image to registry"]
-        BLD --> BAK["Backup taken"]
+    subgraph REL["2 · Release · after the merge to main or prod"]
+        direction TB
+        CFG["Config validated<br/>image built and pushed"] --> BAK["Backup taken"]
         BAK --> DEP["Deploy"]
         DEP --> HC{"Healthy?"}
         HC -->|"yes"| DONE(["Released"])
         HC -->|"no"| RB["Automatic rollback<br/>restore backup · restart · re-check"]
     end
-
-    HUMAN --> CFG
 ```
 
 ## The two test pipelines
