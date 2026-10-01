@@ -95,6 +95,7 @@ user's row is gone, and the user's files are removed from the bucket.
 | **Retention schedule** | The jobs listed above exist. The rest of a schedule — inactive accounts, support tickets, campaign and accounting records — is the operator's to enforce; note that the cascade deletes campaign and invoice rows, so a schedule that keeps them for years should anonymise instead |
 | **Withdrawing acceptance of the terms** | Only by deleting the account |
 | **Masking is not universal** | Some log statements still write a raw e-mail address |
+| **Backups** | Set up by hand at the hosting provider and in the cloud console; nothing in this repository configures or schedules them |
 | **Encryption of the database at rest** | A property of the hosting, not shown in this repository |
 | **Records of processing, processor agreements, breach procedure** | Organisational documents; none in this repository |
 
@@ -102,12 +103,18 @@ user's row is gone, and the user's files are removed from the bucket.
 
 Take the consent module as it is — it is the most complete part, and the most tedious to get right.
 
-**Write your terms and your consents to match what the software does**, and most of what could be
-a gap is simply your stated process. Say that an account is closed on request, by the operator,
-within a month, once running collaborations are settled. Publish the retention periods you
-enforce — application logs are 30 days here. Name the processors you actually use. Do not promise
+**Write your terms and your consents to match what the software does — and write them last.**
+Ours were written before the product settled, and in places they promise more than it does; they
+need that correction. Once the terms say what the software does, most of the gaps on this page
+stop being gaps and become your stated process. So do not repeat our mistake: say that an account
+is closed on request, by the operator, within a month, once running collaborations are settled.
+Publish the retention periods you enforce. Name the processors you actually use. Do not promise
 an age check, analytics or backups you have not set up. Users accept those terms through the
 consent module, with the version recorded, so what you promised is on file.
+
+**Keep application logs at least 30 days.** That is the floor here: long enough to answer a
+request from the authorities and to look into an incident. Put the same number in your retention
+policy.
 
 **Not everything has to be automated.** A request that arrives a few times a year is cheaper and
 safer in the hands of a person with a checklist than in code nobody exercises. Start with the
@@ -117,6 +124,15 @@ volume asks for it.
 **When the product earns its keep**, do more: fix the three bugs with an integration test each,
 add a job that runs the cascade when a marked account's retention ends, add the export endpoint,
 and write your processing records before someone asks for them.
+
+**About fines.** Nothing here is a promise or legal advice. GDPR fines are sized to turnover — up
+to 2 % for the organisational duties, up to 4 % for the principles and people's rights — and to
+what the operator did before anyone asked (Art. 83(2)). This base is that "before": consent on
+file, operations logged, requests answered, known limits written down. Do less than this and the
+risk is yours to explain. Do this much, fix what you are told to fix, and automate more as the
+business grows.
+
+Take the code, skip our mistakes, and build your business.
 
 The older, longer design
 note [`docs/Architecture/04_DATA_PRIVACY_COMPLIANCE.md`](../Architecture/04_DATA_PRIVACY_COMPLIANCE.md)
