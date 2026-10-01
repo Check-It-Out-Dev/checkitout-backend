@@ -1,0 +1,7 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-9b155ff7-d914-426b-8140-ca02d9e7033e
+  Company: COMPANY-8b41e0ad-3d7c-4c24-b5ed-e796f76aa6e6
+  Admin: ADMIN-0387c02a-b7df-4d98-9391-7ec61a3c82f1
+20:22:45.200 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.p.PartnershipOpportunityService&amp#27;[0;39m - GDPR: Service=patchOpportunity, Operation=PARTIAL_UPDATE, UserID=COMPANY-8b41e0ad-3d7c-4c24-b5ed-e796f76aa6e6, OpportunityID=5030, UpdatedFields=[nonExistentField, title], Purpose=partial_modification
+20:22:45.200 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.p.PartnershipOpportunityService&amp#27;[0;39m - GDPR: Service=findOpportunityById, Operation=RETRIEVE_OPPORTUNITY, UserID=COMPANY-8b41e0ad-3d7c-4c24-b5ed-e796f76aa6e6, OpportunityID=5030, Purpose=data_retrieval
+20:22:45.204 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.p.PartnershipOpportunityService&amp#27;[0;39m - Field nonExistentField does not exist in class PartnershipOpportunity

@@ -1,9 +1,0 @@
-[Integration Test] Test users created:
-  Influencer: INFLUENCER-16daac6d-3e6e-4ea1-a177-445efd04ca6b
-  Company: COMPANY-dc63fa8e-c33a-4f53-94ad-53986b2c52e0
-  Admin: ADMIN-8540055b-39f7-46f3-a35c-5e463830dffc
-09:22:50.885 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: ADMIN_MODIFICATION Operation=patchUserPreferences, AdminFirebaseUID=ADMIN-8540055b-39f7-46f3-a35c-5e463830dffc, TargetUserID=3512, FieldsModified=[notificationEmailEnabled], Purpose=admin_support, LegalBasis=legitimate_interest
-09:22:50.887 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=adminCreateDefaultPreferences, AdminFirebaseUID=ADMIN-8540055b-39f7-46f3-a35c-5e463830dffc, TargetUserID=3512, Reason=no_existing_preferences
-09:22:50.887 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=createDefaultPreferences, FirebaseUID=INFLUENCER-16daac6d-3e6e-4ea1-a177-445efd04ca6b, DataCreated=user.preferences.*, Purpose=initial_setup, LegalBasis=contract
-09:22:50.887 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=createDefaultPreferences_SUCCESS, FirebaseUID=INFLUENCER-16daac6d-3e6e-4ea1-a177-445efd04ca6b, PreferencesID=25, DefaultsApplied=true
-09:22:50.887 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: ADMIN_MODIFICATION_SUCCESS Operation=patchUserPreferences_SUCCESS, AdminFirebaseUID=ADMIN-8540055b-39f7-46f3-a35c-5e463830dffc, TargetUserID=3512, PreferencesID=25
