@@ -16,7 +16,7 @@ sequenceDiagram
     A-->>B: session cookie + signature cookie (HttpOnly, Secure, SameSite=Strict)
     Note over A,B: an account with two-factor gets a partial session until the code is verified
     B->>A: any request, cookies attached
-    A->>A: check signature, expiry, token version, device fingerprint — no outside call
+    Note over A: checks signature, expiry, token version<br/>and device fingerprint — no outside call
     A-->>B: response
     B->>A: change e-mail or password
     A-->>B: step-up required

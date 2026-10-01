@@ -55,16 +55,15 @@ thing that solved it.
 ## Architecture
 
 ```mermaid
-flowchart LR
+flowchart TB
     FE["Angular frontend<br/>client generated from the contract"]
     EDGE["Cloudflare → nginx<br/>TLS · rate limits · headers"]
     FE --> EDGE --> API
 
     subgraph APP["Spring Boot · one deployable"]
-        direction TB
         API["Filters and REST controllers<br/>session · consent · roles · rate limits"]
-        SVC["Feature modules<br/>campaigns · applications · billing · consent · support"]
         JOB["Scheduled jobs<br/>locked, one instance at a time"]
+        SVC["Feature modules<br/>campaigns · applications · billing · consent · support"]
         API --> SVC
         JOB --> SVC
     end

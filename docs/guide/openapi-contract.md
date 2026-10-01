@@ -6,14 +6,14 @@ that file. A contract change that breaks the client is a compile error in the fr
 before it could be a bug report.
 
 ```mermaid
-flowchart LR
+flowchart TB
     APP["The application<br/>booted by a test"] -->|"GET /api/v3/api-docs"| GEN["OpenApiSpecGeneratorTest<br/>keys sorted, pretty-printed"]
-    GEN --> SPEC[("docs/openapi/openapi.json<br/>committed here")]
-    SPEC -->|"same bytes"| FESPEC[("the frontend's copy")]
-    FESPEC --> CLIENT["Generated TypeScript client<br/>models + services"]
+    GEN --> SPEC[("docs/openapi/openapi.json<br/>committed here, same bytes in the frontend")]
+    SPEC --> CLIENT["Generated TypeScript client<br/>models + services"]
     CLIENT --> TSC{"Type check<br/>and build"}
     TSC -->|"breaks"| RED["Red build"]
     TSC -->|"holds"| TIERS["Every frontend test tier<br/>runs on the same types"]
+
     IMG["Published backend image"] -->|"nightly, and on every publish"| CHECK["contract-check<br/>boot · compare · regenerate · compile"]
     CHECK --> TSC
     IMG --> FUZZ["Schemathesis<br/>does the server do what the document says?"]

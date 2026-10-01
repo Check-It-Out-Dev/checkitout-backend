@@ -6,9 +6,8 @@ release work?* — the deployment chain, which takes a backup first and restores
 new version does not come up healthy.
 
 ```mermaid
-flowchart LR
+flowchart TB
     subgraph PR["Every pull request · ~7 min"]
-        direction TB
         U["Unit + integration tests"] --> INV["Invariants<br/>coverage and killed mutants<br/>may not drop on untouched code"]
         INV --> REV["Claude reviewer<br/>comments · never approves"]
         REV --> I5{"Every number it wrote<br/>found in the run's reports?"}
@@ -17,8 +16,7 @@ flowchart LR
     end
 
     subgraph REL["Release · push to main or prod"]
-        direction TB
-        CFG["Config loaded<br/>and validated"] --> BLD["Build · image to registry"]
+        CFG["Config loaded and validated"] --> BLD["Build · image to registry"]
         BLD --> BAK["Backup taken"]
         BAK --> DEP["Deploy"]
         DEP --> HC{"Healthy?"}

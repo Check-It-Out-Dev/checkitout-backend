@@ -5,22 +5,22 @@ what may be lost (caches, rate-limit counters), and every outside vendor sits be
 There is no service mesh and no message broker, because one team and one product never needed them.
 
 ```mermaid
-flowchart LR
+flowchart TB
     FE["Angular frontend<br/>client generated from the contract"]
     EDGE["Cloudflare → nginx<br/>TLS · rate limits · security headers"]
     FE -->|"HTTPS · signed session cookies"| EDGE --> FIL
 
     subgraph APP["Spring Boot 3.4 · Java 21 · one deployable"]
-        direction TB
         FIL["Filters<br/>session · banned · consent · verified e-mail"]
         CTL["REST controllers<br/>roles and rate limits declared per endpoint"]
+        JOB["Scheduled jobs<br/>one instance at a time"]
         SVC["Feature services<br/>campaigns · applications · billing · support · consent"]
         REP["JPA repositories"]
         LIS["After-commit listeners<br/>notifications · invoices"]
-        JOB["Scheduled jobs<br/>one instance at a time"]
-        FIL --> CTL --> SVC --> REP
-        SVC -.->|"after commit"| LIS
+        FIL --> CTL --> SVC
         JOB --> SVC
+        SVC --> REP
+        SVC -.->|"after commit"| LIS
     end
 
     REP --> PG[("PostgreSQL<br/>schema by Liquibase")]

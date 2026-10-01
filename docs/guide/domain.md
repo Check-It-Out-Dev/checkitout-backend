@@ -13,7 +13,6 @@ Each arrow is taken by exactly one side, and every change is appended to a statu
 
 ```mermaid
 stateDiagram-v2
-    direction LR
     [*] --> APPLIED
     APPLIED --> ACCEPTED_BY_COMPANY: company accepts
     APPLIED --> REJECTED_BY_COMPANY: company rejects

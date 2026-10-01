@@ -14,7 +14,6 @@ graph answers it by query. The implementation is an enum, guards at each transit
 
 ```mermaid
 stateDiagram-v2
-    direction LR
     [*] --> FREE_ACTIVE: first use
     FREE_ACTIVE --> TRIAL_ENTERPRISE: trial activated
     TRIAL_ENTERPRISE --> FREE_ACTIVE: trial ends or is cancelled

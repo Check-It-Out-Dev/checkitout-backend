@@ -9,7 +9,7 @@ organisation's documents and are not in this repository.
 **In one line: GDPR-aware by design, not "GDPR compliant" out of the box.**
 
 ```mermaid
-flowchart LR
+flowchart TB
     DOC["Legal document<br/>type · language · version · content hash"] --> SHOW["Shown to the user"]
     SHOW --> REC["Consent record<br/>time · document hash · control clicked · user agent"]
     REC --> OK["Account active"]
