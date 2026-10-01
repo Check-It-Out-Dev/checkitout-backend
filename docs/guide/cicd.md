@@ -56,8 +56,9 @@ pipeline finishes. Three limits make it safe to leave switched on:
    produced. One number that is not there, and the review is withheld and the job goes red.
 3. **It is not the gate.** The gate is the invariants job, which calls no model and holds no secret:
    coverage never lower on code the change did not touch (I1), no mutant that was killed yesterday
-   left alive (I2), the suite green in written and in random order (I3), every published number equal
-   to the tree (I4).
+   left alive (I2), the suite green (I3) — and, on a governance round, green in random order too —
+   every published number equal to the tree (I4). A missing measurement is reported as incomplete,
+   not as a pass.
 
 An agent may propose anything; the invariants dispose; a person merges. The plain-words guide is
 [`docs/testing/ai-in-the-loop.md`](../testing/ai-in-the-loop.md).
@@ -84,11 +85,11 @@ Deployment runs from [`backend-deployment-prod.yml`](../../.github/workflows/bac
   Compose under systemd. Kubernetes is used here to *run tests*, not to host the product — one VPS is
   the right size for it. Runbooks: [`deployment/`](../../deployment/).
 
-## Static gates on every build
+## Static gates
 
 Enforcer (Java 21), Spotless, PMD, SpotBugs with FindSecBugs, OWASP dependency-check (fails at
-CVSS ≥ 7) and JaCoCo run in the Maven build itself; CodeQL, Semgrep, Checkov and Trivy write into
-GitHub code scanning. If a gate blocks a change, the cause is fixed, never the gate.
+CVSS ≥ 7) and JaCoCo run in the Maven build itself; Semgrep, Checkov and Trivy run every night and
+write into GitHub code scanning beside CodeQL. If a gate blocks a change, the cause is fixed, never the gate.
 
 ## Check it yourself
 

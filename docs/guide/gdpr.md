@@ -1,7 +1,8 @@
 # Privacy and GDPR: what is built, and what is not
 
 The platform was designed with the regulation in mind — consent you can prove, documents with
-versions, deletion that reaches every store — and this page lists exactly what the code does. It
+versions, an administrator's deletion that reaches every store — and this page lists exactly what
+the code does. It
 also lists what it does not do. Nobody should take the software for a complete GDPR programme: that
 also needs records of processing, agreements with processors and a breach procedure, which are an
 organisation's documents and are not in this repository.
@@ -33,7 +34,7 @@ flowchart TB
 | **Audit of consent** | Administrators can read a user's consent records and history | `/admin/legal/consent-records/{userId}`, `/admin/consent/users/{id}/history/{type}` |
 | **Retention jobs** | Anonymous consent older than a year, accounts that never consented, deferred deletions, location and rate-limit data are each cleaned by a scheduled job; application logs are kept 30 days | `consent/`, `auth/`, Loki configuration under `deployment/` |
 | **Less personal data in logs** | E-mail addresses and identifiers are masked by a shared utility before logging | `common/util/PiiMaskingUtils`, `LogSafe` |
-| **Encryption** | TLS at the edge with HSTS, `Secure` cookies; third-party tokens and authenticator secrets encrypted with Cloud KMS | [security](security.md) |
+| **Encryption** | TLS at the edge (the origin sets HSTS; see [security](security.md) for the Cloudflare caveat), `Secure` cookies; third-party tokens and authenticator secrets encrypted with Cloud KMS | [security](security.md) |
 
 ## Not built, or built only in part
 

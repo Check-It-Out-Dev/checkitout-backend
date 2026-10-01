@@ -69,7 +69,7 @@ controllers, services, entities and repository.
 
 The written conventions are in [CONTRIBUTING.md](../../CONTRIBUTING.md). Where the code base follows
 them only in part is measured, not hidden: the
-[prompt-under-test study](https://github.com/Check-It-Out-Dev/graph-theory-system-modeling#part-2--how-to-make-sure-ai-wont-turn-your-codebase-into-spaghetti)
+[prompt-under-test study](https://github.com/Check-It-Out-Dev/graph-theory-system-modeling/blob/main/docs/PROMPT-UNDER-TEST.md)
 counted the exceptions before asking a coding agent to follow the rules.
 
 Next: [the subscription state machine](billing-graph.md) · [architecture overview](overview.md) ·

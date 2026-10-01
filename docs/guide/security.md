@@ -55,8 +55,10 @@ sequenceDiagram
   An account that owes a consent can still sign in and accept it — and do nothing else.
 - **Consent is provable.** Each acceptance stores the document's hash, the time and the control that
   was clicked; the consent cookie is HMAC-signed ([privacy](gdpr.md)).
-- **Headers are set once, at the edge**: HSTS, a content security policy, `X-Frame-Options: DENY`,
-  `nosniff`, a referrer and a permissions policy. CSRF tokens are not used: the session cookie is
+- **Headers are set once, at the edge**: a content security policy, `X-Frame-Options: DENY`,
+  `nosniff`, a referrer and a permissions policy. The origin also sets HSTS; in production
+  Cloudflare's own HSTS setting overrode it, and switching it back on there is an open action for
+  the owner, recorded in the [remediation response](../security/pentest-remediation.md). CSRF tokens are not used: the session cookie is
   `SameSite=Strict`, a unit test fails the build if anyone loosens that, and the reasoning is written
   next to the line that disables them in
   [`WebSecurityConfiguration`](../../src/main/java/com/sm/instagram/platform/common/authorization/WebSecurityConfiguration.java).
@@ -75,7 +77,7 @@ sequenceDiagram
 
 ## Evaluated from outside
 
-A grey-box penetration test by an independent team (OWASP methodology, June–July 2026) found
+A grey-box penetration test by an independent team (OWASP methodology, 2026) found
 **nothing critical** and rated the security posture **above average**: 1 high, 4 medium, 4 low and
 2 informational findings. The high and all four medium findings were fixed; one low finding was
 fixed, two were accepted as design decisions with their reasoning, one (a nonce-based content
@@ -86,8 +88,9 @@ not something one passes — a re-test of the fixes was recommended and has not 
 Meta also reviewed the platform: the business is a verified **Tech Provider** for the Instagram API
 ([screenshot of the verification](../evidence/meta-tech-provider.png)).
 
-The static side runs on every pull request and every night: CodeQL, Semgrep, Checkov, Trivy with an
-SBOM, OWASP dependency-check, SpotBugs with FindSecBugs ([CI/CD](cicd.md)). The one rule that was
+The static side: SpotBugs with FindSecBugs and OWASP dependency-check run in the Maven build;
+Semgrep, Checkov and Trivy with an SBOM run every night beside CodeQL; pull requests add
+SonarQube's new-code gate and dependency review ([CI/CD](cicd.md)). The one rule that was
 dismissed in bulk has a written disposition and a test that fails if the control is removed
 ([log injection](../security/log-injection-disposition.md)).
 

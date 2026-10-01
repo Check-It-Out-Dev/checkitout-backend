@@ -13,7 +13,7 @@ flowchart TB
     subgraph APP["Spring Boot 3.4 · Java 21 · one deployable"]
         FIL["Filters<br/>session · banned · consent · verified e-mail"]
         CTL["REST controllers<br/>roles and rate limits declared per endpoint"]
-        JOB["Scheduled jobs<br/>one instance at a time"]
+        JOB["Scheduled jobs<br/>those that must not run twice hold a lock"]
         SVC["Feature services<br/>campaigns · applications · billing · support · consent"]
         REP["JPA repositories"]
         LIS["After-commit listeners<br/>notifications · invoices"]

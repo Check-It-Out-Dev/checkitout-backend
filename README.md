@@ -26,18 +26,20 @@ Java 21 · Spring Boot 3.4 · PostgreSQL · Redis · Stripe. It ran in productio
 - **Security evaluated from outside** — an independent penetration test (OWASP methodology, 2026)
   found nothing critical and rated the security above average; every finding and what was done about
   it is [published](docs/security/pentest-remediation.md).
-- **Verified Meta Tech Provider** — Meta verified the business and its access, and the application
-  went live on the Instagram API ([screenshot](docs/evidence/meta-tech-provider.png)).
+- **Verified Meta Tech Provider** — Meta verified the business and its access as a Tech Provider
+  for the Instagram API ([screenshot](docs/evidence/meta-tech-provider.png)).
 - **Contract-first by enforcement** — the OpenAPI document is generated from a running server and the
   frontend's typed client is generated from that document; a change that breaks the client fails the
   build ([how](docs/guide/openapi-contract.md)).
 - **AI-reviewed CI** — a Claude reviewer comments on every pull request but cannot approve, and every
   number it cites is machine-checked against the run's own reports ([how](docs/guide/cicd.md)).
-- **Self-healing delivery** — releases go to Ansible-provisioned hosts behind a backup, a health
-  check and an automatic rollback ([how](docs/guide/cicd.md#the-release-chain)).
+- **Self-healing delivery** — a release takes a backup first, checks health after, and rolls itself
+  back when the new version does not come up; the hosts are provisioned by Ansible
+  ([how](docs/guide/cicd.md#the-release-chain)).
 - **Billing that survives reality** — Stripe subscriptions with signed, idempotent webhooks and
   invoices that retry; the subscription lifecycle was designed as a graph and runs as a locked state
-  machine driven by scheduled jobs ([how](docs/guide/billing-graph.md)).
+  machine driven by scheduled jobs. Exercised end to end in Stripe's test mode; never switched on in
+  production ([how](docs/guide/billing-graph.md)).
 
 ## The story
 
@@ -62,7 +64,7 @@ flowchart TB
 
     subgraph APP["Spring Boot · one deployable"]
         API["Filters and REST controllers<br/>session · consent · roles · rate limits"]
-        JOB["Scheduled jobs<br/>locked, one instance at a time"]
+        JOB["Scheduled jobs<br/>those that must not run twice hold a lock"]
         SVC["Feature modules<br/>campaigns · applications · billing · consent · support"]
         API --> SVC
         JOB --> SVC
@@ -92,7 +94,8 @@ The full index is [docs/README.md](docs/README.md).
 
 ## Quick start
 
-No credentials, no vendor sign-ups — one command (you need Docker, a JDK 21 and Node):
+No credentials, no vendor sign-ups — one command (you need Docker, a JDK 21 and Node 22.22+ or
+24.15+; Node 23 does not work for the frontend):
 
 ```bash
 git clone https://github.com/Check-It-Out-Dev/checkitout-backend
@@ -115,11 +118,13 @@ API: `https://localhost:8080/api` · Swagger UI: `https://localhost:8080/api/swa
 
 ```bash
 docker compose -f docker-compose-dev-redis.yml up -d postgres redis
-./mvnw spring-boot:run        # profile `dev`, plain HTTP on :8080; add the `ssl` profile for HTTPS
+./mvnw spring-boot:run        # profile `dev`, plain HTTP on :8080
 ```
 
 No `.env` is required: every external credential has a blank default, and the feature behind it
-fails cleanly instead of stopping the boot. The path from here to production, one vendor at a time,
+fails cleanly instead of stopping the boot. HTTPS by hand needs a keystore first
+([docs/SSL-SETUP-GUIDE.md](docs/SSL-SETUP-GUIDE.md)); the frontend's dev server expects HTTPS on
+:8080 unless you start it with `BE_PROXY_TARGET=http://localhost:8080`. The wizard does both for you. The path from here to production, one vendor at a time,
 is [docs/ROLLOUT.md](docs/ROLLOUT.md).
 
 Prefer not to run anything? The [live sandbox](https://checkitout.app/sandbox/) is this backend on
@@ -157,15 +162,16 @@ so a stale figure fails the build instead of ageing in public.
 | **Domain** | **38 entities** | 50 REST controllers |
 | **Contract** | **233 paths** | 272 operations · 205 schemas · OpenAPI 3.1 |
 
-And one number worth more than any of them: **`@Disabled` appears zero times** across all 369 test
-files. Nothing is quarantined, skipped-and-forgotten, or commented out.
+And one more: **`@Disabled` appears zero times** across all 369 test files. Nothing is quarantined,
+skipped-and-forgotten, or commented out.
 
 ## Who is this for
 
 Teams building a marketplace in the EU:
 
 - **GDPR-aware by design** — versioned legal documents with recorded, provable consent and enforced
-  re-consent, cookie consent, and account-erasure paths across every store. What is built and what a
+  re-consent, cookie consent, an administrator erasure cascade across every store and a thinner
+  self-service path. What is built and what a
   team must still add (the data export, for one) is [written down](docs/guide/gdpr.md).
 - **Subscriptions and invoicing wired end to end** — Stripe checkout and webhooks, invoices through
   a replaceable adapter. It was exercised end to end in Stripe's test mode; the flag that enables it
