@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Cron job for processing notification email queue.
@@ -50,6 +51,11 @@ public class EmailCronJob {
     private boolean emailEnabled;
 
     /**
+     * Serialises the scheduled run and an on-demand flush inside one process.
+     */
+    private final ReentrantLock queueLock = new ReentrantLock();
+
+    /**
      * Process pending notification emails.
      * <p>
      * Schedule: Every 15 minutes (configurable via notification.email.cron)
@@ -74,9 +80,33 @@ public class EmailCronJob {
             lockAtLeastFor = "1m"
     )
     public void processEmailQueue() {
+        processPendingEmails();
+    }
+
+    /**
+     * The work itself, without the scheduler lock.
+     * <p>
+     * The lock belongs to the scheduled entry point above: ShedLock holds it for at least a minute
+     * and silently skips any call made while it is held. An on-demand caller — the dev/e2e flush
+     * endpoint — must not go through it, or a flush within a minute of a scheduled run (or of
+     * another flush) sends nothing and says nothing. Callers in the same process are serialised
+     * here instead, so a flush that meets a scheduled run waits for it and then runs.
+     *
+     * @return whether the queue ran, and how many e-mails were sent, failed and skipped
+     */
+    public BatchResult processPendingEmails() {
+        queueLock.lock();
+        try {
+            return processBatch();
+        } finally {
+            queueLock.unlock();
+        }
+    }
+
+    private BatchResult processBatch() {
         if (!emailEnabled) {
             log.debug("Email cron job disabled via configuration");
-            return;
+            return new BatchResult(false, 0, 0, 0);
         }
 
         log.info("Starting email queue processing, batchSize={}", batchSize);
@@ -85,6 +115,7 @@ public class EmailCronJob {
         int successCount = 0;
         int failureCount = 0;
         int skippedCount = 0;
+        boolean completed = true;
 
         try {
             // Fetch pending emails
@@ -141,12 +172,23 @@ public class EmailCronJob {
 
         } catch (Exception e) {
             log.error("Email queue processing failed: {}", e.getMessage(), e);
+            completed = false;
         }
 
         long duration = System.currentTimeMillis() - startTime;
 
         log.info("Email queue processing complete: success={}, failed={}, skipped={}, duration={}ms",
                 successCount, failureCount, skippedCount, duration);
+
+        return new BatchResult(completed, successCount, failureCount, skippedCount);
+    }
+
+    /**
+     * What one pass over the queue did. {@code ran} is false when the queue is switched off, or when
+     * the pass could not be completed — the queue could not be read, say. The scheduled run logs that
+     * and carries on; an on-demand caller can tell its user.
+     */
+    public record BatchResult(boolean ran, int sent, int failed, int skipped) {
     }
 
     /**

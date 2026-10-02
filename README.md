@@ -109,15 +109,15 @@ job re-runs with `--check` so a stale figure fails the build rather than ageing 
 
 | | | |
 | :-- | --: | :-- |
-| **Test methods** | **9,125** | 8,518 `@Test` + 607 `@ParameterizedTest`, across **295** test classes and the **2,165** `@Nested` groups inside them |
-| **Test code : main code** | **2.0 : 1** | ~189k lines of test Java against ~93k of main |
+| **Test methods** | **9,136** | 8,529 `@Test` + 607 `@ParameterizedTest`, across **297** test classes and the **2,165** `@Nested` groups inside them |
+| **Test code : main code** | **2.0 : 1** | ~190k lines of test Java against ~93k of main |
 | **Demoted from the pull-request tier** | **165** | `@Tag("subsumed")` on a test whose every covered line and killed mutant other tests also cover and kill — it leaves the pull-request tier and still runs nightly; nothing is deleted ([Test governance](#test-governance)) |
 | **Cucumber** | **34 files** | 148 `Scenario` + 28 `Scenario Outline`, **277 after Examples expansion** |
 | **Domain** | **38 entities** | 50 REST controllers |
 | **Contract** | **233 paths** | 272 operations · 205 schemas · OpenAPI 3.1 |
 
 And one number worth more than any of them: **`@Disabled` appears zero times**
-across all 369 test files. Nothing is quarantined, skipped-and-forgotten, or
+across all 371 test files. Nothing is quarantined, skipped-and-forgotten, or
 commented out waiting for someone to come back to it.
 
 > [!NOTE]
