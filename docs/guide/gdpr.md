@@ -113,9 +113,23 @@ only once they are switched on. Users accept those terms through the consent mod
 version recorded, so what you promised is on file.
 
 **Set the backups up yourself.** They are operator settings, not code. While the platform ran
-for real users, backups with point-in-time recovery were switched on by hand — in the cloud
-console and at the hosting provider — as the terms promised. Nothing in this repository turns
-them on or chooses how long they are kept; when you run this, you set both.
+for real users they were the providers' standard options, chosen by hand: a managed PostgreSQL
+with automatic backups and point-in-time recovery, backups for Firestore, and the storage buckets
+and the server as managed services. Nothing in this repository turns them on or chooses how long
+they are kept; when you run this, you set both. A starting point that fits a promise to erase
+within 30 days:
+
+| What | How often | Kept for |
+| :-- | :-- | :-- |
+| Database: point-in-time recovery | Continuous | 7 days |
+| Database: full backup | Daily | 30 days |
+| Firestore: backup | Daily | 30 days |
+| Uploaded files: object versioning | On every change | Old versions 30 days |
+| A restore, rehearsed on a copy | Once a quarter | — |
+
+Keep a backup no longer than you say you keep the data: then a person erased today is gone from
+every backup within those 30 days, and you can say so in your retention policy. After a restore,
+run the deletions made since that backup again — the cascade's ledger tells you which.
 
 **Keep application logs at least 30 days.** That is the floor here: long enough to answer a
 request from the authorities and to look into an incident. Put the same number in your retention
