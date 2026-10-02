@@ -343,7 +343,7 @@ Boot order: docker deps → BE → FE. The FE repo also carries
 | `GET /api/test/email?to=<addr>` | list captured emails, newest first, optional recipient filter |
 | `GET /api/test/email/latest?to=<addr>` | newest match or 404 |
 | `DELETE /api/test/email` | purge the inbox — **call before each scenario** so a stale email can't false-positive a link/code regex |
-| `POST /api/test/email/flush` | synchronously run the 15-min notification email cron (`EmailCronJob.processEmailQueue`) so queued notification emails land now |
+| `POST /api/test/email/flush` | synchronously run the notification e-mail queue (`EmailCronJob.processPendingEmails`, the work of the 15-minute job without its scheduler lock) so queued notification emails land now; answers `{flushed, sent, failed, skipped}` |
 
 Note: transactional support-ticket emails send immediately; only
 *notification* emails sit in the cron queue and need `/flush`.
