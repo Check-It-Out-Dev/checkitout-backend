@@ -123,9 +123,10 @@ request from the authorities and to look into an incident. Put the same number i
 policy.
 
 **Not everything has to be automated.** A request that arrives a few times a year is cheaper and
-safer in the hands of a person with a checklist than in code nobody exercises. Start with the
-manual process, keep a note of each request and the date it was answered, and automate when the
-volume asks for it.
+safer in the hands of a person with a checklist than in code nobody exercises. If you are just
+starting, find an administrator who will look after this for you — answer the requests, run the
+cascade, check the backups — before you write a line of automation. Keep a note of each request
+and the date it was answered, and automate when the volume asks for it.
 
 **When the product earns its keep**, do more: fix the three bugs with an integration test each,
 add a job that runs the cascade when a marked account's retention ends, add the export endpoint,
