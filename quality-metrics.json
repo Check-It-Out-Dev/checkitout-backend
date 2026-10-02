@@ -2,25 +2,25 @@
   "schema": 1,
   "repo": "Check-It-Out-Dev/checkitout-backend",
   "run": {
-    "number": 174,
-    "id": 36978654835,
+    "number": 30,
+    "id": 36986556055,
     "sha": "12b26ad",
     "branch": "main",
     "workflow": "ci-tests",
-    "startedAt": "2026-10-02T07:27:31Z",
-    "durationSec": 272,
-    "url": "https://github.com/Check-It-Out-Dev/checkitout-backend/actions/runs/36978654835"
+    "startedAt": "2026-10-02T08:52:47Z",
+    "durationSec": 900,
+    "url": "https://github.com/Check-It-Out-Dev/checkitout-backend/actions/runs/36986556055"
   },
   "tests": {
-    "total": 11275,
-    "passed": 11243,
+    "total": 11572,
+    "passed": 11519,
     "failed": 0,
     "flaky": 0,
-    "skipped": 32,
+    "skipped": 53,
     "passRate": 1,
     "flakyRate": 0,
-    "durationMeanSec": 0.01,
-    "durationP95Sec": 0.02,
+    "durationMeanSec": 0.06,
+    "durationP95Sec": 0.03,
     "tiers": {
       "unit": {
         "total": 10441,
@@ -28,7 +28,7 @@
         "failed": 0,
         "flaky": 0,
         "skipped": 0,
-        "durationSec": 77
+        "durationSec": 80
       },
       "integration": {
         "total": 834,
@@ -36,14 +36,22 @@
         "failed": 0,
         "flaky": 0,
         "skipped": 32,
-        "durationSec": 22
+        "durationSec": 24
+      },
+      "e2e": {
+        "total": 297,
+        "passed": 276,
+        "failed": 0,
+        "flaky": 0,
+        "skipped": 21,
+        "durationSec": 626
       }
     }
   },
   "coverage": {
     "lines": 58.66,
     "statements": 59.26,
-    "branches": 51.68,
+    "branches": 51.66,
     "functions": 65.61
   },
   "mutation": {
@@ -55,18 +63,18 @@
     "classesWithNoUnitTest": 15
   },
   "security": {
-    "total": 26,
+    "total": 24,
     "error": 7,
-    "warning": 18,
-    "note": 1,
+    "warning": 17,
+    "note": 0,
     "tools": {
       "Semgrep OSS": 15,
-      "Trivy": 11
+      "Trivy": 9
     },
     "scans": 3
   },
   "flaky": [],
   "reports": {
-    "allure": "allure/ci-tests-174/"
+    "allure": "allure/ci-tests-30/"
   }
 }

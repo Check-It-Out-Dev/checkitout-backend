@@ -1,0 +1,13 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-684e9817-010f-47e9-ab9d-e2afd872c7b0
+  Company: COMPANY-d787ce51-c412-4430-b400-321edfa2a3a1
+  Admin: ADMIN-e917324d-b9a9-4d16-b9bf-7a75c7ca2d3b
+08:55:07.504 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=updateUser, UpdaterFirebaseUID=ADMIN-e917324d-b9a9-4d16-b9bf-7a75c7ca2d3b, TargetUserID=5307, Purpose=profile_update, DataModified=user.profile,user.addresses, LegalBasis=consent
+08:55:07.505 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=findUserById, AccessorFirebaseUID=ADMIN-e917324d-b9a9-4d16-b9bf-7a75c7ca2d3b, TargetUserID=5307, Purpose=user_data_retrieval, DataAccessed=user.profile,user.addresses,user.socialConnections
+08:55:07.551 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=updateUser_SUCCESS, UpdaterFirebaseUID=ADMIN-e917324d-b9a9-4d16-b9bf-7a75c7ca2d3b, UserID=5307, AccountStatus=ACTIVE, CriticalChanges=true
+08:55:07.552 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: Service Operation=getTranslation, FirebaseUID=ADMIN-e917324d-b9a9-4d16-b9bf-7a75c7ca2d3b, Key=ACCOUNT_STATUS_ACTIVE, Language=en, Purpose=translation_lookup
+08:55:07.555 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: DataAccessed=translation_value, FirebaseUID=ADMIN-e917324d-b9a9-4d16-b9bf-7a75c7ca2d3b, Key=ACCOUNT_STATUS_ACTIVE, Purpose=translation_service
+08:55:07.555 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: Service Operation=getTranslation, FirebaseUID=ADMIN-e917324d-b9a9-4d16-b9bf-7a75c7ca2d3b, Key=ACCOUNT_STATUS_ACTIVE_DESC, Language=en, Purpose=translation_lookup
+08:55:07.557 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: DataAccessed=translation_value, FirebaseUID=ADMIN-e917324d-b9a9-4d16-b9bf-7a75c7ca2d3b, Key=ACCOUNT_STATUS_ACTIVE_DESC, Purpose=translation_service
+08:55:07.557 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: Service Operation=getTranslation, FirebaseUID=ADMIN-e917324d-b9a9-4d16-b9bf-7a75c7ca2d3b, Key=USER_TYPE_INFLUENCER, Language=en, Purpose=translation_lookup
+08:55:07.559 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: DataAccessed=translation_value, FirebaseUID=ADMIN-e917324d-b9a9-4d16-b9bf-7a75c7ca2d3b, Key=USER_TYPE_INFLUENCER, Purpose=translation_service
