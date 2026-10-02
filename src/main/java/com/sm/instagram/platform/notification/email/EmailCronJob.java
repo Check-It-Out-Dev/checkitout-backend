@@ -115,6 +115,7 @@ public class EmailCronJob {
         int successCount = 0;
         int failureCount = 0;
         int skippedCount = 0;
+        boolean completed = true;
 
         try {
             // Fetch pending emails
@@ -171,6 +172,7 @@ public class EmailCronJob {
 
         } catch (Exception e) {
             log.error("Email queue processing failed: {}", e.getMessage(), e);
+            completed = false;
         }
 
         long duration = System.currentTimeMillis() - startTime;
@@ -178,11 +180,13 @@ public class EmailCronJob {
         log.info("Email queue processing complete: success={}, failed={}, skipped={}, duration={}ms",
                 successCount, failureCount, skippedCount, duration);
 
-        return new BatchResult(true, successCount, failureCount, skippedCount);
+        return new BatchResult(completed, successCount, failureCount, skippedCount);
     }
 
     /**
-     * What one pass over the queue did. {@code ran} is false when the queue is switched off.
+     * What one pass over the queue did. {@code ran} is false when the queue is switched off, or when
+     * the pass could not be completed — the queue could not be read, say. The scheduled run logs that
+     * and carries on; an on-demand caller can tell its user.
      */
     public record BatchResult(boolean ran, int sent, int failed, int skipped) {
     }

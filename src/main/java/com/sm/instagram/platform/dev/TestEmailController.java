@@ -70,7 +70,8 @@ public class TestEmailController {
      * minute, and a call made while it is held is skipped without an error —
      * which this endpoint used to report as {@code flushed: true}. The answer
      * now says what happened: {@code flushed} is false when the queue is
-     * switched off, and the counts are those of this pass.
+     * switched off or the pass could not be completed, and the counts are
+     * those of this pass.
      *
      * <p>Idempotent: per-notification dedup (email_sent=true) is enforced
      * inside the cron logic — calling this twice doesn't send the same

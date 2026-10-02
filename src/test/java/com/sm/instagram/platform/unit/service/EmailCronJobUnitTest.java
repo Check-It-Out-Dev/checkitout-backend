@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -116,6 +117,25 @@ class EmailCronJobUnitTest {
 
         verifyNoInteractions(notificationService, emailService);
         assertThat(result.ran()).isFalse();
+    }
+
+    @Test
+    @DisplayName("a queue that cannot be read reports that it did not run")
+    void aQueueThatCannotBeReadReportsThatItDidNotRun() {
+        when(notificationService.findPendingEmails(100)).thenThrow(new IllegalStateException("database unavailable"));
+
+        EmailCronJob.BatchResult result = cronJob.processPendingEmails();
+
+        verifyNoInteractions(emailService);
+        assertThat(result).isEqualTo(new EmailCronJob.BatchResult(false, 0, 0, 0));
+    }
+
+    @Test
+    @DisplayName("the scheduled run survives a queue that cannot be read")
+    void theScheduledRunSurvivesAQueueThatCannotBeRead() {
+        when(notificationService.findPendingEmails(100)).thenThrow(new IllegalStateException("database unavailable"));
+
+        assertThatCode(() -> cronJob.processEmailQueue()).doesNotThrowAnyException();
     }
 
     @Test

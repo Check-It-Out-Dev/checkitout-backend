@@ -109,7 +109,7 @@ job re-runs with `--check` so a stale figure fails the build rather than ageing 
 
 | | | |
 | :-- | --: | :-- |
-| **Test methods** | **9,134** | 8,527 `@Test` + 607 `@ParameterizedTest`, across **297** test classes and the **2,165** `@Nested` groups inside them |
+| **Test methods** | **9,136** | 8,529 `@Test` + 607 `@ParameterizedTest`, across **297** test classes and the **2,165** `@Nested` groups inside them |
 | **Test code : main code** | **2.0 : 1** | ~190k lines of test Java against ~93k of main |
 | **Demoted from the pull-request tier** | **165** | `@Tag("subsumed")` on a test whose every covered line and killed mutant other tests also cover and kill — it leaves the pull-request tier and still runs nightly; nothing is deleted ([Test governance](#test-governance)) |
 | **Cucumber** | **34 files** | 148 `Scenario` + 28 `Scenario Outline`, **277 after Examples expansion** |
