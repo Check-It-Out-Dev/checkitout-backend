@@ -31,11 +31,11 @@ flowchart TB
 
 | Area | Automatic | Done by a person |
 | :-- | :-- | :-- |
-| Consent and legal documents | Recording each acceptance, tying it to the document version, asking again after a new version, blocking after 38 days | Publishing a new version |
+| Consent and legal documents | Recording each acceptance, tying it to the document version, blocking an account that has not accepted after 38 days | Publishing a new version: a migration adds the document and resets the acceptance flag |
 | Cookie choice | The banner, the signed cookie, the record | — |
 | Log of operations on personal data | Every such operation writes a `GDPR:` line | Reading the log when someone asks what happened |
 | Correcting data | The user does it in their profile | — |
-| Erasure | Taking the request, checking for a running collaboration, ending the sessions, deferring Meta's requests | An administrator previews and runs the cascade |
+| Erasure | Taking the request, refusing it while a collaboration is unfinished, withdrawing applications still waiting for an answer, ending the sessions, deferring Meta's requests | An administrator previews and runs the cascade |
 | A copy of the data, restriction, objection | — | By hand, when the user writes — the support tickets are the channel |
 | Retention | Anonymous consent records, rate-limit data, location data, application logs | Everything else in your schedule |
 | The organisation's documents | — | Records of processing, processor agreements, breach procedure |
@@ -43,39 +43,43 @@ flowchart TB
 ### Why erasure is a request and not a button
 
 On a marketplace one side cannot vanish in the middle of a collaboration: the other side has
-delivered content, or is owed it. So a deletion request first meets the blockers — active or
-pending applications, campaigns with applications — and the user sees why it has to wait. When
-nothing blocks it, the account is marked and signed out, and an administrator finishes the job with
-one cascade. A request can also arrive as a support ticket: tickets have a reference, a status page
-and an administrator's queue. This is simpler to build than a self-service purge, and it keeps a
-person in the one step that cannot be undone.
+delivered content, or is owed it. So a deletion request is refused while a collaboration is
+unfinished — an influencer with an accepted application, a company whose campaign has active
+applications — and the user is told why; applications still waiting for an answer are withdrawn.
+A separate eligibility endpoint lists the blockers, so a screen can show them before the user
+asks. When nothing blocks it, the account is marked and signed out, and an administrator finishes
+the job with one cascade. A request can also arrive as a support ticket: tickets have a
+reference, a status page and an administrator's queue. This is simpler to build than a
+self-service purge, and it keeps a person in the one step that cannot be undone.
 
 ## What is built, and where
 
 | Obligation | What the code does | Where |
 | :-- | :-- | :-- |
-| **Consent that can be proven** (Art. 7) | Every acceptance stores which document version was shown (by content hash), when, through which control and from which user agent. The record is append-only | `legal/ConsentRecord`, `LegalController` (`/legal/consent/prepare`, `/record-batch`); `consent-lifecycle.feature`, `consent-module.feature` |
-| **Versioned terms and re-consent** | Legal documents are unique by type, language and version. Publishing a new version puts accounts into a grace period; a filter then limits a non-consenting account to signing in and accepting; a nightly job blocks it when the grace period ends | `legal/LegalDocument`, `ConsentEnforcementFilter`, `ConsentEnforcementCronJob` |
+| **Consent that can be proven** (Art. 7) | Every acceptance stores which document version was shown (by content hash), when, through which control and from which user agent. A record is not rewritten; an anonymous one is attached to the account once it exists | `legal/ConsentRecord`, `LegalController` (`/legal/consent/prepare`, `/record-batch`); `consent-lifecycle.feature`, `consent-module.feature` |
+| **Versioned terms and re-consent** | Legal documents are unique by type, language and version. Publishing a new version — a migration that adds the document and resets the acceptance flag — starts a grace period; a nightly job blocks an account that has not accepted when it ends. A blocked account can still sign in, use what it has and accept; it cannot create a campaign or apply to one until it does | `legal/LegalDocument`, `ConsentEnforcementCronJob`, `ConsentEnforcementFilter` |
 | **Cookie consent before an account exists** | Categories are served by the backend, an anonymous choice is recorded, the cookie carrying it is HMAC-signed and survives the OAuth round trip. Every cookie the backend sets is either necessary or the record of a choice | `LegalController`, `ConsentCookieService`; `oauth-consent-cookie-survival.feature` |
 | **Optional consents, and withdrawing them** (Art. 7(3)) | Marketing-type consents are separate, each change is a new immutable row, and withdrawal is the same call as granting | `consent/ConsentService` (`POST /consent/my`), `UserConsent` |
 | **A log of what was done with personal data** | Reads, changes, deletions and administrator actions on personal data each write a structured `GDPR:` line — the operation, who did it, to whom, for what purpose — close to a thousand statements across about a hundred classes | `log.*("GDPR: …")` throughout `user/`, `auth/`, `admin/`, `legal/`, `support/` |
 | **Rectification** (Art. 16) | A user edits their own profile, addresses and e-mail; changing a name, e-mail, phone or tax number triggers verification again | `UserController` (`PATCH /users/{id}`), `ProfileFieldCriticality`; `UserService_Patch_IntegrationTest` |
 | **Seeing your own data** (Art. 15) | Profile, preferences, consents and their history, company data, notifications, tickets, subscription and invoices each have a read endpoint for their owner | `GET /users/me`, `/consent/my`, `/legal/consent/my`, `/support/ticket/my-tickets`, `/subscription/invoices` |
-| **Erasure on request** (Art. 17) | The user asks from the account settings; the account is marked for deletion and its sessions end. An administrator previews and runs the cascade, which deletes across PostgreSQL, both Firestore collections and Firebase Auth, with a task ledger and a daily retry | `UserAccountOrchestrator`, `admin/cascade/` |
-| **Refusing or deferring erasure while a collaboration runs** (Art. 17(3)) | An eligibility check lists what blocks a deletion — active or pending applications, campaigns that are active or have applications, the last administrator — each with a reason the user can read. Meta's deletion request is deferred and retried daily until the collaboration ends | `UserAccountOrchestrator` (`checkDeletionEligibilityForUser`), `DeferredDeletionCronJob` |
+| **Erasure on request** (Art. 17) | The user asks from the account settings; the account is marked for deletion and its sessions end. An administrator previews and runs the cascade, which deletes across PostgreSQL, both Firestore collections and Firebase Auth, with a task ledger and a daily retry | `UserAccountOrchestrator`, `admin/cascade/`; `UserService_Delete_IntegrationTest` |
+| **Refusing or deferring erasure while a collaboration runs** (Art. 17(3)) | The deletion itself is refused while an influencer has an unfinished application or a company's campaign has active ones. An eligibility check lists what blocks a deletion — active or pending applications, campaigns that are active or have applications, the last administrator — each with a reason the user can read. Meta's deletion request is deferred and retried daily until the collaboration ends | `UserAccountOrchestrator` (`archiveUser`, `checkDeletionEligibilityForUser`), `DeferredDeletionCronJob`; `UserAccountOrchestrator_Archive_IntegrationTest` |
 | **Meta's callbacks are verified** | The `signed_request` of Instagram's data-deletion and deauthorisation callbacks is checked with HMAC-SHA256 before the request is acted on | `InstagramCallbackController` |
 | **What survives erasure** | Consent records and support tickets are detached from the person (`ON DELETE SET NULL`) rather than deleted | schema: `consent_record`, `support_ticket` |
 | **Audit of consent** | Administrators can read a user's consent records and history | `/admin/legal/consent-records/{userId}`, `/admin/consent/users/{id}/history/{type}` |
 | **Retention that a job or a timer enforces** | Anonymous consent records older than a year (weekly job); rate-limit data after 24 hours; the location cache after 7 days and travel events after 30; application logs after 30 days in Loki | `legal/AnonymousConsentCleanupCronJob`, `common/ratelimit/`, `common/security/geoip/`, Loki configuration under `deployment/` |
 | **Private by default, where it was decided** | A phone number is shown to the other party only after its owner opts in; e-mail notifications have a master switch and one per category, and both are honoured | `userpreferences/`, `NotificationService` |
-| **Less personal data in logs** | A shared utility masks e-mail and IP addresses before logging, at about 165 call sites | `common/util/PiiMaskingUtils`, `LogSafe` |
+| **Less personal data in logs** | E-mail and IP addresses are masked before logging at about 165 call sites, through a shared utility and per-class helpers | `common/util/PiiMaskingUtils`, private `maskEmail` / `maskIp` helpers |
 | **Encryption** | TLS at the edge (the origin sets HSTS; see [security](security.md) for the Cloudflare caveat), `Secure` cookies; third-party tokens and authenticator secrets encrypted with Cloud KMS | [security](security.md) |
 
 ## Known bugs
 
 Three, all on the erasure path and none on the consent side. They were found by reading the code
-on 1 October 2026. No erasure path has a test against a real database yet, which is how they
-survived; one integration test per entry point would pin all three.
+on 1 October 2026. The user's request and the administrator's permanent delete are tested on
+PostgreSQL, but with a user who has no application, no copied address and no pending request, so
+those tests never meet the keys below; the cascade and Meta's callbacks have unit tests only. One
+integration test per entry point, with a user who has all three, would pin them.
 
 | Bug | What happens | The fix |
 | :-- | :-- | :-- |
@@ -128,8 +132,10 @@ within 30 days:
 | A restore, rehearsed on a copy | Once a quarter | — |
 
 Keep a backup no longer than you say you keep the data: then a person erased today is gone from
-every backup within those 30 days, and you can say so in your retention policy. After a restore,
-run the deletions made since that backup again — the cascade's ledger tells you which.
+every backup within those 30 days, and you can say so in your retention policy. A restore brings
+back people erased since that backup, so list those deletions before you restore — the cascade's
+ledger and the `GDPR:` log lines hold them, and the ledger lives in the database you are about to
+replace — and run them again afterwards.
 
 **Keep application logs at least 30 days.** That is the floor here: long enough to answer a
 request from the authorities and to look into an incident. Put the same number in your retention
