@@ -83,8 +83,8 @@ survived; one integration test per entry point would pin all three.
 | **Three foreign keys stop a permanent delete** | `applied_opportunity.influencer_id` is `NOT NULL` with `ON DELETE SET NULL`; `pending_data_deletion_request.user_id` and `address.source_address_id` have no delete rule. Depending on what the user has — an application, a deletion request that came through Meta, an address a campaign copied — the permanent delete or the cascade stops on a constraint | Decide the rule per key (`CASCADE`, or delete the rows in the service first) and migrate |
 | **The cascade removes files under the wrong prefix** | The storage step deletes `users/{uid}/`; uploads are written to `content/{uid}/` and avatar copies to `profile-pictures/{uid}/`. The step reports success and the files stay | Delete all three prefixes |
 
-Until they are fixed, the administrator who finishes a deletion checks the result by hand: the
-user's row is gone, and the user's files are removed from the bucket.
+Until they are fixed, the administrator who finishes a deletion checks that the user's row is
+gone and removes the user's files from the bucket by hand.
 
 ## Left to the team that runs it
 
@@ -95,7 +95,7 @@ user's row is gone, and the user's files are removed from the bucket.
 | **Retention schedule** | The jobs listed above exist. The rest of a schedule — inactive accounts, support tickets, campaign and accounting records — is the operator's to enforce; note that the cascade deletes campaign and invoice rows, so a schedule that keeps them for years should anonymise instead |
 | **Withdrawing acceptance of the terms** | Only by deleting the account |
 | **Masking is not universal** | Some log statements still write a raw e-mail address |
-| **Backups** | Operator settings: switched on by hand, with point-in-time recovery, in the cloud console and at the hosting provider while the platform ran for real users. Nothing in this repository configures or schedules them |
+| **Backups** | Operator settings, switched on by hand in the cloud console and at the hosting provider; nothing in this repository configures them ([below](#if-you-reuse-this)) |
 | **Encryption of the database at rest** | A property of the hosting, not shown in this repository |
 | **Records of processing, processor agreements, breach procedure** | Organisational documents; none in this repository |
 
@@ -105,9 +105,8 @@ Take the consent module as it is — it is the most complete part, and the most 
 
 **Write your terms and your consents to match what your installation does, and keep them in
 step.** Ours were written while the platform was running for real users, and they matched how it
-was set up then — backups with point-in-time recovery among them. When the two drift apart, as
-ours have in places since, correcting the terms removes most of what would otherwise read as a
-gap: it becomes your stated process. So say that an account is closed on request, by the
+was set up then. When the two drift apart, as ours have in places since, correcting the terms
+removes most of what would otherwise read as a gap: it becomes your stated process. So say that an account is closed on request, by the
 operator, within a month, once running collaborations are settled. Publish the retention periods
 you enforce. Name the processors you actually use. Promise an age check, analytics or backups
 only once they are switched on. Users accept those terms through the consent module, with the
@@ -141,11 +140,11 @@ consent on file, operations logged, requests answered, known limits written down
 this and the risk is yours to explain. Do this much, fix what you are told to fix, and automate
 more as the business grows.
 
-Take the code, skip our mistakes, and build your business.
-
 The older, longer design
 note [`docs/Architecture/04_DATA_PRIVACY_COMPLIANCE.md`](../Architecture/04_DATA_PRIVACY_COMPLIANCE.md)
 describes several endpoints that were planned and never built; this page is the one that matches the
 code.
+
+Take the code, skip our mistakes, and build your business.
 
 Next: [security](security.md) · [domain and modules](domain.md) · [back to the index](../README.md)
