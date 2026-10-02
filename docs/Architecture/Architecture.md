@@ -1,5 +1,8 @@
 # CheckItOut Platform - System Documentation
 
+> **Status: an early design note, not maintained.** It was written before much of the code and was not kept in step with it — several classes and endpoints it names were never built. For what the code does today read [the architecture overview](../guide/overview.md); this file is kept for history.
+
+
 ## 🎯 Executive Summary
 
 **CheckItOut** is an **Instagram-integrated partnership and collaboration platform** that connects influencers, content creators, and businesses for sponsorship opportunities and collaborative ventures. Built on Spring Boot with a modular architecture, it provides a complete ecosystem for managing partnership lifecycles from discovery to active cooperation.

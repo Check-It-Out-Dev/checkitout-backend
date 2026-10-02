@@ -1,5 +1,7 @@
 # Data Management, Privacy & Compliance Architecture
-*Actual Implementation - GDPR Compliance & Data Protection*
+
+> **Status: an early design note, not maintained.** It was written before much of the code and was not kept in step with it — several classes and endpoints it names were never built. For what the code does today read [the privacy page of the guide](../guide/gdpr.md), which lists what is built and what is not; this file is kept for history.
+
 
 ## 🎯 Executive Summary
 

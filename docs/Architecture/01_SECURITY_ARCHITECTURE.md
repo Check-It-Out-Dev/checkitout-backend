@@ -1,5 +1,7 @@
 # Security Architecture & Infrastructure Protection
-*Actual Implementation - Production Security Measures*
+
+> **Status: an early design note, not maintained.** It was written before much of the code and was not kept in step with it — several classes and endpoints it names were never built. For what the code does today read [the security page of the guide](../guide/security.md); this file is kept for history.
+
 
 ## 🔐 Executive Summary
 

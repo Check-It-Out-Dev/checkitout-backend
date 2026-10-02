@@ -10,7 +10,7 @@ bar for changes is the same one we held ourselves to.
    dependency-check (fails at CVSS ≥ 7), JaCoCo. If a gate blocks you, fix the cause —
    never disable the gate.
 2. **Tests ride along.** A change to domain logic comes with tests in the right tier
-   (see [docs/testing/strategy.md](docs/testing/strategy.md) for the decision matrix).
+   (see [docs/TESTING-PHILOSOPHY.md](docs/TESTING-PHILOSOPHY.md) for which tier a test belongs in).
    Bug fixes come with a regression test that fails before the fix.
 3. **Schema changes go through Liquibase only.** `ddl-auto=validate` is non-negotiable;
    add a changelog under `src/main/resources/db/changelog/` (chronological `YYYY/MM`
@@ -19,34 +19,42 @@ bar for changes is the same one we held ourselves to.
    `@TransactionalEventListener(AFTER_COMMIT)` for side-effects; ShedLock on every
    `@Scheduled`; Ports & Adapters for replaceable vendors; errors via
    `TranslatableException` with i18n keys.
-5. **No secrets, ever.** `.env` stays gitignored; new keys are added to
-   `.env.example` with a placeholder and a comment that says where to obtain the value.
+5. **No secrets, ever.** `.env` stays gitignored and none is needed to boot; a new setting gets a
+   blank default in `application.yml` and a line in the flag reference of
+   [docs/DEV-LITE.md](docs/DEV-LITE.md#flags--what-to-switch-and-where) that says where to obtain the value.
 
 ## Local setup
 
-The short version (full walkthrough in the [README](README.md)):
+No credentials are needed. One command brings up the databases, the backend and — if it is checked
+out next door — the frontend, with a seeded world and three accounts
+([docs/DEV-LITE.md](docs/DEV-LITE.md)):
 
 ```bash
-cp .env.example .env          # fill in your keys
-docker compose -f docker-compose-dev-redis.yml up -d
-./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+node tools/dev-lite.mjs
 ```
 
-`dev` self-provisions its PostgreSQL database on first run
-([docs/operations/local-dev.md](docs/operations/local-dev.md)). No Redis? Use the
+Or by hand, as a developer would (JDK 21, Docker for the databases):
+
+```bash
+docker compose -f docker-compose-dev-redis.yml up -d postgres redis
+./mvnw spring-boot:run        # profile `dev`
+```
+
+`dev` creates its PostgreSQL database on first run
+([docs/LOCAL_DATABASE_SETUP.md](docs/LOCAL_DATABASE_SETUP.md)). No Redis? Use the
 `no-redis` profile — `storage.mode` swaps every Redis-backed component for an
 in-memory one.
 
 ## Running tests
 
 ```bash
-./mvnw test -Dtest=*UnitTest -DskipITs=true -DskipPmd=true   # unit (~7,970)
-./mvnw clean verify -Pintegration -DskipPmd=true             # integration (Testcontainers)
-./mvnw clean verify -Pe2e -DskipPmd=true                     # all 15 E2E suites (10+ min)
+./mvnw test -Ptest                                  # unit — no external services, about a minute
+./mvnw clean verify -Pintegration -DskipPmd=true    # integration (Testcontainers)
+./mvnw clean verify -Pe2e -DskipPmd=true            # every end-to-end suite (10+ min)
 ```
 
 Run a single E2E suite with the skip-flag pattern —
-[docs/testing/e2e.md](docs/testing/e2e.md). Never use `-Dit.test=`.
+[docs/Tests/newE2EsuiteGuide.md](docs/Tests/newE2EsuiteGuide.md). Never use `-Dit.test=`.
 
 ## API changes
 
@@ -66,5 +74,5 @@ and commit the spec diff in the same PR.
 ## Where to start reading
 
 [docs/README.md](docs/README.md) is the index;
-[docs/architecture.md](docs/architecture.md) is the map. The E2E feature files under
+[docs/guide/overview.md](docs/guide/overview.md) is the map. The E2E feature files under
 `src/test/resources/features/` double as executable product documentation.

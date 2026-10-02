@@ -1,5 +1,8 @@
 # How to Run a Single E2E Suite and Create New Suites
 
+> **Written for an AI coding agent operating this repository on Windows** — which is why it reads as a list of tool calls. A person should start at [testing in depth](../testing/README.md).
+
+
 ## Neo4j Graph — Test Infrastructure Quick Access
 
 The entire test infrastructure is modeled in Neo4j namespace `CheckItOutSystem`. Use these queries to retrieve critical test info:

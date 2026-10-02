@@ -1,5 +1,8 @@
 # Notification System MVP - Architecture Overview
 
+> **Status: a design document from January 2025**, kept as written and not re-verified against the code. The module's place in the system is in [domain and modules](../guide/domain.md).
+
+
 **Version:** 3.0
 **Date:** January 2025
 **Status:** Ready for Implementation

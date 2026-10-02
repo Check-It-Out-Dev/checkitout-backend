@@ -98,7 +98,8 @@ server (GreenMail) and readable over HTTP:
 ```
 GET  https://localhost:8080/api/test/email          all messages
 GET  https://localhost:8080/api/test/email/latest   the newest one
-POST https://localhost:8080/api/test/email/flush    empty the inbox
+POST https://localhost:8080/api/test/email/flush    send the queued notification e-mails now
+DELETE https://localhost:8080/api/test/email        empty the inbox
 ```
 
 That covers the flows worth exercising locally. The two exceptions are password

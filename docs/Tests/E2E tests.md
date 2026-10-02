@@ -1,6 +1,6 @@
 # E2E Test Strategy
 
-> **Snapshot from 2026-01-17.** The current, measured figures are in the [README's numbers table](../README.md#testing) (test methods, classes, Cucumber files and scenarios, measured 2026-09-08). This document keeps its own numbers as they were when it was written.
+> **Snapshot from 2026-01-17.** The current, measured figures are in the [README's numbers table](../../README.md#the-numbers), which a gate keeps equal to the tree. This document keeps its own numbers as they were when it was written.
 
 > **Last Updated**: January 17, 2026
 > **Status**: Phase 2 (Security) COMPLETE | Phase 3 (Business Logic) NEXT
@@ -343,7 +343,7 @@ mvn verify -Pe2e -Dpmd.skip=true -Dcpd.skip=true
 
 Phase 2 (Security) is complete. **Phase 3 focuses on core business workflows.**
 
-See **[E2E-REMAINING.md](../E2E-REMAINING.md)** for detailed implementation plan.
+The detailed plan lived in `E2E-REMAINING.md`, which was removed once the suites below were built; the current list of suites is in [testing in depth](../testing/README.md).
 
 ### Suite 8: Partnership Flow (`@partnership-flow`)
 
