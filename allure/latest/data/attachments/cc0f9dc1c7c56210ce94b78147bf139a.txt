@@ -1,0 +1,10 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-d4d44117-8be0-4bbc-9d59-482c2255fb14
+  Company: COMPANY-0d6f7234-aae6-488d-8b38-ae8689c78df6
+  Admin: ADMIN-6a92426c-8b2c-489d-9870-94d0ffd89779
+08:43:23.335 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus, FirebaseUID=INFLUENCER-d4d44117-8be0-4bbc-9d59-482c2255fb14, OpportunityID=2610, Action=ACCEPT, Purpose=status_management
+08:43:23.335 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=INFLUENCER-d4d44117-8be0-4bbc-9d59-482c2255fb14, OpportunityID=2610, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
+08:43:23.374 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus_SUCCESS, FirebaseUID=INFLUENCER-d4d44117-8be0-4bbc-9d59-482c2255fb14, OpportunityID=2610, OldStatus=CONTENT_APPROVED, NewStatus=CONTENT_POSTED
+08:43:23.374 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=INFLUENCER-d4d44117-8be0-4bbc-9d59-482c2255fb14, AppliedOpportunityID=2610, StatusChange=CONTENT_APPROVED→CONTENT_POSTED, Purpose=status_tracking
+08:43:23.375 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=INFLUENCER-d4d44117-8be0-4bbc-9d59-482c2255fb14, AppliedOpportunityID=2610, DataAccessed=status,changedBy,reason, Purpose=audit_trail
+08:43:23.375 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2610, CONTENT_APPROVED -> CONTENT_POSTED, Changed by=INFLUENCER-d4d44117-8be0-4bbc-9d59-482c2255fb14, Reason=Status accepted via API (/status/update endpoint)
