@@ -1,0 +1,10 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-bf48344c-aa2d-413e-849f-8e89df34f8a1
+  Company: COMPANY-76556b35-3dc6-4a51-b08d-186b1400684a
+  Admin: ADMIN-5f5e3d48-b867-49af-83ca-c1489184075e
+09:19:53.391 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus, FirebaseUID=COMPANY-76556b35-3dc6-4a51-b08d-186b1400684a, OpportunityID=2614, Action=REJECT, Purpose=status_management
+09:19:53.391 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=COMPANY-76556b35-3dc6-4a51-b08d-186b1400684a, OpportunityID=2614, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
+09:19:53.418 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus_SUCCESS, FirebaseUID=COMPANY-76556b35-3dc6-4a51-b08d-186b1400684a, OpportunityID=2614, OldStatus=CONTENT_POSTED, NewStatus=CONTENT_POSTED_REJECTED
+09:19:53.418 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=COMPANY-76556b35-3dc6-4a51-b08d-186b1400684a, AppliedOpportunityID=2614, StatusChange=CONTENT_POSTED→CONTENT_POSTED_REJECTED, Purpose=status_tracking
+09:19:53.420 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=COMPANY-76556b35-3dc6-4a51-b08d-186b1400684a, AppliedOpportunityID=2614, DataAccessed=status,changedBy,reason, Purpose=audit_trail
+09:19:53.420 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2614, CONTENT_POSTED -> CONTENT_POSTED_REJECTED, Changed by=COMPANY-76556b35-3dc6-4a51-b08d-186b1400684a, Reason=Status rejected via API (/status/update endpoint)
