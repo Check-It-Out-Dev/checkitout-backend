@@ -1,9 +1,0 @@
-[Integration Test] Test users created:
-  Influencer: INFLUENCER-f60bd012-2a0f-4dc3-8f4b-ddaa016a3dc3
-  Company: COMPANY-99f741bc-e5dd-482f-add6-3042f4dd3e3f
-  Admin: ADMIN-a43e4a38-4704-4cc8-8f1d-ec5ce33330fe
-12:39:16.792 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.user.UserAccountOrchestrator&amp#27;[0;39m - User 3978 status changed from ACTIVE to TO_BE_DELETED for archival
-12:39:16.792 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=evictUser, DataDeleted=cached_user_data, Purpose=cache_management
-12:39:16.792 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
-12:39:16.793 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
-12:39:16.793 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.user.UserAccountOrchestrator&amp#27;[0;39m - GDPR: Operation=cacheEvict_onArchival, UserId=3978, NewStatus=TO_BE_DELETED, Purpose=immediate_session_invalidation

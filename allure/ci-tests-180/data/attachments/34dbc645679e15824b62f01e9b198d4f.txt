@@ -1,0 +1,10 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-a0132f28-fe94-42aa-9586-ac48b966be9f
+  Company: COMPANY-df8a2a94-c350-43a7-b7b6-237ffc0d105c
+  Admin: ADMIN-db2f8bd7-31fe-4aa8-8db1-5b8a445adc3a
+06:32:49.091 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus, FirebaseUID=COMPANY-df8a2a94-c350-43a7-b7b6-237ffc0d105c, OpportunityID=2617, Action=REJECT, Purpose=status_management
+06:32:49.091 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=COMPANY-df8a2a94-c350-43a7-b7b6-237ffc0d105c, OpportunityID=2617, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
+06:32:49.120 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus_SUCCESS, FirebaseUID=COMPANY-df8a2a94-c350-43a7-b7b6-237ffc0d105c, OpportunityID=2617, OldStatus=CONTENT_SEND_TO_ACCEPT, NewStatus=CONTENT_REJECTED
+06:32:49.121 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=COMPANY-df8a2a94-c350-43a7-b7b6-237ffc0d105c, AppliedOpportunityID=2617, StatusChange=CONTENT_SEND_TO_ACCEPT→CONTENT_REJECTED, Purpose=status_tracking
+06:32:49.122 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=COMPANY-df8a2a94-c350-43a7-b7b6-237ffc0d105c, AppliedOpportunityID=2617, DataAccessed=status,changedBy,reason, Purpose=audit_trail
+06:32:49.122 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2617, CONTENT_SEND_TO_ACCEPT -> CONTENT_REJECTED, Changed by=COMPANY-df8a2a94-c350-43a7-b7b6-237ffc0d105c, Reason=Status rejected via API (/status/update endpoint)
