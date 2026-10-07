@@ -6,6 +6,7 @@ Java 21 · Spring Boot 3.4 · PostgreSQL · Redis · Stripe. It ran in productio
 
 [**🔗 Live sandbox — click around**](https://checkitout.app/sandbox/) ·
 [**🛡 Penetration test — findings and fixes**](docs/security/pentest-remediation.md) ·
+[**📄 the original report (PDF)**](docs/security/CheckItOut-v1.0.pdf) ·
 [**📋 Technical survey**](https://checkitout.app/technical-survey/engineering) ·
 [**✅ Verified Meta Tech Provider**](docs/evidence/meta-tech-provider.png)
 
@@ -25,7 +26,8 @@ Java 21 · Spring Boot 3.4 · PostgreSQL · Redis · Stripe. It ran in productio
   the tests. The exact counts are [measured and gated](#the-numbers).
 - **Security evaluated from outside** — an independent penetration test (OWASP methodology, 2026)
   found nothing critical and rated the security above average; every finding and what was done about
-  it is [published](docs/security/pentest-remediation.md).
+  it is [published](docs/security/pentest-remediation.md), next to
+  [the auditor's original report](docs/security/CheckItOut-v1.0.pdf) (PDF, unaltered).
 - **Verified Meta Tech Provider** — Meta verified the business and its access as a Tech Provider
   for the Instagram API ([screenshot](docs/evidence/meta-tech-provider.png)).
 - **Contract-first by enforcement** — the OpenAPI document is generated from a running server and the
