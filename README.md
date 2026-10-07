@@ -10,7 +10,7 @@ Firebase authentication, Stripe billing and Polish e-invoicing.
 [![License: MIT](https://img.shields.io/badge/License-MIT-1f6feb.svg)](LICENSE)
 [![Java](https://img.shields.io/badge/Java-21-f89820.svg)](https://openjdk.org/projects/jdk/21/)
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.4-6db33f.svg)](https://spring.io/projects/spring-boot)
-[![Test methods](https://img.shields.io/badge/test_methods-8922-15c213.svg)](#the-numbers)
+[![Test methods](https://img.shields.io/badge/test_methods-8908-15c213.svg)](#the-numbers)
 [![OpenAPI](https://img.shields.io/badge/OpenAPI-3.1-85ea2d.svg)](docs/openapi/openapi.json)
 
 ▶ **[checkitout.app](https://checkitout.app)** — the live demo (the frontend's
@@ -74,7 +74,7 @@ Measured 2026-09-26, on this tree, with commands you can run.
 
 | | | |
 | :-- | --: | :-- |
-| **Test methods** | **8,908** | 8,312 `@Test` + 596 `@ParameterizedTest`, across **273** test classes |
+| **Test methods** | **8,908** | 8,312 `@Test` + 596 `@ParameterizedTest`, across **256** test classes and the **2,152** `@Nested` groups inside them |
 | **Test code : main code** | **2.0 : 1** | 182,241 lines of test Java against 90,195 of main |
 | **Cucumber** | **34 files** | 148 `Scenario` + 28 `Scenario Outline`, **277 after Examples expansion** |
 | **Domain** | **40 entities** | 50 REST controllers |
