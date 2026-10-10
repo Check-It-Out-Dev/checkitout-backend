@@ -1,0 +1,8 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-49148ef5-534d-431c-a778-907dcd205495
+  Company: COMPANY-7a97ac12-4036-42af-9288-72b7e59ec6ef
+  Admin: ADMIN-097a9bbd-eb45-4eac-8747-2616acc46bc6
+08:53:47.329 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=ADMIN-097a9bbd-eb45-4eac-8747-2616acc46bc6, OpportunityID=2579, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
+08:53:47.353 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=ADMIN-097a9bbd-eb45-4eac-8747-2616acc46bc6, AppliedOpportunityID=2579, StatusChange=APPLIED→ACCEPTED_BY_COMPANY, Purpose=status_tracking
+08:53:47.354 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=ADMIN-097a9bbd-eb45-4eac-8747-2616acc46bc6, AppliedOpportunityID=2579, DataAccessed=status,changedBy,reason, Purpose=audit_trail
+08:53:47.354 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2579, APPLIED -> ACCEPTED_BY_COMPANY, Changed by=ADMIN-097a9bbd-eb45-4eac-8747-2616acc46bc6, Reason=Status updated via full update (PUT)
