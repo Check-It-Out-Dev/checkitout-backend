@@ -10,79 +10,80 @@ flowchart LR
     n5["#35;toBePaidCannotTransitionBackward()"]
     n4 -- "2 probes · 2 kills" --> n5
     n6["[test-template-invocation: #35;1]"]:::demoted
-    n6 -- "2 probes · 1 kills" --> n5
-    n7["… 35 more"]:::demoted
+    n6 -- "2 probes · 1 kills" --> n7
+    n8["… 35 more"]:::demoted
   end
-  subgraph n8["PartnershipOpportunityUnitTest$PartnershipOpportunityEntityTests$ValidationTests"]
+  subgraph n9["PartnershipOpportunityUnitTest$PartnershipOpportunityEntityTests$ValidationTests"]
     direction LR
-    n9["#35;shouldFailValidationForCompensationAmountMinEx…"]:::demoted
-    n9 -- "41 probes · 0 kills" --> n10
-    n11["#35;shouldFailValidationForLongCompensationDescrip…"]:::demoted
-    n11 -- "42 probes · 0 kills" --> n10
-    n12["#35;shouldFailValidationForLongDetails()"]:::demoted
-    n12 -- "42 probes · 0 kills" --> n10
-    n13["#35;shouldFailValidationForLongName()"]:::demoted
-    n13 -- "41 probes · 0 kills" --> n10
-    n14["… 23 more"]:::demoted
+    n10["#35;shouldFailValidationForCompensationAmountMinEx…"]:::demoted
+    n10 -- "41 probes · 0 kills" --> n11
+    n12["#35;shouldFailValidationForLongCompensationDescrip…"]:::demoted
+    n12 -- "42 probes · 0 kills" --> n11
+    n13["#35;shouldFailValidationForLongDetails()"]:::demoted
+    n13 -- "42 probes · 0 kills" --> n11
+    n14["#35;shouldFailValidationForLongName()"]:::demoted
+    n14 -- "41 probes · 0 kills" --> n11
+    n15["… 23 more"]:::demoted
   end
-  subgraph n15["OpportunityStatusUnitTest$JsonSerialization"]
+  subgraph n16["OpportunityStatusUnitTest$JsonSerialization"]
     direction LR
-    n16["#35;fromStringShouldParseLowercase()"]:::demoted
-    n16 -- "2 probes · 1 kills" --> n17
-    n18["#35;fromStringShouldParseMixedCase()"]:::demoted
-    n18 -- "2 probes · 1 kills" --> n17
+    n17["#35;fromStringShouldParseMixedCase()"]:::demoted
+    n18["#35;fromStringShouldParseLowercase()"]
+    n17 -- "2 probes · 1 kills" --> n18
     n19["[test-template-invocation: #35;1]"]:::demoted
-    n19 -- "2 probes · 1 kills" --> n17
-    n20["[test-template-invocation: #35;11]"]:::demoted
-    n20 -- "2 probes · 1 kills" --> n17
-    n21["… 20 more"]:::demoted
+    n19 -- "2 probes · 1 kills" --> n18
+    n20["[test-template-invocation: #35;10]"]:::demoted
+    n20 -- "2 probes · 1 kills" --> n18
+    n21["[test-template-invocation: #35;11]"]:::demoted
+    n21 -- "2 probes · 1 kills" --> n18
+    n22["… 20 more"]:::demoted
   end
-  subgraph n22["CommonSafetyUnitTest$ProfilePatternMatchingTests"]
+  subgraph n23["CommonSafetyUnitTest$ProfilePatternMatchingTests"]
     direction LR
-    n23["[test-template-invocation: #35;1]"]:::demoted
-    n23 -- "25 probes · 2 kills" --> n24
-    n25["[test-template-invocation: #35;2]"]:::demoted
-    n25 -- "25 probes · 2 kills" --> n24
-    n26["[test-template-invocation: #35;3]"]:::demoted
-    n26 -- "25 probes · 2 kills" --> n24
-    n27["[test-template-invocation: #35;4]"]:::demoted
-    n27 -- "25 probes · 2 kills" --> n24
-    n28["… 18 more"]:::demoted
+    n24["[test-template-invocation: #35;1]"]:::demoted
+    n24 -- "25 probes · 2 kills" --> n25
+    n26["[test-template-invocation: #35;2]"]:::demoted
+    n26 -- "25 probes · 2 kills" --> n25
+    n27["[test-template-invocation: #35;3]"]:::demoted
+    n27 -- "25 probes · 2 kills" --> n25
+    n28["[test-template-invocation: #35;4]"]:::demoted
+    n28 -- "25 probes · 2 kills" --> n25
+    n29["… 18 more"]:::demoted
   end
-  subgraph n29["UserDeletionDtosUnitTest$DeletionBlockerCategoryTests"]
+  subgraph n30["UserDeletionDtosUnitTest$DeletionBlockerCategoryTests"]
     direction LR
-    n30["#35;getDescriptionShouldReturnEnumNameWhenTranslat…"]:::demoted
-    n30 -- "3 probes · 1 kills" --> n31
-    n32["#35;getDescriptionShouldReturnTranslatedDescriptio…"]:::demoted
-    n32 -- "3 probes · 1 kills" --> n31
-    n33["#35;getLabelShouldReturnEnumNameWhenTranslationNot…"]:::demoted
-    n33 -- "3 probes · 1 kills" --> n34
-    n35["#35;getLabelShouldReturnTranslatedLabelWhenAvailab…"]:::demoted
-    n35 -- "3 probes · 1 kills" --> n34
-    n36["… 18 more"]:::demoted
+    n31["#35;getDescriptionShouldReturnEnumNameWhenTranslat…"]:::demoted
+    n31 -- "3 probes · 1 kills" --> n32
+    n33["#35;getDescriptionShouldReturnTranslatedDescriptio…"]:::demoted
+    n33 -- "3 probes · 1 kills" --> n32
+    n34["#35;getLabelShouldReturnEnumNameWhenTranslationNot…"]:::demoted
+    n34 -- "3 probes · 1 kills" --> n35
+    n36["#35;getLabelShouldReturnTranslatedLabelWhenAvailab…"]:::demoted
+    n36 -- "3 probes · 1 kills" --> n35
+    n37["… 18 more"]:::demoted
   end
-  subgraph n37["AuthDtoCompleteUnitTest$RegisterUserRequestCompleteTests"]
+  subgraph n38["AuthDtoCompleteUnitTest$RegisterUserRequestCompleteTests"]
     direction LR
-    n38["#35;shouldAcceptValidHttpsProfilePictureUrl()"]:::demoted
-    n38 -- "9 probes · 1 kills" --> n39
-    n40["#35;shouldFailForCompanyWithoutAddress()"]:::demoted
-    n40 -- "14 probes · 3 kills" --> n41
-    n42["#35;shouldFailForCompanyWithoutName()"]:::demoted
-    n42 -- "21 probes · 3 kills" --> n43
-    n44["#35;shouldFailForInfluencerWithPlatformNoAuthCode()"]:::demoted
-    n44 -- "11 probes · 5 kills" --> n45
-    n46["… 17 more"]:::demoted
+    n39["#35;shouldAcceptValidHttpsProfilePictureUrl()"]:::demoted
+    n39 -- "9 probes · 1 kills" --> n40
+    n41["#35;shouldFailForCompanyWithoutAddress()"]:::demoted
+    n41 -- "14 probes · 3 kills" --> n42
+    n43["#35;shouldFailForCompanyWithoutName()"]:::demoted
+    n43 -- "21 probes · 3 kills" --> n44
+    n45["#35;shouldFailForInfluencerWithPlatformNoAuthCode()"]:::demoted
+    n45 -- "11 probes · 5 kills" --> n46
+    n47["… 17 more"]:::demoted
   end
   n2["AppliedOpportunityContentServiceUnitTest$MoveTo…"]
-  n10["[test-template-invocation: #35;2]"]
-  n17["[test-template-invocation: #35;10]"]
-  n24["CommonSafetyUnitTest$DangerousConfigurationProf…"]
-  n31["PartnershipAndDeletionUnitTest$DeletionBlockerC…"]
-  n34["PartnershipAndDeletionUnitTest$DeletionBlockerC…"]
-  n39["RegisterUserRequestUnitTest$AddressDataValidati…"]
-  n41["RegisterUserRequestUnitTest$AddressDataValidati…"]
-  n43["RegisterUserRequestUnitTest$CompanyDataValidati…"]
-  n45["RegisterUserRequestUnitTest$SocialDataValidatio…"]
+  n7["MetadataUnitTest$GetOpportunityStatusTransition…"]
+  n11["[test-template-invocation: #35;2]"]
+  n25["CommonSafetyUnitTest$DangerousConfigurationProf…"]
+  n32["PartnershipAndDeletionUnitTest$DeletionBlockerC…"]
+  n35["PartnershipAndDeletionUnitTest$DeletionBlockerC…"]
+  n40["RegisterUserRequestUnitTest$AddressDataValidati…"]
+  n42["RegisterUserRequestUnitTest$AddressDataValidati…"]
+  n44["RegisterUserRequestUnitTest$CompanyDataValidati…"]
+  n46["RegisterUserRequestUnitTest$SocialDataValidatio…"]
   classDef demoted stroke-dasharray: 4 3
 ```
 
@@ -92,108 +93,109 @@ flowchart LR
 | `FutureOrPresentDateValidatorUnitTest$DirectValidatorTests` | 20 | 3 tests |
 | `AppliedOpportunityServiceUnitTest$OpportunityStatusStateMachine` | 17 | 10 tests |
 | `AuthDtoCompleteUnitTest$AssessmentResultCompleteTests` | 17 | 6 tests |
-| `AppliedOpportunityEnumsUnitTest$OpportunityStatusEnumTests$CanTransitionToTests` | 16 | 9 tests |
+| `AppliedOpportunityEnumsUnitTest$OpportunityStatusEnumTests$CanTransitionToTests` | 16 | 10 tests |
+| `AppliedOpportunityEnumsUnitTest$OpportunityStatusEnumTests$GetNextStatusTests` | 16 | 7 tests |
 | `AuthDtoUnitTest$RegisterUserRequestValidationTests` | 16 | 10 tests |
-| `SupportTicketServiceUnitTest$TicketStatusTests` | 16 | 11 tests |
 | `UserPackageUnitTest$AccountStatusEnumTests$JsonSerializationTests` | 16 | 2 tests |
 | `RequestContextUtilsUnitTest$SanitizeSensitiveDataTests` | 16 | 1 tests |
 | `OpportunityStatusUnitTest$LocalizationMethods` | 15 | 2 tests |
-| `AppliedOpportunityServiceUnitTest$TerminalStatusIdentification` | 15 | 4 tests |
+| `AppliedOpportunityServiceUnitTest$TerminalStatusIdentification` | 15 | 3 tests |
 | `SpecificationBuilderUnitTest$ParameterizedTests` | 15 | 2 tests |
+| `SupportTicketServiceUnitTest$TicketStatusTests` | 15 | 10 tests |
 | `OpportunityStatusUnitTest$CanTransitionToValidTransitions` | 14 | 8 tests |
-| `AppliedOpportunityEnumsUnitTest$OpportunityStatusEnumTests$GetNextStatusTests` | 14 | 6 tests |
 | `CorsLoggingFilterUnitTest$OriginValidationTests` | 14 | 6 tests |
 | `CorsLoggingFilterUnitTest$PreflightRequestHandlingTests` | 14 | 5 tests |
 | `CorsLoggingFilterUnitTest$SuspiciousOriginDetectionTests` | 14 | 8 tests |
 | `RegisterUserRequestUnitTest$EmailValidationTests` | 14 | 1 tests |
+| `AppliedOpportunityEnumsUnitTest$ContentApprovalStatusEnumTests` | 13 | 3 tests |
 | `ConsentDtosUnitTest$ConsentActionEnumTests` | 13 | 8 tests |
-| `InstagramSocialAuthUnitTest$InstagramConfigTests$AuthorizationUrlGenerationTests` | 13 | 3 tests |
+| `InstagramSocialAuthUnitTest$InstagramConfigTests$AuthorizationUrlGenerationTests` | 13 | 2 tests |
 | `PartnershipOpportunityUnitTest$PartnershipOpportunityEntityTests$BusinessRuleTests` | 13 | 9 tests |
-| `RedisUserCacheUnitTest$CacheUserTests` | 13 | 6 tests |
 | `RegisterUserRequestUnitTest$UserTypeValidationTests` | 13 | 3 tests |
 | `ActiveCooperationControllerUnitTest$GetInfluencersToAcceptTests` | 12 | 2 tests |
 | `OpportunityStatusUnitTest$SuccessfulCompletionChecks` | 12 | 2 tests |
-| `AppliedOpportunityEnumsUnitTest$ContentApprovalStatusEnumTests` | 12 | 3 tests |
+| `OpportunityStatusUnitTest$TerminalStatusChecks` | 12 | 2 tests |
 | `AppliedOpportunityEnumsUnitTest$OpportunityStatusEnumTests$EnumPropertiesTests` | 12 | 1 tests |
 | `AppliedOpportunityEnumsUnitTest$OpportunityStatusEnumTests$IsSuccessfulCompletionTests` | 12 | 2 tests |
 | `AppliedOpportunityEnumsUnitTest$OpportunityStatusEnumTests$IsTerminalStatusTests` | 12 | 2 tests |
-| `AuthDtoMoreUnitTest$RecaptchaResponseAdditionalTests` | 12 | 3 tests |
 | `HashingUtilUnitTest$HashIdentifierTests` | 12 | 4 tests |
-| `MetadataUnitTest$OpportunityStatusEnumTests` | 12 | 12 tests |
+| `MetadataUnitTest$OpportunityStatusEnumTests` | 12 | 13 tests |
+| `RedisUserCacheUnitTest$CacheUserTests` | 12 | 4 tests |
 | `RequestBodyCachingFilterUnitTest$OriginAuthorizationTests` | 12 | 5 tests |
-| `OpportunityStatusUnitTest$TerminalStatusChecks` | 11 | 2 tests |
-| `UserEntityUnitTest$AccountStatusTransitionsTests` | 11 | 7 tests |
+| `SecretsServiceUnitTest$EdgeCaseTests` | 12 | 10 tests |
+| `UserEntityUnitTest$AccountStatusTransitionsTests` | 11 | 8 tests |
 | `NipValidatorUnitTest$IsValid` | 11 | 4 tests |
+| `AuthDtoMoreUnitTest$RecaptchaResponseAdditionalTests` | 11 | 2 tests |
 | `HtmlEncoderUnitTest$ParameterizedEncodingTests` | 11 | 1 tests |
 | `InstagramSocialAuthUnitTest$InstagramConfigTests$ConfigurationValidationTests` | 11 | 7 tests |
 | `RegisterUserRequestUnitTest$PasswordValidationTests` | 11 | 1 tests |
 | `RegisterUserRequestUnitTest$PhoneNumberValidationTests` | 11 | 2 tests |
-| `ActiveCooperationControllerUnitTest$GetInfluencersToRateTests` | 10 | 2 tests |
-| `ActiveCooperationControllerUnitTest$GetOpportunitiesInProgressTests` | 10 | 2 tests |
+| `ActiveCooperationControllerUnitTest$GetInfluencersToRateTests` | 10 | 3 tests |
+| `ActiveCooperationControllerUnitTest$GetOpportunitiesInProgressTests` | 10 | 3 tests |
 | `AssessmentResultUnitTest$SuccessFactoryMethodTests` | 10 | 4 tests |
-| `AuthDtoUnitTest$AssessmentResultTests` | 10 | 5 tests |
+| `AuthDtoUnitTest$AssessmentResultTests` | 10 | 6 tests |
 | `AuthValidatorsUnitTest$RecaptchaStartupValidatorTests$ValidateThresholdsTests` | 10 | 6 tests |
 | `CommonJwtUnitTest$CreateTokenWithClaimsTests` | 10 | 4 tests |
 | `CommonSafetyUnitTest$DangerousConfigurationProfileTests` | 10 | 8 tests |
 | `InMemoryUserCacheUnitTest$GetAccountStatusTests` | 10 | 6 tests |
+| `InstagramConfigUnitTest$AuthorizationUrlTests` | 10 | 2 tests |
 | `PartnershipOpportunityEntityUnitTest$NotBlankValidationTests` | 10 | 1 tests |
 | `PartnershipOpportunityEntityUnitTest$PatternAndMinMaxTests` | 10 | 3 tests |
 | `PartnershipOpportunityMoreUnitTest$PartnershipOpportunityEntityAdvancedTests$UpdaterIdPatternTests` | 10 | 2 tests |
 | `StorageHealthUnitTest$SystemLoadDetailsTests` | 10 | 1 tests |
-| `SupportTicketServiceUnitTest$TicketCategoryTests` | 10 | 2 tests |
 | `HmacUtilsUnitTest$ConstantTimeEquals` | 10 | 2 tests |
 | `HmacUtilsUnitTest$GenerateHMAC` | 10 | 3 tests |
 | `FileUploadControllerUnitTest$GenerateSignedUrlValidation` | 9 | 2 tests |
-| `OpportunityStatusUnitTest$GetNextStatusAcceptPath` | 9 | 2 tests |
 | `UserEntityMoreUnitTest$ProfileFieldCriticalityAdditionalTests` | 9 | 2 tests |
 | `AppliedOpportunityServiceUnitTest$CanTransitionToValidation` | 9 | 5 tests |
 | `CommonJwtUnitTest$ErrorHandlingTests` | 9 | 4 tests |
 | `CommonSafetyUnitTest$DangerousConfigurationEnvironmentTests` | 9 | 8 tests |
+| `ConsentAndAddressUnitTest$ConsentActionEnumTests$JsonSerializationTests` | 9 | 2 tests |
 | `CustomErrorControllerUnitTest$MessageKeyResolutionTests` | 9 | 9 tests |
-| `EncryptionServicesUnitTest$EdgeCasesTests` | 9 | 4 tests |
 | `PartnershipOpportunityEntityUnitTest$SizeConstraintTests` | 9 | 2 tests |
-| `ProfilePictureProxyServiceUnitTest$IsInstagramCdnUrlTests` | 9 | 3 tests |
-| `RedisUserCacheUnitTest$GetAccountStatusTests` | 9 | 3 tests |
 | `SpecificationBuilderUnitTest$CopyNonNullPropertiesTests` | 9 | 1 tests |
-| `SupportTicketModelsUnitTest$TicketCategoryEnumTests` | 9 | 1 tests |
+| `SupportTicketModelsUnitTest$TicketCategoryEnumTests` | 9 | 2 tests |
+| `SupportTicketServiceUnitTest$TicketCategoryTests` | 9 | 2 tests |
 | `UserCacheServiceUnitTest$InMemoryUserCacheTests$GetAccountStatusTests` | 9 | 7 tests |
-| `UserPackageUnitTest$AccountStatusEnumTests$CanTransitionToTests` | 9 | 7 tests |
 | `UserServiceUnitTest$AccountStatusTransitionsTests` | 9 | 7 tests |
 | `HashingUtilUnitTest$HashIdentifier` | 9 | 3 tests |
 | `HmacUtilsUnitTest$ValidateHMAC` | 9 | 1 tests |
 | `OtpAuthUrlsUnitTest` | 9 | 1 tests |
-| `ActiveCooperationControllerUnitTest$UpdateCompanyRatingTests` | 8 | 1 tests |
+| `ActiveCooperationControllerUnitTest$UpdateCompanyRatingTests` | 8 | 2 tests |
 | `ActiveCooperationControllerUnitTest$UpdateInfluencerRatingTests` | 8 | 1 tests |
+| `OpportunityStatusUnitTest$GetNextStatusAcceptPath` | 8 | 1 tests |
 | `OpportunityStatusUnitTest$GetPossibleTransitions` | 8 | 5 tests |
 | `AssessmentResultUnitTest$AllowedFactoryMethodTests` | 8 | 2 tests |
 | `AssessmentResultUnitTest$InvalidFactoryMethodTests` | 8 | 2 tests |
 | `AuthorizationServiceUnitTest$BannedUserAuthorizationFilterTests` | 8 | 1 tests |
 | `CommonValidatorUnitTest$CheckStorageModeTests` | 8 | 4 tests |
-| `ConsentAndAddressUnitTest$ConsentActionEnumTests$JsonSerializationTests` | 8 | 2 tests |
 | `CustomErrorControllerUnitTest$SpecificErrorLoggingTests` | 8 | 6 tests |
+| `EncryptionServicesUnitTest$EdgeCasesTests` | 8 | 1 tests |
 | `FutureOrPresentDateValidatorUnitTest$EdgeCaseTests` | 8 | 2 tests |
 | `HashingUtilUnitTest$GenerateRedisKeyTests` | 8 | 5 tests |
 | `InMemoryUserCacheUnitTest$CacheUserTests` | 8 | 5 tests |
-| `InstagramConfigUnitTest$AuthorizationUrlTests` | 8 | 2 tests |
 | `PartnershipAndDeletionUnitTest$CompensationTypeTests` | 8 | 4 tests |
 | `PartnershipOpportunityMoreUnitTest$NumericRangeValidationTests$CompensationAmountValidation` | 8 | 4 tests |
 | `PartnershipOpportunityMoreUnitTest$PartnershipOpportunityEntityAdvancedTests$BoundaryValueTests` | 8 | 8 tests |
+| `ProfilePictureProxyServiceUnitTest$IsInstagramCdnUrlTests` | 8 | 4 tests |
+| `RedisUserCacheUnitTest$GetAccountStatusTests` | 8 | 3 tests |
 | `RegisterUserRequestUnitTest$ProfilePictureUrlValidationTests` | 8 | 2 tests |
-| `SecretsServiceUnitTest$EdgeCaseTests` | 8 | 6 tests |
 | `SignedUrlValidationServiceUnitTest$GetValidationReportTests` | 8 | 2 tests |
 | `StorageRateLimitServiceUnitTest$EdgeCaseTests` | 8 | 3 tests |
 | `UserCacheServiceUnitTest$InMemoryUserCacheTests$CacheUserTests` | 8 | 9 tests |
 | `UserCacheServiceUnitTest$InMemoryUserCacheTests$IsUserActiveTests` | 8 | 5 tests |
+| `UserPackageUnitTest$AccountStatusEnumTests$CanTransitionToTests` | 8 | 8 tests |
 | `RequestContextUtilsUnitTest$GetClientIpAddressTests` | 8 | 3 tests |
 | `JwtAuthenticationFilterDevLitePublicUnitTest` | 7 | 4 tests |
-| `AssessmentResultUnitTest$BlockedFactoryMethodTests` | 7 | 3 tests |
+| `AssessmentResultUnitTest$BlockedFactoryMethodTests` | 7 | 4 tests |
 | `AssessmentResultUnitTest$EdgeCaseTests` | 7 | 4 tests |
-| `AuthorizationMoreUnitTest$HttpMethodSpecificTests` | 7 | 8 tests |
 | `AuthorizationServiceUnitTest$PermissionUtilsRoleCheckingTests` | 7 | 5 tests |
 | `CommonJwtUnitTest$GetSubjectTests` | 7 | 3 tests |
 | `CommonSafetyUnitTest$DatabaseUrlPatternMatchingTests` | 7 | 5 tests |
 | `CommonValidatorUnitTest$ConfigurationValuesTests` | 7 | 2 tests |
+| `CorsLoggingFilterUnitTest$ResponseHeaderLoggingTests` | 7 | 10 tests |
 | `CredentialsServiceUnitTest$IsProductionEnvironmentTests` | 7 | 2 tests |
+| `CustomErrorControllerUnitTest$UnknownStatusCodeTests` | 7 | 5 tests |
 | `DiskAndLiquibaseHealthUnitTest$DiskSpaceHealthIndicatorTests$HealthMethodTests` | 7 | 4 tests |
 | `EnumTranslationServiceUnitTest$TranslateToStringTests` | 7 | 1 tests |
 | `MetadataUnitTest$OpportunityStatusGetNextStatusTests` | 7 | 5 tests |
@@ -203,14 +205,18 @@ flowchart LR
 | `RequestLoggingFiltersUnitTest$RequestCorrelationFilterTests$CorrelationIdGenerationTests` | 7 | 3 tests |
 | `RequestLoggingFiltersUnitTest$RequestCorrelationFilterTests$HttpMethodTests` | 7 | 1 tests |
 | `RequestLoggingFiltersUnitTest$RequestLoggingFilterTests$ParameterExtractionTests` | 7 | 1 tests |
+| `RequestLoggingFilterUnitTest$DoFilterInternalTests` | 7 | 5 tests |
+| `SecretsServiceUnitTest$GetSecretProductionModeTests` | 7 | 4 tests |
 | `SignedUrlServiceUnitTest$ValidationTests` | 7 | 2 tests |
-| `SupportTicketModelsUnitTest$SupportTicketEntityTests$HelperMethodTests` | 7 | 2 tests |
+| `SupportTicketModelsUnitTest$SupportTicketEntityTests$HelperMethodTests` | 7 | 3 tests |
+| `SupportTicketModelsUnitTest$TicketStatusEnumTests$StateTransitionTests` | 7 | 7 tests |
 | `UserPackageUnitTest$ProfileFieldCriticalityEnumTests$CriticalFieldsTests` | 7 | 3 tests |
 | `FileUploadControllerUnitTest$GenerateSignedUrl` | 6 | 2 tests |
 | `UserEntityUnitTest$AccountStatusEnumTests` | 6 | 4 tests |
 | `ApplicationHealthIndicatorUnitTest$HealthMethodTests` | 6 | 1 tests |
 | `AppliedOpportunityEnumsUnitTest$RateStatusEnumTests$FromStringTests` | 6 | 1 tests |
 | `AuthDtoCompleteUnitTest$ExchangeTokenRequestCompleteTests` | 6 | 2 tests |
+| `AuthorizationMoreUnitTest$HttpMethodSpecificTests` | 6 | 7 tests |
 | `AuthorizationServiceUnitTest$PermissionUtilsUserOwnerTests` | 6 | 6 tests |
 | `BaseClassesUnitTest$BaseServiceTests$PatchTests` | 6 | 3 tests |
 | `CommonJwtUnitTest$CreateTokenDefaultExpirationTests` | 6 | 3 tests |
@@ -220,28 +226,25 @@ flowchart LR
 | `CommonSafetyUnitTest$EdgeCasesTests` | 6 | 8 tests |
 | `ConsentEnforcementFilterUnitTest$WhenUserBlocked` | 6 | 2 tests |
 | `CorsLoggingFilterUnitTest$EdgeCaseTests` | 6 | 5 tests |
-| `CorsLoggingFilterUnitTest$ResponseHeaderLoggingTests` | 6 | 9 tests |
-| `CustomErrorControllerUnitTest$UnknownStatusCodeTests` | 6 | 3 tests |
 | `EncryptionServicesUnitTest$TokenEncryptionServiceTests$EncryptTokenTests` | 6 | 4 tests |
 | `EnumTranslationServiceUnitTest$IsValidEnumValueTests` | 6 | 1 tests |
 | `EnumTranslationServiceUnitTest$TranslateRoleTests` | 6 | 1 tests |
 | `EnumTranslationServiceUnitTest$TranslateToEnumTests` | 6 | 1 tests |
 | `HtmlEncoderUnitTest$IndividualSpecialCharacterTests` | 6 | 1 tests |
 | `InstagramConfigUnitTest$EdgeCaseTests` | 6 | 2 tests |
+| `InstagramServiceUnitTest$PrivacyUtilitiesTests` | 6 | 6 tests |
+| `InstagramSocialAuthUnitTest$InstagramServiceTests$RefreshSocialDataTests` | 6 | 1 tests |
 | `PartnershipOpportunityUnitTest$CompensationTypeEnumTests$FromStringTests` | 6 | 1 tests |
+| `ProfilePictureProxyServiceUnitTest$IsPermanentFirebaseStorageUrlTests` | 6 | 4 tests |
 | `RequestLoggingFiltersUnitTest$RequestLoggingFilterTests$HeaderExtractionTests` | 6 | 1 tests |
 | `RequestLoggingFilterUnitTest$ShouldNotFilterTests` | 6 | 2 tests |
-| `SecretsServiceUnitTest$GetSecretDevelopmentModeTests` | 6 | 7 tests |
-| `SecretsServiceUnitTest$GetSecretProductionModeTests` | 6 | 4 tests |
 | `StorageHealthUnitTest$RedisHealthCheckTests` | 6 | 4 tests |
-| `SupportTicketModelsUnitTest$TicketStatusEnumTests$StateTransitionTests` | 6 | 5 tests |
 | `UserServiceUnitTest$CheckProfileCompletenessTests` | 6 | 4 tests |
 | `GeoDistanceCalculatorUnitTest$CalculateDistanceKmTests` | 6 | 1 tests |
 | `LogSafeUnitTest` | 6 | 3 tests |
 | `PiiMaskingUtilsUnitTest$MaskEmailTests` | 6 | 3 tests |
 | `PiiMaskingUtilsUnitTest$PseudonymousIdTests` | 6 | 1 tests |
 | `AdminControllerUnitTest$SetUserClaimsTests$PermissionSettingTests` | 5 | 1 tests |
-| `OpportunityStatusUnitTest$GetNextStatusRejectPath` | 5 | 4 tests |
 | `AppliedOpportunityEnumsUnitTest$OpportunityStatusEnumTests$FromStringTests` | 5 | 1 tests |
 | `AppliedOpportunityEnumsUnitTest$OpportunityStatusEnumTests$GetActiveStatusesTests` | 5 | 1 tests |
 | `AppliedOpportunityServiceUnitTest$CollaborationStatusWorkflow` | 5 | 6 tests |
@@ -253,27 +256,23 @@ flowchart LR
 | `CommonValidatorUnitTest$EdgeCasesTests` | 5 | 4 tests |
 | `CommonValidatorUnitTest$EnvironmentSpecificValidationTests` | 5 | 2 tests |
 | `CredentialsServiceUnitTest$IsBase64Tests` | 5 | 3 tests |
-| `CustomErrorControllerUnitTest$EdgeCaseTests` | 5 | 6 tests |
-| `DatabaseHealthIndicatorUnitTest$UrlMaskingTests` | 5 | 1 tests |
+| `DatabaseHealthIndicatorUnitTest$HealthUpStatusTests` | 5 | 2 tests |
 | `FutureOrPresentDateValidatorUnitTest$BeanValidationIntegrationTests` | 5 | 3 tests |
-| `HashingUtilUnitTest$HashIpAddressTests` | 5 | 3 tests |
+| `HashingUtilUnitTest$HashIpAddressTests` | 5 | 4 tests |
 | `InMemoryUserCacheUnitTest$UserTypeHandlingTests` | 5 | 1 tests |
-| `InstagramServiceUnitTest$PrivacyUtilitiesTests` | 5 | 5 tests |
 | `InstagramSocialAuthUnitTest$InstagramServiceTests$AnonymizeIdTests` | 5 | 2 tests |
 | `InstagramSocialAuthUnitTest$InstagramServiceTests$MaskUsernameTests` | 5 | 3 tests |
-| `InstagramSocialAuthUnitTest$InstagramServiceTests$RefreshSocialDataTests` | 5 | 1 tests |
 | `PartnershipOpportunityMoreUnitTest$NumericRangeValidationTests$FollowersRangeValidation` | 5 | 2 tests |
-| `ProfilePictureProxyServiceUnitTest$IsPermanentFirebaseStorageUrlTests` | 5 | 3 tests |
 | `RedisServiceUnitTest$DataTypeTests` | 5 | 1 tests |
 | `RedisServiceUnitTest$KeyExpirationTests` | 5 | 1 tests |
+| `RedisUserCacheUnitTest$GetTokenVersionTests` | 5 | 4 tests |
 | `RequestLoggingFiltersUnitTest$RequestCorrelationFilterTests$ActuatorEndpointFilteringTests` | 5 | 1 tests |
 | `RequestLoggingFiltersUnitTest$RequestLoggingFilterTests$ClientIpExtractionTests` | 5 | 2 tests |
-| `RequestLoggingFilterUnitTest$DoFilterInternalTests` | 5 | 3 tests |
 | `SignedUrlValidationServiceUnitTest$IsBase64DetectionTests` | 5 | 2 tests |
 | `StorageHealthUnitTest$HealthDetailsKeyTests` | 5 | 1 tests |
-| `StorageHealthUnitTest$StatusNoteMessageTests` | 5 | 6 tests |
-| `SupportTicketEntityUnitTest$IsResolvedMethodTests` | 5 | 1 tests |
-| `SupportTicketModelsUnitTest$TicketStatusEnumTests$DisplayNameTests` | 5 | 1 tests |
+| `StorageHealthUnitTest$MixedComponentStateTests` | 5 | 5 tests |
+| `StorageHealthUnitTest$StatusNoteMessageTests` | 5 | 5 tests |
+| `SupportTicketModelsUnitTest$TicketStatusEnumTests$DisplayNameTests` | 5 | 2 tests |
 | `UserCacheServiceUnitTest$CrossImplementationTests` | 5 | 8 tests |
 | `UserPackageUnitTest$ProfileFieldCriticalityEnumTests$NonCriticalFieldsTests` | 5 | 2 tests |
 | `SanitizeFilenameUnitTest` | 5 | 5 tests |
@@ -285,10 +284,13 @@ flowchart LR
 | `NipValidatorUnitTest$Normalize` | 4 | 1 tests |
 | `AppliedOpportunityEnumsUnitTest$OpportunityStatusEnumTests$GetCompletedStatusesTests` | 4 | 1 tests |
 | `AppliedOpportunityEnumsUnitTest$OpportunityStatusEnumTests$GetPossibleTransitionsTests` | 4 | 5 tests |
-| `AssessmentResultUnitTest$GetterTests` | 4 | 6 tests |
+| `AssessmentResultUnitTest$GetterTests` | 4 | 5 tests |
 | `AssessmentResultUnitTest$ToStringTests` | 4 | 4 tests |
 | `AuthDtoCompleteUnitTest$CrossFieldValidationTests` | 4 | 5 tests |
 | `AuthDtoExtendedUnitTest$ExchangeTokenRequestTests` | 4 | 1 tests |
+| `AuthDtoUnitTest$RecaptchaResponseTests` | 4 | 4 tests |
+| `AuthorizationMoreUnitTest$JwtFilterInvalidTokenTests` | 4 | 4 tests |
+| `AuthorizationMoreUnitTest$JwtFilterPublicEndpointTests` | 4 | 5 tests |
 | `AuthValidatorsUnitTest$ImprovedQRCodeServiceTests$GenerateSecretTests` | 4 | 2 tests |
 | `AuthValidatorsUnitTest$ImprovedQRCodeServiceTests$IsValidSecretTests` | 4 | 1 tests |
 | `BaseClassesUnitTest$EdgeCaseTests` | 4 | 1 tests |
@@ -302,15 +304,17 @@ flowchart LR
 | `CommonJwtUnitTest$TokenTimingTests` | 4 | 4 tests |
 | `CommonSafetyUnitTest$MultipleProfilesHandlingTests` | 4 | 7 tests |
 | `CommonSafetyUnitTest$OnApplicationEventTests` | 4 | 2 tests |
-| `CommonValidatorUnitTest$CheckReCaptchaTests` | 4 | 5 tests |
+| `CommonValidatorUnitTest$CheckReCaptchaTests` | 4 | 4 tests |
 | `CorsLoggingFilterUnitTest$ClientIpExtractionTests` | 4 | 2 tests |
 | `CredentialsServiceUnitTest$IsProductionProjectTests` | 4 | 1 tests |
 | `CredentialsServiceUnitTest$SanitizeForLoggingTests` | 4 | 2 tests |
 | `CustomErrorControllerUnitTest$CorsPreflightTests` | 4 | 4 tests |
-| `DatabaseHealthIndicatorUnitTest$HealthUpStatusTests` | 4 | 1 tests |
+| `CustomErrorControllerUnitTest$EdgeCaseTests` | 4 | 5 tests |
+| `DatabaseHealthIndicatorUnitTest$UrlMaskingTests` | 4 | 1 tests |
+| `EncryptionServicesUnitTest$TokenEncryptionServiceTests$DecryptTokenTests` | 4 | 4 tests |
 | `EnumTranslationServiceUnitTest$TranslateCategoryTests` | 4 | 1 tests |
 | `FirebaseStorageServiceUnitTest$DeleteFolderTests$DeleteFolderSuccessTests` | 4 | 2 tests |
-| `HashingUtilUnitTest$HashFirebaseUidTests` | 4 | 4 tests |
+| `HashingUtilUnitTest$HashFirebaseUidTests` | 4 | 3 tests |
 | `HtmlEncoderUnitTest$XssAttackPatternTests` | 4 | 1 tests |
 | `InMemoryUserCacheUnitTest$EdgeCaseTests` | 4 | 3 tests |
 | `InMemoryUserCacheUnitTest$IsUserActiveTests` | 4 | 4 tests |
@@ -324,8 +328,10 @@ flowchart LR
 | `PartnershipOpportunityMoreUnitTest$PartnershipOpportunityEntityAdvancedTests$DateRangeEdgeCases` | 4 | 4 tests |
 | `PartnershipOpportunityUnitTest$EdgeCaseTests` | 4 | 4 tests |
 | `ProfilePictureProxyServiceUnitTest$BoundaryAndSpecialCasesTests` | 4 | 2 tests |
+| `ProfilePictureProxyServiceUnitTest$HasPreservableProfilePictureTests` | 4 | 5 tests |
 | `ProfilePictureProxyServiceUnitTest$UrlDetectionEdgeCasesTests` | 4 | 4 tests |
 | `RecaptchaServiceUnitTest$VerifyTokenInvalidTokenTests` | 4 | 1 tests |
+| `RedisServiceUnitTest$RateLimitingSimulationTests` | 4 | 4 tests |
 | `RedisUserCacheUnitTest$IsUserActiveTests` | 4 | 5 tests |
 | `RequestBodyCachingFilterUnitTest$CachedBodyHttpServletRequestTests` | 4 | 2 tests |
 | `RequestBodyCachingFilterUnitTest$CachedBodyServletInputStreamTests` | 4 | 3 tests |
@@ -339,40 +345,38 @@ flowchart LR
 | `SignedUrlValidationServiceUnitTest$EdgeCasesTests` | 4 | 2 tests |
 | `SpecificationBuilderUnitTest$CopyEdgeCasesTests` | 4 | 1 tests |
 | `SpecificationBuilderUnitTest$EnumFieldFilterTests` | 4 | 4 tests |
-| `StorageHealthUnitTest$MixedComponentStateTests` | 4 | 6 tests |
-| `StorageHealthUnitTest$OverallHealthStatusTests` | 4 | 4 tests |
+| `StorageHealthUnitTest$EdgeCaseTests` | 4 | 6 tests |
+| `SupportTicketEntityUnitTest$IsResolvedMethodTests` | 4 | 2 tests |
 | `TwoFactorAuthServiceUnitTest$EdgeCasesTests` | 4 | 4 tests |
 | `TwoFactorAuthServiceUnitTest$VerifyBackupCodeTests` | 4 | 2 tests |
 | `TwoFactorAuthServiceUnitTest$VerifyTotpCodeTests` | 4 | 4 tests |
+| `UserCacheServiceUnitTest$RedisUserCacheTests$GetAccountStatusTests` | 4 | 8 tests |
 | `UserCacheServiceUnitTest$RedisUserCacheTests$IsUserActiveTests` | 4 | 6 tests |
 | `UserCacheServiceUnitTest$UserTypeHandlingTests` | 4 | 1 tests |
 | `UserPackageUnitTest$ProfileFieldCriticalityEnumTests$UnknownFieldsTests` | 4 | 1 tests |
-| `UserServiceUnitTest$AccountStatusEnumTests` | 4 | 4 tests |
+| `UserServiceUnitTest$AccountStatusEnumTests` | 4 | 5 tests |
 | `InterruptsUnitTest` | 4 | 2 tests |
-| `ActiveCooperationControllerUnitTest$EdgeCaseTests` | 3 | 2 tests |
+| `ActiveCooperationControllerUnitTest$EdgeCaseTests` | 3 | 3 tests |
+| `ConsentControllerUnitTest$EdgeCaseTests` | 3 | 1 tests |
 | `FileManagementControllerUnitTest$WebhookControllerEdgeCaseTests` | 3 | 2 tests |
 | `OpportunityStatusUnitTest$ActiveStatuses` | 3 | 1 tests |
-| `OpportunityStatusUnitTest$GetNextStatusInvalidTransitions` | 3 | 2 tests |
+| `OpportunityStatusUnitTest$FullStateMachinePaths` | 3 | 5 tests |
+| `OpportunityStatusUnitTest$GetNextStatusRejectPath` | 3 | 2 tests |
 | `NetworkExceptionHandlerUnitTest$HandleNetworkRetryExhaustedExceptionTests` | 3 | 4 tests |
-| `JwtAuthenticationFilterStaleTokenUnitTest` | 3 | 5 tests |
 | `AddressServiceUnitTest$SearchReusableAddressesFlexibleTests` | 3 | 3 tests |
 | `ApplicationHealthIndicatorUnitTest$EdgeCaseTests` | 3 | 1 tests |
 | `ApplicationHealthIndicatorUnitTest$HealthCheckConsistencyTests` | 3 | 1 tests |
 | `ApplicationHealthIndicatorUnitTest$HealthDetailsValidationTests` | 3 | 2 tests |
-| `AppliedOpportunityEnumsUnitTest$StateMachineIntegrationTests` | 3 | 4 tests |
+| `AppliedOpportunityEnumsUnitTest$StateMachineIntegrationTests` | 3 | 5 tests |
 | `AppliedOpportunityServiceUnitTest$GetActiveAndCompletedStatuses` | 3 | 3 tests |
 | `AppliedOpportunityServiceUnitTest$OpportunityStatusJsonSerialization` | 3 | 3 tests |
 | `AppliedOpportunityServiceUnitTest$RateStatusJsonSerialization` | 3 | 3 tests |
 | `AuthDtoCompleteUnitTest$RecaptchaRequestCompleteTests` | 3 | 1 tests |
-| `AuthDtoUnitTest$RecaptchaResponseTests` | 3 | 3 tests |
 | `AuthorizationMoreUnitTest$CookieExtractionTests` | 3 | 2 tests |
 | `AuthorizationMoreUnitTest$HmacSignatureValidationTests` | 3 | 3 tests |
-| `AuthorizationMoreUnitTest$JwtFilterInvalidTokenTests` | 3 | 3 tests |
-| `AuthorizationMoreUnitTest$JwtFilterPublicEndpointTests` | 3 | 4 tests |
-| `AuthorizationMoreUnitTest$JwtFilterValidTokenTests` | 3 | 4 tests |
 | `AuthorizationMoreUnitTest$RoleBasedAuthTests` | 3 | 1 tests |
 | `AuthorizationMoreUnitTest$SecurityContextTests` | 3 | 4 tests |
-| `CityFullUnitTest$CityConverterToCityNameTests` | 3 | 2 tests |
+| `CityFullUnitTest$CityConverterToCityNameTests` | 3 | 1 tests |
 | `CommonExceptionsUnitTest$TranslatableExceptionTests` | 3 | 3 tests |
 | `CommonJwtUnitTest$CreateTokenWithMinutesExpiryTests` | 3 | 2 tests |
 | `CommonSafetyUnitTest$CombinedDangerousConfigurationTests` | 3 | 6 tests |
@@ -389,28 +393,20 @@ flowchart LR
 | `DatabaseHealthIndicatorUnitTest$QueryTestExecutionTests` | 3 | 1 tests |
 | `DiskAndLiquibaseHealthUnitTest$LiquibaseHealthIndicatorTests$EdgeCaseTests` | 3 | 2 tests |
 | `EmailVerificationServiceUnitTest$SyncEmailVerificationStatusTests` | 3 | 4 tests |
-| `EncryptionServicesUnitTest$TokenEncryptionServiceTests$DecryptTokenTests` | 3 | 3 tests |
-| `EncryptionServicesUnitTest$TokenEncryptionServiceTests$ValidateKMSServiceTests` | 3 | 3 tests |
 | `FirebaseStorageServiceUnitTest$GetFileMetadataTests$GetFileMetadataSuccessTests` | 3 | 1 tests |
 | `GdprRateLimiterUnitTest$GdprCompliantRateLimiterServiceTests$CheckLimitTests` | 3 | 2 tests |
 | `GdprRateLimiterUnitTest$GdprCompliantRateLimiterServiceTests$ConstructorTests` | 3 | 2 tests |
 | `HtmlEncoderUnitTest$UnicodeAndSafeCharacterTests` | 3 | 1 tests |
 | `ImprovedQRCodeServiceLoggingUnitTest` | 3 | 2 tests |
-| `InMemoryUserCacheUnitTest$ConcurrentAccessTests` | 3 | 4 tests |
+| `InMemoryUserCacheUnitTest$ConcurrentAccessTests` | 3 | 6 tests |
 | `InMemoryUserCacheUnitTest$GetTokenVersionTests` | 3 | 3 tests |
 | `InstagramConfigUnitTest$ConfigurationValidationTests` | 3 | 3 tests |
-| `InstagramServiceUnitTest$RefreshSocialDataTests` | 3 | 1 tests |
 | `InstagramSocialAuthUnitTest$InstagramConfigTests$ClientIdRecognitionTests` | 3 | 1 tests |
 | `InstagramSocialAuthUnitTest$InstagramServiceTests$RefreshLongLivedTokenTests` | 3 | 2 tests |
-| `OAuthCallbackServiceUnitTest$CookieHandlingTests` | 3 | 2 tests |
 | `PartnershipOpportunityMoreUnitTest$EdgeCasesAndCornerCases` | 3 | 1 tests |
-| `ProfilePictureProxyServiceUnitTest$HasPreservableProfilePictureTests` | 3 | 4 tests |
-| `ProfilePictureProxyServiceUnitTest$IntegrationScenarioTests` | 3 | 3 tests |
-| `ProfilePictureProxyServiceUnitTest$PreservableProfilePictureLogicTests` | 3 | 2 tests |
+| `ProfilePictureProxyServiceUnitTest$PreservableProfilePictureLogicTests` | 3 | 3 tests |
 | `RedisServiceUnitTest$ConnectionHandlingTests` | 3 | 2 tests |
-| `RedisServiceUnitTest$EdgeCaseTests` | 3 | 3 tests |
 | `RedisUserCacheUnitTest$EdgeCaseTests` | 3 | 1 tests |
-| `RedisUserCacheUnitTest$GetTokenVersionTests` | 3 | 4 tests |
 | `RedisUserCacheUnitTest$KeyHashingTests` | 3 | 4 tests |
 | `RegisterUserRequestUnitTest$SocialDataValidationTests` | 3 | 5 tests |
 | `RequestBodyCachingFilterUnitTest$EdgeCaseTests` | 3 | 3 tests |
@@ -418,27 +414,26 @@ flowchart LR
 | `RequestBodyCachingFilterUnitTest$ResponseStatusLoggingTests` | 3 | 4 tests |
 | `RequestLoggingFiltersUnitTest$RequestCorrelationFilterTests$MdcContextManagementTests` | 3 | 1 tests |
 | `RequestLoggingFiltersUnitTest$RequestCorrelationFilterTests$ResponseHeaderTests` | 3 | 2 tests |
-| `RequestLoggingFiltersUnitTest$RequestLoggingFilterTests$ExceptionHandlingTests` | 3 | 2 tests |
-| `RequestLoggingFiltersUnitTest$RequestLoggingFilterTests$RequestLoggingTests` | 3 | 3 tests |
 | `RequestLoggingFilterUnitTest$IpAddressExtractionTests` | 3 | 2 tests |
 | `SecretsServiceUnitTest$ErrorHandlingTests` | 3 | 3 tests |
+| `SignedUrlValidationServiceUnitTest$TestSignedUrlLifecycleTests` | 3 | 3 tests |
 | `SpecificationBuilderUnitTest$StringFieldFilterTests` | 3 | 2 tests |
 | `StorageHealthUnitTest$ComponentStatusValuesTests` | 3 | 1 tests |
 | `StorageHealthUnitTest$ConstructorTests` | 3 | 4 tests |
-| `StorageHealthUnitTest$EdgeCaseTests` | 3 | 4 tests |
-| `StorageHealthUnitTest$FirebaseStorageHealthCheckTests` | 3 | 3 tests |
-| `StorageHealthUnitTest$RateLimiterHealthCheckTests` | 3 | 3 tests |
+| `StorageHealthUnitTest$OverallHealthStatusTests` | 3 | 4 tests |
+| `StorageHealthUnitTest$RateLimiterHealthCheckTests` | 3 | 4 tests |
 | `StorageRateLimitServiceUnitTest$ConstructorTests` | 3 | 2 tests |
 | `StorageRateLimitServiceUnitTest$HasStorageSpaceTests` | 3 | 2 tests |
 | `StorageRateLimitServiceUnitTest$UploadTypeEnumTests` | 3 | 1 tests |
 | `TokenEncryptionServiceUnitTest$DecryptTokenTests` | 3 | 4 tests |
 | `TokenEncryptionServiceUnitTest$EncryptTokenTests` | 3 | 4 tests |
+| `TokenEncryptionServiceUnitTest$ValidateKMSServiceTests` | 3 | 3 tests |
 | `TranslationServiceUnitTest$KeyNormalizationTests` | 3 | 1 tests |
 | `TranslationServiceUnitTest$TranslateAccountStatusTests` | 3 | 1 tests |
 | `TranslationServiceUnitTest$TranslateCurrencyTests` | 3 | 1 tests |
 | `TranslationServiceUnitTest$TranslateOpportunityStatusTests` | 3 | 1 tests |
-| `UserCacheServiceUnitTest$RedisUserCacheTests$GetAccountStatusTests` | 3 | 6 tests |
-| `UserCacheServiceUnitTest$RedisUserCacheTests$GetTokenVersionTests` | 3 | 5 tests |
+| `UserCacheServiceUnitTest$RedisUserCacheTests$CacheUserTests` | 3 | 3 tests |
+| `UserPackageUnitTest$AccountStatusEnumTests$GetPossibleTransitionsTests` | 3 | 5 tests |
 | `UserPackageUnitTest$AccountStatusEnumTests$HelperMethodsTests` | 3 | 3 tests |
 | `UserPackageUnitTest$EdgeCaseTests` | 3 | 8 tests |
 | `UserSocialConnectionServiceUnitTest$ConnectionEntityTests` | 3 | 6 tests |
@@ -448,8 +443,6 @@ flowchart LR
 | `AdminControllerUnitTest$SetUserClaimsTests$FirebaseErrorHandlingTests` | 2 | 1 tests |
 | `AdminControllerUnitTest$SetUserClaimsTests$PathVariableTests` | 2 | 1 tests |
 | `AuthControllerUnitTest$Setup2FATests` | 2 | 1 tests |
-| `ConsentControllerUnitTest$EdgeCaseTests` | 2 | 1 tests |
-| `ConsentControllerUnitTest$GetUserConsentsTests` | 2 | 1 tests |
 | `FileManagementControllerUnitTest$WebhookControllerTests$ObjectFinalizedTests` | 2 | 2 tests |
 | `FileManagementControllerUnitTest$WebhookControllerTests$UserIdExtractionTests` | 2 | 2 tests |
 | `FileUploadControllerUnitTest$GetRateLimitStatus` | 2 | 1 tests |
@@ -458,6 +451,7 @@ flowchart LR
 | `UserControllerUnitTest$FindPublicPaginatedTests` | 2 | 1 tests |
 | `UserControllerUnitTest$GetAccountStatusListTests` | 2 | 1 tests |
 | `UserControllerUnitTest$GetUserTypeListTests` | 2 | 1 tests |
+| `OpportunityStatusUnitTest$GetNextStatusInvalidTransitions` | 2 | 2 tests |
 | `UserEntityMoreUnitTest$DefaultNoteServiceTests$GetDefaultNoteForAdminTypesTests` | 2 | 2 tests |
 | `UserEntityMoreUnitTest$DefaultNoteServiceTests$GetDefaultNoteForInfluencerTests` | 2 | 2 tests |
 | `UserEntityUnitTest$TokenVersionTests` | 2 | 1 tests |
@@ -465,6 +459,7 @@ flowchart LR
 | `GusBir1ResponseParserUnitTest$ExtractSessionId` | 2 | 1 tests |
 | `GusBir1ResponseParserUnitTest$IsSoapFault` | 2 | 3 tests |
 | `JwtAuthenticationFilterBrokenSessionPublicUnitTest` | 2 | 5 tests |
+| `JwtAuthenticationFilterStaleTokenUnitTest` | 2 | 2 tests |
 | `ServiceAccountKeyValidatorUnitTest$ValidInput` | 2 | 1 tests |
 | `AddressServiceUnitTest$FindByIdTests` | 2 | 3 tests |
 | `ApplicationHealthIndicatorUnitTest$HealthIndicatorInterfaceTests` | 2 | 1 tests |
@@ -477,6 +472,7 @@ flowchart LR
 | `AuthDtoMoreUnitTest$RecaptchaRequestAdditionalTests` | 2 | 1 tests |
 | `AuthDtoUnitTest$RecaptchaRequestTests` | 2 | 1 tests |
 | `AuthorizationMoreUnitTest$AdminCheckRunnerTests` | 2 | 2 tests |
+| `AuthorizationMoreUnitTest$JwtFilterValidTokenTests` | 2 | 3 tests |
 | `AuthSessionUnitTest$SocialAuthSessionServiceTests$GetSocialDataTests` | 2 | 1 tests |
 | `AuthSessionUnitTest$SocialAuthSessionServiceTests$RemoveSessionTests` | 2 | 1 tests |
 | `AuthValidatorsUnitTest$QRCodeGeneratorServiceTests$GenerateSimpleQRCodeTests` | 2 | 1 tests |
@@ -486,8 +482,8 @@ flowchart LR
 | `BaseClassesUnitTest$BaseServiceTests$GetDataPagedAndFilteredTests` | 2 | 1 tests |
 | `CityFullUnitTest$CityConverterToCityTests` | 2 | 1 tests |
 | `CommonValidatorUnitTest$CheckGoogleCloudStorageTests` | 2 | 4 tests |
-| `CommonValidatorUnitTest$FinalStatusCalculationTests` | 2 | 3 tests |
 | `CommonValidatorUnitTest$MaskEmailTests` | 2 | 2 tests |
+| `CommonValidatorUnitTest$ValidateAllServicesTests` | 2 | 2 tests |
 | `ConsentServiceUnitTest$GetUserConsentHistoryTests` | 2 | 2 tests |
 | `CorsLoggingFilterUnitTest$CorsHeaderValidationTests` | 2 | 3 tests |
 | `CorsLoggingFilterUnitTest$FilterInvocationTests` | 2 | 2 tests |
@@ -501,12 +497,13 @@ flowchart LR
 | `CustomErrorControllerUnitTest$BadRequestTests` | 2 | 3 tests |
 | `CustomErrorControllerUnitTest$ErrorResponseStructureTests` | 2 | 3 tests |
 | `CustomErrorControllerUnitTest$InternalServerErrorTests` | 2 | 4 tests |
-| `DiskAndLiquibaseHealthUnitTest$DiskSpaceHealthIndicatorTests$FormatBytesTests` | 2 | 3 tests |
-| `DiskAndLiquibaseHealthUnitTest$IntegrationLikeTests` | 2 | 3 tests |
-| `DiskAndLiquibaseHealthUnitTest$LiquibaseHealthIndicatorTests$LiquibaseConfiguredTests` | 2 | 2 tests |
-| `EncryptionServicesUnitTest$ConcurrentAccessTests` | 2 | 1 tests |
+| `DiskAndLiquibaseHealthUnitTest$DiskSpaceHealthIndicatorTests$FormatBytesTests` | 2 | 2 tests |
+| `DiskAndLiquibaseHealthUnitTest$IntegrationLikeTests` | 2 | 2 tests |
+| `EncryptionServicesUnitTest$ConcurrentAccessTests` | 2 | 2 tests |
 | `EncryptionServicesUnitTest$TokenEncryptionServiceTests$EndToEndTests` | 2 | 1 tests |
+| `EncryptionServicesUnitTest$TokenEncryptionServiceTests$ValidateKMSServiceTests` | 2 | 3 tests |
 | `EncryptionServicesUnitTest$TotpEncryptionServiceTests$EncryptBackupCodesTests` | 2 | 1 tests |
+| `EncryptionServicesUnitTest$TotpEncryptionServiceTests$EncryptTotpSecretTests` | 2 | 1 tests |
 | `EnumTranslationServiceUnitTest$TranslateFieldTests` | 2 | 1 tests |
 | `FirebaseServiceUnitTest$CreateOrValidateFirebaseUserTests` | 2 | 3 tests |
 | `FirebaseServiceUnitTest$EdgeCasesTests` | 2 | 3 tests |
@@ -525,39 +522,42 @@ flowchart LR
 | `HtmlEncoderUnitTest$ObjectEncodingTests` | 2 | 1 tests |
 | `InMemoryUserCacheUnitTest$CleanExpiredTests` | 2 | 2 tests |
 | `InMemoryUserCacheUnitTest$EvictAllTests` | 2 | 2 tests |
-| `InMemoryUserCacheUnitTest$EvictTests` | 2 | 2 tests |
-| `InstagramServiceUnitTest$GetPlatformNameTests` | 2 | 1 tests |
-| `InstagramSocialAuthUnitTest$BoundaryValueTests` | 2 | 3 tests |
+| `InstagramServiceUnitTest$RefreshSocialDataTests` | 2 | 1 tests |
+| `InstagramSocialAuthUnitTest$CrossComponentIntegrationTests` | 2 | 3 tests |
 | `InstagramSocialAuthUnitTest$InstagramConfigTests$ApiConnectionTestTests` | 2 | 2 tests |
 | `InstagramSocialAuthUnitTest$InstagramServiceTests$GetPlatformNameTests` | 2 | 1 tests |
 | `InstagramSocialAuthUnitTest$InstagramStartupValidatorTests$HelperMethodsTests` | 2 | 3 tests |
-| `MetadataUnitTest$AccountStatusEnumTests` | 2 | 4 tests |
-| `MetadataUnitTest$ConsentActionEnumTests` | 2 | 3 tests |
-| `MetadataUnitTest$GetOpportunityStatusTransitionsTests` | 2 | 4 tests |
+| `MetadataUnitTest$GetOpportunityStatusTransitionsTests` | 2 | 2 tests |
+| `OAuthCallbackServiceUnitTest$CookieHandlingTests` | 2 | 1 tests |
 | `PartnershipAndDeletionUnitTest$DeletionBlockerCategoryTests` | 2 | 2 tests |
 | `PartnershipOpportunityEntityUnitTest$ValidEntityTests` | 2 | 3 tests |
 | `PartnershipOpportunityMoreUnitTest$CompensationTypeEnumAdvancedTests$OrdinalAndValueTests` | 2 | 1 tests |
+| `ProfilePictureProxyServiceUnitTest$IntegrationScenarioTests` | 2 | 2 tests |
 | `ProfilePictureProxyServiceUnitTest$ProxyToFirebaseStorageErrorHandlingTests` | 2 | 1 tests |
+| `ProfilePictureProxyServiceUnitTest$UrlPatternClassificationTests` | 2 | 3 tests |
 | `RateLimiterServiceUnitTest$RateLimitResultTests` | 2 | 3 tests |
 | `RecaptchaServiceUnitTest$ActionSpecificThresholdTests` | 2 | 1 tests |
 | `RecaptchaServiceUnitTest$VerifyTokenDisabledTests` | 2 | 2 tests |
 | `RecaptchaServiceUnitTest$VerifyTokenIpExtractionTests` | 2 | 2 tests |
 | `RecaptchaServiceUnitTest$VerifyTokenSuccessTests` | 2 | 2 tests |
+| `RedisServiceUnitTest$EdgeCaseTests` | 2 | 1 tests |
 | `RedisServiceUnitTest$GdprComplianceTests` | 2 | 3 tests |
 | `RedisServiceUnitTest$HashingUtilIntegrationTests` | 2 | 2 tests |
 | `RedisServiceUnitTest$IsRedisOperationalTests` | 2 | 2 tests |
-| `RedisServiceUnitTest$RateLimitingSimulationTests` | 2 | 2 tests |
 | `RedisServiceUnitTest$SerializationTests` | 2 | 3 tests |
 | `RedisServiceUnitTest$ServerInfoTests` | 2 | 1 tests |
-| `RedisServiceUnitTest$TtlAndDurationTests` | 2 | 3 tests |
 | `RedisServiceUnitTest$ValidateRedisAccessTests` | 2 | 2 tests |
 | `RedisServiceUnitTest$WriteReadOperationTests` | 2 | 3 tests |
+| `RedisUserCacheUnitTest$EvictAllTests` | 2 | 2 tests |
+| `RedisUserCacheUnitTest$EvictTests` | 2 | 2 tests |
 | `RedisUserCacheUnitTest$SerializationTests` | 2 | 1 tests |
 | `RegisterUserRequestUnitTest$CompanyDataValidationTests` | 2 | 5 tests |
 | `RegisterUserRequestUnitTest$CompleteValidationTests` | 2 | 8 tests |
 | `RequestBodyCachingFilterUnitTest$EarlyRequestLoggingFilterTests` | 2 | 3 tests |
 | `RequestLoggingFiltersUnitTest$FilterIntegrationTests` | 2 | 4 tests |
+| `RequestLoggingFiltersUnitTest$RequestLoggingFilterTests$ExceptionHandlingTests` | 2 | 1 tests |
 | `RequestLoggingFiltersUnitTest$RequestLoggingFilterTests$MdcFallbackGenerationTests` | 2 | 3 tests |
+| `RequestLoggingFiltersUnitTest$RequestLoggingFilterTests$RequestLoggingTests` | 2 | 1 tests |
 | `RequestLoggingFiltersUnitTest$RequestLoggingFilterTests$RequestWrappingTests` | 2 | 1 tests |
 | `RequestLoggingFiltersUnitTest$RequestLoggingFilterTests$UserAgentCategorizationTests` | 2 | 2 tests |
 | `RequestLoggingFilterUnitTest$ContentLengthHandlingTests` | 2 | 1 tests |
@@ -566,19 +566,18 @@ flowchart LR
 | `SecretsServiceUnitTest$ClearCacheTests` | 2 | 1 tests |
 | `ServiceTypeFullUnitTest$ServiceTypeMapperTests` | 2 | 2 tests |
 | `SignedUrlServiceUnitTest$GenerateSignedUrlSuccessTests` | 2 | 6 tests |
-| `SignedUrlValidationServiceUnitTest$ActualUploadTestFlagTests` | 2 | 3 tests |
 | `SignedUrlValidationServiceUnitTest$GetCredentialsTests` | 2 | 2 tests |
 | `SignedUrlValidationServiceUnitTest$IsFullyOperationalTests` | 2 | 2 tests |
 | `SpecificationBuilderUnitTest$BooleanFieldFilterTests` | 2 | 1 tests |
 | `SpecificationBuilderUnitTest$NumberFieldFilterTests` | 2 | 1 tests |
-| `StorageHealthUnitTest$ConcurrencyTests` | 2 | 4 tests |
+| `StorageHealthUnitTest$ConcurrencyTests` | 2 | 1 tests |
+| `StorageHealthUnitTest$FirebaseStorageHealthCheckTests` | 2 | 3 tests |
 | `StorageHealthUnitTest$HealthMethodBasicTests` | 2 | 1 tests |
 | `StorageRateLimitServiceUnitTest$CheckUploadAllowedWithTypeTests` | 2 | 4 tests |
 | `StorageRateLimitServiceUnitTest$RateLimitResultTests` | 2 | 4 tests |
 | `SupportTicketEntityUnitTest$AddResponseMethodTests` | 2 | 1 tests |
 | `TokenEncryptionServiceUnitTest$EndToEndEncryptionTests` | 2 | 1 tests |
 | `TokenEncryptionServiceUnitTest$IsEncryptionEnabledTests` | 2 | 2 tests |
-| `TokenEncryptionServiceUnitTest$ValidateKMSServiceTests` | 2 | 2 tests |
 | `TotpValidationServiceUnitTest$ApplicationListenerTests` | 2 | 1 tests |
 | `TotpValidationServiceUnitTest$EdgeCasesTests` | 2 | 3 tests |
 | `TotpValidationServiceUnitTest$ValidateKMSAccessTests` | 2 | 1 tests |
@@ -586,18 +585,15 @@ flowchart LR
 | `TranslationServiceUnitTest$TranslateServiceTypeTests` | 2 | 1 tests |
 | `TwoFactorAuthServiceUnitTest$Is2FARequiredTests` | 2 | 2 tests |
 | `UserCacheServiceUnitTest$InMemoryUserCacheTests$GetTokenVersionTests` | 2 | 5 tests |
-| `UserCacheServiceUnitTest$RedisUserCacheTests$CacheUserTests` | 2 | 2 tests |
-| `UserCacheServiceUnitTest$RedisUserCacheTests$EvictAllTests` | 2 | 3 tests |
+| `UserCacheServiceUnitTest$RedisUserCacheTests$GetTokenVersionTests` | 2 | 3 tests |
 | `UserCacheServiceUnitTest$TokenVersionBehaviorTests` | 2 | 3 tests |
-| `UserPackageUnitTest$AccountStatusEnumTests$GetPossibleTransitionsTests` | 2 | 3 tests |
 | `UserServiceUnitTest$CheckPermissionsAndReturnUserTests` | 2 | 2 tests |
 | `UserServiceUnitTest$ProfileCompletenessResultTests` | 2 | 2 tests |
 | `UserServiceUnitTest$UserTokenVersionTests` | 2 | 2 tests |
 | `UserSocialConnectionServiceUnitTest$FindByIdTests` | 2 | 3 tests |
-| `HashingUtilUnitTest$HashFirebaseUid` | 2 | 3 tests |
+| `HashingUtilUnitTest$HashFirebaseUid` | 2 | 1 tests |
 | `HmacUtilsUnitTest$IntegrationScenarios` | 2 | 1 tests |
 | `PiiMaskingUtilsUnitTest$MaskPhoneNumberTests` | 2 | 1 tests |
-| `PiiMaskingUtilsUnitTest$MaskUsernameTests` | 2 | 2 tests |
 | `RequestContextUtilsUnitTest$GenerateTraceIdTests` | 2 | 1 tests |
 | `TotpQRCodeStartupValidatorLoggingUnitTest` | 2 | 2 tests |
 | `RateLimitResponsesCustomizerUnitTest` | 1 | 3 tests |
@@ -608,10 +604,10 @@ flowchart LR
 | `AuthControllerUnitTest$Check2FAStatusTests` | 1 | 2 tests |
 | `ConsentControllerUnitTest$GetAllConsentDefinitionsTests` | 1 | 1 tests |
 | `ConsentControllerUnitTest$GetMyConsentsTests` | 1 | 1 tests |
+| `ConsentControllerUnitTest$GetUserConsentsTests` | 1 | 1 tests |
 | `UserControllerUnitTest$ControllerBehaviorTests` | 1 | 1 tests |
 | `UserControllerUnitTest$DeletePermanentlyTests` | 1 | 1 tests |
 | `OpportunityStatusUnitTest$CompletedStatuses` | 1 | 1 tests |
-| `OpportunityStatusUnitTest$FullStateMachinePaths` | 1 | 2 tests |
 | `UserEntityMoreUnitTest$DefaultNoteServiceTests$GetDefaultNoteForCompanyTests` | 1 | 2 tests |
 | `UserEntityMoreUnitTest$DefaultNoteServiceTests$LocaleHandlingTests` | 1 | 2 tests |
 | `NetworkExceptionHandlerUnitTest$HandleWebClientResponseExceptionTests` | 1 | 2 tests |
@@ -635,6 +631,7 @@ flowchart LR
 | `AuthDtoCompleteUnitTest$RegistrationResponseCompleteTests` | 1 | 2 tests |
 | `AuthorizationMoreUnitTest$EdgeCasesTests` | 1 | 1 tests |
 | `AuthorizationMoreUnitTest$JwtClaimsExtractionTests` | 1 | 1 tests |
+| `AuthorizationMoreUnitTest$MultipleAuthoritiesTests` | 1 | 2 tests |
 | `AuthorizationServiceUnitTest$PermissionUtilsGetUserIdTests` | 1 | 1 tests |
 | `AuthValidatorsUnitTest$RecaptchaStartupValidatorTests$EmailMaskingTests` | 1 | 2 tests |
 | `AuthValidatorsUnitTest$RecaptchaStartupValidatorTests$ValidateConfigurationTests` | 1 | 2 tests |
@@ -658,17 +655,16 @@ flowchart LR
 | `BaseClassesUnitTest$BaseServiceTests$UpdateEntityUpdaterTests` | 1 | 1 tests |
 | `BaseClassesUnitTest$SequentialOperationsTests` | 1 | 3 tests |
 | `BaseClassesUnitTest$UpdaterTrackingTests` | 1 | 1 tests |
-| `CityFullUnitTest$CityEntityBasicTests` | 1 | 2 tests |
-| `CityServiceUnitTest$CityEntityTests` | 1 | 2 tests |
+| `CityFullUnitTest$CityEntityBasicTests` | 1 | 1 tests |
+| `CityServiceUnitTest$CityEntityTests` | 1 | 1 tests |
 | `CommonSafetyUnitTest$EnvironmentInjectionTests` | 1 | 2 tests |
 | `CommonSafetyUnitTest$IsTestContextTests` | 1 | 1 tests |
 | `CommonSafetyUnitTest$SafetyErrorMessageTests` | 1 | 1 tests |
-| `CommonValidatorUnitTest$ValidateAllServicesTests` | 1 | 1 tests |
+| `CommonValidatorUnitTest$FinalStatusCalculationTests` | 1 | 2 tests |
 | `ConsentCookieServiceUnitTest$ReadConsentCookie` | 1 | 1 tests |
 | `ConsentDtosUnitTest$EdgeCaseTests` | 1 | 3 tests |
 | `ConsentServiceUnitTest$ConsentActionEnumTests` | 1 | 2 tests |
 | `ConsentServiceUnitTest$GetAvailableConsentsWithExistingConsentTests` | 1 | 2 tests |
-| `CorsLoggingFilterUnitTest$RejectionReasonDeterminationTests` | 1 | 2 tests |
 | `CredentialsServiceUnitTest$GetCredentialsWithScopesTests` | 1 | 1 tests |
 | `CredentialsServiceUnitTest$InitErrorHandlingTests` | 1 | 2 tests |
 | `CredentialsServiceUnitTest$LoadFromBase64PropertyTests` | 1 | 1 tests |
@@ -685,14 +681,14 @@ flowchart LR
 | `DatabaseHealthIndicatorUnitTest$DataSourceConfigurationTests` | 1 | 1 tests |
 | `DatabaseHealthIndicatorUnitTest$HealthDownStatusTests` | 1 | 1 tests |
 | `DiskAndLiquibaseHealthUnitTest$DiskSpaceHealthIndicatorTests$ConstructorTests` | 1 | 2 tests |
-| `DiskAndLiquibaseHealthUnitTest$DiskSpaceHealthIndicatorTests$EdgeCaseTests` | 1 | 2 tests |
+| `DiskAndLiquibaseHealthUnitTest$DiskSpaceHealthIndicatorTests$EdgeCaseTests` | 1 | 1 tests |
+| `DiskAndLiquibaseHealthUnitTest$LiquibaseHealthIndicatorTests$CheckChangelogTableTests` | 1 | 1 tests |
 | `DiskAndLiquibaseHealthUnitTest$LiquibaseHealthIndicatorTests$ExceptionHandlingTests` | 1 | 1 tests |
+| `DiskAndLiquibaseHealthUnitTest$LiquibaseHealthIndicatorTests$LiquibaseConfiguredTests` | 1 | 1 tests |
 | `EmailVerificationServiceUnitTest$ExtractOobCodeTests` | 1 | 1 tests |
-| `EncryptionServicesUnitTest$CrossServiceIntegrationTests` | 1 | 2 tests |
 | `EncryptionServicesUnitTest$KMSValidationServiceTests$DecryptTokenKmsTests` | 1 | 1 tests |
 | `EncryptionServicesUnitTest$KMSValidationServiceTests$EncryptTotpSecretKmsTests` | 1 | 2 tests |
 | `EncryptionServicesUnitTest$KMSValidationServiceTests$KmsEndToEndTests` | 1 | 2 tests |
-| `EncryptionServicesUnitTest$TotpEncryptionServiceTests$EncryptTotpSecretTests` | 1 | 1 tests |
 | `EncryptionServicesUnitTest$TotpEncryptionServiceTests$InitTests` | 1 | 1 tests |
 | `EncryptionServicesUnitTest$TotpEncryptionServiceTests$TotpEndToEndTests` | 1 | 2 tests |
 | `EncryptionServicesUnitTest$TotpEncryptionServiceTests$VerifyBackupCodeTests` | 1 | 1 tests |
@@ -723,21 +719,25 @@ flowchart LR
 | `GeoLocationServiceUnitTest$GeoLocationGdprServiceTests$AnonymizeOldDataTests` | 1 | 2 tests |
 | `GeoLocationServiceUnitTest$GeoLocationGdprServiceTests$ExportUserLocationDataTests` | 1 | 1 tests |
 | `InMemoryUserCacheUnitTest$CacheExpirationTests` | 1 | 1 tests |
+| `InMemoryUserCacheUnitTest$EvictTests` | 1 | 2 tests |
+| `InstagramServiceUnitTest$GetPlatformNameTests` | 1 | 1 tests |
 | `InstagramServiceUnitTest$RefreshLongLivedTokenTests` | 1 | 1 tests |
-| `InstagramSocialAuthUnitTest$CrossComponentIntegrationTests` | 1 | 1 tests |
+| `InstagramSocialAuthUnitTest$BoundaryValueTests` | 1 | 1 tests |
 | `InstagramSocialAuthUnitTest$InstagramStartupValidatorTests$AppAccessTokenGenerationTests` | 1 | 1 tests |
 | `LegalConsentServiceUnitTest$ComputeDaysToAcceptNewTerms` | 1 | 1 tests |
 | `LegalDocumentServiceUnitTest$GetCurrentDocuments` | 1 | 1 tests |
 | `LegalDocumentServiceUnitTest$GetLatestPublishedAt` | 1 | 1 tests |
 | `LegalDocumentServiceUnitTest$GetLatestVersion` | 1 | 1 tests |
-| `MetadataUnitTest$GetAccountStatusTransitionsTests` | 1 | 4 tests |
+| `MetadataUnitTest$AccountStatusEnumTests` | 1 | 1 tests |
+| `MetadataUnitTest$ConsentActionEnumTests` | 1 | 1 tests |
+| `MetadataUnitTest$GetAccountStatusTransitionsTests` | 1 | 2 tests |
 | `MetadataUnitTest$GetActiveOpportunityStatusesTests` | 1 | 1 tests |
 | `MetadataUnitTest$GetCompletedOpportunityStatusesTests` | 1 | 2 tests |
 | `OAuthCallbackServiceUnitTest$HandleOAuthErrorTests` | 1 | 2 tests |
+| `OAuthCallbackServiceUnitTest$ProcessInstagramCallbackExistingUserTests` | 1 | 2 tests |
 | `OAuthCallbackServiceUnitTest$UserClaimsGenerationTests` | 1 | 1 tests |
 | `PartnershipOpportunityUnitTest$CompensationTypeEnumTests$ValueAndPropertiesTests` | 1 | 1 tests |
 | `ProfilePictureProxyServiceUnitTest$ProxyToFirebaseStorageValidationTests` | 1 | 1 tests |
-| `ProfilePictureProxyServiceUnitTest$UrlPatternClassificationTests` | 1 | 2 tests |
 | `RateLimiterServiceUnitTest$CleanupExpiredEntriesTests` | 1 | 1 tests |
 | `RateLimiterServiceUnitTest$EdgeCaseTests` | 1 | 1 tests |
 | `RateLimiterServiceUnitTest$GetTrackedEntriesCountTests` | 1 | 1 tests |
@@ -745,8 +745,7 @@ flowchart LR
 | `RecaptchaServiceUnitTest$VerifyTokenActionMismatchTests` | 1 | 1 tests |
 | `RecaptchaServiceUnitTest$VerifyTokenProjectIdTests` | 1 | 1 tests |
 | `RedisServiceUnitTest$PerformanceTests` | 1 | 1 tests |
-| `RedisUserCacheUnitTest$EvictAllTests` | 1 | 1 tests |
-| `RedisUserCacheUnitTest$EvictTests` | 1 | 2 tests |
+| `RedisServiceUnitTest$TtlAndDurationTests` | 1 | 2 tests |
 | `RedisUserCacheUnitTest$IntegrationLikeTests` | 1 | 2 tests |
 | `RedisUserCacheUnitTest$TtlConfigurationTests` | 1 | 1 tests |
 | `RequestBodyCachingFilterUnitTest$FilterIntegrationTests` | 1 | 3 tests |
@@ -754,21 +753,21 @@ flowchart LR
 | `RequestLoggingFiltersUnitTest$RequestLoggingFilterTests$IpAnonymizationTests` | 1 | 1 tests |
 | `RequestLoggingFilterUnitTest$ErrorHandlingTests` | 1 | 1 tests |
 | `SecretsServiceUnitTest$GetSecretCachingTests` | 1 | 1 tests |
+| `SecretsServiceUnitTest$GetSecretDevelopmentModeTests` | 1 | 2 tests |
 | `SecretsServiceUnitTest$ThreadSafetyTests` | 1 | 2 tests |
 | `ServiceTypeFullUnitTest$ServiceTypeControllerTests$FindPaginatedTests` | 1 | 1 tests |
 | `ServiceTypeFullUnitTest$ServiceTypeConverterTests` | 1 | 1 tests |
 | `SignedUrlServiceUnitTest$ConfirmUploadTests` | 1 | 2 tests |
 | `SignedUrlServiceUnitTest$ValidateUploadSuccessTests` | 1 | 3 tests |
+| `SignedUrlValidationServiceUnitTest$ActualUploadTestFlagTests` | 1 | 2 tests |
 | `SignedUrlValidationServiceUnitTest$ConstructorTests` | 1 | 1 tests |
 | `SignedUrlValidationServiceUnitTest$InitializationTests` | 1 | 1 tests |
-| `SignedUrlValidationServiceUnitTest$RunValidationTests` | 1 | 3 tests |
-| `SignedUrlValidationServiceUnitTest$TestSignedUrlLifecycleTests` | 1 | 1 tests |
 | `SpecificationBuilderUnitTest$CityFieldSpecialHandlingTests` | 1 | 1 tests |
 | `SpecificationBuilderUnitTest$EmptyAndNullFiltersTests` | 1 | 1 tests |
 | `SpecificationBuilderUnitTest$MultipleFiltersCombinedTests` | 1 | 3 tests |
 | `SpecificationBuilderUnitTest$NestedFieldPathTests` | 1 | 1 tests |
 | `SpecificationBuilderUnitTest$UnknownFieldHandlingTests` | 1 | 1 tests |
-| `StorageHealthUnitTest$RedisHealthCheckKeyPatternTests` | 1 | 2 tests |
+| `StorageHealthUnitTest$RedisHealthCheckKeyPatternTests` | 1 | 1 tests |
 | `StorageRateLimitServiceUnitTest$CheckUploadAllowedWithoutTypeTests` | 1 | 1 tests |
 | `StorageRateLimitServiceUnitTest$GetRemainingDailyUploadsTests` | 1 | 1 tests |
 | `StorageRateLimitServiceUnitTest$GetRemainingHourlyUploadsTests` | 1 | 1 tests |
@@ -779,7 +778,6 @@ flowchart LR
 | `FakturowniaAdapterUnitTest$ResultFactories` | 1 | 2 tests |
 | `StripeServiceUnitTest$GetPublicKey` | 1 | 1 tests |
 | `StripeWebhookHandlerUnitTest$SubscriptionUpdated` | 1 | 3 tests |
-| `SupportTicketModelsUnitTest$EdgeCaseTests` | 1 | 7 tests |
 | `SupportTicketServiceUnitTest$GetTicketByIdTests` | 1 | 1 tests |
 | `SupportTicketServiceUnitTest$SupportTicketEntityTests` | 1 | 2 tests |
 | `TotpValidationServiceUnitTest$TotpDisabledTests` | 1 | 1 tests |
@@ -793,18 +791,19 @@ flowchart LR
 | `TwoFactorAuthServiceUnitTest$Is2FAEnabledTests` | 1 | 1 tests |
 | `UserCacheServiceUnitTest$InMemoryUserCacheTests$EvictAllTests` | 1 | 1 tests |
 | `UserCacheServiceUnitTest$InMemoryUserCacheTests$EvictTests` | 1 | 2 tests |
-| `UserCacheServiceUnitTest$RedisUserCacheTests$EvictTests` | 1 | 2 tests |
+| `UserCacheServiceUnitTest$RedisUserCacheTests$EvictAllTests` | 1 | 2 tests |
 | `UserServiceUnitTest$FindByFirebaseUserIdNoPermissionCheckTests` | 1 | 2 tests |
 | `UserServiceUnitTest$FindByFirebaseUserIdTests` | 1 | 2 tests |
 | `UserServiceUnitTest$FindByIdWithPermissionsTests` | 1 | 2 tests |
 | `UserServiceUnitTest$UserEntityTests` | 1 | 3 tests |
 | `UserServiceUnitTest$WouldChangeEmailTests` | 1 | 1 tests |
 | `UserSocialConnectionServiceUnitTest$DeleteTests` | 1 | 2 tests |
-| `UserSocialConnectionServiceUnitTest$GetDataPagedAndFilteredTests` | 1 | 1 tests |
+| `UserSocialConnectionServiceUnitTest$GetDataPagedAndFilteredTests` | 1 | 2 tests |
 | `UserSocialConnectionServiceUnitTest$GetPrimaryConnectionSafeTests` | 1 | 1 tests |
 | `UserSocialConnectionServiceUnitTest$PermissionBehaviorTests` | 1 | 2 tests |
 | `WebhookControllerUnitTest` | 1 | 1 tests |
 | `GeoDistanceCalculatorUnitTest$IsWithinRadiusTests` | 1 | 1 tests |
+| `PiiMaskingUtilsUnitTest$MaskUsernameTests` | 1 | 1 tests |
 | `RequestContextUtilsUnitTest$BuildFullRequestDetailsTests` | 1 | 1 tests |
 | `RequestContextUtilsUnitTest$GetCurrentUserTests` | 1 | 1 tests |
 | `SessionValidationUtilsUnitTest$IsSameCountry` | 1 | 1 tests |
