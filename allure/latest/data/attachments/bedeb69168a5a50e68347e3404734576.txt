@@ -1,0 +1,9 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-7c0ec5ff-3e27-4340-a48c-937119a65859
+  Company: COMPANY-e644fff6-3af2-470d-a9c2-54d4625257c9
+  Admin: ADMIN-33533ee5-f6f2-47c2-84fb-a98cb312bd5b
+09:16:49.254 [http-nio-auto-7-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EarlyRequestLoggingFilter: Processing request GET /api/public-config from origin: null
+09:16:49.255 [http-nio-auto-7-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.EarlyRequestLoggingFilter&amp#27;[0;39m - EARLY_REQUEST_START: {method=GET, originAuthorized=true, requestId=REQ-1791710209254-297, origin=null, correlationId=REQ-c7748a44, userAgent=ReactorNetty/1.2.18, type=EARLY_REQUEST, uri=/api/public-config, timestamp=2026-10-11 09:16:49.254, remoteAddr=127.0.0.1}
+09:16:49.261 [http-nio-auto-7-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - INCOMING_REQUEST: {method=GET, requestId=REQ-1791710209261-297, correlationId=REQ-c7748a44, contentLength=-1, uri=/api/public-config, contentType=null, timestamp=2026-10-11 09:16:49.261, remoteAddr=127.0.0.xxx}
+09:16:49.265 [http-nio-auto-7-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_SUCCESS: {duration=4ms, method=GET, requestId=REQ-1791710209261-297, requestCompleted=true, correlationId=REQ-c7748a44, uri=/api/public-config, timestamp=2026-10-11 09:16:49.261, status=200}
+09:16:49.265 [http-nio-auto-7-exec-1] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.c.l.RequestLoggingFilter&amp#27;[0;39m - REQUEST_COMPLETE request_id="REQ-1791710209261-297" correlation_id="REQ-c7748a44" method="GET" path="/api/public-config" status=200 execution_time_ms=4 client_ip="127.0.0.xxx" user_agent="Other"
