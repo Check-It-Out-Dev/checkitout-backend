@@ -1,0 +1,10 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-e2159b61-ffaf-4363-8805-8029a669a216
+  Company: COMPANY-4899681e-85dd-479c-9011-76175143a503
+  Admin: ADMIN-483c2639-f7f2-48f6-b3bf-c3736d4a444b
+09:41:10.547 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus, FirebaseUID=INFLUENCER-e2159b61-ffaf-4363-8805-8029a669a216, OpportunityID=2610, Action=ACCEPT, Purpose=status_management
+09:41:10.547 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=INFLUENCER-e2159b61-ffaf-4363-8805-8029a669a216, OpportunityID=2610, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
+09:41:10.574 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus_SUCCESS, FirebaseUID=INFLUENCER-e2159b61-ffaf-4363-8805-8029a669a216, OpportunityID=2610, OldStatus=CONTENT_APPROVED, NewStatus=CONTENT_POSTED
+09:41:10.574 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=INFLUENCER-e2159b61-ffaf-4363-8805-8029a669a216, AppliedOpportunityID=2610, StatusChange=CONTENT_APPROVED→CONTENT_POSTED, Purpose=status_tracking
+09:41:10.575 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=INFLUENCER-e2159b61-ffaf-4363-8805-8029a669a216, AppliedOpportunityID=2610, DataAccessed=status,changedBy,reason, Purpose=audit_trail
+09:41:10.575 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2610, CONTENT_APPROVED -> CONTENT_POSTED, Changed by=INFLUENCER-e2159b61-ffaf-4363-8805-8029a669a216, Reason=Status accepted via API (/status/update endpoint)
