@@ -1,0 +1,7 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-2ee73cfb-8e25-4ac3-889f-83a776691063
+  Company: COMPANY-f716bcae-6d21-4e5e-ba7a-30707339e0fd
+  Admin: ADMIN-1d2d1e74-daa3-4da8-9a99-15a2a885296a
+09:43:02.803 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: DELETION Operation=deleteAppliedOpportunity, FirebaseUID=ADMIN-1d2d1e74-daa3-4da8-9a99-15a2a885296a, OpportunityID=2554, Purpose=opportunity_removal, LegalBasis=user_request
+09:43:02.803 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=ADMIN-1d2d1e74-daa3-4da8-9a99-15a2a885296a, OpportunityID=2554, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
+09:43:02.857 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: DELETION_COMPLETE Operation=deleteAppliedOpportunity_SUCCESS, FirebaseUID=ADMIN-1d2d1e74-daa3-4da8-9a99-15a2a885296a, OpportunityID=2554, DeletedStatus=ACCEPTED_BY_COMPANY, DataRemoved=application_data
