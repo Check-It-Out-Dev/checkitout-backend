@@ -85,7 +85,7 @@ jobs:
       # Armed: the probe listener records what every test exercised (target/subsume/), which is what
       # the invariants job below judges the change on. Measured at +8 s on a 2-minute tier.
       - run: chmod +x mvnw && ./mvnw $MAVEN_ARGS test -Ptest -DskipITs -Dsubsume.probes=true
-      - uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d  # v6
+      - uses: mikepenz/action-junit-report@6ef3fdcfcd5f0b5d14df3e659ef19b8c6820f93d  # v6
         if: always()
         with:
           report_paths: target/surefire-reports/TEST-*.xml
@@ -215,7 +215,7 @@ jobs:
       - name: Testcontainers on Linux
         run: sed -i '/ClientProviderStrategy/d' src/test/resources/testcontainers.properties
       - run: chmod +x mvnw && ./mvnw $MAVEN_ARGS verify -Pintegration
-      - uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d  # v6
+      - uses: mikepenz/action-junit-report@6ef3fdcfcd5f0b5d14df3e659ef19b8c6820f93d  # v6
         if: always()
         with:
           # Both failsafe profiles write into a subdirectory of failsafe-reports, one per tier, so
@@ -293,7 +293,7 @@ jobs:
       - name: Emulator log on failure
         if: failure()
         run: tail -100 /tmp/emulators.log || true
-      - uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d  # v6
+      - uses: mikepenz/action-junit-report@6ef3fdcfcd5f0b5d14df3e659ef19b8c6820f93d  # v6
         if: always()
         with:
           # See the note on the integration tier: the reports are one directory down. This check
