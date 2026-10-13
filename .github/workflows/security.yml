@@ -89,13 +89,13 @@ jobs:
           n = sum(len(x.get("results", [])) for x in runs)
           print(f"### Semgrep\n\n{n} finding(s) across the OWASP, secrets and TypeScript rule sets.")
           PY
-      - uses: github/codeql-action/upload-sarif@b96794f015dfd88f77b49b1c93e0fa7110f94c63  # v4.38.0
+      - uses: github/codeql-action/upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d  # v4.38.3
         with:
           sarif_file: semgrep.sarif
           category: semgrep
       # Also kept as an artifact. upload-sarif tells the Security tab; the summary job below counts
       # what every scanner found and puts one number on the dashboard, and it can only read files.
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
         if: always() && hashFiles('semgrep.sarif') != ''
         with:
           name: sarif-semgrep
@@ -128,12 +128,12 @@ jobs:
           n = sum(len(x.get("results", [])) for x in r.get("runs", []))
           print(f"### Checkov\n\n{n} misconfiguration(s) in manifests, images and workflows.")
           PY
-      - uses: github/codeql-action/upload-sarif@b96794f015dfd88f77b49b1c93e0fa7110f94c63  # v4.38.0
+      - uses: github/codeql-action/upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d  # v4.38.3
         if: hashFiles('checkov.sarif') != ''
         with:
           sarif_file: checkov.sarif
           category: checkov
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
         if: always() && hashFiles('checkov.sarif') != ''
         with:
           name: sarif-checkov
@@ -169,11 +169,11 @@ jobs:
             trivy fs . --offline-scan --scanners vuln --skip-dirs target,node_modules \
               --format table --severity HIGH,CRITICAL --exit-code 0 2>/dev/null | tail -25
           } | tee -a "$GITHUB_STEP_SUMMARY"
-      - uses: github/codeql-action/upload-sarif@b96794f015dfd88f77b49b1c93e0fa7110f94c63  # v4.38.0
+      - uses: github/codeql-action/upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d  # v4.38.3
         with:
           sarif_file: trivy.sarif
           category: trivy
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
         if: always() && hashFiles('trivy.sarif') != ''
         with:
           name: sarif-trivy
@@ -191,18 +191,18 @@ jobs:
             trivy image ghcr.io/check-it-out-dev/checkitout-backend:main --scanners vuln               --format table --severity HIGH,CRITICAL --exit-code 0 2>/dev/null | tail -25
           } | tee -a "$GITHUB_STEP_SUMMARY"
         continue-on-error: true
-      - uses: github/codeql-action/upload-sarif@b96794f015dfd88f77b49b1c93e0fa7110f94c63  # v4.38.0
+      - uses: github/codeql-action/upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d  # v4.38.3
         if: hashFiles('trivy-image.sarif') != ''
         with:
           sarif_file: trivy-image.sarif
           category: trivy-image
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
         if: always() && hashFiles('trivy-image.sarif') != ''
         with:
           name: sarif-trivy-image
           path: trivy-image.sarif
           retention-days: 7
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
         with:
           name: sbom-${{ github.run_number }}
           path: sbom*.cdx.json
@@ -232,12 +232,12 @@ jobs:
           sparse-checkout: |
             tools/ci
             tools/lib
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020  # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1  # v7.1.0
         with:
           node-version: 24
 
       - name: Collect the SARIF every tool produced
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333  # v8.0.2
         with:
           pattern: sarif-*
           path: sarif
@@ -268,7 +268,7 @@ jobs:
         run: |
           bash tools/ci/publish-pages.sh site "security run ${{ github.run_number }}"
 
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
         if: always()
         with:
           name: security-summary-${{ github.run_number }}
