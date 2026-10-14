@@ -1,0 +1,10 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-8020dd65-9cf2-4989-96d6-984a0296a137
+  Company: COMPANY-4bc6bb90-4dfb-4232-808a-b1abaf489c03
+  Admin: ADMIN-e843dd86-a255-4e20-8f88-976ab5520475
+07:59:13.492 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus, FirebaseUID=INFLUENCER-8020dd65-9cf2-4989-96d6-984a0296a137, OpportunityID=2610, Action=ACCEPT, Purpose=status_management
+07:59:13.493 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=INFLUENCER-8020dd65-9cf2-4989-96d6-984a0296a137, OpportunityID=2610, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
+07:59:13.520 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus_SUCCESS, FirebaseUID=INFLUENCER-8020dd65-9cf2-4989-96d6-984a0296a137, OpportunityID=2610, OldStatus=CONTENT_APPROVED, NewStatus=CONTENT_POSTED
+07:59:13.520 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=INFLUENCER-8020dd65-9cf2-4989-96d6-984a0296a137, AppliedOpportunityID=2610, StatusChange=CONTENT_APPROVED→CONTENT_POSTED, Purpose=status_tracking
+07:59:13.521 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=INFLUENCER-8020dd65-9cf2-4989-96d6-984a0296a137, AppliedOpportunityID=2610, DataAccessed=status,changedBy,reason, Purpose=audit_trail
+07:59:13.521 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2610, CONTENT_APPROVED -> CONTENT_POSTED, Changed by=INFLUENCER-8020dd65-9cf2-4989-96d6-984a0296a137, Reason=Status accepted via API (/status/update endpoint)
