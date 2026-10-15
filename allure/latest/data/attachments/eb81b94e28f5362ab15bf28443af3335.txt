@@ -1,9 +1,0 @@
-[Integration Test] Test users created:
-  Influencer: INFLUENCER-4e5c9bbb-1013-4ada-a102-e91d67a98261
-  Company: COMPANY-050ef3bf-5b5d-4177-9e8b-60ce1ec51d6b
-  Admin: ADMIN-d184b27b-82c8-4a4e-8380-1fcabd9ee2e6
-07:59:11.553 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=ADMIN-d184b27b-82c8-4a4e-8380-1fcabd9ee2e6, OpportunityID=2570, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
-07:59:11.585 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=ADMIN-d184b27b-82c8-4a4e-8380-1fcabd9ee2e6, OpportunityID=2570, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
-07:59:11.614 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=ADMIN-d184b27b-82c8-4a4e-8380-1fcabd9ee2e6, AppliedOpportunityID=2570, StatusChange=APPLIED→ACCEPTED_BY_COMPANY, Purpose=status_tracking
-07:59:11.616 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=ADMIN-d184b27b-82c8-4a4e-8380-1fcabd9ee2e6, AppliedOpportunityID=2570, DataAccessed=status,changedBy,reason, Purpose=audit_trail
-07:59:11.616 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2570, APPLIED -> ACCEPTED_BY_COMPANY, Changed by=ADMIN-d184b27b-82c8-4a4e-8380-1fcabd9ee2e6, Reason=Status updated via patch operation (PATCH)
