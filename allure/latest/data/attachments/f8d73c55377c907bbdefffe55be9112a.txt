@@ -1,0 +1,14 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-2464d2db-1fef-4f80-8a4a-094183267694
+  Company: COMPANY-9e31c896-83bb-4a34-b0ba-7583d6a55430
+  Admin: ADMIN-6d48084f-6c91-470a-865b-9675af322511
+07:30:55.282 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findByInfluencerUserId, FirebaseUID=INFLUENCER-pending-97e728ac-5a3e-40b7-bde7-db0cf4127bb2, Purpose=user_opportunities_retrieval, DataAccessed=applied_opportunities.list
+07:30:55.290 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findByInfluencerUserId_SUCCESS, FirebaseUID=INFLUENCER-pending-97e728ac-5a3e-40b7-bde7-db0cf4127bb2, RecordsRetrieved=1
+07:30:55.291 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: DELETION Operation=deleteAppliedOpportunity, FirebaseUID=ADMIN-6d48084f-6c91-470a-865b-9675af322511, OpportunityID=2696, Purpose=opportunity_removal, LegalBasis=user_request
+07:30:55.291 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=ADMIN-6d48084f-6c91-470a-865b-9675af322511, OpportunityID=2696, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
+07:30:55.313 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: DELETION_COMPLETE Operation=deleteAppliedOpportunity_SUCCESS, FirebaseUID=ADMIN-6d48084f-6c91-470a-865b-9675af322511, OpportunityID=2696, DeletedStatus=APPLIED, DataRemoved=application_data
+07:30:55.313 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.user.UserAccountOrchestrator&amp#27;[0;39m - User 4054 status changed from ACTIVE to TO_BE_DELETED for archival
+07:30:55.313 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=evictUser, DataDeleted=cached_user_data, Purpose=cache_management
+07:30:55.313 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+07:30:55.315 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+07:30:55.315 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.user.UserAccountOrchestrator&amp#27;[0;39m - GDPR: Operation=cacheEvict_onArchival, UserId=4054, NewStatus=TO_BE_DELETED, Purpose=immediate_session_invalidation
