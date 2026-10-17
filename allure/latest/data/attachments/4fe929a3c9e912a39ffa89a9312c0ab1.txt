@@ -1,0 +1,10 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-ee2ad56b-c72d-47b4-a3ff-de0b5359c484
+  Company: COMPANY-ae2e1972-6451-48c1-ba02-335dba8370f9
+  Admin: ADMIN-bda8b2a3-6028-40b0-bf1c-94888d040f2e
+07:10:56.509 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=checkDeletionEligibility, CheckerFirebaseUID=ADMIN-bda8b2a3-6028-40b0-bf1c-94888d040f2e, TargetUserID=5271, Purpose=deletion_assessment
+07:10:56.509 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=findUserById, AccessorFirebaseUID=ADMIN-bda8b2a3-6028-40b0-bf1c-94888d040f2e, TargetUserID=5271, Purpose=user_data_retrieval, DataAccessed=user.profile,user.addresses,user.socialConnections
+07:10:56.524 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findByInfluencerUserId, FirebaseUID=eligible-1792221056508, Purpose=user_opportunities_retrieval, DataAccessed=applied_opportunities.list
+07:10:56.530 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findByInfluencerUserId_SUCCESS, FirebaseUID=eligible-1792221056508, RecordsRetrieved=0
+07:10:56.531 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: Service Operation=getTranslation, FirebaseUID=ADMIN-bda8b2a3-6028-40b0-bf1c-94888d040f2e, Key=DELETION_SUMMARY_CAN_DELETE_ALL, Language=en, Purpose=translation_lookup
+07:10:56.534 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: DataAccessed=translation_value, FirebaseUID=ADMIN-bda8b2a3-6028-40b0-bf1c-94888d040f2e, Key=DELETION_SUMMARY_CAN_DELETE_ALL, Purpose=translation_service
