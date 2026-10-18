@@ -2,14 +2,14 @@
   "schema": 1,
   "repo": "Check-It-Out-Dev/checkitout-backend",
   "run": {
-    "number": 45,
-    "id": 39012546809,
+    "number": 46,
+    "id": 39107468795,
     "sha": "2cada43",
     "branch": "main",
     "workflow": "ci-tests",
-    "startedAt": "2026-10-17T07:09:00Z",
-    "durationSec": 903,
-    "url": "https://github.com/Check-It-Out-Dev/checkitout-backend/actions/runs/39012546809"
+    "startedAt": "2026-10-18T07:23:19Z",
+    "durationSec": 735,
+    "url": "https://github.com/Check-It-Out-Dev/checkitout-backend/actions/runs/39107468795"
   },
   "tests": {
     "total": 11572,
@@ -19,7 +19,7 @@
     "skipped": 53,
     "passRate": 1,
     "flakyRate": 0,
-    "durationMeanSec": 0.06,
+    "durationMeanSec": 0.05,
     "durationP95Sec": 0.03,
     "tiers": {
       "unit": {
@@ -36,7 +36,7 @@
         "failed": 0,
         "flaky": 0,
         "skipped": 32,
-        "durationSec": 19
+        "durationSec": 20
       },
       "e2e": {
         "total": 297,
@@ -44,37 +44,37 @@
         "failed": 0,
         "flaky": 0,
         "skipped": 21,
-        "durationSec": 635
+        "durationSec": 506
       }
     }
   },
   "coverage": {
     "lines": 58.66,
     "statements": 59.26,
-    "branches": 51.67,
+    "branches": 51.66,
     "functions": 65.61
   },
   "mutation": {
-    "score": 44.23,
-    "coveredScore": 70.62,
+    "score": 44.27,
+    "coveredScore": 70.69,
     "mutants": 2408,
-    "survived": 443,
+    "survived": 442,
     "floor": 40,
     "classesWithNoUnitTest": 15
   },
   "security": {
-    "total": 29,
-    "error": 11,
-    "warning": 18,
+    "total": 31,
+    "error": 12,
+    "warning": 19,
     "note": 0,
     "tools": {
       "Semgrep OSS": 15,
-      "Trivy": 14
+      "Trivy": 16
     },
     "scans": 3
   },
   "flaky": [],
   "reports": {
-    "allure": "allure/ci-tests-45/"
+    "allure": "allure/ci-tests-46/"
   }
 }

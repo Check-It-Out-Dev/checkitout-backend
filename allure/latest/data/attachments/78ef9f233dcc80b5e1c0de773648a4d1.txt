@@ -1,0 +1,10 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-6569d3dc-a2ec-4e5b-b243-239e0a26366d
+  Company: COMPANY-ade4adad-24f9-4866-96cc-5ead34a16ebe
+  Admin: ADMIN-9fea61d7-01e4-44b4-a32a-542e60fb7913
+07:25:15.807 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus, FirebaseUID=INFLUENCER-6569d3dc-a2ec-4e5b-b243-239e0a26366d, OpportunityID=2610, Action=ACCEPT, Purpose=status_management
+07:25:15.807 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=INFLUENCER-6569d3dc-a2ec-4e5b-b243-239e0a26366d, OpportunityID=2610, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
+07:25:15.832 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus_SUCCESS, FirebaseUID=INFLUENCER-6569d3dc-a2ec-4e5b-b243-239e0a26366d, OpportunityID=2610, OldStatus=CONTENT_APPROVED, NewStatus=CONTENT_POSTED
+07:25:15.832 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=INFLUENCER-6569d3dc-a2ec-4e5b-b243-239e0a26366d, AppliedOpportunityID=2610, StatusChange=CONTENT_APPROVED→CONTENT_POSTED, Purpose=status_tracking
+07:25:15.833 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=INFLUENCER-6569d3dc-a2ec-4e5b-b243-239e0a26366d, AppliedOpportunityID=2610, DataAccessed=status,changedBy,reason, Purpose=audit_trail
+07:25:15.833 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2610, CONTENT_APPROVED -> CONTENT_POSTED, Changed by=INFLUENCER-6569d3dc-a2ec-4e5b-b243-239e0a26366d, Reason=Status accepted via API (/status/update endpoint)

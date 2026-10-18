@@ -1,9 +1,0 @@
-[Integration Test] Test users created:
-  Influencer: INFLUENCER-1edb1534-cf10-4439-8d78-1dd1dea0492f
-  Company: COMPANY-74f3ff4b-a2e3-40a8-9299-ed7491fbb574
-  Admin: ADMIN-41928293-c864-4f04-b357-32be32690253
-07:10:56.988 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=updateUser, UpdaterFirebaseUID=ADMIN-41928293-c864-4f04-b357-32be32690253, TargetUserID=5321, Purpose=profile_update, DataModified=user.profile,user.addresses, LegalBasis=consent
-07:10:56.988 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=findUserById, AccessorFirebaseUID=ADMIN-41928293-c864-4f04-b357-32be32690253, TargetUserID=5321, Purpose=user_data_retrieval, DataAccessed=user.profile,user.addresses,user.socialConnections
-07:10:56.991 [scheduling-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
-07:10:56.995 [scheduling-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
-07:10:57.018 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=updateUser_SUCCESS, UpdaterFirebaseUID=ADMIN-41928293-c864-4f04-b357-32be32690253, UserID=5321, AccountStatus=ACTIVE, CriticalChanges=false

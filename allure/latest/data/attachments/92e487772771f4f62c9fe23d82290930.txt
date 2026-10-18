@@ -1,0 +1,7 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-ae2f1583-1913-44a0-b702-5385f09fb97b
+  Company: COMPANY-e4e066ed-f306-4fd3-ae79-a2a0b52599ad
+  Admin: ADMIN-6a20c2e4-5bf6-412b-a57e-346f3de96455
+07:25:31.554 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=patchUser, UpdaterFirebaseUID=INFLUENCER-ae2f1583-1913-44a0-b702-5385f09fb97b, TargetUserID=5041, FieldsModified=[profilePicture, noteFromAdmin], Purpose=partial_profile_update, LegalBasis=consent
+07:25:31.554 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - User 5041 editing own profile - no status transition (fields validated by DTO validators)
+07:25:31.555 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - Patched user with ID: 5041 (critical changes: false)
