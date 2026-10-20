@@ -1,0 +1,10 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-c6b684cd-f364-4739-983e-20d05d4a8ae8
+  Company: COMPANY-aedd5b3c-b6a8-4d36-afcd-2028dffefdb2
+  Admin: ADMIN-d647be06-4c40-4f60-a856-1ee08ea59fd7
+07:54:52.755 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus, FirebaseUID=COMPANY-aedd5b3c-b6a8-4d36-afcd-2028dffefdb2, OpportunityID=2614, Action=REJECT, Purpose=status_management
+07:54:52.756 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=COMPANY-aedd5b3c-b6a8-4d36-afcd-2028dffefdb2, OpportunityID=2614, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
+07:54:52.787 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus_SUCCESS, FirebaseUID=COMPANY-aedd5b3c-b6a8-4d36-afcd-2028dffefdb2, OpportunityID=2614, OldStatus=CONTENT_POSTED, NewStatus=CONTENT_POSTED_REJECTED
+07:54:52.787 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=COMPANY-aedd5b3c-b6a8-4d36-afcd-2028dffefdb2, AppliedOpportunityID=2614, StatusChange=CONTENT_POSTED→CONTENT_POSTED_REJECTED, Purpose=status_tracking
+07:54:52.788 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=COMPANY-aedd5b3c-b6a8-4d36-afcd-2028dffefdb2, AppliedOpportunityID=2614, DataAccessed=status,changedBy,reason, Purpose=audit_trail
+07:54:52.788 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2614, CONTENT_POSTED -> CONTENT_POSTED_REJECTED, Changed by=COMPANY-aedd5b3c-b6a8-4d36-afcd-2028dffefdb2, Reason=Status rejected via API (/status/update endpoint)
