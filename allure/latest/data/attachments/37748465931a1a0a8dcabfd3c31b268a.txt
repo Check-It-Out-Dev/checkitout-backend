@@ -1,0 +1,20 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-ada77d9e-61d1-4d9c-9b3a-7434bedb29d1
+  Company: COMPANY-930314b8-653f-4240-9c0f-41938e73528f
+  Admin: ADMIN-547d65df-8d82-4314-a695-a1b2e6501a06
+07:35:57.220 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findByInfluencerUserId, FirebaseUID=INFLUENCER-multi-581fb7b5-bc34-43e6-a81d-7c668dc1534f, Purpose=user_opportunities_retrieval, DataAccessed=applied_opportunities.list
+07:35:57.227 [scheduling-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+07:35:57.228 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findByInfluencerUserId_SUCCESS, FirebaseUID=INFLUENCER-multi-581fb7b5-bc34-43e6-a81d-7c668dc1534f, RecordsRetrieved=2
+07:35:57.230 [scheduling-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+07:35:57.231 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: Service Operation=getTranslation, FirebaseUID=SYSTEM, Key=DELETION_BLOCKER_ACTIVE_OPPORTUNITIES, Language=en, Purpose=translation_lookup
+07:35:57.232 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: DataAccessed=translation_value, FirebaseUID=SYSTEM, Key=DELETION_BLOCKER_ACTIVE_OPPORTUNITIES, Purpose=translation_service
+07:35:57.232 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: Service Operation=getTranslation, FirebaseUID=SYSTEM, Key=DELETION_BLOCKER_ACTIVE_OPPORTUNITIES_DESC, Language=en, Purpose=translation_lookup
+07:35:57.233 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: DataAccessed=translation_value, FirebaseUID=SYSTEM, Key=DELETION_BLOCKER_ACTIVE_OPPORTUNITIES_DESC, Purpose=translation_service
+07:35:57.233 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: Service Operation=getTranslation, FirebaseUID=SYSTEM, Key=DELETION_BLOCKER_PENDING_OPPORTUNITIES, Language=en, Purpose=translation_lookup
+07:35:57.234 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: DataAccessed=translation_value, FirebaseUID=SYSTEM, Key=DELETION_BLOCKER_PENDING_OPPORTUNITIES, Purpose=translation_service
+07:35:57.234 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: Service Operation=getTranslation, FirebaseUID=SYSTEM, Key=DELETION_BLOCKER_PENDING_OPPORTUNITIES_DESC, Language=en, Purpose=translation_lookup
+07:35:57.236 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: DataAccessed=translation_value, FirebaseUID=SYSTEM, Key=DELETION_BLOCKER_PENDING_OPPORTUNITIES_DESC, Purpose=translation_service
+07:35:57.236 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: Service Operation=getTranslation, FirebaseUID=SYSTEM, Key=DELETION_SUMMARY_CANNOT_DELETE, Language=en, Purpose=translation_lookup
+07:35:57.237 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: DataAccessed=translation_value, FirebaseUID=SYSTEM, Key=DELETION_SUMMARY_CANNOT_DELETE, Purpose=translation_service
+07:35:57.237 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: Service Operation=getTranslation, FirebaseUID=SYSTEM, Key=DELETION_SUMMARY_BLOCKERS_COUNT, Language=en, Purpose=translation_lookup
+07:35:57.238 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: DataAccessed=translation_value, FirebaseUID=SYSTEM, Key=DELETION_SUMMARY_BLOCKERS_COUNT, Purpose=translation_service
