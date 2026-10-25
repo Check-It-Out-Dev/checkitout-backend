@@ -1,8 +1,0 @@
-[Integration Test] Test users created:
-  Influencer: INFLUENCER-e685e685-e2cf-4139-8345-3dd774a7ec20
-  Company: COMPANY-6cdb4e55-6288-464f-a99c-7138d3a40e44
-  Admin: ADMIN-91387658-404f-4670-a51b-ec463098305f
-07:35:43.182 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=patchCurrentUserPreferences, FirebaseUID=INFLUENCER-e685e685-e2cf-4139-8345-3dd774a7ec20, FieldsModified=[gdprMarketingConsent], Purpose=partial_settings_update, LegalBasis=consent
-07:35:43.187 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=getCurrentUserPreferences, FirebaseUID=INFLUENCER-e685e685-e2cf-4139-8345-3dd774a7ec20, Purpose=user_preference_retrieval, DataAccessed=user.preferences.*
-07:35:43.188 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: CONSENT_CHANGE Operation=patchGdprConsent, FirebaseUID=INFLUENCER-e685e685-e2cf-4139-8345-3dd774a7ec20, NewConsent=true, Purpose=marketing_consent_update
-07:35:43.188 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=patchCurrentUserPreferences_SUCCESS, FirebaseUID=INFLUENCER-e685e685-e2cf-4139-8345-3dd774a7ec20, ModifiedFields=[gdprMarketingConsent]

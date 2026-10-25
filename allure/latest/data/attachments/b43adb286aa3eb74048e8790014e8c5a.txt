@@ -1,0 +1,10 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-ab07d9b9-ecf1-4cde-a22e-98f589c2c4e5
+  Company: COMPANY-76a9a5ae-d2c9-4e59-ae90-7c8ca6f7bc0a
+  Admin: ADMIN-37e79dcf-4578-4ee3-93af-5de4a70c0942
+07:48:25.520 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus, FirebaseUID=COMPANY-76a9a5ae-d2c9-4e59-ae90-7c8ca6f7bc0a, OpportunityID=2614, Action=REJECT, Purpose=status_management
+07:48:25.520 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=COMPANY-76a9a5ae-d2c9-4e59-ae90-7c8ca6f7bc0a, OpportunityID=2614, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
+07:48:25.548 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus_SUCCESS, FirebaseUID=COMPANY-76a9a5ae-d2c9-4e59-ae90-7c8ca6f7bc0a, OpportunityID=2614, OldStatus=CONTENT_POSTED, NewStatus=CONTENT_POSTED_REJECTED
+07:48:25.548 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=COMPANY-76a9a5ae-d2c9-4e59-ae90-7c8ca6f7bc0a, AppliedOpportunityID=2614, StatusChange=CONTENT_POSTED→CONTENT_POSTED_REJECTED, Purpose=status_tracking
+07:48:25.549 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=COMPANY-76a9a5ae-d2c9-4e59-ae90-7c8ca6f7bc0a, AppliedOpportunityID=2614, DataAccessed=status,changedBy,reason, Purpose=audit_trail
+07:48:25.549 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2614, CONTENT_POSTED -> CONTENT_POSTED_REJECTED, Changed by=COMPANY-76a9a5ae-d2c9-4e59-ae90-7c8ca6f7bc0a, Reason=Status rejected via API (/status/update endpoint)
