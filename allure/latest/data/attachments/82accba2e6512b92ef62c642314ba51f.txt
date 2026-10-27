@@ -1,0 +1,10 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-fc49593a-e63f-4df8-8d33-fb3337c8d7b4
+  Company: COMPANY-4fa02833-b0a7-4a41-80ee-afcec57b41f8
+  Admin: ADMIN-a10f3f8a-082f-4f72-8272-a941f6df05d0
+08:19:26.894 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus, FirebaseUID=ADMIN-a10f3f8a-082f-4f72-8272-a941f6df05d0, OpportunityID=2602, Action=ACCEPT, Purpose=status_management
+08:19:26.894 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=ADMIN-a10f3f8a-082f-4f72-8272-a941f6df05d0, OpportunityID=2602, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
+08:19:26.918 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus_SUCCESS, FirebaseUID=ADMIN-a10f3f8a-082f-4f72-8272-a941f6df05d0, OpportunityID=2602, OldStatus=APPLIED, NewStatus=ACCEPTED_BY_COMPANY
+08:19:26.918 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=ADMIN-a10f3f8a-082f-4f72-8272-a941f6df05d0, AppliedOpportunityID=2602, StatusChange=APPLIED→ACCEPTED_BY_COMPANY, Purpose=status_tracking
+08:19:26.920 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=ADMIN-a10f3f8a-082f-4f72-8272-a941f6df05d0, AppliedOpportunityID=2602, DataAccessed=status,changedBy,reason, Purpose=audit_trail
+08:19:26.920 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2602, APPLIED -> ACCEPTED_BY_COMPANY, Changed by=ADMIN-a10f3f8a-082f-4f72-8272-a941f6df05d0, Reason=Status accepted via API (/status/update endpoint)
