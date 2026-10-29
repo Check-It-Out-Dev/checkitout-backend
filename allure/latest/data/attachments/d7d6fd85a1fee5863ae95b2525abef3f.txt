@@ -1,0 +1,10 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-d7d6d548-9dae-4be2-91d1-db4afe39dc67
+  Company: COMPANY-f3e1d2f3-1f94-48e2-a490-1783a0263bb4
+  Admin: ADMIN-f25335bb-ac3c-44c8-8761-3dc9280fc789
+08:51:44.044 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus, FirebaseUID=COMPANY-f3e1d2f3-1f94-48e2-a490-1783a0263bb4, OpportunityID=2519, Action=ACCEPT, Purpose=status_management
+08:51:44.044 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=COMPANY-f3e1d2f3-1f94-48e2-a490-1783a0263bb4, OpportunityID=2519, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
+08:51:44.083 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus_SUCCESS, FirebaseUID=COMPANY-f3e1d2f3-1f94-48e2-a490-1783a0263bb4, OpportunityID=2519, OldStatus=CONTENT_SEND_TO_ACCEPT, NewStatus=CONTENT_APPROVED
+08:51:44.084 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=COMPANY-f3e1d2f3-1f94-48e2-a490-1783a0263bb4, AppliedOpportunityID=2519, StatusChange=CONTENT_SEND_TO_ACCEPT→CONTENT_APPROVED, Purpose=status_tracking
+08:51:44.086 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=COMPANY-f3e1d2f3-1f94-48e2-a490-1783a0263bb4, AppliedOpportunityID=2519, DataAccessed=status,changedBy,reason, Purpose=audit_trail
+08:51:44.086 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2519, CONTENT_SEND_TO_ACCEPT -> CONTENT_APPROVED, Changed by=COMPANY-f3e1d2f3-1f94-48e2-a490-1783a0263bb4, Reason=Status accepted via API (/status/update endpoint)
