@@ -1,0 +1,12 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-8e6b9cd8-286e-410a-aab5-d49cd2e8fe80
+  Company: COMPANY-ff6af66a-b52d-473e-899a-6bc3255e70d1
+  Admin: ADMIN-917b0747-7ae4-4f3e-95eb-27092c78d7f8
+09:39:24.605 [scheduling-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+09:39:24.606 [scheduling-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+09:39:24.609 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findByInfluencerUserId, FirebaseUID=INFLUENCER-active-CONTENT_REJECTED-21e02278-b229-4f2b-9031-7e3da51fb979, Purpose=user_opportunities_retrieval, DataAccessed=applied_opportunities.list
+09:39:24.616 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findByInfluencerUserId_SUCCESS, FirebaseUID=INFLUENCER-active-CONTENT_REJECTED-21e02278-b229-4f2b-9031-7e3da51fb979, RecordsRetrieved=1
+09:39:24.618 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: Service Operation=getTranslation, FirebaseUID=SYSTEM, Key=DELETION_BLOCKER_ACTIVE_OPPORTUNITIES, Language=en, Purpose=translation_lookup
+09:39:24.619 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: DataAccessed=translation_value, FirebaseUID=SYSTEM, Key=DELETION_BLOCKER_ACTIVE_OPPORTUNITIES, Purpose=translation_service
+09:39:24.619 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: Service Operation=getTranslation, FirebaseUID=SYSTEM, Key=DELETION_BLOCKER_ACTIVE_OPPORTUNITIES_DESC, Language=en, Purpose=translation_lookup
+09:39:24.620 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: DataAccessed=translation_value, FirebaseUID=SYSTEM, Key=DELETION_BLOCKER_ACTIVE_OPPORTUNITIES_DESC, Purpose=translation_service
