@@ -1,0 +1,7 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-8e07e162-6355-4b27-b8a2-8d703a0cddad
+  Company: COMPANY-e70d6729-9bfc-45b5-b95b-27c0a87983ae
+  Admin: ADMIN-288f8745-7155-40a1-b933-364238b3e422
+09:58:30.182 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: ADMIN_MODIFICATION Operation=patchUserPreferences, AdminFirebaseUID=ADMIN-288f8745-7155-40a1-b933-364238b3e422, TargetUserID=2789, FieldsModified=[notificationPushEnabled, notificationEmailEnabled, timezone, gdprMarketingConsent, language, darkModeEnabled, communicationFrequency], Purpose=admin_support, LegalBasis=legitimate_interest
+09:58:30.182 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: ADMIN_CONSENT_CHANGE Operation=adminPatchGdprConsent, AdminFirebaseUID=ADMIN-288f8745-7155-40a1-b933-364238b3e422, TargetUserID=2789, NewConsent=true, Purpose=admin_override
+09:58:30.188 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: ADMIN_MODIFICATION_SUCCESS Operation=patchUserPreferences_SUCCESS, AdminFirebaseUID=ADMIN-288f8745-7155-40a1-b933-364238b3e422, TargetUserID=2789, PreferencesID=48
