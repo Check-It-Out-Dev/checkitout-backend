@@ -1,0 +1,8 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-7905b188-766d-40d0-aecb-35bec976b86b
+  Company: COMPANY-d8dddd36-4c0e-46ad-9049-a372a32dbde9
+  Admin: ADMIN-4885eae6-1770-43a8-9b99-f564aceb519f
+09:48:30.329 [scheduling-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+09:48:30.330 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=patchUser, UpdaterFirebaseUID=ADMIN-4885eae6-1770-43a8-9b99-f564aceb519f, TargetUserID=17557, FieldsModified=[userType], Purpose=partial_profile_update, LegalBasis=consent
+09:48:30.330 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: ADMIN_ROLE_CHANGE Operation=updateUserType, AdminFirebaseUID=ADMIN-4885eae6-1770-43a8-9b99-f564aceb519f, TargetUserID=17557, OldRole=INFLUENCER, RequestedRole=INFLUENCER, Purpose=role_management
+09:48:30.330 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - Patched user with ID: 17557 (critical changes: false)

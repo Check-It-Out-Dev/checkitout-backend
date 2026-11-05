@@ -1,0 +1,7 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-5a1f072d-2b67-4980-90bf-e84110419691
+  Company: COMPANY-4e5565c6-ee5c-4541-8213-77946b4717eb
+  Admin: ADMIN-efc02d7b-745b-4e8e-bf23-3fb25f004a5f
+09:48:30.323 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=patchUser, UpdaterFirebaseUID=INFLUENCER-5a1f072d-2b67-4980-90bf-e84110419691, TargetUserID=17550, FieldsModified=[accountStatus], Purpose=partial_profile_update, LegalBasis=consent
+09:48:30.323 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - SECURITY: Non-admin attempted to change accountStatus for user 17550
+09:48:30.325 [scheduling-1] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
