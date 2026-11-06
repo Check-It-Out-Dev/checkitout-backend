@@ -2,14 +2,14 @@
   "schema": 1,
   "repo": "Check-It-Out-Dev/checkitout-backend",
   "run": {
-    "number": 64,
-    "id": 42005079741,
+    "number": 65,
+    "id": 42197336944,
     "sha": "2cada43",
     "branch": "main",
     "workflow": "ci-tests",
-    "startedAt": "2026-11-05T09:45:59Z",
-    "durationSec": 764,
-    "url": "https://github.com/Check-It-Out-Dev/checkitout-backend/actions/runs/42005079741"
+    "startedAt": "2026-11-06T09:44:45Z",
+    "durationSec": 943,
+    "url": "https://github.com/Check-It-Out-Dev/checkitout-backend/actions/runs/42197336944"
   },
   "tests": {
     "total": 11572,
@@ -19,8 +19,8 @@
     "skipped": 53,
     "passRate": 1,
     "flakyRate": 0,
-    "durationMeanSec": 0.05,
-    "durationP95Sec": 0.02,
+    "durationMeanSec": 0.07,
+    "durationP95Sec": 0.03,
     "tiers": {
       "unit": {
         "total": 10441,
@@ -28,7 +28,7 @@
         "failed": 0,
         "flaky": 0,
         "skipped": 0,
-        "durationSec": 62
+        "durationSec": 82
       },
       "integration": {
         "total": 834,
@@ -44,7 +44,7 @@
         "failed": 0,
         "flaky": 0,
         "skipped": 21,
-        "durationSec": 524
+        "durationSec": 661
       }
     }
   },
@@ -64,9 +64,9 @@
   },
   "security": {
     "total": 88,
-    "error": 19,
-    "warning": 22,
-    "note": 47,
+    "error": 21,
+    "warning": 21,
+    "note": 46,
     "tools": {
       "Semgrep OSS": 15,
       "Trivy": 73
@@ -75,6 +75,6 @@
   },
   "flaky": [],
   "reports": {
-    "allure": "allure/ci-tests-64/"
+    "allure": "allure/ci-tests-65/"
   }
 }
