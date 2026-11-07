@@ -1,0 +1,10 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-e510eb54-427f-4569-b5a7-27b08b62fa2e
+  Company: COMPANY-82df65fd-2bd5-4f3c-93e4-ab2578ca6105
+  Admin: ADMIN-49d135e6-f460-49f1-9008-d784457aee45
+09:09:51.865 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus, FirebaseUID=COMPANY-82df65fd-2bd5-4f3c-93e4-ab2578ca6105, OpportunityID=2524, Action=REJECT, Purpose=status_management
+09:09:51.866 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=COMPANY-82df65fd-2bd5-4f3c-93e4-ab2578ca6105, OpportunityID=2524, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
+09:09:51.910 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus_SUCCESS, FirebaseUID=COMPANY-82df65fd-2bd5-4f3c-93e4-ab2578ca6105, OpportunityID=2524, OldStatus=CONTENT_POSTED, NewStatus=CONTENT_POSTED_REJECTED
+09:09:51.910 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=COMPANY-82df65fd-2bd5-4f3c-93e4-ab2578ca6105, AppliedOpportunityID=2524, StatusChange=CONTENT_POSTED→CONTENT_POSTED_REJECTED, Purpose=status_tracking
+09:09:51.913 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=COMPANY-82df65fd-2bd5-4f3c-93e4-ab2578ca6105, AppliedOpportunityID=2524, DataAccessed=status,changedBy,reason, Purpose=audit_trail
+09:09:51.913 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2524, CONTENT_POSTED -> CONTENT_POSTED_REJECTED, Changed by=COMPANY-82df65fd-2bd5-4f3c-93e4-ab2578ca6105, Reason=Status rejected via API (/status/update endpoint)
