@@ -1,8 +1,0 @@
-[Integration Test] Test users created:
-  Influencer: INFLUENCER-6e56b39b-bb26-4164-9b30-ce4515edb675
-  Company: COMPANY-4a60fba6-32fe-416e-8937-dafb631fe34c
-  Admin: ADMIN-c1f9126d-ab86-4ab8-890b-7a7991e08c6d
-10:12:07.267 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=ADMIN-c1f9126d-ab86-4ab8-890b-7a7991e08c6d, OpportunityID=2575, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
-10:12:07.300 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=ADMIN-c1f9126d-ab86-4ab8-890b-7a7991e08c6d, AppliedOpportunityID=2575, StatusChange=APPLIED→ACCEPTED_BY_COMPANY, Purpose=status_tracking
-10:12:07.301 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=ADMIN-c1f9126d-ab86-4ab8-890b-7a7991e08c6d, AppliedOpportunityID=2575, DataAccessed=status,changedBy,reason, Purpose=audit_trail
-10:12:07.301 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2575, APPLIED -> ACCEPTED_BY_COMPANY, Changed by=ADMIN-c1f9126d-ab86-4ab8-890b-7a7991e08c6d, Reason=Status updated via full update (PUT)
