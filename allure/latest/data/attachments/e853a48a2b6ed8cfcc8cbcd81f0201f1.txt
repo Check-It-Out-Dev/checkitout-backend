@@ -1,0 +1,7 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-2c741bc3-2f94-4cb9-bd55-3698a5c94233
+  Company: COMPANY-71ef1420-108b-4173-894b-2225c2e977a2
+  Admin: ADMIN-ce1cace9-eabf-402d-91ea-f94cda30530f
+10:12:31.323 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=createUser, FirebaseUID=INFLUENCER-2c741bc3-2f94-4cb9-bd55-3698a5c94233, Email=test-1794219151322@example.com, UserType=INFLUENCER, Purpose=account_creation, LegalBasis=contract, DataCreated=user.profile,user.addresses
+10:12:31.323 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - User null editing own profile - no status transition (fields validated by DTO validators)
+10:12:31.323 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=createUser_SUCCESS, FirebaseUID=INFLUENCER-2c741bc3-2f94-4cb9-bd55-3698a5c94233, UserID=5392, AccountStatus=IN_VALIDATION

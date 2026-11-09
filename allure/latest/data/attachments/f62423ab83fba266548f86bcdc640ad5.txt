@@ -1,0 +1,7 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-8c0b13ac-4156-49db-a2f6-d7faaf5d78ac
+  Company: COMPANY-201e45b0-7e7e-43d5-9229-311a2db8aabe
+  Admin: ADMIN-bfd29156-b2f7-4533-b81e-e909a7de48aa
+10:13:05.094 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=patchCurrentUserPreferences, FirebaseUID=INFLUENCER-8c0b13ac-4156-49db-a2f6-d7faaf5d78ac, FieldsModified=[notificationPushEnabled, timezone, language, darkModeEnabled], Purpose=partial_settings_update, LegalBasis=consent
+10:13:05.097 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=getCurrentUserPreferences, FirebaseUID=INFLUENCER-8c0b13ac-4156-49db-a2f6-d7faaf5d78ac, Purpose=user_preference_retrieval, DataAccessed=user.preferences.*
+10:13:05.098 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.u.UserPreferencesService&amp#27;[0;39m - GDPR: Operation=patchCurrentUserPreferences_SUCCESS, FirebaseUID=INFLUENCER-8c0b13ac-4156-49db-a2f6-d7faaf5d78ac, ModifiedFields=[notificationPushEnabled, timezone, language, darkModeEnabled]

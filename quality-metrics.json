@@ -2,25 +2,25 @@
   "schema": 1,
   "repo": "Check-It-Out-Dev/checkitout-backend",
   "run": {
-    "number": 67,
-    "id": 42467043094,
+    "number": 68,
+    "id": 42598902797,
     "sha": "2cada43",
     "branch": "main",
     "workflow": "ci-tests",
-    "startedAt": "2026-11-08T09:24:19Z",
-    "durationSec": 849,
-    "url": "https://github.com/Check-It-Out-Dev/checkitout-backend/actions/runs/42467043094"
+    "startedAt": "2026-11-09T10:10:15Z",
+    "durationSec": 299,
+    "url": "https://github.com/Check-It-Out-Dev/checkitout-backend/actions/runs/42598902797"
   },
   "tests": {
-    "total": 11572,
-    "passed": 11519,
+    "total": 11275,
+    "passed": 11243,
     "failed": 0,
     "flaky": 0,
-    "skipped": 53,
+    "skipped": 32,
     "passRate": 1,
     "flakyRate": 0,
-    "durationMeanSec": 0.05,
-    "durationP95Sec": 0.03,
+    "durationMeanSec": 0.01,
+    "durationP95Sec": 0.02,
     "tiers": {
       "unit": {
         "total": 10441,
@@ -28,7 +28,7 @@
         "failed": 0,
         "flaky": 0,
         "skipped": 0,
-        "durationSec": 74
+        "durationSec": 80
       },
       "integration": {
         "total": 834,
@@ -36,15 +36,7 @@
         "failed": 0,
         "flaky": 0,
         "skipped": 32,
-        "durationSec": 24
-      },
-      "e2e": {
-        "total": 297,
-        "passed": 276,
-        "failed": 0,
-        "flaky": 0,
-        "skipped": 21,
-        "durationSec": 519
+        "durationSec": 22
       }
     }
   },
@@ -75,6 +67,6 @@
   },
   "flaky": [],
   "reports": {
-    "allure": "allure/ci-tests-67/"
+    "allure": "allure/ci-tests-68/"
   }
 }

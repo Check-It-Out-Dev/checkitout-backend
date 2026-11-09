@@ -1,9 +1,0 @@
-[Integration Test] Test users created:
-  Influencer: INFLUENCER-3514d94c-b5f7-4409-b2e5-4cd4df73bf2e
-  Company: COMPANY-194efe22-ac4a-4b81-9a1e-4679b746ab68
-  Admin: ADMIN-331ed09b-9504-49dd-9852-f3119c03a547
-09:26:53.506 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mo.h.e.jdbc.spi.SqlExceptionHelper&amp#27;[0;39m - SQL Error: 0, SQLState: 23505
-09:26:53.506 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mo.h.e.jdbc.spi.SqlExceptionHelper&amp#27;[0;39m - Batch entry 0 /* insert for com.sm.instagram.platform.subscription.entity.CompanySubscription */insert into company_subscription (created_time,current_plan_id,grace_deadline,last_update_time,newest_terms_accepted,previous_plan_id,previous_state,status,stripe_customer_id,stripe_schedule_id,stripe_subscription_id,target_plan_id,trial_end_date,trial_used,updater_id,user_id,version,id) values (('2026-11-08 09:26:53.501139+00'),('1'::int8),(NULL),('2026-11-08 09:26:53.501142+00'),('TRUE'::boolean),(NULL),(NULL),('FREE_ACTIVE'),(NULL),(NULL),(NULL),(NULL),(NULL),('FALSE'::boolean),(NULL),('3351'::int8),('0'::int8),('2512'::int8)),(('2026-11-08 09:26:53.503971+00'),('2'::int8),(NULL),('2026-11-08 09:26:53.503974+00'),('TRUE'::boolean),(NULL),(NULL),('BUSINESS_ACTIVE'),(NULL),(NULL),(NULL),(NULL),(NULL),('FALSE'::boolean),(NULL),('3351'::int8),('0'::int8),('2513'::int8)) was aborted: ERROR: duplicate key value violates unique constraint "company_subscription_user_unique"
-  Detail: Key (user_id)=(3351) already exists.  Call getNextException to see other errors in the batch.
-09:26:53.506 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mo.h.e.jdbc.spi.SqlExceptionHelper&amp#27;[0;39m - ERROR: duplicate key value violates unique constraint "company_subscription_user_unique"
-  Detail: Key (user_id)=(3351) already exists.

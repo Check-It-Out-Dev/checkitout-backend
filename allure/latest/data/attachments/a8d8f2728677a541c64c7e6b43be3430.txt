@@ -1,9 +1,0 @@
-[Integration Test] Test users created:
-  Influencer: INFLUENCER-b8915d64-1838-4019-922e-658eacb038be
-  Company: COMPANY-4017f8a7-7083-46c6-9d4f-47937d192e84
-  Admin: ADMIN-4ee55362-d468-49e3-9c47-b02559afccf3
-09:26:15.052 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateRating, FirebaseUID=ADMIN-4ee55362-d468-49e3-9c47-b02559afccf3, OpportunityID=2551, RatingType=influencer, Rating=POSITIVE, Purpose=feedback_management
-09:26:15.052 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateRating_SUCCESS, FirebaseUID=ADMIN-4ee55362-d468-49e3-9c47-b02559afccf3, OpportunityID=2551, RatingType=influencer, NewRating=POSITIVE
-09:26:15.052 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=ADMIN-4ee55362-d468-49e3-9c47-b02559afccf3, AppliedOpportunityID=2551, StatusChange=DONE→DONE, Purpose=status_tracking
-09:26:15.062 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=ADMIN-4ee55362-d468-49e3-9c47-b02559afccf3, AppliedOpportunityID=2551, DataAccessed=status,changedBy,reason, Purpose=audit_trail
-09:26:15.062 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2551, DONE -> DONE, Changed by=ADMIN-4ee55362-d468-49e3-9c47-b02559afccf3, Reason=Influencer rating updated to POSITIVE via API

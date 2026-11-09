@@ -1,9 +1,0 @@
-[Integration Test] Test users created:
-  Influencer: INFLUENCER-8a88c0ca-1dd4-42fd-94e3-444837713d67
-  Company: COMPANY-daa1009d-61ae-478b-a74b-11011264a6ca
-  Admin: ADMIN-cc225c8f-1126-4de9-b931-8557f2b06ae3
-09:26:53.699 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mo.h.e.jdbc.spi.SqlExceptionHelper&amp#27;[0;39m - SQL Error: 0, SQLState: 23505
-09:26:53.699 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mo.h.e.jdbc.spi.SqlExceptionHelper&amp#27;[0;39m - Batch entry 0 /* insert for com.sm.instagram.platform.subscription.entity.SubscriptionEvent */insert into subscription_event (billing_period_end,billing_period_start,created_time,event_type,metadata,plan_from,plan_to,stripe_event_id,user_id,id) values ((NULL),(NULL),('2026-11-08 09:26:53.697298+00'),('PAYMENT_SUCCEEDED'),(NULL),(NULL),(NULL),('evt_duplicate'),('3384'::int8),('2515'::int8)),((NULL),(NULL),('2026-11-08 09:26:53.698515+00'),('PAYMENT_SUCCEEDED'),(NULL),(NULL),(NULL),('evt_duplicate'),('3384'::int8),('2516'::int8)) was aborted: ERROR: duplicate key value violates unique constraint "subscription_event_stripe_unique"
-  Detail: Key (stripe_event_id)=(evt_duplicate) already exists.  Call getNextException to see other errors in the batch.
-09:26:53.699 [main] &amp#27;[1;31mERROR&amp#27;[0;39m &amp#27;[36mo.h.e.jdbc.spi.SqlExceptionHelper&amp#27;[0;39m - ERROR: duplicate key value violates unique constraint "subscription_event_stripe_unique"
-  Detail: Key (stripe_event_id)=(evt_duplicate) already exists.
