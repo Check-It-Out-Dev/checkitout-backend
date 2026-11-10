@@ -17,6 +17,17 @@ Java 21 · Spring Boot 3.4 · PostgreSQL · Redis · Stripe. It ran in productio
 [![nightly pipeline](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/nightly.yml/badge.svg)](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/nightly.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-1f6feb.svg)](LICENSE)
 
+> [!NOTE]
+> **Automation paused on 10 November 2026.** This project is finished and no further changes are
+> planned, so the automation in this repository was switched off: the pull-request and nightly
+> pipelines, the deployment workflows, Dependabot and CodeQL scanning. They exist to check changes,
+> and there are no changes left to check — another night would only run the same code again. The
+> workflow files are still in [`.github/workflows/`](.github/workflows) and the run history is under
+> [Actions](https://github.com/Check-It-Out-Dev/checkitout-backend/actions); the badges above and
+> the published reports show the last runs. Dependabot's configuration was removed together with
+> this note and is in the history. Dependency versions are frozen as of that date: check them
+> against current advisories before reusing the code.
+
 ---
 
 ## Highlights
