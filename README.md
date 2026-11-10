@@ -14,7 +14,6 @@ Java 21 · Spring Boot 3.4 · PostgreSQL · Redis · Stripe. It ran in productio
 [![Mutation](https://img.shields.io/endpoint?url=https://check-it-out-dev.github.io/checkitout-backend/badges/mutation.json)](https://check-it-out-dev.github.io/checkitout-backend/#quality)
 [![Security](https://img.shields.io/endpoint?url=https://check-it-out-dev.github.io/checkitout-backend/badges/security.json)](https://check-it-out-dev.github.io/checkitout-backend/#quality)
 [![pull-request pipeline](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/pr.yml/badge.svg)](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/pr.yml)
-[![nightly pipeline](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/nightly.yml/badge.svg)](https://github.com/Check-It-Out-Dev/checkitout-backend/actions/workflows/nightly.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-1f6feb.svg)](LICENSE)
 
 > [!NOTE]
