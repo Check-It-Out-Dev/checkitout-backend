@@ -1,0 +1,14 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-e1a8deac-74c7-419d-ae35-bf7b857c058b
+  Company: COMPANY-0c3a16b7-bcd5-4836-b4c6-84a0003f5a7b
+  Admin: ADMIN-dd03908e-e8b3-42ff-a767-ea8ef0a64030
+10:18:50.621 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: DELETION_REQUEST Operation=deleteUser, DeleterFirebaseUID=ADMIN-dd03908e-e8b3-42ff-a767-ea8ef0a64030, TargetUserID=5256, Purpose=account_deletion, LegalBasis=user_request
+10:18:50.621 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=findUserById, AccessorFirebaseUID=ADMIN-dd03908e-e8b3-42ff-a767-ea8ef0a64030, TargetUserID=5256, Purpose=user_data_retrieval, DataAccessed=user.profile,user.addresses,user.socialConnections
+10:18:50.633 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=findUserById, AccessorFirebaseUID=ADMIN-dd03908e-e8b3-42ff-a767-ea8ef0a64030, TargetUserID=5256, Purpose=user_data_retrieval, DataAccessed=user.profile,user.addresses,user.socialConnections
+10:18:50.647 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.user.UserAccountOrchestrator&amp#27;[0;39m - User 5256 status changed from ACTIVE to TO_BE_DELETED for archival
+10:18:50.647 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.auth.cache.RedisUserCache&amp#27;[0;39m - GDPR: Operation=evictUser, DataDeleted=cached_user_data, Purpose=cache_management
+10:18:50.647 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Fetching Redis Connection from RedisConnectionFactory
+10:18:50.649 [main] &amp#27;[39mDEBUG&amp#27;[0;39m &amp#27;[36mo.s.d.r.core.RedisConnectionUtils&amp#27;[0;39m - Closing Redis Connection
+10:18:50.649 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.user.UserAccountOrchestrator&amp#27;[0;39m - GDPR: Operation=cacheEvict_onArchival, UserId=5256, NewStatus=TO_BE_DELETED, Purpose=immediate_session_invalidation
+10:18:50.649 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - User with ID 5256 marked for deletion
+10:18:50.649 [main] &amp#27;[31mWARN &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: DELETION_ARCHIVED Operation=deleteUser_ARCHIVED, DeleterFirebaseUID=ADMIN-dd03908e-e8b3-42ff-a767-ea8ef0a64030, UserID=5256, Status=TO_BE_DELETED

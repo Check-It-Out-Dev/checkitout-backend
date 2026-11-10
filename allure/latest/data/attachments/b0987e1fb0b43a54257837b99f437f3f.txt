@@ -1,0 +1,12 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-9f39417f-a642-41c6-98b7-c26ee94a7814
+  Company: COMPANY-59e06eb4-4843-475b-ab4b-df3e181a62db
+  Admin: ADMIN-dbface30-0a52-4819-b667-4f670279eeda
+10:18:51.426 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=createUser, FirebaseUID=ADMIN-dbface30-0a52-4819-b667-4f670279eeda, Email=test-1794305931425@example.com, UserType=INFLUENCER, Purpose=account_creation, LegalBasis=contract, DataCreated=user.profile,user.addresses
+10:18:51.427 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.platform.user.UserService&amp#27;[0;39m - GDPR: Operation=createUser_SUCCESS, FirebaseUID=ADMIN-dbface30-0a52-4819-b667-4f670279eeda, UserID=5372, AccountStatus=ACTIVE
+10:18:51.428 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: Service Operation=getTranslation, FirebaseUID=ADMIN-dbface30-0a52-4819-b667-4f670279eeda, Key=ACCOUNT_STATUS_ACTIVE, Language=en, Purpose=translation_lookup
+10:18:51.431 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: DataAccessed=translation_value, FirebaseUID=ADMIN-dbface30-0a52-4819-b667-4f670279eeda, Key=ACCOUNT_STATUS_ACTIVE, Purpose=translation_service
+10:18:51.431 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: Service Operation=getTranslation, FirebaseUID=ADMIN-dbface30-0a52-4819-b667-4f670279eeda, Key=ACCOUNT_STATUS_ACTIVE_DESC, Language=en, Purpose=translation_lookup
+10:18:51.433 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: DataAccessed=translation_value, FirebaseUID=ADMIN-dbface30-0a52-4819-b667-4f670279eeda, Key=ACCOUNT_STATUS_ACTIVE_DESC, Purpose=translation_service
+10:18:51.433 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: Service Operation=getTranslation, FirebaseUID=ADMIN-dbface30-0a52-4819-b667-4f670279eeda, Key=USER_TYPE_INFLUENCER, Language=en, Purpose=translation_lookup
+10:18:51.435 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.dictionary.DictionaryService&amp#27;[0;39m - GDPR: DataAccessed=translation_value, FirebaseUID=ADMIN-dbface30-0a52-4819-b667-4f670279eeda, Key=USER_TYPE_INFLUENCER, Purpose=translation_service

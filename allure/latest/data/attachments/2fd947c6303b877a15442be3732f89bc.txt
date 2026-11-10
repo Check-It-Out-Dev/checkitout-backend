@@ -1,0 +1,10 @@
+[Integration Test] Test users created:
+  Influencer: INFLUENCER-fe65e556-546a-4bbf-9990-b660d34e5669
+  Company: COMPANY-42b694a2-2609-470c-adab-514984b2aca1
+  Admin: ADMIN-b0a9d18c-0101-4a83-a2e2-c7c09b01e0ee
+10:18:26.947 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus, FirebaseUID=INFLUENCER-fe65e556-546a-4bbf-9990-b660d34e5669, OpportunityID=2517, Action=ACCEPT, Purpose=status_management
+10:18:26.947 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=findAppliedOpportunityById, FirebaseUID=INFLUENCER-fe65e556-546a-4bbf-9990-b660d34e5669, OpportunityID=2517, Purpose=opportunity_retrieval, DataAccessed=opportunity.details,influencer.data,company.data
+10:18:26.981 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityService&amp#27;[0;39m - GDPR: Operation=updateOpportunityStatus_SUCCESS, FirebaseUID=INFLUENCER-fe65e556-546a-4bbf-9990-b660d34e5669, OpportunityID=2517, OldStatus=ACCEPTED_BY_INFLUENCER, NewStatus=CONTENT_SEND_TO_ACCEPT
+10:18:26.981 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: Operation=logStatusChange, FirebaseUID=INFLUENCER-fe65e556-546a-4bbf-9990-b660d34e5669, AppliedOpportunityID=2517, StatusChange=ACCEPTED_BY_INFLUENCER→CONTENT_SEND_TO_ACCEPT, Purpose=status_tracking
+10:18:26.984 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - GDPR: DataCreated=status_history, FirebaseUID=INFLUENCER-fe65e556-546a-4bbf-9990-b660d34e5669, AppliedOpportunityID=2517, DataAccessed=status,changedBy,reason, Purpose=audit_trail
+10:18:26.984 [main] &amp#27;[34mINFO &amp#27;[0;39m &amp#27;[36mc.s.i.p.a.AppliedOpportunityStatusHistoryService&amp#27;[0;39m - Status change logged: Applied Opportunity ID=2517, ACCEPTED_BY_INFLUENCER -> CONTENT_SEND_TO_ACCEPT, Changed by=INFLUENCER-fe65e556-546a-4bbf-9990-b660d34e5669, Reason=Status accepted via API (/status/update endpoint)
